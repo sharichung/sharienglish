@@ -1761,7 +1761,7 @@ David"></textarea>
                 return;
             }
 
-            const spins = 5;
+            const spins = 8; // was 5, now spins at least 2 full circles (8*360=2880deg)
             const degrees = spins * 360 + Math.floor(Math.random() * 360);
 
             wheel.style.transform = `rotate(${degrees}deg)`;
