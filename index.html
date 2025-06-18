@@ -1129,14 +1129,16 @@ David"></textarea>
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 p-6 rounded-xl mb-6">
-                        <h3 class="font-bold text-blue-700 mb-3 text-xl">Sentence Frames:</h3>
-                        <ul id="sentenceFrames" class="text-xl text-blue-600 space-y-2">
+                    <details class="bg-blue-50 p-6 rounded-xl mb-6" id="sentenceFramesDetails">
+                        <summary class="font-bold text-blue-700 mb-3 text-xl cursor-pointer select-none">
+                            Sentence Frames
+                        </summary>
+                        <ul id="sentenceFrames" class="text-xl text-blue-600 space-y-2 mt-3">
                             <li>"I like ___ because it tastes ___."</li>
                             <li>"My favorite ___ is ___ because ___."</li>
                             <li>"___ are healthy/delicious because ___."</li>
                         </ul>
-                    </div>
+                    </details>
 
                     <div class="flex space-x-4">
                         <button id="flipCardBtn"
@@ -1752,7 +1754,7 @@ David"></textarea>
             wheel.style.background = '';
             wheel.style.transform = '';
         }
-        
+
 
         function spinWheel() {
             if (appData.students.length === 0) {
