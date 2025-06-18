@@ -1689,45 +1689,108 @@ David"></textarea>
 
         function updateWheel() {
             wheel.innerHTML = '';
-
             if (appData.students.length === 0) {
                 wheel.style.background = '#f0f0f0';
                 return;
             }
-
-            const sliceAngle = 360 / appData.students.length;
-            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7',
-                '#C7CEEA', '#F8B195', '#F67280', '#C06C84', '#6C5B7B'
+            const size = 300;
+            const radius = size / 2;
+            const sliceAngle = 2 * Math.PI / appData.students.length;
+            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA', '#F8B195', '#F67280',
+                '#C06C84', '#6C5B7B'
             ];
 
-            appData.students.forEach((student, index) => {
-                const slice = document.createElement('div');
-                slice.style.position = 'absolute';
-                slice.style.width = '100%';
-                slice.style.height = '100%';
-                slice.style.transform = `rotate(${index * sliceAngle}deg)`;
-                slice.style.transformOrigin = '50% 50%';
-                slice.style.clipPath =
-                    `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((index + 1) * sliceAngle * Math.PI / 180)}% ${50 - 50 * Math.sin((index + 1) * sliceAngle * Math.PI / 180)}%)`;
-                slice.style.backgroundColor = colors[index % colors.length];
+            // Create SVG
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', size);
+            svg.setAttribute('height', size);
+            svg.style.display = 'block';
+            svg.style.margin = '0 auto';
 
-                const text = document.createElement('div');
-                text.style.position = 'absolute';
-                text.style.top = '15%';
-                text.style.left = '50%';
-                text.style.transform = 'translateX(-50%) rotate(' + (360 -
-                    index * sliceAngle - sliceAngle / 2) + 'deg)';
-                text.style.fontSize = '12px';
-                text.style.fontWeight = 'bold';
-                text.style.textAlign = 'center';
-                text.style.width = '100px';
-                text.style.marginLeft = '-25px';
-                text.textContent = student;
+            // Draw slices
+            for (let i = 0; i < appData.students.length; i++) {
+                const startAngle = i * sliceAngle - Math.PI / 2;
+                const endAngle = (i + 1) * sliceAngle - Math.PI / 2;
+                const x1 = radius + radius * Math.cos(startAngle);
+                const y1 = radius + radius * Math.sin(startAngle);
+                const x2 = radius + radius * Math.cos(endAngle);
+                const y2 = radius + radius * Math.sin(endAngle);
 
-                slice.appendChild(text);
-                wheel.appendChild(slice);
-            });
+                const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+                const pathData = [
+                    `M${radius},${radius}`,
+                    `L${x1},${y1}`,
+                    `A${radius},${radius} 0 ${largeArcFlag} 1 ${x2},${y2}`,
+                    'Z'
+                ].join(' ');
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', pathData);
+                path.setAttribute('fill', colors[i % colors.length]);
+                svg.appendChild(path);
+
+                // Add text
+                const textAngle = startAngle + sliceAngle / 2;
+                const textRadius = radius * 0.65;
+                const tx = radius + textRadius * Math.cos(textAngle);
+                const ty = radius + textRadius * Math.sin(textAngle);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', tx);
+                text.setAttribute('y', ty);
+                text.setAttribute('fill', '#333');
+                text.setAttribute('font-size', '16');
+                text.setAttribute('font-family', 'Nunito, sans-serif');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('alignment-baseline', 'middle');
+                text.setAttribute('transform', `rotate(${(textAngle * 180 / Math.PI)},${tx},${ty})`);
+                text.textContent = appData.students[i];
+                svg.appendChild(text);
+            }
+
+            wheel.appendChild(svg);
+            wheel.style.background = '';
+            wheel.style.transform = '';
         }
+        wheel.innerHTML = '';
+
+        if (appData.students.length === 0) {
+            wheel.style.background = '#f0f0f0';
+            return;
+        }
+
+        const sliceAngle = 360 / appData.students.length;
+        const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7',
+            '#C7CEEA', '#F8B195', '#F67280', '#C06C84', '#6C5B7B'
+        ];
+
+        appData.students.forEach((student, index) => {
+            const slice = document.createElement('div');
+            slice.style.position = 'absolute';
+            slice.style.width = '100%';
+            slice.style.height = '100%';
+            slice.style.transform = `rotate(${index * sliceAngle}deg)`;
+            slice.style.transformOrigin = '50% 50%';
+            slice.style.clipPath =
+                `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((index + 1) * sliceAngle * Math.PI / 180)}% ${50 - 50 * Math.sin((index + 1) * sliceAngle * Math.PI / 180)}%)`;
+            slice.style.backgroundColor = colors[index % colors.length];
+
+            const text = document.createElement('div');
+            text.style.position = 'absolute';
+            text.style.top = '15%';
+            text.style.left = '50%';
+            text.style.transform = 'translateX(-50%) rotate(' + (360 -
+                index * sliceAngle - sliceAngle / 2) + 'deg)';
+            text.style.fontSize = '12px';
+            text.style.fontWeight = 'bold';
+            text.style.textAlign = 'center';
+            text.style.width = '100px';
+            text.style.marginLeft = '-25px';
+            text.textContent = student;
+
+            slice.appendChild(text);
+            wheel.appendChild(slice);
+        });
 
         function spinWheel() {
             if (appData.students.length === 0) {
@@ -1745,7 +1808,7 @@ David"></textarea>
                 const normalizedDegrees = degrees % 360;
                 const sliceAngle = 360 / appData.students.length;
                 let selectedIndex = Math.floor((360 - normalizedDegrees) / sliceAngle) % appData.students
-                .length;
+                    .length;
                 // Fix negative index
                 selectedIndex = ((selectedIndex % appData.students.length) + appData.students.length) % appData
                     .students.length;
