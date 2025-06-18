@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Class Helper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0f9ff;
+            color: #333;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 3s ease-out;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .wheel-center {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .wheel-arrow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ff6b6b;
+            z-index: 20;
+        }
+
+        .topic-button {
+            transition: all 0.3s ease;
+        }
+
+        .topic-button:hover {
+            transform: translateY(-5px);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                top: -10px;
+                transform: translateX(0) rotate(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                top: 100%;
+                transform: translateX(100px) rotate(360deg);
+            }
+        }
+
+        .flashcard {
+            perspective: 1000px;
+            height: 100%;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1rem;
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+
+        .keyboard-shortcut {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 5px;
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            appearance: button;
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+        [type=search] {
+            appearance: textfield;
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+        }
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .container {
+            width: 100%
+        }
+
+        @media (min-width: 640px) {
+            .container {
+                max-width: 640px
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1024px
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .container {
+                max-width: 1280px
+            }
+        }
+
+        @media (min-width: 1536px) {
+            .container {
+                max-width: 1536px
+            }
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .ml-2 {
+            margin-left: 0.5rem
+        }
+
+        .mr-1 {
+            margin-right: 0.25rem
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem
+        }
+
+        .block {
+            display: block
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .h-40 {
+            height: 10rem
+        }
+
+        .h-80 {
+            height: 20rem
+        }
+
+        .min-h-screen {
+            min-height: 100vh
+        }
+
+        .w-full {
+            width: 100%
+        }
+
+        .max-w-4xl {
+            max-width: 56rem
+        }
+
+        .flex-1 {
+            flex: 1 1 0%
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr))
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .justify-between {
+            justify-content: space-between
+        }
+
+        .gap-2 {
+            gap: 0.5rem
+        }
+
+        .gap-4 {
+            gap: 1rem
+        }
+
+        .gap-6 {
+            gap: 1.5rem
+        }
+
+        .space-x-2> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+            margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .space-x-4> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(1rem * var(--tw-space-x-reverse));
+            margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .space-y-2> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem
+        }
+
+        .border {
+            border-width: 1px
+        }
+
+        .bg-blue-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gray-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gray-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-orange-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 237 213 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-orange-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(249 115 22 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-pink-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(252 231 243 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(243 232 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(168 85 247 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-red-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-teal-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(204 251 241 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops))
+        }
+
+        .from-blue-100 {
+            --tw-gradient-from: #dbeafe var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(219 234 254 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-orange-100 {
+            --tw-gradient-from: #ffedd5 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(255 237 213 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .to-purple-100 {
+            --tw-gradient-to: #f3e8ff var(--tw-gradient-to-position)
+        }
+
+        .to-yellow-100 {
+            --tw-gradient-to: #fef9c3 var(--tw-gradient-to-position)
+        }
+
+        .p-2 {
+            padding: 0.5rem
+        }
+
+        .p-3 {
+            padding: 0.75rem
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .p-8 {
+            padding: 2rem
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem
+        }
+
+        .text-6xl {
+            font-size: 3.75rem;
+            line-height: 1
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .text-blue-500 {
+            --tw-text-opacity: 1;
+            color: rgb(59 130 246 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-600 {
+            --tw-text-opacity: 1;
+            color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-700 {
+            --tw-text-opacity: 1;
+            color: rgb(29 78 216 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-600 {
+            --tw-text-opacity: 1;
+            color: rgb(75 85 99 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-700 {
+            --tw-text-opacity: 1;
+            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-600 {
+            --tw-text-opacity: 1;
+            color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+        }
+
+        .text-orange-600 {
+            --tw-text-opacity: 1;
+            color: rgb(234 88 12 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-600 {
+            --tw-text-opacity: 1;
+            color: rgb(147 51 234 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-700 {
+            --tw-text-opacity: 1;
+            color: rgb(126 34 206 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .shadow-lg {
+            --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .transition {
+            transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .hover\:bg-blue-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-gray-300:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(209 213 219 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-green-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-orange-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(234 88 12 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-purple-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(147 51 234 / var(--tw-bg-opacity, 1))
+        }
+
+        .focus\:outline-none:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px
+        }
+
+        .focus\:ring-2:focus {
+            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
+        }
+
+        .focus\:ring-blue-500:focus {
+            --tw-ring-opacity: 1;
+            --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity, 1))
+        }
+
+        .focus\:ring-purple-500:focus {
+            --tw-ring-opacity: 1;
+            --tw-ring-color: rgb(168 85 247 / var(--tw-ring-opacity, 1))
+        }
+
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .md\:grid-cols-4 {
+                grid-template-columns: repeat(4, minmax(0, 1fr))
+            }
+
+            .md\:p-8 {
+                padding: 2rem
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1240.0" data-gr-ext-installed="" data-new-gr-c-s-loaded="14.1240.0">
+    <div class="min-h-screen p-4 md:p-8">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-blue-600 mb-2">English Class Helper 🎓</h1>
+            <p class="text-lg text-blue-500">Interactive tool for Grade 6 English lessons</p>
+        </header>
+
+        <!-- Main Container -->
+        <div class="container mx-auto">
+            <!-- Main Screen (Student Selection) -->
+            <div id="mainScreen" class="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Column: Student Input -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-purple-600 mb-4">Student Names</h2>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Paste student names (one per line):</label>
+                            <textarea id="studentNamesInput"
+                                class="w-full h-40 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Alice
+Brian
+Candy
+David"></textarea>
+                        </div>
+                        <div class="flex space-x-2 mb-4">
+                            <button id="createWheelBtn"
+                                class="flex-1 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition">
+                                Create Wheel
+                            </button>
+                            <button id="saveListBtn"
+                                class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+                                Save List
+                            </button>
+                            <button id="loadListBtn"
+                                class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                                Load List
+                            </button>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Saved Lists:</label>
+                            <select id="savedLists"
+                                class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select a saved list...</option>
+                                <option value="sample">Sample Class</option>
+                            </select>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-2">Keyboard Shortcuts:</p>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div><span class="keyboard-shortcut">Space</span> Spin the wheel</div>
+                                <div><span class="keyboard-shortcut">→</span> Next card</div>
+                                <div><span class="keyboard-shortcut">Esc</span> Return to main screen</div>
+                                <div><span class="keyboard-shortcut">F</span> Flip card</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Wheel -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-purple-600 mb-4">Student Selector</h2>
+                        <div class="wheel-container mb-6">
+                            <div class="wheel-arrow"></div>
+                            <div class="wheel" id="wheel"></div>
+                            <div class="wheel-center">
+                                <span class="text-2xl">🎯</span>
+                            </div>
+                        </div>
+                        <button id="spinWheelBtn"
+                            class="w-full bg-purple-500 text-white py-3 px-4 rounded-lg text-xl font-bold hover:bg-purple-600 transition flex items-center justify-center mb-4"
+                            disabled="">
+                            <span class="mr-2">Start Wheel</span> 🎡
+                        </button>
+                        <div id="selectedStudentContainer" class="p-4 bg-purple-100 rounded-lg text-center hidden">
+                            <p class="text-lg">Selected Student: <span id="selectedStudentName"
+                                    class="font-bold text-purple-700"></span></p>
+                            <p class="mt-2">Please choose a topic:</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Selection (Hidden initially) -->
+                <div id="topicSelectionContainer" class="mt-6 hidden">
+                    <h2 class="text-2xl font-bold text-green-600 mb-4">Choose a Topic</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button class="topic-button bg-red-100 p-6 rounded-lg text-center" data-topic="Food">
+                            <div class="text-4xl mb-2">🍎</div>
+                            <h3 class="font-bold text-lg">Food</h3>
+                        </button>
+                        <button class="topic-button bg-blue-100 p-6 rounded-lg text-center" data-topic="Hobbies">
+                            <div class="text-4xl mb-2">🎨</div>
+                            <h3 class="font-bold text-lg">Hobbies</h3>
+                        </button>
+                        <button class="topic-button bg-yellow-100 p-6 rounded-lg text-center" data-topic="Weather">
+                            <div class="text-4xl mb-2">☁️</div>
+                            <h3 class="font-bold text-lg">Weather</h3>
+                        </button>
+                        <button class="topic-button bg-green-100 p-6 rounded-lg text-center" data-topic="School Life">
+                            <div class="text-4xl mb-2">🏫</div>
+                            <h3 class="font-bold text-lg">School Life</h3>
+                        </button>
+                        <button class="topic-button bg-purple-100 p-6 rounded-lg text-center" data-topic="Animals">
+                            <div class="text-4xl mb-2">🐘</div>
+                            <h3 class="font-bold text-lg">Animals</h3>
+                        </button>
+                        <button class="topic-button bg-pink-100 p-6 rounded-lg text-center" data-topic="Travel">
+                            <div class="text-4xl mb-2">✈️</div>
+                            <h3 class="font-bold text-lg">Travel</h3>
+                        </button>
+                        <button class="topic-button bg-orange-100 p-6 rounded-lg text-center" data-topic="Sports">
+                            <div class="text-4xl mb-2">⚽</div>
+                            <h3 class="font-bold text-lg">Sports</h3>
+                        </button>
+                        <button class="topic-button bg-teal-100 p-6 rounded-lg text-center" data-topic="Emotions">
+                            <div class="text-4xl mb-2">😊</div>
+                            <h3 class="font-bold text-lg">Emotions</h3>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flashcard Screen (Hidden initially) -->
+            <div id="flashcardScreen" class="hidden">
+                <div class="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-orange-600">Topic: <span id="currentTopic">Food</span>
+                            </h2>
+                            <p class="text-lg text-gray-600">Student: <span id="currentStudent">Alice</span></p>
+                        </div>
+                        <button id="exitFlashcardBtn"
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg transition flex items-center">
+                            <span class="mr-1">Exit</span> <span class="keyboard-shortcut">Esc</span>
+                        </button>
+                    </div>
+
+                    <div class="flashcard h-80 mb-6">
+                        <div class="flashcard-inner" id="flashcardInner">
+                            <div class="flashcard-front bg-gradient-to-r from-orange-100 to-yellow-100 p-8 rounded-xl">
+                                <div class="text-6xl mb-6" id="cardEmoji">🍎</div>
+                                <h3 id="cardWord" class="text-4xl font-bold mb-4">apple</h3>
+                                <p id="cardQuestion" class="text-xl">What is your favorite fruit?</p>
+                            </div>
+                            <div class="flashcard-back bg-gradient-to-r from-blue-100 to-purple-100 p-8 rounded-xl">
+                                <h3 class="text-2xl font-bold mb-4">Hints:</h3>
+                                <ul id="cardHints" class="text-xl space-y-2">
+                                    <li>Think about taste (sweet, sour, juicy)</li>
+                                    <li>Consider texture (crunchy, soft)</li>
+                                    <li>When do you usually eat this?</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-6 rounded-xl mb-6">
+                        <h3 class="font-bold text-blue-700 mb-3 text-xl">Sentence Frames:</h3>
+                        <ul id="sentenceFrames" class="text-xl text-blue-600 space-y-2">
+                            <li>"I like ___ because it tastes ___."</li>
+                            <li>"My favorite ___ is ___ because ___."</li>
+                            <li>"___ are healthy/delicious because ___."</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button id="flipCardBtn"
+                            class="flex-1 bg-blue-500 text-white py-3 px-4 rounded-lg font-bold hover:bg-blue-600 transition flex items-center justify-center">
+                            <span class="mr-2">Flip Card</span> 🔄 <span class="ml-2 keyboard-shortcut">F</span>
+                        </button>
+                        <button id="nextCardBtn"
+                            class="flex-1 bg-orange-500 text-white py-3 px-4 rounded-lg font-bold hover:bg-orange-600 transition flex items-center justify-center">
+                            <span class="mr-2">Next Card</span> ⏭️ <span class="ml-2 keyboard-shortcut">→</span>
+                        </button>
+                        <button id="nextStudentBtn"
+                            class="flex-1 bg-purple-500 text-white py-3 px-4 rounded-lg font-bold hover:bg-purple-600 transition flex items-center justify-center">
+                            <span class="mr-2">Next Student</span> 👨‍👩‍👧‍👦
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        const appData = {
+                students: [],
+                selectedStudent: null,
+                selectedTopic: null,
+                currentCardIndex: 0,
+                savedLists: {
+                    'sample': ['Alice', 'Brian', 'Candy', 'David', 'Emma', 'Frank', 'Grace', 'Henry']
+                },
+                topics: {
+                    'Food': {
+                        emoji: '🍎',
+                        cards: [{
+                                word: 'apple',
+                                emoji: '🍎',
+                                question: 'What is your favorite fruit?',
+                                hints: ['Think about taste (sweet, sour, juicy)',
+                                    'Consider texture (crunchy, soft)', 'When do you usually eat this?'
+                                ]
+                            },
+                            {
+                                word: 'sandwich',
+                                emoji: '🥪',
+                                question: 'What do you like in your sandwich?',
+                                hints: ['Think about fillings', 'Consider bread types',
+                                    'Is it for breakfast, lunch, or dinner?'
+                                ]
+                            },
+                            {
+                                word: 'chicken',
+                                emoji: '🍗',
+                                question: 'How do you like your chicken cooked?',
+                                hints: ['Think about cooking methods (fried, baked, grilled)',
+                                    'What flavors do you enjoy?', 'What side dishes go well with it?'
+                                ]
+                            },
+                            {
+                                word: 'orange juice',
+                                emoji: '🍊',
+                                question: 'Do you prefer juice or water?',
+                                hints: ['Think about when you drink it', 'Consider taste and health benefits',
+                                    'What other drinks do you enjoy?'
+                                ]
+                            },
+                            {
+                                word: 'vegetables',
+                                emoji: '🥦',
+                                question: 'What vegetables do you eat?',
+                                hints: ['Think about colors and tastes', 'How are they prepared?',
+                                    'Which ones are your favorites?'
+                                ]
+                            }
+                        ],
+                        sentenceFrames: [
+                            '"I like ___ because it tastes ___."',
+                            '"My favorite ___ is ___ because ___."',
+                            '"___ are healthy/delicious because ___."'
+                        ]
+                    },
+                    'Hobbies': {
+                        emoji: '🎨',
+                        cards: [{
+                                word: 'drawing',
+                                emoji: '🎨',
+                                question: 'What do you like to draw?',
+                                hints: ['Think about subjects (people, animals, landscapes)',
+                                    'What materials do you use?', 'When do you enjoy drawing?'
+                                ]
+                            },
+                            {
+                                word: 'reading',
+                                emoji: '📚',
+                                question: 'What kind of books do you enjoy?',
+                                hints: ['Think about genres (adventure, mystery, fantasy)',
+                                    'Who are your favorite authors?', 'Where do you like to read?'
+                                ]
+                            },
+                            {
+                                word: 'sports',
+                                emoji: '⚽',
+                                question: 'What sports do you play?',
+                                hints: ['Think about team vs individual sports', 'Where do you play?',
+                                    'Why do you enjoy it?'
+                                ]
+                            },
+                            {
+                                word: 'music',
+                                emoji: '🎵',
+                                question: 'Do you play any instruments?',
+                                hints: ['Think about what instruments interest you', 'Do you take lessons?',
+                                    'Do you prefer listening or playing?'
+                                ]
+                            },
+                            {
+                                word: 'video games',
+                                emoji: '🎮',
+                                question: 'What games do you like to play?',
+                                hints: ['Think about types of games', 'Who do you play with?',
+                                    'How often do you play?'
+                                ]
+                            }
+                        ],
+                        sentenceFrames: [
+                            '"I enjoy ___ because ___."',
+                            '"In my free time, I like to ___."',
+                            '"My favorite hobby is ___ because ___."'
+                        ]
+                    },
+                    'Weather': {
+                        emoji: '☁️',
+                        cards: [{
+                                word: 'sunny',
+                                emoji: '☀️',
+                                question: 'What do you do on sunny days?',
+                                hints: ['Think about outdoor activities', 'How does sunshine make you feel?',
+                                    'What clothes do you wear?'
+                                ]
+                            },
+                            {
+                                word: 'rainy',
+                                emoji: '🌧️',
+                                question: 'Do you like rainy days?',
+                                hints: ['Think about indoor activities', 'What sounds do you hear?',
+                                    'What do you wear in the rain?'
+                                ]
+                            },
+                            {
+                                word: 'snowy',
+                                emoji: '❄️',
+                                question: 'What can you do in the snow?',
+                                hints: ['Think about winter activities', 'How does snow feel?',
+                                    'What do you wear in snowy weather?'
+                                ]
+                            },
+                            {
+                                word: 'windy',
+                                emoji: '🌬️',
+                                question: 'Is it windy today?',
+                                hints: ['Think about how wind feels', 'What moves in the wind?',
+                                    'Is wind helpful or harmful?'
+                                ]
+                            },
+                            {
+                                word: 'seasons',
+                                emoji: '🍂',
+                                question: 'What is your favorite season?',
+                                hints: ['Think about weather in each season', 'What activities can you do?',
+                                    'What holidays happen in that season?'
+                                ]
+                            }
+                        sentenceFrames: [
+                            '"When it\'s ___, I like to ___."',
+                            '"My favorite weather is ___ because ___."',
+                            '"In ___ weather, you should ___."'
+                        ]
+                        ]
+                    },
+                    'School Life': {
+                        emoji: '🏫',
+                        cards: [{
+                                word: 'classroom',
+                                emoji: '🏫',
+                                question: 'What is your favorite subject?',
+                                hints: ['Think about what you learn', 'Why do you enjoy it?',
+                                    'Who teaches this subject?'
+                                ]
+                            },
+                            {
+                                word: 'homework',
+                                emoji: '📝',
+                                question: 'Where do you do your homework?',
+                                hints: ['Think about time and place', 'Do you have a routine?',
+                                    'Who helps you with homework?'
+                                ]
+                            },
+                            {
+                                word: 'friends',
+                                emoji: '👫',
+                                question: 'What do you do with friends at school?',
+                                hints: ['Think about activities during breaks', 'How do you help each other?',
+                                    'What makes someone a good friend?'
+                                ]
+                            },
+                            {
+                                word: 'lunch time',
+                                emoji: '🍱',
+                                question: 'What do you eat for lunch at school?',
+                                hints: ['Think about your favorite school meals', 'Do you bring lunch or buy it?',
+                                    'Who do you sit with?'
+                                ]
+                            },
+                            {
+                                word: 'learning',
+                                emoji: '📚',
+                                question: 'How do you learn best?',
+                                hints: ['Think about different learning styles',
+                                    'Do you prefer group work or individual work?',
+                                    'What helps you remember information?'
+                                ]
+                            }
+                        ],
+                        sentenceFrames: [
+                            '"At school, I enjoy ___ because ___."',
+                            '"My favorite part of school is ___ because ___."',
+                            '"I learn best when ___."'
+                        ]
+                    },
+                    'Animals': {
+                        emoji: '🐘',
+                        cards: [{
+                                word: 'pets',
+                                emoji: '🐕',
+                                question: 'Do you have any pets?',
+                                hints: ['Think about types of pets', 'How do you care for them?',
+                                    'What are their names?'
+                                ]
+                            },
+                            {
+                                word: 'wild animals',
+                                emoji: '🦁',
+                                question: 'What wild animal would you like to see?',
+                                hints: ['Think about where they live', 'What do they eat?',
+                                    'Why are they interesting?'
+                                ]
+                            },
+                            {
+                                word: 'ocean animals',
+                                emoji: '🐠',
+                                question: 'Name some animals that live in the ocean',
+                                hints: ['Think about different sizes', 'Consider different depths of ocean',
+                                    'How do they move?'
+                                ]
+                            },
+                            {
+                                word: 'insects',
+                                emoji: '🐝',
+                                question: 'Are you afraid of any insects?',
+                                hints: ['Think about different types', 'Where do you see them?',
+                                    'Are they helpful or harmful?'
+                                ]
+                            },
+                            {
+                                word: 'birds',
+                                emoji: '🦜',
+                                question: 'Can you name three types of birds?',
+                                hints: ['Think about birds in your area', 'Consider their colors and sizes',
+                                    'What sounds do they make?'
+                                ]
+                            }
+                        ],
+                        sentenceFrames: [
+                            '"My favorite animal is ___ because ___."',
+                            '"___ live in ___ and they ___."',
+                            '"I think ___ are interesting because ___."'
+                        ]
+                    },
+                    'Travel': {
+                    'Travel': {
+                        emoji: '✈️',
+                        cards: [
+                            {
+                                word: 'countries',
+                                emoji: '🌎',
+                                question: 'What country would you like to visit?',
+                                hints: [
+                                    'Think about location and climate',
+                                    'What language do they speak?',
+                                    'What would you see there?'
+                                ]
+                            },
+                            {
+                                word: 'transportation',
+                                emoji: '🚂',
+                                question: 'How do you like to travel?',
+                                hints: [
+                                    'Think about different vehicles',
+                                    "What's the fastest way to travel?",
+                                    "What's the most comfortable?"
+                                ]
+                            },
+                            {
+                                word: 'suitcase',
+                                emoji: '🧳',
+                                question: 'What would you pack for a beach holiday?',
+                                hints: [
+                                    'Think about clothes',
+                                    'Consider weather and activities',
+                                    'What else would you need?'
+                                ]
+                            },
+                            {
+                                word: 'souvenirs',
+                                emoji: '🎁',
+                                question: 'What souvenirs would you buy?',
+                                hints: [
+                                    'Think about gifts for family',
+                                    'What reminds you of a place?',
+                                    "What's special about different locations?"
+                                ]
+                            },
+                            {
+                                word: 'landmarks',
+                                emoji: '🗽',
+                                question: 'What famous landmarks do you know?',
+                                hints: [
+                                    'Think about buildings and monuments',
+                                    'Where are they located?',
+                                    'Why are they famous?'
+                                ]
+                            }
+                        ],
+                        sentenceFrames: [
+                            '"I would like to visit ___ because ___."',
+                            '"The best part about traveling is ___."',
+                            '"When I travel, I always ___."'
+                        ]
+                    },
+                    'Sports': {
+                                    cards: [{
+                                                word: 'football',
+                                                emoji: '⚽',
+                                                question: 'Do you play football?',
+                                                hints: ['Think about positions', 'Where do you play?',
+                                                    'What skills do you need?'
+                                                ]
+                                            },
+                                            {
+                                                word: 'swimming',
+                                                emoji: '🏊',
+                                                question: 'Can you swim?',
+                                                hints: ['Think about different strokes', 'Where do you swim?',
+                                                    'Why is swimming important?'
+                                                ]
+                                            },
+                                            {
+                                                word: 'basketball',
+                                                emoji: '🏀',
+                                                question: 'Have you played basketball?',
+                                                hints: ['Think about team roles', 'What skills are needed?',
+                                                    'Where can you play?'
+                                                ]
+                                            },
+                                            {
+                                                word: 'running',
+                                                emoji: '🏃',
+                                                question: 'Do you enjoy running?',
+                                                hints: ['Think about where to run', 'What equipment do you need?',
+                                                    'Why is running good for you?'
+                                                ]
+                                            },
+                                            {
+                                                word: 'team sports',
+                                                    'Emotions': {
+                                                        emoji: '😊',
+                                                        cards: [
+                                                            {
+                                                                word: 'happy',
+                                                                emoji: '😊',
+                                                                question: 'What makes you happy?',
+                                                                hints: [
+                                                                    'Think about activities',
+                                                                    'Consider people in your life',
+                                                                    'What events make you smile?'
+                                                                ]
+                                                            },
+                                                            {
+                                                                word: 'sad',
+                                                                emoji: '😢',
+                                                                question: 'What do you do when you feel sad?',
+                                                                hints: [
+                                                                    'Think about coping strategies',
+                                                                    'Who helps you feel better?',
+                                                                    'How do you express sadness?'
+                                                                ]
+                                                            },
+                                                            {
+                                                                word: 'excited',
+                                                                emoji: '🤩',
+                                                                question: 'What are you excited about?',
+                                                                hints: [
+                                                                    'Think about upcoming events',
+                                                                    'Consider goals or wishes',
+                                                                    'How does excitement feel?'
+                                                                ]
+                                                            },
+                                                            {
+                                                                word: 'nervous',
+                                                                emoji: '😰',
+                                                                question: 'When do you feel nervous?',
+                                                                hints: [
+                                                                    'Think about challenging situations',
+                                                                    'How does your body feel?',
+                                                                    'What helps you calm down?'
+                                                                ]
+                                                            },
+                                                            {
+                                                                word: 'proud',
+                                                                emoji: '🥇',
+                                                                question: 'What are you proud of?',
+                                                                hints: [
+                                                                    'Think about achievements',
+                                                                    'Consider skills you\'ve developed',
+                                                                    'Who has helped you succeed?'
+                                                                ]
+                                                            }
+                                                        ],
+                                                        sentenceFrames: [
+                                                            '"I feel ___ when ___."',
+                                                            '"When I\'m ___, I usually ___."',
+                                                            '"___ makes me feel ___ because ___."'
+                                                        ]
+                                                    }
+                                                }
+                                            };
+                                                            Who has helped you succeed ? '] }
+                                                        ],
+                                                        sentenceFrames: [
+                                                            '"I feel ___ when ___."',
+                                                            '"When I'
+                                                            m ___, I usually ___.
+                                                            "',
+                                                            '"___ makes me feel ___ because ___."'
+                                                        ]
+                                                    }
+                                                }
+                                            };
+
+                                            // DOM Elements
+                                            const mainScreen = document.getElementById('mainScreen');
+                                            const flashcardScreen = document.getElementById('flashcardScreen');
+                                            const studentNamesInput = document.getElementById('studentNamesInput');
+                                            const createWheelBtn = document.getElementById('createWheelBtn');
+                                            const saveListBtn = document.getElementById('saveListBtn');
+                                            const loadListBtn = document.getElementById('loadListBtn');
+                                            const savedListsSelect = document.getElementById('savedLists');
+                                            const wheel = document.getElementById('wheel');
+                                            const spinWheelBtn = document.getElementById('spinWheelBtn');
+                                            const selectedStudentContainer = document.getElementById(
+                                                'selectedStudentContainer');
+                                            const selectedStudentName = document.getElementById('selectedStudentName');
+                                            const topicSelectionContainer = document.getElementById(
+                                                'topicSelectionContainer');
+                                            const topicButtons = document.querySelectorAll('.topic-button');
+                                            const currentTopic = document.getElementById('currentTopic');
+                                            const currentStudent = document.getElementById('currentStudent');
+                                            const cardEmoji = document.getElementById('cardEmoji');
+                                            const cardWord = document.getElementById('cardWord');
+                                            const cardQuestion = document.getElementById('cardQuestion');
+                                            const cardHints = document.getElementById('cardHints');
+                                            const sentenceFrames = document.getElementById('sentenceFrames');
+                                            const flashcardInner = document.getElementById('flashcardInner');
+                                            const flipCardBtn = document.getElementById('flipCardBtn');
+                                            const nextCardBtn = document.getElementById('nextCardBtn');
+                                            const nextStudentBtn = document.getElementById('nextStudentBtn');
+                                            const exitFlashcardBtn = document.getElementById('exitFlashcardBtn');
+
+                                            // Initialize with sample data
+                                            studentNamesInput.value = appData.savedLists['sample'].join('\n');
+
+                                            // Functions
+                                            function createWheel() {
+                                                const names = studentNamesInput.value.trim().split('\n').filter(name =>
+                                                    name.trim() !== '');
+
+                                                if (names.length === 0) {
+                                                    alert('Please enter at least one student name.');
+                                                    return;
+                                                }
+
+                                                appData.students = names;
+                                                updateWheel();
+                                                spinWheelBtn.disabled = false;
+                                            }
+
+                                            function updateWheel() {
+                                                wheel.innerHTML = '';
+
+                                                if (appData.students.length === 0) {
+                                                    wheel.style.background = '#f0f0f0';
+                                                    return;
+                                                }
+
+                                                const sliceAngle = 360 / appData.students.length;
+                                                const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7',
+                                                    '#C7CEEA', '#F8B195', '#F67280', '#C06C84', '#6C5B7B'
+                                                ];
+
+                                                appData.students.forEach((student, index) => {
+                                                    const slice = document.createElement('div');
+                                                    slice.style.position = 'absolute';
+                                                    slice.style.width = '100%';
+                                                    slice.style.height = '100%';
+                                                    slice.style.transform = `rotate(${index * sliceAngle}deg)`;
+                                                    slice.style.transformOrigin = '50% 50%';
+                                                    slice.style.clipPath =
+                                                        `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((index + 1) * sliceAngle * Math.PI / 180)}% ${50 - 50 * Math.sin((index + 1) * sliceAngle * Math.PI / 180)}%)`;
+                                                    slice.style.backgroundColor = colors[index % colors.length];
+
+                                                    const text = document.createElement('div');
+                                                    text.style.position = 'absolute';
+                                                    text.style.top = '15%';
+                                                    text.style.left = '50%';
+                                                    text.style.transform = 'translateX(-50%) rotate(' + (360 -
+                                                        index * sliceAngle - sliceAngle / 2) + 'deg)';
+                                                    text.style.fontSize = '12px';
+                                                    text.style.fontWeight = 'bold';
+                                                    text.style.textAlign = 'center';
+                                                    text.style.width = '100px';
+                                                    text.style.marginLeft = '-25px';
+                                                    text.textContent = student;
+
+                                                    slice.appendChild(text);
+                                                    wheel.appendChild(slice);
+                                                });
+                                            }
+
+                                            function spinWheel() {
+                                                if (appData.students.length === 0) {
+                                                    alert('Please create the wheel first!');
+                                                    return;
+                                                }
+
+                                                const spins = 5;
+                                                const degrees = spins * 360 + Math.floor(Math.random() * 360);
+
+                                                wheel.style.transform = `rotate(${degrees}deg)`;
+
+                                                setTimeout(() => {
+                                                    // Calculate which student is selected
+                                                    const normalizedDegrees = degrees % 360;
+                                                    const sliceAngle = 360 / appData.students.length;
+                                                    const selectedIndex = Math.floor((360 - normalizedDegrees) /
+                                                        sliceAngle) % appData.students.length;
+
+                                                    appData.selectedStudent = appData.students[selectedIndex];
+                                                    selectedStudentName.textContent = appData.selectedStudent;
+                                                    selectedStudentContainer.classList.remove('hidden');
+                                                    topicSelectionContainer.classList.remove('hidden');
+
+                                                    // Create confetti effect
+                                                    createConfetti();
+                                                }, 3000);
+                                            }
+
+                                            function createConfetti() {
+                                                const container = document.querySelector('.wheel-container');
+                                                const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7',
+                                                    '#C7CEEA'
+                                                ];
+
+                                                for (let i = 0; i < 50; i++) {
+                                                    const confetti = document.createElement('div');
+                                                    confetti.className = 'confetti';
+                                                    confetti.style.backgroundColor = colors[Math.floor(Math.random() *
+                                                        colors.length)];
+                                                    confetti.style.left = Math.random() * 300 + 'px';
+                                                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                                                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                                                    confetti.style.opacity = Math.random();
+                                                    confetti.style.animation =
+                                                        `fall ${Math.random() * 3 + 2}s linear forwards`;
+
+                                                    container.appendChild(confetti);
+
+                                                    setTimeout(() => {
+                                                        confetti.remove();
+                                                    }, 5000);
+                                                }
+                                            }
+
+                                            function selectTopic(topic) {
+                                                if (!appData.selectedStudent) {
+                                                    alert('Please select a student first!');
+                                                    return;
+                                                }
+
+                                                appData.selectedTopic = topic;
+                                                appData.currentCardIndex = 0;
+
+                                                // Switch to flashcard screen
+                                                mainScreen.classList.add('hidden');
+                                                flashcardScreen.classList.remove('hidden');
+
+                                                // Update flashcard content
+                                                currentTopic.textContent = topic;
+                                                currentStudent.textContent = appData.selectedStudent;
+
+                                                updateFlashcard();
+                                            }
+
+                                            function updateFlashcard() {
+                                                const topic = appData.topics[appData.selectedTopic];
+                                                const card = topic.cards[appData.currentCardIndex];
+
+                                                // Reset card to front side
+                                                flashcardInner.style.transform = '';
+
+                                                // Update card content
+                                                cardEmoji.textContent = card.emoji;
+                                                cardWord.textContent = card.word;
+                                                cardQuestion.textContent = card.question;
+
+                                                // Update hints
+                                                cardHints.innerHTML = '';
+                                                card.hints.forEach(hint => {
+                                                    const li = document.createElement('li');
+                                                    li.textContent = hint;
+                                                    cardHints.appendChild(li);
+                                                });
+
+                                                // Update sentence frames
+                                                sentenceFrames.innerHTML = '';
+                                                topic.sentenceFrames.forEach(frame => {
+                                                    const li = document.createElement('li');
+                                                    li.textContent = frame;
+                                                    sentenceFrames.appendChild(li);
+                                                });
+                                            }
+
+                                            function flipCard() {
+                                                flashcardInner.style.transform = flashcardInner.style.transform ===
+                                                    'rotateY(180deg)' ? '' : 'rotateY(180deg)';
+                                            }
+
+                                            function nextCard() {
+                                                const topic = appData.topics[appData.selectedTopic];
+                                                appData.currentCardIndex = (appData.currentCardIndex + 1) % topic.cards
+                                                    .length;
+                                                updateFlashcard();
+                                            }
+
+                                            function nextStudent() {
+                                                // Return to main screen
+                                                flashcardScreen.classList.add('hidden');
+                                                mainScreen.classList.remove('hidden');
+
+                                                // Reset selection
+                                                appData.selectedStudent = null;
+                                                appData.selectedTopic = null;
+                                                selectedStudentContainer.classList.add('hidden');
+                                                topicSelectionContainer.classList.add('hidden');
+                                            }
+
+                                            function exitFlashcard() {
+                                                nextStudent();
+                                            }
+
+                                            function saveStudentList() {
+                                                const listName = prompt('Enter a name for this student list:');
+                                                if (listName && listName.trim() !== '') {
+                                                    const students = studentNamesInput.value.trim().split('\n').filter(
+                                                        name => name.trim() !== '');
+                                                    if (students.length > 0) {
+                                                        appData.savedLists[listName] = students;
+
+                                                        // Update saved lists dropdown
+                                                        const option = document.createElement('option');
+                                                        option.value = listName;
+                                                        option.textContent = listName;
+                                                        savedListsSelect.appendChild(option);
+
+                                                        alert(`List "${listName}" saved successfully!`);
+                                                    } else {
+                                                        alert('Please enter at least one student name.');
+                                                    }
+                                                }
+                                            }
+
+                                            function loadStudentList() {
+                                                const selectedList = savedListsSelect.value;
+                                                if (selectedList && appData.savedLists[selectedList]) {
+                                                    studentNamesInput.value = appData.savedLists[selectedList].join(
+                                                        '\n');
+                                                    alert(`List "${selectedList}" loaded successfully!`);
+                                                }
+                                            }
+
+                                            // Event Listeners
+                                            createWheelBtn.addEventListener('click', createWheel);
+                                            spinWheelBtn.addEventListener('click', spinWheel);
+                                            saveListBtn.addEventListener('click', saveStudentList);
+                                            loadListBtn.addEventListener('click', loadStudentList);
+
+                                            topicButtons.forEach(button => {
+                                                button.addEventListener('click', () => selectTopic(button.dataset
+                                                    .topic));
+                                            });
+
+                                            flipCardBtn.addEventListener('click', flipCard);
+                                            nextCardBtn.addEventListener('click', nextCard);
+                                            nextStudentBtn.addEventListener('click', nextStudent);
+                                            exitFlashcardBtn.addEventListener('click', exitFlashcard);
+
+                                            // Keyboard shortcuts
+                                            document.addEventListener('keydown', (e) => {
+                                                if (e.code === 'Space' && !mainScreen.classList.contains(
+                                                    'hidden')) {
+                                                    e.preventDefault();
+                                                    if (!spinWheelBtn.disabled) {
+                                                        spinWheel();
+                                                    }
+                                                } else if (e.code === 'ArrowRight' && !flashcardScreen.classList
+                                                    .contains('hidden')) {
+                                                    nextCard();
+                                                } else if (e.code === 'Escape' && !flashcardScreen.classList
+                                                    .contains('hidden')) {
+                                                    exitFlashcard();
+                                                } else if (e.code === 'KeyF' && !flashcardScreen.classList.contains(
+                                                        'hidden')) {
+                                                    flipCard();
+                                                }
+                                            });
+
+                                            // Initialize with sample data in the textarea
+                                            studentNamesInput.value = appData.savedLists['sample'].join('\n');
+    </script>
+
+</body>
+
+</html>
