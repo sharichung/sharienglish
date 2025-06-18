@@ -1955,24 +1955,6 @@ David"></textarea>
                 }
             }
         }
-        const listName = prompt('Enter a name for this student list:');
-        if (listName && listName.trim() !== '') {
-            const students = studentNamesInput.value.trim().split('\n').filter(
-                name => name.trim() !== '');
-            if (students.length > 0) {
-                appData.savedLists[listName] = students;
-
-                // Update saved lists dropdown
-                const option = document.createElement('option');
-                option.value = listName;
-                option.textContent = listName;
-                savedListsSelect.appendChild(option);
-
-                alert(`List "${listName}" saved successfully!`);
-            } else {
-                alert('Please enter at least one student name.');
-            }
-        }
 
         function loadStudentList() {
             const selectedList = savedListsSelect.value;
