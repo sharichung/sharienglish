@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crazy Kitchen - English Learning Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #f0f9ff;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #c7f9cc, #80ed99, #57cc99);
+        }
+
+        .food-item {
+            transition: all 0.3s ease;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .food-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .food-item:active {
+            cursor: grabbing;
+        }
+
+        .food-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .plate {
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: visible;
+        }
+
+        .plate::before {
+            content: "🍽️";
+            position: absolute;
+            font-size: 2rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .plate-item {
+            position: absolute;
+            transition: all 0.3s ease;
+            z-index: 10;
+            cursor: grab;
+        }
+
+        .plate-item:active {
+            cursor: grabbing;
+        }
+
+        .category-tab {
+            transition: all 0.3s ease;
+        }
+
+        .category-tab.active {
+            background-color: #fff;
+            color: #22c55e;
+            transform: translateY(-5px);
+        }
+
+        .sentence-blank {
+            display: inline-block;
+            min-width: 100px;
+            border-bottom: 3px solid #22c55e;
+            text-align: center;
+            padding: 0 5px;
+            font-weight: bold;
+            color: #22c55e;
+        }
+
+        .pop-animation {
+            animation: pop 0.5s ease-out;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .shake-animation {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+        }
+
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .dragging {
+            opacity: 0.8;
+            transform: scale(1.1);
+            z-index: 1000;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .chef-hat {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 4rem;
+            animation: bounce 2s infinite;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                top: -10px;
+                transform: translateX(0) rotate(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                top: 100%;
+                transform: translateX(100px) rotate(360deg);
+            }
+        }
+
+        .taste-tag {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .taste-tag:hover {
+            transform: scale(1.1);
+        }
+
+        .taste-tag.selected {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            pointer-events: none;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn-action {
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+
+        .speech-bubble {
+            position: relative;
+            background-color: white;
+            border-radius: 20px;
+            padding: 15px;
+            filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+        }
+
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 15px solid transparent;
+            border-top-color: white;
+            border-bottom: 0;
+            margin-left: -15px;
+            margin-bottom: -15px;
+        }
+
+        .highlight-text {
+            color: #22c55e;
+            font-weight: bold;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .sentence-container {
+            transition: all 0.5s ease;
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .container {
+            width: 100%
+        }
+
+        @media (min-width: 640px) {
+            .container {
+                max-width: 640px
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1024px
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .container {
+                max-width: 1280px
+            }
+        }
+
+        @media (min-width: 1536px) {
+            .container {
+                max-width: 1536px
+            }
+        }
+
+        .fixed {
+            position: fixed
+        }
+
+        .absolute {
+            position: absolute
+        }
+
+        .relative {
+            position: relative
+        }
+
+        .left-1\/2 {
+            left: 50%
+        }
+
+        .right-2 {
+            right: 0.5rem
+        }
+
+        .top-1\/2 {
+            top: 50%
+        }
+
+        .top-2 {
+            top: 0.5rem
+        }
+
+        .z-50 {
+            z-index: 50
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mt-4 {
+            margin-top: 1rem
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .aspect-square {
+            aspect-ratio: 1 / 1
+        }
+
+        .w-full {
+            width: 100%
+        }
+
+        .max-w-md {
+            max-width: 28rem
+        }
+
+        .flex-shrink-0 {
+            flex-shrink: 0
+        }
+
+        .-translate-x-1\/2 {
+            --tw-translate-x: -50%;
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .-translate-y-1\/2 {
+            --tw-translate-y: -50%;
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .transform {
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .cursor-pointer {
+            cursor: pointer
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr))
+        }
+
+        .flex-col {
+            flex-direction: column
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-between {
+            justify-content: space-between
+        }
+
+        .gap-2 {
+            gap: 0.5rem
+        }
+
+        .gap-3 {
+            gap: 0.75rem
+        }
+
+        .gap-6 {
+            gap: 1.5rem
+        }
+
+        .space-y-4> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+        }
+
+        .overflow-x-auto {
+            overflow-x: auto
+        }
+
+        .rounded-2xl {
+            border-radius: 1rem
+        }
+
+        .rounded-3xl {
+            border-radius: 1.5rem
+        }
+
+        .rounded-full {
+            border-radius: 9999px
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem
+        }
+
+        .border-2 {
+            border-width: 2px
+        }
+
+        .border-green-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(187 247 208 / var(--tw-border-opacity, 1))
+        }
+
+        .bg-green-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(240 253 244 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .p-3 {
+            padding: 0.75rem
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem
+        }
+
+        .pb-4 {
+            padding-bottom: 1rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .text-blue-500 {
+            --tw-text-opacity: 1;
+            color: rgb(59 130 246 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-400 {
+            --tw-text-opacity: 1;
+            color: rgb(156 163 175 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-700 {
+            --tw-text-opacity: 1;
+            color: rgb(21 128 61 / var(--tw-text-opacity, 1))
+        }
+
+        .text-red-500 {
+            --tw-text-opacity: 1;
+            color: rgb(239 68 68 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .opacity-50 {
+            opacity: 0.5
+        }
+
+        .shadow-lg {
+            --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .shadow-xl {
+            --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .drop-shadow-lg {
+            --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+            filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+        }
+
+        .hover\:text-gray-600:hover {
+            --tw-text-opacity: 1;
+            color: rgb(75 85 99 / var(--tw-text-opacity, 1))
+        }
+
+        @media (min-width: 768px) {
+            .md\:inline {
+                display: inline
+            }
+
+            .md\:text-5xl {
+                font-size: 3rem;
+                line-height: 1
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lg\:col-span-2 {
+                grid-column: span 2 / span 2
+            }
+
+            .lg\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1240.0" data-gr-ext-installed="">
+    <div class="game-container">
+        <div class="chef-hat">👨‍🍳</div>
+
+        <!-- Header -->
+        <header class="py-4 px-6 flex justify-between items-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">Crazy Kitchen</h1>
+            <div class="flex gap-3">
+                <button id="clearPlateBtn"
+                    class="btn-action bg-white text-red-500 rounded-full p-3 shadow-lg flex items-center gap-2">
+                    <span class="text-xl">🗑️</span>
+                    <span class="font-bold hidden md:inline">Clear Plate</span>
+                </button>
+                <button id="newMealBtn"
+                    class="btn-action bg-white text-blue-500 rounded-full p-3 shadow-lg flex items-center gap-2">
+                    <span class="text-xl">🔄</span>
+                    <span class="font-bold hidden md:inline">New Meal</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="container mx-auto px-4 py-2">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Food Selection Area -->
+                <div class="lg:col-span-2 bg-white rounded-3xl shadow-xl p-6">
+                    <!-- Category Tabs -->
+                    <div class="flex overflow-x-auto pb-4 gap-3 mb-6">
+                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer active"
+                            data-category="main">
+                            🍔 Main Foods
+                        </div>
+                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
+                            data-category="fruits">
+                            🍎 Fruits
+                        </div>
+                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
+                            data-category="vegetables">
+                            🥦 Vegetables
+                        </div>
+                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
+                            data-category="desserts">
+                            🍦 Desserts
+                        </div>
+                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
+                            data-category="drinks">
+                            🥤 Drinks
+                        </div>
+                    </div>
+
+                    <!-- Food Grid -->
+                    <div id="foodGrid" class="food-grid">
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Pizza"
+                            data-emoji="🍕" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🍕</div>
+                            <p class="font-bold">Pizza</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Burger"
+                            data-emoji="🍔" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🍔</div>
+                            <p class="font-bold">Burger</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Sandwich"
+                            data-emoji="🥪" data-tastes="[&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🥪</div>
+                            <p class="font-bold">Sandwich</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Bread"
+                            data-emoji="🍞" data-tastes="[&quot;plain&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🍞</div>
+                            <p class="font-bold">Bread</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Cheese"
+                            data-emoji="🧀" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🧀</div>
+                            <p class="font-bold">Cheese</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Spaghetti"
+                            data-emoji="🍝" data-tastes="[&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🍝</div>
+                            <p class="font-bold">Spaghetti</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Taco"
+                            data-emoji="🌮" data-tastes="[&quot;spicy&quot;,&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🌮</div>
+                            <p class="font-bold">Taco</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Burrito"
+                            data-emoji="🌯" data-tastes="[&quot;spicy&quot;,&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🌯</div>
+                            <p class="font-bold">Burrito</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Rice"
+                            data-emoji="🍚" data-tastes="[&quot;plain&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🍚</div>
+                            <p class="font-bold">Rice</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Egg"
+                            data-emoji="🥚" data-tastes="[&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🥚</div>
+                            <p class="font-bold">Egg</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Bacon"
+                            data-emoji="🥓" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🥓</div>
+                            <p class="font-bold">Bacon</p>
+                        </div>
+                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Sushi"
+                            data-emoji="🍣" data-tastes="[&quot;savory&quot;,&quot;umami&quot;]" draggable="true">
+                            <div class="food-icon mb-2">🍣</div>
+                            <p class="font-bold">Sushi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plate and Sentence Builder Area -->
+                <div class="bg-white rounded-3xl shadow-xl p-6 flex flex-col">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4">My Crazy Meal</h2>
+
+                    <!-- Plate -->
+                    <div class="plate w-full aspect-square mb-6 relative" id="plate">
+                        <!-- Food items will be placed here -->
+                    </div>
+
+                    <!-- Sentence Builder -->
+                    <div class="bg-green-50 rounded-2xl p-4 border-2 border-green-200">
+                        <h3 class="text-xl font-bold text-green-700 mb-3">My Sentences:</h3>
+
+                        <div class="space-y-4 text-lg sentence-container" id="sentenceContainer">
+                            <p id="sentence1">"I made a meal with <span id="food1" class="sentence-blank">___</span>,
+                                <span id="food2" class="sentence-blank">___</span>, and <span id="food3"
+                                    class="sentence-blank">___</span>."</p>
+
+                            <p id="sentence2">"It tastes <span id="taste" class="sentence-blank">___</span>."</p>
+                        </div>
+
+                        <button id="speakBtn"
+                            class="btn-action mt-4 bg-green-500 text-white rounded-full py-3 px-6 font-bold flex items-center gap-2 mx-auto">
+                            <span class="text-xl">🗣️</span>
+                            <span>Speak It!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltip -->
+        <div id="tooltip" class="tooltip"></div>
+
+        <!-- Speech Bubble (initially hidden) -->
+        <div id="speechBubble"
+            class="speech-bubble fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-md pop-animation hidden">
+            <p id="speechText" class="text-lg">"I made a meal with Pizza, Spaghetti, and Sushi."<br><br>"It tastes
+                mostly savory with hints of salty and umami."</p>
+            <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                onclick="document.getElementById('speechBubble').classList.add('hidden')">✕</button>
+        </div>
+    </div>
+
+    <script>
+        // Game data
+        const gameData = {
+            selectedCategory: 'main',
+            plateItems: [],
+            draggedItem: null,
+            dragOffset: {
+                x: 0,
+                y: 0
+            }
+        };
+
+        // Food items by category with taste properties
+        const foodItems = {
+            "main": [{
+                    name: "Pizza",
+                    emoji: "🍕",
+                    tastes: ["salty", "savory"]
+                },
+                {
+                    name: "Burger",
+                    emoji: "🍔",
+                    tastes: ["salty", "savory"]
+                },
+                {
+                    name: "Sandwich",
+                    emoji: "🥪",
+                    tastes: ["savory"]
+                },
+                {
+                    name: "Bread",
+                    emoji: "🍞",
+                    tastes: ["plain"]
+                },
+                {
+                    name: "Cheese",
+                    emoji: "🧀",
+                    tastes: ["salty", "savory"]
+                },
+                {
+                    name: "Spaghetti",
+                    emoji: "🍝",
+                    tastes: ["savory"]
+                },
+                {
+                    name: "Taco",
+                    emoji: "🌮",
+                    tastes: ["spicy", "savory"]
+                },
+                {
+                    name: "Burrito",
+                    emoji: "🌯",
+                    tastes: ["spicy", "savory"]
+                },
+                {
+                    name: "Rice",
+                    emoji: "🍚",
+                    tastes: ["plain"]
+                },
+                {
+                    name: "Egg",
+                    emoji: "🥚",
+                    tastes: ["savory"]
+                },
+                {
+                    name: "Bacon",
+                    emoji: "🥓",
+                    tastes: ["salty", "savory"]
+                },
+                {
+                    name: "Sushi",
+                    emoji: "🍣",
+                    tastes: ["savory", "umami"]
+                }
+            ],
+            "fruits": [{
+                    name: "Apple",
+                    emoji: "🍎",
+                    tastes: ["sweet", "crunchy"]
+                },
+                {
+                    name: "Banana",
+                    emoji: "🍌",
+                    tastes: ["sweet", "soft"]
+                },
+                {
+                    name: "Orange",
+                    emoji: "🍊",
+                    tastes: ["sweet", "sour"]
+                },
+                {
+                    name: "Grapes",
+                    emoji: "🍇",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Strawberry",
+                    emoji: "🍓",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Watermelon",
+                    emoji: "🍉",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Pineapple",
+                    emoji: "🍍",
+                    tastes: ["sweet", "sour"]
+                },
+                {
+                    name: "Peach",
+                    emoji: "🍑",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Cherry",
+                    emoji: "🍒",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Pear",
+                    emoji: "🍐",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Kiwi",
+                    emoji: "🥝",
+                    tastes: ["sweet", "sour"]
+                },
+                {
+                    name: "Coconut",
+                    emoji: "🥥",
+                    tastes: ["sweet", "creamy"]
+                }
+            ],
+            "vegetables": [{
+                    name: "Broccoli",
+                    emoji: "🥦",
+                    tastes: ["bitter", "crunchy"]
+                },
+                {
+                    name: "Carrot",
+                    emoji: "🥕",
+                    tastes: ["sweet", "crunchy"]
+                },
+                {
+                    name: "Corn",
+                    emoji: "🌽",
+                    tastes: ["sweet", "crunchy"]
+                },
+                {
+                    name: "Tomato",
+                    emoji: "🍅",
+                    tastes: ["sweet", "sour"]
+                },
+                {
+                    name: "Potato",
+                    emoji: "🥔",
+                    tastes: ["plain", "starchy"]
+                },
+                {
+                    name: "Cucumber",
+                    emoji: "🥒",
+                    tastes: ["fresh", "crunchy"]
+                },
+                {
+                    name: "Lettuce",
+                    emoji: "🥬",
+                    tastes: ["fresh", "crunchy"]
+                },
+                {
+                    name: "Onion",
+                    emoji: "🧅",
+                    tastes: ["sharp", "pungent"]
+                },
+                {
+                    name: "Garlic",
+                    emoji: "🧄",
+                    tastes: ["sharp", "pungent"]
+                },
+                {
+                    name: "Avocado",
+                    emoji: "🥑",
+                    tastes: ["creamy", "mild"]
+                },
+                {
+                    name: "Eggplant",
+                    emoji: "🍆",
+                    tastes: ["mild", "soft"]
+                },
+                {
+                    name: "Bell Pepper",
+                    emoji: "🫑",
+                    tastes: ["fresh", "crunchy"]
+                }
+            ],
+            "desserts": [{
+                    name: "Ice Cream",
+                    emoji: "🍦",
+                    tastes: ["sweet", "cold", "creamy"]
+                },
+                {
+                    name: "Cake",
+                    emoji: "🍰",
+                    tastes: ["sweet", "soft"]
+                },
+                {
+                    name: "Donut",
+                    emoji: "🍩",
+                    tastes: ["sweet", "soft"]
+                },
+                {
+                    name: "Cookie",
+                    emoji: "🍪",
+                    tastes: ["sweet", "crunchy"]
+                },
+                {
+                    name: "Chocolate",
+                    emoji: "🍫",
+                    tastes: ["sweet", "rich"]
+                },
+                {
+                    name: "Candy",
+                    emoji: "🍬",
+                    tastes: ["sweet"]
+                },
+                {
+                    name: "Lollipop",
+                    emoji: "🍭",
+                    tastes: ["sweet"]
+                },
+                {
+                    name: "Cupcake",
+                    emoji: "🧁",
+                    tastes: ["sweet", "soft"]
+                },
+                {
+                    name: "Pie",
+                    emoji: "🥧",
+                    tastes: ["sweet"]
+                },
+                {
+                    name: "Pancakes",
+                    emoji: "🥞",
+                    tastes: ["sweet", "soft"]
+                },
+                {
+                    name: "Waffle",
+                    emoji: "🧇",
+                    tastes: ["sweet", "crunchy"]
+                },
+                {
+                    name: "Pudding",
+                    emoji: "🍮",
+                    tastes: ["sweet", "creamy"]
+                }
+            ],
+            "drinks": [{
+                    name: "Milk",
+                    emoji: "🥛",
+                    tastes: ["creamy", "mild"]
+                },
+                {
+                    name: "Coffee",
+                    emoji: "☕",
+                    tastes: ["bitter", "strong"]
+                },
+                {
+                    name: "Tea",
+                    emoji: "🍵",
+                    tastes: ["mild", "soothing"]
+                },
+                {
+                    name: "Juice",
+                    emoji: "🧃",
+                    tastes: ["sweet", "fruity"]
+                },
+                {
+                    name: "Soda",
+                    emoji: "🥤",
+                    tastes: ["sweet", "fizzy"]
+                },
+                {
+                    name: "Smoothie",
+                    emoji: "🧋",
+                    tastes: ["sweet", "fruity"]
+                },
+                {
+                    name: "Water",
+                    emoji: "💧",
+                    tastes: ["plain", "refreshing"]
+                },
+                {
+                    name: "Lemonade",
+                    emoji: "🍋",
+                    tastes: ["sweet", "sour"]
+                },
+                {
+                    name: "Hot Chocolate",
+                    emoji: "🍫",
+                    tastes: ["sweet", "rich"]
+                },
+                {
+                    name: "Milkshake",
+                    emoji: "🥤",
+                    tastes: ["sweet", "creamy"]
+                },
+                {
+                    name: "Coconut Drink",
+                    emoji: "🥥",
+                    tastes: ["sweet", "tropical"]
+                },
+                {
+                    name: "Bubble Tea",
+                    emoji: "🧋",
+                    tastes: ["sweet", "chewy"]
+                }
+            ]
+        };
+
+        // DOM Elements
+        const foodGrid = document.getElementById('foodGrid');
+        const plate = document.getElementById('plate');
+        const clearPlateBtn = document.getElementById('clearPlateBtn');
+        const newMealBtn = document.getElementById('newMealBtn');
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        const tooltip = document.getElementById('tooltip');
+        const speakBtn = document.getElementById('speakBtn');
+        const sentenceContainer = document.getElementById('sentenceContainer');
+
+        // Sentence elements
+        const food1Element = document.getElementById('food1');
+        const food2Element = document.getElementById('food2');
+        const food3Element = document.getElementById('food3');
+        const tasteElement = document.getElementById('taste');
+
+        // Load foods for category
+        function loadFoodsForCategory(category) {
+            const foods = foodItems[category];
+            foodGrid.innerHTML = '';
+
+            foods.forEach(food => {
+                const foodElement = document.createElement('div');
+                foodElement.className = 'food-item bg-white rounded-xl shadow-lg p-4 text-center';
+                foodElement.dataset.name = food.name;
+                foodElement.dataset.emoji = food.emoji;
+                foodElement.dataset.tastes = JSON.stringify(food.tastes);
+                foodElement.innerHTML = `
+                    <div class="food-icon mb-2">${food.emoji}</div>
+                    <p class="font-bold">${food.name}</p>
+                `;
+
+                // Make draggable
+                foodElement.setAttribute('draggable', 'true');
+
+                // Drag events
+                foodElement.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        name: food.name,
+                        emoji: food.emoji,
+                        tastes: food.tastes
+                    }));
+                    foodElement.classList.add('opacity-50');
+                });
+
+                foodElement.addEventListener('dragend', () => {
+                    foodElement.classList.remove('opacity-50');
+                });
+
+                // Touch events for mobile
+                foodElement.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const foodRect = foodElement.getBoundingClientRect();
+
+                    gameData.draggedItem = {
+                        name: food.name,
+                        emoji: food.emoji,
+                        tastes: food.tastes,
+                        element: createDragElement(food.emoji)
+                    };
+
+                    gameData.dragOffset = {
+                        x: touch.clientX - foodRect.left,
+                        y: touch.clientY - foodRect.top
+                    };
+
+                    document.body.appendChild(gameData.draggedItem.element);
+                    updateDragElementPosition(touch.clientX, touch.clientY);
+                });
+
+                foodGrid.appendChild(foodElement);
+            });
+        }
+
+        // Create drag element for touch devices
+        function createDragElement(emoji) {
+            const element = document.createElement('div');
+            element.className = 'absolute text-4xl dragging';
+            element.style.pointerEvents = 'none';
+            element.textContent = emoji;
+            return element;
+        }
+
+        // Update drag element position
+        function updateDragElementPosition(x, y) {
+            if (!gameData.draggedItem || !gameData.draggedItem.element) return;
+
+            gameData.draggedItem.element.style.left = `${x - gameData.dragOffset.x}px`;
+            gameData.draggedItem.element.style.top = `${y - gameData.dragOffset.y}px`;
+        }
+
+        // Setup category tabs
+        function setupCategoryTabs() {
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Update active tab
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    // Load foods for selected category
+                    const category = tab.dataset.category;
+                    gameData.selectedCategory = category;
+                    loadFoodsForCategory(category);
+                });
+            });
+        }
+
+        // Setup plate drop zone
+        function setupPlateDropZone() {
+            plate.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                plate.classList.add('bg-green-50');
+            });
+
+            plate.addEventListener('dragleave', () => {
+                plate.classList.remove('bg-green-50');
+            });
+
+            plate.addEventListener('drop', (e) => {
+                e.preventDefault();
+                plate.classList.remove('bg-green-50');
+
+                try {
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    addFoodToPlate(data.name, data.emoji, data.tastes, e.clientX, e.clientY);
+                } catch (error) {
+                    console.error('Error adding food to plate:', error);
+                }
+            });
+        }
+
+        // Add food to plate
+        function addFoodToPlate(name, emoji, tastes, clientX, clientY) {
+            // Limit to 10 items
+            if (gameData.plateItems.length >= 10) {
+                showTooltip('Your plate is full! Remove some items first.', clientX, clientY);
+                return;
+            }
+
+            const plateRect = plate.getBoundingClientRect();
+
+            // Calculate position relative to plate
+            let x, y;
+
+            if (clientX && clientY) {
+                x = ((clientX - plateRect.left) / plateRect.width) * 100;
+                y = ((clientY - plateRect.top) / plateRect.height) * 100;
+            } else {
+                // Random position if no coordinates provided
+                x = Math.random() * 70 + 15; // 15% to 85%
+                y = Math.random() * 70 + 15; // 15% to 85%
+            }
+
+            // Ensure position is within bounds
+            x = Math.max(10, Math.min(90, x));
+            y = Math.max(10, Math.min(90, y));
+
+            // Create food element
+            const foodElement = document.createElement('div');
+            foodElement.className = 'plate-item pop-animation';
+            foodElement.dataset.name = name;
+            foodElement.dataset.tastes = JSON.stringify(tastes);
+            foodElement.innerHTML = `<span class="text-4xl">${emoji}</span>`;
+            foodElement.style.left = `${x}%`;
+            foodElement.style.top = `${y}%`;
+
+            // Make draggable within plate
+            foodElement.setAttribute('draggable', 'true');
+
+            // Drag events
+            foodElement.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    name: name,
+                    emoji: emoji,
+                    tastes: tastes,
+                    id: foodElement.id
+                }));
+                foodElement.classList.add('opacity-50');
+            });
+
+            foodElement.addEventListener('dragend', () => {
+                foodElement.classList.remove('opacity-50');
+            });
+
+            // Double click to remove
+            foodElement.addEventListener('dblclick', () => {
+                removeFoodFromPlate(foodElement);
+            });
+
+            // Add to plate
+            plate.appendChild(foodElement);
+
+            // Add to data
+            const id = `food-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            foodElement.id = id;
+            gameData.plateItems.push({
+                id,
+                name,
+                emoji,
+                tastes,
+                element: foodElement
+            });
+
+            // Update sentence
+            updateSentence();
+
+            // Create confetti effect
+            createConfetti();
+        }
+
+        // Remove food from plate
+        function removeFoodFromPlate(element) {
+            // Remove from DOM
+            element.classList.add('shake-animation');
+
+            setTimeout(() => {
+                element.remove();
+
+                // Remove from data
+                const index = gameData.plateItems.findIndex(item => item.element === element);
+                if (index !== -1) {
+                    gameData.plateItems.splice(index, 1);
+                }
+
+                // Update sentence
+                updateSentence();
+            }, 300);
+        }
+
+        // Clear plate
+        function clearPlate() {
+            // Animation
+            const items = [...plate.querySelectorAll('.plate-item')];
+
+            if (items.length === 0) return;
+
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('shake-animation');
+
+                    setTimeout(() => {
+                        item.remove();
+                    }, 300);
+                }, index * 100);
+            });
+
+            // Clear data
+            gameData.plateItems = [];
+
+            // Update sentence
+            setTimeout(() => {
+                updateSentence();
+            }, items.length * 100 + 300);
+        }
+
+        // Generate taste description based on food items
+        function generateTasteDescription() {
+            if (gameData.plateItems.length === 0) {
+                return "___";
+            }
+
+            // Collect all taste properties
+            const allTastes = [];
+            gameData.plateItems.forEach(item => {
+                if (item.tastes) {
+                    allTastes.push(...item.tastes);
+                }
+            });
+
+            // Count occurrences of each taste
+            const tasteCounts = {};
+            allTastes.forEach(taste => {
+                tasteCounts[taste] = (tasteCounts[taste] || 0) + 1;
+            });
+
+            // Sort tastes by frequency
+            const sortedTastes = Object.keys(tasteCounts).sort((a, b) => tasteCounts[b] - tasteCounts[a]);
+
+            // Check for weird combinations
+            const isWeird = checkForWeirdCombination(sortedTastes);
+            if (isWeird) {
+                return "weird!";
+            }
+
+            // Generate description based on taste frequencies
+            if (sortedTastes.length === 0) {
+                return "plain";
+            } else if (sortedTastes.length === 1) {
+                return sortedTastes[0];
+            } else if (sortedTastes.length === 2) {
+                const mainTaste = sortedTastes[0];
+                const secondaryTaste = sortedTastes[1];
+
+                if (tasteCounts[mainTaste] > tasteCounts[secondaryTaste] * 2) {
+                    return `mainly ${mainTaste} and a little ${secondaryTaste}`;
+                } else {
+                    return `${mainTaste} and ${secondaryTaste}`;
+                }
+            } else {
+                // For 3 or more tastes
+                const topThreeTastes = sortedTastes.slice(0, 3);
+
+                // If one taste is dominant
+                if (tasteCounts[topThreeTastes[0]] > tasteCounts[topThreeTastes[1]] * 2) {
+                    return `mostly ${topThreeTastes[0]} with hints of ${topThreeTastes[1]} and ${topThreeTastes[2]}`;
+                } else {
+                    return `${topThreeTastes[0]}, ${topThreeTastes[1]}, and ${topThreeTastes[2]}`;
+                }
+            }
+        }
+
+        // Check for weird taste combinations
+        function checkForWeirdCombination(tastes) {
+            // Define conflicting taste pairs
+            const conflictingPairs = [
+                ['sweet', 'bitter'],
+                ['sweet', 'pungent'],
+                ['creamy', 'fizzy'],
+                ['spicy', 'plain'],
+                ['bitter', 'salty']
+            ];
+
+            // Check if any conflicting pair exists in the tastes
+            for (const [taste1, taste2] of conflictingPairs) {
+                if (tastes.includes(taste1) && tastes.includes(taste2)) {
+                    return true;
+                }
+            }
+
+            // Check for too many different tastes (more than 5 different tastes is weird)
+            if (tastes.length > 5) {
+                return true;
+            }
+
+            // Check for unusual category combinations
+            const categories = new Set();
+            gameData.plateItems.forEach(item => {
+                for (const category in foodItems) {
+                    if (foodItems[category].some(food => food.name === item.name)) {
+                        categories.add(category);
+                    }
+                }
+            });
+
+            // If we have both desserts and vegetables, or desserts and main foods, it's weird
+            if ((categories.has('desserts') && categories.has('vegetables')) ||
+                (categories.has('desserts') && categories.has('main'))) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Update sentence
+        function updateSentence() {
+            // Reset
+            food1Element.textContent = '___';
+            food2Element.textContent = '___';
+            food3Element.textContent = '___';
+
+            // Update with plate items
+            if (gameData.plateItems.length > 0) {
+                food1Element.textContent = gameData.plateItems[0].name;
+            }
+
+            if (gameData.plateItems.length > 1) {
+                food2Element.textContent = gameData.plateItems[1].name;
+            }
+
+            if (gameData.plateItems.length > 2) {
+                food3Element.textContent = gameData.plateItems[2].name;
+            }
+
+            // Generate and update taste description
+            const tasteDescription = generateTasteDescription();
+            tasteElement.textContent = tasteDescription;
+
+            // Add highlight animation to taste element
+            tasteElement.classList.add('highlight-text');
+            setTimeout(() => {
+                tasteElement.classList.remove('highlight-text');
+            }, 2000);
+
+            // Add animation to sentence container
+            sentenceContainer.classList.add('shake-animation');
+            setTimeout(() => {
+                sentenceContainer.classList.remove('shake-animation');
+            }, 500);
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const container = document.querySelector('.game-container');
+            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA'];
+
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.opacity = Math.random();
+                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+
+                container.appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Show tooltip
+        function showTooltip(text, x, y) {
+            tooltip.textContent = text;
+            tooltip.style.left = `${x}px`;
+            tooltip.style.top = `${y - 30}px`;
+            tooltip.style.opacity = '1';
+
+            setTimeout(() => {
+                tooltip.style.opacity = '0';
+            }, 2000);
+        }
+
+        // Setup touch events for the document
+        function setupTouchEvents() {
+            document.addEventListener('touchmove', (e) => {
+                if (!gameData.draggedItem) return;
+                e.preventDefault();
+
+                const touch = e.touches[0];
+                updateDragElementPosition(touch.clientX, touch.clientY);
+            });
+
+            document.addEventListener('touchend', (e) => {
+                if (!gameData.draggedItem) return;
+
+                const touch = e.changedTouches[0];
+                const plateRect = plate.getBoundingClientRect();
+
+                // Check if dropped on plate
+                if (
+                    touch.clientX >= plateRect.left &&
+                    touch.clientX <= plateRect.right &&
+                    touch.clientY >= plateRect.top &&
+                    touch.clientY <= plateRect.bottom
+                ) {
+                    addFoodToPlate(
+                        gameData.draggedItem.name,
+                        gameData.draggedItem.emoji,
+                        gameData.draggedItem.tastes,
+                        touch.clientX,
+                        touch.clientY
+                    );
+                }
+
+                // Remove drag element
+                if (gameData.draggedItem.element) {
+                    gameData.draggedItem.element.remove();
+                }
+
+                gameData.draggedItem = null;
+            });
+        }
+
+        // Speak button animation
+        function setupSpeakButton() {
+            speakBtn.addEventListener('click', () => {
+                speakBtn.classList.add('shake-animation');
+
+                // Get sentences
+                let sentences = [];
+
+                if (food1Element.textContent !== '___') {
+                    let sentence = `"I made a meal with ${food1Element.textContent}`;
+
+                    if (food2Element.textContent !== '___') {
+                        sentence += `, ${food2Element.textContent}`;
+                    }
+
+                    if (food3Element.textContent !== '___') {
+                        sentence += `, and ${food3Element.textContent}`;
+                    }
+
+                    sentence += `."`;
+                    sentences.push(sentence);
+                }
+
+                if (tasteElement.textContent !== '___') {
+                    sentences.push(`"It tastes ${tasteElement.textContent}."`);
+                }
+
+                if (sentences.length === 0) {
+                    sentences.push('"I need to add some food to my plate!"');
+                }
+
+                // Show speech bubble
+                const speechBubble = document.getElementById('speechBubble');
+                const speechText = document.getElementById('speechText');
+
+                speechText.innerHTML = sentences.join('<br><br>');
+                speechBubble.classList.remove('hidden');
+                speechBubble.classList.add('pop-animation');
+
+                setTimeout(() => {
+                    speakBtn.classList.remove('shake-animation');
+                }, 500);
+
+                // Auto-hide speech bubble after a while
+                setTimeout(() => {
+                    speechBubble.classList.add('shake-animation');
+                    setTimeout(() => {
+                        speechBubble.classList.add('hidden');
+                        speechBubble.classList.remove('shake-animation');
+                    }, 500);
+                }, 6000);
+            });
+        }
+
+        // Generate food tips based on current plate
+        function generateFoodTip() {
+            const tips = [
+                "Try adding some vegetables for a balanced meal!",
+                "Sweet and salty foods can taste great together!",
+                "Fruits make a healthy dessert!",
+                "Try creating a meal from different food groups!",
+                "What happens if you mix sweet and spicy foods?",
+                "Can you make a meal that tastes weird on purpose?",
+                "Try making a colorful plate with different foods!",
+                "What's your favorite food combination?",
+                "Can you make a meal with foods from every category?",
+                "Try making a breakfast, lunch, or dinner plate!"
+            ];
+
+            return tips[Math.floor(Math.random() * tips.length)];
+        }
+
+        // Initialize
+        function init() {
+            // Load initial foods
+            loadFoodsForCategory('main');
+
+            // Setup event listeners
+            setupCategoryTabs();
+            setupPlateDropZone();
+            setupTouchEvents();
+            setupSpeakButton();
+
+            // Clear plate button
+            clearPlateBtn.addEventListener('click', clearPlate);
+
+            // New meal button
+            newMealBtn.addEventListener('click', () => {
+                clearPlate();
+
+                // Show first category
+                categoryTabs[0].click();
+
+                // Create confetti
+                createConfetti();
+
+                // Show a tip
+                const tip = generateFoodTip();
+                showTooltip(tip, window.innerWidth / 2, window.innerHeight / 2);
+            });
+        }
+
+        // Start the game
+        init();
+    </script>
+
+</body>
+
+</html>
