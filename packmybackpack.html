@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack My Backpack - ESL Speaking Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0f9ff;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .item-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .item-card.selected {
+            border: 4px solid #3b82f6;
+            background-color: #dbeafe;
+        }
+
+        .item-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .backpack-items {
+            min-height: 80px;
+            border: 2px dashed #93c5fd;
+            background-color: #eff6ff;
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(59, 130, 246, 0.8);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .nav-button:hover {
+            background-color: rgba(37, 99, 235, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-prev {
+            left: 20px;
+        }
+
+        .nav-next {
+            right: 20px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background-color: rgba(59, 130, 246, 1);
+            transform: scale(1.2);
+        }
+
+        .destination-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .backpack-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                top: -10px;
+                transform: translateX(0) rotate(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                top: 100%;
+                transform: translateX(100px) rotate(360deg);
+            }
+        }
+
+        .title-text {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .challenge-item {
+            transition: all 0.3s ease;
+        }
+
+        .challenge-item:hover {
+            transform: scale(1.05);
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .container {
+            width: 100%
+        }
+
+        @media (min-width: 640px) {
+            .container {
+                max-width: 640px
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1024px
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .container {
+                max-width: 1280px
+            }
+        }
+
+        @media (min-width: 1536px) {
+            .container {
+                max-width: 1536px
+            }
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mb-10 {
+            margin-bottom: 2.5rem
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .h-full {
+            height: 100%
+        }
+
+        .transform {
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .cursor-pointer {
+            cursor: pointer
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
+
+        .flex-col {
+            flex-direction: column
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .gap-2 {
+            gap: 0.5rem
+        }
+
+        .gap-4 {
+            gap: 1rem
+        }
+
+        .rounded-full {
+            border-radius: 9999px
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem
+        }
+
+        .border-2 {
+            border-width: 2px
+        }
+
+        .border-yellow-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(253 224 71 / var(--tw-border-opacity, 1))
+        }
+
+        .border-purple-500 {
+            --tw-border-opacity: 1;
+            border-color: rgb(168 85 247 / var(--tw-border-opacity, 1))
+        }
+
+        .bg-amber-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 243 199 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-cyan-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(207 250 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-indigo-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(224 231 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(243 232 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(250 204 21 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(233 213 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gradient-to-br {
+            background-image: linear-gradient(to bottom right, var(--tw-gradient-stops))
+        }
+
+        .from-amber-100 {
+            --tw-gradient-from: #fef3c7 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(254 243 199 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-blue-100 {
+            --tw-gradient-from: #dbeafe var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(219 234 254 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-blue-400 {
+            --tw-gradient-from: #60a5fa var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(96 165 250 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-green-100 {
+            --tw-gradient-from: #dcfce7 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(220 252 231 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-indigo-100 {
+            --tw-gradient-from: #e0e7ff var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(224 231 255 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-pink-100 {
+            --tw-gradient-from: #fce7f3 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(252 231 243 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .to-amber-300 {
+            --tw-gradient-to: #fcd34d var(--tw-gradient-to-position)
+        }
+
+        .to-blue-300 {
+            --tw-gradient-to: #93c5fd var(--tw-gradient-to-position)
+        }
+
+        .to-cyan-300 {
+            --tw-gradient-to: #67e8f9 var(--tw-gradient-to-position)
+        }
+
+        .to-green-300 {
+            --tw-gradient-to: #86efac var(--tw-gradient-to-position)
+        }
+
+        .to-purple-300 {
+            --tw-gradient-to: #d8b4fe var(--tw-gradient-to-position)
+        }
+
+        .to-purple-500 {
+            --tw-gradient-to: #a855f7 var(--tw-gradient-to-position)
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem
+        }
+
+        .px-8 {
+            padding-left: 2rem;
+            padding-right: 2rem
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem
+        }
+
+        .text-5xl {
+            font-size: 3rem;
+            line-height: 1
+        }
+
+        .text-6xl {
+            font-size: 3.75rem;
+            line-height: 1
+        }
+
+        .text-8xl {
+            font-size: 6rem;
+            line-height: 1
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .text-amber-600 {
+            --tw-text-opacity: 1;
+            color: rgb(217 119 6 / var(--tw-text-opacity, 1))
+        }
+
+        .text-amber-700 {
+            --tw-text-opacity: 1;
+            color: rgb(180 83 9 / var(--tw-text-opacity, 1))
+        }
+
+        .text-amber-800 {
+            --tw-text-opacity: 1;
+            color: rgb(146 64 14 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-600 {
+            --tw-text-opacity: 1;
+            color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-700 {
+            --tw-text-opacity: 1;
+            color: rgb(29 78 216 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-800 {
+            --tw-text-opacity: 1;
+            color: rgb(30 64 175 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-900 {
+            --tw-text-opacity: 1;
+            color: rgb(30 58 138 / var(--tw-text-opacity, 1))
+        }
+
+        .text-cyan-600 {
+            --tw-text-opacity: 1;
+            color: rgb(8 145 178 / var(--tw-text-opacity, 1))
+        }
+
+        .text-cyan-700 {
+            --tw-text-opacity: 1;
+            color: rgb(14 116 144 / var(--tw-text-opacity, 1))
+        }
+
+        .text-cyan-800 {
+            --tw-text-opacity: 1;
+            color: rgb(21 94 117 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-600 {
+            --tw-text-opacity: 1;
+            color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-700 {
+            --tw-text-opacity: 1;
+            color: rgb(21 128 61 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-800 {
+            --tw-text-opacity: 1;
+            color: rgb(22 101 52 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-600 {
+            --tw-text-opacity: 1;
+            color: rgb(79 70 229 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-700 {
+            --tw-text-opacity: 1;
+            color: rgb(67 56 202 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-800 {
+            --tw-text-opacity: 1;
+            color: rgb(55 48 163 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-600 {
+            --tw-text-opacity: 1;
+            color: rgb(147 51 234 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-700 {
+            --tw-text-opacity: 1;
+            color: rgb(126 34 206 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-800 {
+            --tw-text-opacity: 1;
+            color: rgb(107 33 168 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .text-yellow-800 {
+            --tw-text-opacity: 1;
+            color: rgb(133 77 14 / var(--tw-text-opacity, 1))
+        }
+
+        .shadow-lg {
+            --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .transition {
+            transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .hover\:scale-105:hover {
+            --tw-scale-x: 1.05;
+            --tw-scale-y: 1.05;
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .hover\:bg-yellow-500:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1))
+        }
+
+        @media (min-width: 768px) {
+            .md\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
+            }
+
+            .md\:grid-cols-5 {
+                grid-template-columns: repeat(5, minmax(0, 1fr))
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1240.0" data-gr-ext-installed="">
+    <div class="slide-container">
+        <!-- Title Slide -->
+        <div class="slide bg-gradient-to-br from-blue-400 to-purple-500" id="slide-0"
+            style="transform: translateX(0px);">
+            <div class="flex flex-col items-center justify-center h-full">
+                <h1 class="text-6xl font-bold text-white mb-6 title-text">Pack My Backpack</h1>
+                <div class="text-8xl mb-8">🎒</div>
+                <p class="text-2xl text-white mb-10">A fun speaking game for English learners!</p>
+                <button id="startButton"
+                    class="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold py-4 px-8 rounded-full text-xl transition transform hover:scale-105">
+                    Let's Start! 🚀
+                </button>
+            </div>
+        </div>
+
+        <!-- School Slide -->
+        <div class="slide bg-gradient-to-br from-blue-100 to-blue-300" id="slide-1"
+            style="transform: translateX(100%);">
+            <div class="destination-bg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" width="100%"
+                    height="100%">
+                    <path fill="#3b82f6" fill-opacity="0.2"
+                        d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,208C672,213,768,203,864,170.7C960,139,1056,85,1152,69.3C1248,53,1344,75,1392,85.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                    </path>
+                </svg>
+            </div>
+            <div class="backpack-icon">🎒</div>
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-4xl font-bold text-blue-800 mb-2 text-center">I'm going to <span
+                        class="text-5xl">School</span> 🏫</h2>
+                <p class="text-xl text-blue-600 mb-6 text-center">What should I pack in my backpack?</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="pencil"
+                        data-emoji="✏️">
+                        <div class="item-icon mb-2">✏️</div>
+                        <p class="text-xl font-bold">Pencil</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="notebook"
+                        data-emoji="📓">
+                        <div class="item-icon mb-2">📓</div>
+                        <p class="text-xl font-bold">Notebook</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="lunch box"
+                        data-emoji="🍱">
+                        <div class="item-icon mb-2">🍱</div>
+                        <p class="text-xl font-bold">Lunch Box</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="water bottle"
+                        data-emoji="🧴">
+                        <div class="item-icon mb-2">🧴</div>
+                        <p class="text-xl font-bold">Water Bottle</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="ruler"
+                        data-emoji="📏">
+                        <div class="item-icon mb-2">📏</div>
+                        <p class="text-xl font-bold">Ruler</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="eraser"
+                        data-emoji="🧽">
+                        <div class="item-icon mb-2">🧽</div>
+                        <p class="text-xl font-bold">Eraser</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-blue-700 mb-3">My Backpack:</h3>
+                    <div class="backpack-items rounded-lg p-4 mb-4 flex flex-wrap gap-2" id="backpack-1"></div>
+                    <div class="bg-yellow-100 rounded-lg p-4 border-2 border-yellow-300">
+                        <p class="text-xl font-bold text-yellow-800 mb-2">Speaking Practice:</p>
+                        <p class="text-lg">"I bring a <span class="text-blue-600 font-bold">___</span> because <span
+                                class="text-blue-600 font-bold">___</span>."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beach Slide -->
+        <div class="slide bg-gradient-to-br from-blue-100 to-cyan-300" id="slide-2"
+            style="transform: translateX(100%);">
+            <div class="destination-bg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" width="100%"
+                    height="100%">
+                    <path fill="#0891b2" fill-opacity="0.2"
+                        d="M0,160L48,176C96,192,192,224,288,229.3C384,235,480,213,576,181.3C672,149,768,107,864,101.3C960,96,1056,128,1152,149.3C1248,171,1344,181,1392,186.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                    </path>
+                </svg>
+            </div>
+            <div class="backpack-icon">🎒</div>
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-4xl font-bold text-cyan-800 mb-2 text-center">I'm going to the <span
+                        class="text-5xl">Beach</span> 🏖️</h2>
+                <p class="text-xl text-cyan-600 mb-6 text-center">What should I pack in my backpack?</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="sunscreen"
+                        data-emoji="🧴">
+                        <div class="item-icon mb-2">🧴</div>
+                        <p class="text-xl font-bold">Sunscreen</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="towel"
+                        data-emoji="🧖">
+                        <div class="item-icon mb-2">🧖</div>
+                        <p class="text-xl font-bold">Towel</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="sunglasses"
+                        data-emoji="🕶️">
+                        <div class="item-icon mb-2">🕶️</div>
+                        <p class="text-xl font-bold">Sunglasses</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="water bottle"
+                        data-emoji="💧">
+                        <div class="item-icon mb-2">💧</div>
+                        <p class="text-xl font-bold">Water Bottle</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="beach ball"
+                        data-emoji="🏐">
+                        <div class="item-icon mb-2">🏐</div>
+                        <p class="text-xl font-bold">Beach Ball</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="sandwich"
+                        data-emoji="🥪">
+                        <div class="item-icon mb-2">🥪</div>
+                        <p class="text-xl font-bold">Sandwich</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-cyan-700 mb-3">My Backpack:</h3>
+                    <div class="backpack-items rounded-lg p-4 mb-4 flex flex-wrap gap-2" id="backpack-2"></div>
+                    <div class="bg-yellow-100 rounded-lg p-4 border-2 border-yellow-300">
+                        <p class="text-xl font-bold text-yellow-800 mb-2">Speaking Practice:</p>
+                        <p class="text-lg">"I bring a <span class="text-cyan-600 font-bold">___</span> because <span
+                                class="text-cyan-600 font-bold">___</span>."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camping Slide -->
+        <div class="slide bg-gradient-to-br from-green-100 to-green-300" id="slide-3"
+            style="transform: translateX(100%);">
+            <div class="destination-bg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" width="100%"
+                    height="100%">
+                    <path fill="#166534" fill-opacity="0.2"
+                        d="M0,96L48,112C96,128,192,160,288,165.3C384,171,480,149,576,149.3C672,149,768,171,864,165.3C960,160,1056,128,1152,117.3C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                    </path>
+                </svg>
+            </div>
+            <div class="backpack-icon">🎒</div>
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-4xl font-bold text-green-800 mb-2 text-center">I'm going <span
+                        class="text-5xl">Camping</span> 🏕️</h2>
+                <p class="text-xl text-green-600 mb-6 text-center">What should I pack in my backpack?</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="flashlight"
+                        data-emoji="🔦">
+                        <div class="item-icon mb-2">🔦</div>
+                        <p class="text-xl font-bold">Flashlight</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="sleeping bag"
+                        data-emoji="🛌">
+                        <div class="item-icon mb-2">🛌</div>
+                        <p class="text-xl font-bold">Sleeping Bag</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="marshmallows"
+                        data-emoji="🍡">
+                        <div class="item-icon mb-2">🍡</div>
+                        <p class="text-xl font-bold">Marshmallows</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="compass"
+                        data-emoji="🧭">
+                        <div class="item-icon mb-2">🧭</div>
+                        <p class="text-xl font-bold">Compass</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="water bottle"
+                        data-emoji="💧">
+                        <div class="item-icon mb-2">💧</div>
+                        <p class="text-xl font-bold">Water Bottle</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="first aid kit"
+                        data-emoji="🩹">
+                        <div class="item-icon mb-2">🩹</div>
+                        <p class="text-xl font-bold">First Aid Kit</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-green-700 mb-3">My Backpack:</h3>
+                    <div class="backpack-items rounded-lg p-4 mb-4 flex flex-wrap gap-2" id="backpack-3"></div>
+                    <div class="bg-yellow-100 rounded-lg p-4 border-2 border-yellow-300">
+                        <p class="text-xl font-bold text-yellow-800 mb-2">Speaking Practice:</p>
+                        <p class="text-lg">"I bring a <span class="text-green-600 font-bold">___</span> because <span
+                                class="text-green-600 font-bold">___</span>."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Space Slide -->
+        <div class="slide bg-gradient-to-br from-indigo-100 to-purple-300" id="slide-4"
+            style="transform: translateX(100%);">
+            <div class="destination-bg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" width="100%"
+                    height="100%">
+                    <path fill="#4f46e5" fill-opacity="0.2"
+                        d="M0,32L48,58.7C96,85,192,139,288,144C384,149,480,107,576,112C672,117,768,171,864,176C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                    </path>
+                </svg>
+            </div>
+            <div class="backpack-icon">🎒</div>
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-4xl font-bold text-indigo-800 mb-2 text-center">I'm going to <span
+                        class="text-5xl">Space</span> 🚀</h2>
+                <p class="text-xl text-indigo-600 mb-6 text-center">What should I pack in my backpack?</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="space helmet"
+                        data-emoji="👨‍🚀">
+                        <div class="item-icon mb-2">👨‍🚀</div>
+                        <p class="text-xl font-bold">Space Helmet</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="oxygen tank"
+                        data-emoji="🧪">
+                        <div class="item-icon mb-2">🧪</div>
+                        <p class="text-xl font-bold">Oxygen Tank</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="space food"
+                        data-emoji="🍲">
+                        <div class="item-icon mb-2">🍲</div>
+                        <p class="text-xl font-bold">Space Food</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="camera"
+                        data-emoji="📷">
+                        <div class="item-icon mb-2">📷</div>
+                        <p class="text-xl font-bold">Camera</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="space gloves"
+                        data-emoji="🧤">
+                        <div class="item-icon mb-2">🧤</div>
+                        <p class="text-xl font-bold">Space Gloves</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="star map"
+                        data-emoji="🌟">
+                        <div class="item-icon mb-2">🌟</div>
+                        <p class="text-xl font-bold">Star Map</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-indigo-700 mb-3">My Backpack:</h3>
+                    <div class="backpack-items rounded-lg p-4 mb-4 flex flex-wrap gap-2" id="backpack-4"></div>
+                    <div class="bg-yellow-100 rounded-lg p-4 border-2 border-yellow-300">
+                        <p class="text-xl font-bold text-yellow-800 mb-2">Speaking Practice:</p>
+                        <p class="text-lg">"I bring a <span class="text-indigo-600 font-bold">___</span> because <span
+                                class="text-indigo-600 font-bold">___</span>."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zoo Slide -->
+        <div class="slide bg-gradient-to-br from-amber-100 to-amber-300" id="slide-5"
+            style="transform: translateX(100%);">
+            <div class="destination-bg">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none" width="100%"
+                    height="100%">
+                    <path fill="#d97706" fill-opacity="0.2"
+                        d="M0,64L48,80C96,96,192,128,288,144C384,160,480,160,576,138.7C672,117,768,75,864,69.3C960,64,1056,96,1152,106.7C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+                    </path>
+                </svg>
+            </div>
+            <div class="backpack-icon">🎒</div>
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-4xl font-bold text-amber-800 mb-2 text-center">I'm going to the <span
+                        class="text-5xl">Zoo</span> 🦁</h2>
+                <p class="text-xl text-amber-600 mb-6 text-center">What should I pack in my backpack?</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="camera"
+                        data-emoji="📷">
+                        <div class="item-icon mb-2">📷</div>
+                        <p class="text-xl font-bold">Camera</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="binoculars"
+                        data-emoji="🔍">
+                        <div class="item-icon mb-2">🔍</div>
+                        <p class="text-xl font-bold">Binoculars</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="snack"
+                        data-emoji="🍎">
+                        <div class="item-icon mb-2">🍎</div>
+                        <p class="text-xl font-bold">Snack</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="water bottle"
+                        data-emoji="💧">
+                        <div class="item-icon mb-2">💧</div>
+                        <p class="text-xl font-bold">Water Bottle</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="zoo map"
+                        data-emoji="🗺️">
+                        <div class="item-icon mb-2">🗺️</div>
+                        <p class="text-xl font-bold">Zoo Map</p>
+                    </div>
+                    <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center" data-item="hat"
+                        data-emoji="👒">
+                        <div class="item-icon mb-2">👒</div>
+                        <p class="text-xl font-bold">Hat</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-amber-700 mb-3">My Backpack:</h3>
+                    <div class="backpack-items rounded-lg p-4 mb-4 flex flex-wrap gap-2" id="backpack-5"></div>
+                    <div class="bg-yellow-100 rounded-lg p-4 border-2 border-yellow-300">
+                        <p class="text-xl font-bold text-yellow-800 mb-2">Speaking Practice:</p>
+                        <p class="text-lg">"I bring a <span class="text-amber-600 font-bold">___</span> because <span
+                                class="text-amber-600 font-bold">___</span>."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Challenge Slide -->
+        <div class="slide bg-gradient-to-br from-pink-100 to-purple-300" id="slide-6"
+            style="transform: translateX(100%);">
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-4xl font-bold text-purple-800 mb-6 text-center">Speaking Challenge! 🎯</h2>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <h3 class="text-2xl font-bold text-purple-700 mb-4">Choose a destination:</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="challenge-item bg-blue-100 rounded-lg p-4 text-center cursor-pointer"
+                            data-destination="School">
+                            <div class="text-3xl mb-2">🏫</div>
+                            <p class="font-bold">School</p>
+                        </div>
+                        <div class="challenge-item bg-cyan-100 rounded-lg p-4 text-center cursor-pointer"
+                            data-destination="Beach">
+                            <div class="text-3xl mb-2">🏖️</div>
+                            <p class="font-bold">Beach</p>
+                        </div>
+                        <div class="challenge-item bg-green-100 rounded-lg p-4 text-center cursor-pointer bg-purple-200 border-2 border-purple-500"
+                            data-destination="Camping">
+                            <div class="text-3xl mb-2">🏕️</div>
+                            <p class="font-bold">Camping</p>
+                        </div>
+                        <div class="challenge-item bg-indigo-100 rounded-lg p-4 text-center cursor-pointer"
+                            data-destination="Space">
+                            <div class="text-3xl mb-2">🚀</div>
+                            <p class="font-bold">Space</p>
+                        </div>
+                        <div class="challenge-item bg-amber-100 rounded-lg p-4 text-center cursor-pointer"
+                            data-destination="Zoo">
+                            <div class="text-3xl mb-2">🦁</div>
+                            <p class="font-bold">Zoo</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <h3 class="text-2xl font-bold text-purple-700 mb-4">Choose 3 items:</h3>
+                    <div id="challenge-items-container" class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                        <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center cursor-pointer"
+                            data-item="Flashlight" data-emoji="🔦">
+                            <div class="item-icon mb-2">🔦</div>
+                            <p class="text-xl font-bold">Flashlight</p>
+                        </div>
+                        <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center cursor-pointer"
+                            data-item="Sleeping Bag" data-emoji="🛌">
+                            <div class="item-icon mb-2">🛌</div>
+                            <p class="text-xl font-bold">Sleeping Bag</p>
+                        </div>
+                        <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center cursor-pointer"
+                            data-item="Marshmallows" data-emoji="🍡">
+                            <div class="item-icon mb-2">🍡</div>
+                            <p class="text-xl font-bold">Marshmallows</p>
+                        </div>
+                        <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center cursor-pointer"
+                            data-item="Compass" data-emoji="🧭">
+                            <div class="item-icon mb-2">🧭</div>
+                            <p class="text-xl font-bold">Compass</p>
+                        </div>
+                        <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center cursor-pointer"
+                            data-item="Water Bottle" data-emoji="💧">
+                            <div class="item-icon mb-2">💧</div>
+                            <p class="text-xl font-bold">Water Bottle</p>
+                        </div>
+                        <div class="item-card bg-white rounded-xl shadow-lg p-4 text-center cursor-pointer"
+                            data-item="First Aid Kit" data-emoji="🩹">
+                            <div class="item-icon mb-2">🩹</div>
+                            <p class="text-xl font-bold">First Aid Kit</p>
+                        </div>
+                    </div>
+                    <div class="bg-purple-100 rounded-lg p-4 mb-4">
+                        <p class="font-bold mb-2">Selected items:</p>
+                        <div id="challenge-selected-items" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-100 rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-yellow-800 mb-4">Now say:</h3>
+                    <div class="bg-white rounded-lg p-4 border-2 border-yellow-300">
+                        <p class="text-xl mb-3">"I'm going to the <span id="final-destination"
+                                class="text-purple-600 font-bold">Camping</span>."</p>
+                        <p class="text-xl mb-3">"I will bring <span id="final-item-1"
+                                class="text-purple-600 font-bold">___</span>, <span id="final-item-2"
+                                class="text-purple-600 font-bold">___</span>, and <span id="final-item-3"
+                                class="text-purple-600 font-bold">___</span> because <span
+                                class="text-purple-600 font-bold">___</span>."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="nav-button nav-prev" id="prevButton" style="display: none;">←</div>
+        <div class="nav-button nav-next" id="nextButton" style="display: flex;">→</div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game data
+        const gameData = {
+            currentSlide: 0,
+            totalSlides: 7,
+            selectedItems: {
+                1: [],
+                2: [],
+                3: [],
+                4: [],
+                5: []
+            },
+            challengeDestination: null,
+            challengeItems: []
+        };
+
+        // Items data by destination
+        const itemsByDestination = {
+            "School": [{
+                    name: "Pencil",
+                    emoji: "✏️"
+                },
+                {
+                    name: "Notebook",
+                    emoji: "📓"
+                },
+                {
+                    name: "Lunch Box",
+                    emoji: "🍱"
+                },
+                {
+                    name: "Water Bottle",
+                    emoji: "🧴"
+                },
+                {
+                    name: "Ruler",
+                    emoji: "📏"
+                },
+                {
+                    name: "Eraser",
+                    emoji: "🧽"
+                }
+            ],
+            "Beach": [{
+                    name: "Sunscreen",
+                    emoji: "🧴"
+                },
+                {
+                    name: "Towel",
+                    emoji: "🧖"
+                },
+                {
+                    name: "Sunglasses",
+                    emoji: "🕶️"
+                },
+                {
+                    name: "Water Bottle",
+                    emoji: "💧"
+                },
+                {
+                    name: "Beach Ball",
+                    emoji: "🏐"
+                },
+                {
+                    name: "Sandwich",
+                    emoji: "🥪"
+                }
+            ],
+            "Camping": [{
+                    name: "Flashlight",
+                    emoji: "🔦"
+                },
+                {
+                    name: "Sleeping Bag",
+                    emoji: "🛌"
+                },
+                {
+                    name: "Marshmallows",
+                    emoji: "🍡"
+                },
+                {
+                    name: "Compass",
+                    emoji: "🧭"
+                },
+                {
+                    name: "Water Bottle",
+                    emoji: "💧"
+                },
+                {
+                    name: "First Aid Kit",
+                    emoji: "🩹"
+                }
+            ],
+            "Space": [{
+                    name: "Space Helmet",
+                    emoji: "👨‍🚀"
+                },
+                {
+                    name: "Oxygen Tank",
+                    emoji: "🧪"
+                },
+                {
+                    name: "Space Food",
+                    emoji: "🍲"
+                },
+                {
+                    name: "Camera",
+                    emoji: "📷"
+                },
+                {
+                    name: "Space Gloves",
+                    emoji: "🧤"
+                },
+                {
+                    name: "Star Map",
+                    emoji: "🌟"
+                }
+            ],
+            "Zoo": [{
+                    name: "Camera",
+                    emoji: "📷"
+                },
+                {
+                    name: "Binoculars",
+                    emoji: "🔍"
+                },
+                {
+                    name: "Snack",
+                    emoji: "🍎"
+                },
+                {
+                    name: "Water Bottle",
+                    emoji: "💧"
+                },
+                {
+                    name: "Zoo Map",
+                    emoji: "🗺️"
+                },
+                {
+                    name: "Hat",
+                    emoji: "👒"
+                }
+            ]
+        };
+
+        // DOM Elements
+        const slides = document.querySelectorAll('.slide');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const progressBar = document.getElementById('progressBar');
+        const startButton = document.getElementById('startButton');
+        const challengeItemsContainer = document.getElementById('challenge-items-container');
+        const challengeSelectedItems = document.getElementById('challenge-selected-items');
+        const finalDestination = document.getElementById('final-destination');
+        const finalItem1 = document.getElementById('final-item-1');
+        const finalItem2 = document.getElementById('final-item-2');
+        const finalItem3 = document.getElementById('final-item-3');
+
+        // Initialize progress bar
+        function initProgressBar() {
+            progressBar.innerHTML = '';
+            for (let i = 0; i < gameData.totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                if (i === gameData.currentSlide) {
+                    dot.classList.add('active');
+                }
+                progressBar.appendChild(dot);
+            }
+        }
+
+        // Navigate to slide
+        function goToSlide(index) {
+            if (index < 0 || index >= gameData.totalSlides) return;
+
+            // Update current slide
+            gameData.currentSlide = index;
+
+            // Update slide positions
+            slides.forEach((slide, i) => {
+                if (i < index) {
+                    slide.style.transform = 'translateX(-100%)';
+                } else if (i > index) {
+                    slide.style.transform = 'translateX(100%)';
+                } else {
+                    slide.style.transform = 'translateX(0)';
+                }
+            });
+
+            // Update progress bar
+            const dots = progressBar.querySelectorAll('.progress-dot');
+            dots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // Show/hide navigation buttons
+            prevButton.style.display = index === 0 ? 'none' : 'flex';
+            nextButton.style.display = index === gameData.totalSlides - 1 ? 'none' : 'flex';
+
+            // Special handling for challenge slide
+            if (index === 6) {
+                setupChallengeSlide();
+            }
+        }
+
+        // Setup item selection
+        function setupItemSelection() {
+            const itemCards = document.querySelectorAll('.item-card');
+            itemCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const slideId = parseInt(card.closest('.slide').id.split('-')[1]);
+                    const item = card.dataset.item;
+                    const emoji = card.dataset.emoji;
+
+                    // Toggle selection
+                    if (card.classList.contains('selected')) {
+                        card.classList.remove('selected');
+                        gameData.selectedItems[slideId] = gameData.selectedItems[slideId].filter(i => i
+                            .name !== item);
+                    } else {
+                        card.classList.add('selected');
+                        gameData.selectedItems[slideId].push({
+                            name: item,
+                            emoji: emoji
+                        });
+                    }
+
+                    // Update backpack display
+                    updateBackpack(slideId);
+                });
+            });
+        }
+
+        // Update backpack display
+        function updateBackpack(slideId) {
+            const backpack = document.getElementById(`backpack-${slideId}`);
+            backpack.innerHTML = '';
+
+            gameData.selectedItems[slideId].forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-white rounded-lg px-3 py-2 shadow flex items-center';
+                itemElement.innerHTML = `
+                    <span class="text-2xl mr-2">${item.emoji}</span>
+                    <span class="font-bold">${item.name}</span>
+                `;
+                backpack.appendChild(itemElement);
+            });
+        }
+
+        // Setup challenge slide
+        function setupChallengeSlide() {
+            // Setup destination selection
+            const challengeItems = document.querySelectorAll('.challenge-item');
+            challengeItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove active class from all items
+                    challengeItems.forEach(i => i.classList.remove('bg-purple-200', 'border-2',
+                        'border-purple-500'));
+
+                    // Add active class to selected item
+                    item.classList.add('bg-purple-200', 'border-2', 'border-purple-500');
+
+                    // Update selected destination
+                    gameData.challengeDestination = item.dataset.destination;
+                    finalDestination.textContent = gameData.challengeDestination;
+
+                    // Load items for selected destination
+                    loadChallengeItems(gameData.challengeDestination);
+                });
+            });
+        }
+
+        // Load challenge items
+        function loadChallengeItems(destination) {
+            const items = itemsByDestination[destination];
+            challengeItemsContainer.innerHTML = '';
+
+            items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className =
+                'item-card bg-white rounded-xl shadow-lg p-4 text-center cursor-pointer';
+                itemElement.dataset.item = item.name;
+                itemElement.dataset.emoji = item.emoji;
+                itemElement.innerHTML = `
+                    <div class="item-icon mb-2">${item.emoji}</div>
+                    <p class="text-xl font-bold">${item.name}</p>
+                `;
+
+                itemElement.addEventListener('click', () => {
+                    // Toggle selection
+                    if (itemElement.classList.contains('selected')) {
+                        itemElement.classList.remove('selected');
+                        gameData.challengeItems = gameData.challengeItems.filter(i => i.name !== item
+                            .name);
+                    } else {
+                        // Limit to 3 items
+                        if (gameData.challengeItems.length < 3) {
+                            itemElement.classList.add('selected');
+                            gameData.challengeItems.push(item);
+                        }
+                    }
+
+                    // Update selected items display
+                    updateChallengeItems();
+                });
+
+                challengeItemsContainer.appendChild(itemElement);
+            });
+
+            // Reset challenge items
+            gameData.challengeItems = [];
+            challengeSelectedItems.innerHTML = '';
+
+            // Reset final items
+            finalItem1.textContent = '___';
+            finalItem2.textContent = '___';
+            finalItem3.textContent = '___';
+        }
+
+        // Update challenge items
+        function updateChallengeItems() {
+            challengeSelectedItems.innerHTML = '';
+
+            gameData.challengeItems.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-white rounded-lg px-3 py-2 shadow flex items-center';
+                itemElement.innerHTML = `
+                    <span class="text-2xl mr-2">${item.emoji}</span>
+                    <span class="font-bold">${item.name}</span>
+                `;
+                challengeSelectedItems.appendChild(itemElement);
+
+                // Update final items
+                if (index === 0) finalItem1.textContent = item.name;
+                if (index === 1) finalItem2.textContent = item.name;
+                if (index === 2) finalItem3.textContent = item.name;
+            });
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const container = document.querySelector('.slide-container');
+            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.opacity = Math.random();
+                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+
+                container.appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Event Listeners
+        prevButton.addEventListener('click', () => {
+            goToSlide(gameData.currentSlide - 1);
+        });
+
+        nextButton.addEventListener('click', () => {
+            goToSlide(gameData.currentSlide + 1);
+        });
+
+        startButton.addEventListener('click', () => {
+            goToSlide(1);
+            createConfetti();
+        });
+
+        // Initialize
+        function init() {
+            initProgressBar();
+            setupItemSelection();
+            prevButton.style.display = 'none';
+        }
+
+        // Start the game
+        init();
+    </script>
+
+</body>
+
+</html>
