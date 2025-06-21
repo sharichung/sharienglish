@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jolly Phonics Learning</title>
+    <script type="text/javascript" id="www-widgetapi-script"
+        src="https://www.youtube.com/s/player/9fe2e06e/www-widgetapi.vflset/www-widgetapi.js" async=""></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: #f0f9ff;
+            scroll-behavior: smooth;
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .sound-card {
+            width: 180px;
+            height: 180px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sound-card:hover {
+            transform: scale(1.05);
+        }
+
+        .action-button {
+            width: 180px;
+            height: 180px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button:hover,
+        .play-button:hover {
+            transform: scale(1.05);
+        }
+
+        .action-button.active {
+            box-shadow: 0 0 0 4px #3b82f6, 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-button svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .action-button .play-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+
+        .game-area {
+            background-color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .letter-choice {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .letter-choice:hover {
+            transform: scale(1.05);
+        }
+
+        .letter-slot {
+            width: 80px;
+            height: 80px;
+            border: 3px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .filled {
+            border: 3px solid #4ade80;
+        }
+
+        .word-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 15px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .word-image:hover {
+            transform: scale(1.05);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 3rem;
+            animation: float 2s ease-out forwards;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .nav-button {
+            position: fixed;
+            bottom: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            background-color: #3b82f6;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 50;
+        }
+
+        .nav-prev {
+            left: 2rem;
+        }
+
+        .nav-next {
+            right: 2rem;
+        }
+
+        .draggable {
+            cursor: grab;
+        }
+
+        .draggable:active {
+            cursor: grabbing;
+        }
+
+        .dragging {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .highlight {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 10px;
+            background-color: #3b82f6;
+            z-index: 50;
+        }
+
+        .word-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .word-button {
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            border-radius: 10px;
+            background-color: #e0f2fe;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .word-button:hover {
+            background-color: #bae6fd;
+            transform: scale(1.05);
+        }
+
+        .word-button.active {
+            background-color: #38bdf8;
+            color: white;
+        }
+
+        .phoneme-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 5px;
+        }
+
+        .phoneme-button:hover {
+            transform: scale(1.05);
+        }
+
+        .show-answer-btn {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            border-radius: 15px;
+            background-color: #fde68a;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .show-answer-btn:hover {
+            background-color: #fcd34d;
+            transform: scale(1.05);
+        }
+
+        .answer-display {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            background-color: #e0f2fe;
+            display: none;
+        }
+
+        .answer-display.visible {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .phoneme-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .phoneme-bubble {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .play-button {
+            width: 180px;
+            padding: 1rem;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-button.active {
+            background-color: #38bdf8;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 5px #0ea5e9;
+        }
+
+        .now-playing {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-radius: 15px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .now-playing.visible {
+            display: flex;
+        }
+
+        .now-playing-icon {
+            margin-right: 10px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        #video-player {
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .letter-choice {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+
+            .sound-card {
+                width: 140px;
+                height: 140px;
+                font-size: 3rem;
+            }
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .mb-10 {
+            margin-bottom: 2.5rem
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .w-full {
+            width: 100%
+        }
+
+        .max-w-3xl {
+            max-width: 48rem
+        }
+
+        .max-w-md {
+            max-width: 28rem
+        }
+
+        .flex-col {
+            flex-direction: column
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .gap-4 {
+            gap: 1rem
+        }
+
+        .gap-8 {
+            gap: 2rem
+        }
+
+        .rounded-full {
+            border-radius: 9999px
+        }
+
+        .bg-blue-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(191 219 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-cyan-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(207 250 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-cyan-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(165 243 252 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-emerald-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(209 250 229 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-emerald-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(167 243 208 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(187 247 208 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-orange-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 237 213 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-orange-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 215 170 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-pink-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(252 231 243 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(243 232 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(233 213 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-red-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-red-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 202 202 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-rose-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 228 230 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-rose-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 205 211 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 240 138 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1))
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .text-blue-500 {
+            --tw-text-opacity: 1;
+            color: rgb(59 130 246 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-600 {
+            --tw-text-opacity: 1;
+            color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+        }
+
+        .text-cyan-500 {
+            --tw-text-opacity: 1;
+            color: rgb(6 182 212 / var(--tw-text-opacity, 1))
+        }
+
+        .text-cyan-600 {
+            --tw-text-opacity: 1;
+            color: rgb(8 145 178 / var(--tw-text-opacity, 1))
+        }
+
+        .text-emerald-500 {
+            --tw-text-opacity: 1;
+            color: rgb(16 185 129 / var(--tw-text-opacity, 1))
+        }
+
+        .text-emerald-600 {
+            --tw-text-opacity: 1;
+            color: rgb(5 150 105 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-500 {
+            --tw-text-opacity: 1;
+            color: rgb(34 197 94 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-600 {
+            --tw-text-opacity: 1;
+            color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+        }
+
+        .text-orange-500 {
+            --tw-text-opacity: 1;
+            color: rgb(249 115 22 / var(--tw-text-opacity, 1))
+        }
+
+        .text-orange-600 {
+            --tw-text-opacity: 1;
+            color: rgb(234 88 12 / var(--tw-text-opacity, 1))
+        }
+
+        .text-pink-600 {
+            --tw-text-opacity: 1;
+            color: rgb(219 39 119 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-500 {
+            --tw-text-opacity: 1;
+            color: rgb(168 85 247 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-600 {
+            --tw-text-opacity: 1;
+            color: rgb(147 51 234 / var(--tw-text-opacity, 1))
+        }
+
+        .text-red-500 {
+            --tw-text-opacity: 1;
+            color: rgb(239 68 68 / var(--tw-text-opacity, 1))
+        }
+
+        .text-red-600 {
+            --tw-text-opacity: 1;
+            color: rgb(220 38 38 / var(--tw-text-opacity, 1))
+        }
+
+        .text-rose-500 {
+            --tw-text-opacity: 1;
+            color: rgb(244 63 94 / var(--tw-text-opacity, 1))
+        }
+
+        .text-rose-600 {
+            --tw-text-opacity: 1;
+            color: rgb(225 29 72 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .text-yellow-500 {
+            --tw-text-opacity: 1;
+            color: rgb(234 179 8 / var(--tw-text-opacity, 1))
+        }
+
+        .text-yellow-600 {
+            --tw-text-opacity: 1;
+            color: rgb(202 138 4 / var(--tw-text-opacity, 1))
+        }
+
+        .shadow-lg {
+            --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .hover\:bg-blue-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-yellow-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(202 138 4 / var(--tw-bg-opacity, 1))
+        }
+    </style>
+</head>
+
+<body>
+    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+
+    <!-- Navigation buttons -->
+    <div class="nav-button nav-prev" id="prevButton">⬆️</div>
+    <div class="nav-button nav-next" id="nextButton">⬇️</div>
+
+    <!-- Section 1: s, a, t -->
+    <section id="section1" class="section bg-blue-100">
+        <h1 class="section-title text-blue-600">Group 1: <span class="text-red-500">s</span> <span
+                class="text-green-500">a</span> <span class="text-purple-500">t</span></h1>
+
+        <!-- Sound Cards -->
+        <div class="flex flex-wrap justify-center gap-8 mb-10">
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-red-200 text-red-600" onclick="playPhoneme('snake')">s</div>
+                <p class="mt-2 text-3xl font-bold text-red-600">snake</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-green-200 text-green-600" onclick="playPhoneme('ants')">a</div>
+                <p class="mt-2 text-3xl font-bold text-green-600">ants</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-purple-200 text-purple-600" onclick="playPhoneme('tennis')">t</div>
+                <p class="mt-2 text-3xl font-bold text-purple-600">tennis</p>
+            </div>
+        </div>
+
+        <!-- Action Videos -->
+        <div class="mb-10 w-full max-w-3xl">
+            <h2 class="text-3xl font-bold mb-4 text-center">Let's Sing Along!</h2>
+
+            <div class="now-playing" id="now-playing">
+                <span class="now-playing-icon">🎵</span>
+                <span class="text-xl font-bold" id="now-playing-text">Now playing: Snake in the Grass</span>
+            </div>
+
+            <!-- Video Player -->
+            <div class="video-container mb-4">
+                <video id="video-player" width="560" height="315" controls>
+                    <source src="Phonics.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="controls flex flex-wrap justify-center gap-8 mb-10">
+                <button class="play-button bg-red-100" data-start="0" data-end="28">s<br>Snake in the Grass</button>
+                <button class="play-button bg-green-100" data-start="29" data-end="61">a<br>Ants on my Arm</button>
+                <button class="play-button bg-purple-100" data-start="61" data-end="90">t<br>Tennis</button>
+                <button class="play-button" data-start="91" data-end="121">i<br>Inky the Mouse</button>
+                <button class="play-button" data-start="122" data-end="154">p<br>Puff Pink Cake</button>
+                <button class="play-button" data-start="155" data-end="185">n<br>Hear the Aeroplane</button>
+                <button class="play-button" data-start="186" data-end="232">c/k<br>Clicking Castanets</button>
+                <button class="play-button" data-start="233" data-end="265">e<br>Eggs in the Pan</button>
+                <button class="play-button" data-start="266" data-end="319">h<br>I Like to Hop</button>
+            </div>
+
+
+
+
+            <!-- Game Area -->
+            <div class="game-area">
+                <h2 class="text-3xl font-bold mb-6 text-center">Let's Spell Words!</h2>
+
+                <div class="word-selector" id="sat-word-selector">
+                    <button class="word-button active" data-word="sat">sat</button>
+                    <button class="word-button" data-word="at">at</button>
+                    <button class="word-button" data-word="as">as</button>
+                    <button class="word-button" data-word="tat">tat</button>
+                    <button class="word-button" data-word="tas">tas</button>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <div class="mb-6">
+                        <button
+                            class="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold py-3 px-6 rounded-full shadow-lg"
+                            id="listen-sat-btn">
+                            Listen to the word
+                        </button>
+                    </div>
+
+                    <div class="flex justify-center gap-4 mb-4">
+                        <div class="phoneme-display" id="phoneme-display-sat"></div>
+                    </div>
+
+                    <div class="flex justify-center gap-4 mb-8" id="slot-container-sat">
+                        <div class="letter-slot" id="sat-slot-0" data-index="0"></div>
+                        <div class="letter-slot" id="sat-slot-1" data-index="1"></div>
+                        <div class="letter-slot" id="sat-slot-2" data-index="2"></div>
+                    </div>
+
+                    <div class="flex justify-center gap-4 mb-8" id="sat-letters">
+                        <div class="letter-choice bg-red-200 text-red-600 draggable" draggable="true" data-letter="s">s
+                        </div>
+                        <div class="letter-choice bg-green-200 text-green-600 draggable" draggable="true"
+                            data-letter="a">a
+                        </div>
+                        <div class="letter-choice bg-purple-200 text-purple-600 draggable" draggable="true"
+                            data-letter="t">
+                            t</div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white text-2xl font-bold py-3 px-6 rounded-full shadow-lg"
+                            id="check-sat-btn">
+                            Check Answer
+                        </button>
+
+                        <button class="show-answer-btn" id="show-sat-answer">
+                            Show Answer
+                        </button>
+                    </div>
+
+                    <div class="answer-display w-full max-w-md" id="sat-answer-display">
+                        <h3 class="text-2xl font-bold mb-2 text-center">Correct Answer:</h3>
+                        <div class="flex justify-center gap-4 mb-4" id="sat-answer-phonemes"></div>
+                        <div class="flex justify-center gap-4" id="sat-answer-letters"></div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- Section 2: i, p, n -->
+    <section id="section2" class="section bg-pink-100">
+        <h1 class="section-title text-pink-600">Group 2: <span class="text-yellow-500">i</span> <span
+                class="text-blue-500">p</span> <span class="text-orange-500">n</span></h1>
+
+        <!-- Sound Cards -->
+        <div class="flex flex-wrap justify-center gap-8 mb-10">
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-yellow-200 text-yellow-600" onclick="playPhoneme('insect')">i</div>
+                <p class="mt-2 text-3xl font-bold text-yellow-600">insect</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-blue-200 text-blue-600" onclick="playPhoneme('puff')">p</div>
+                <p class="mt-2 text-3xl font-bold text-blue-600">puff</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-orange-200 text-orange-600" onclick="playPhoneme('net')">n</div>
+                <p class="mt-2 text-3xl font-bold text-orange-600">net</p>
+            </div>
+        </div>
+
+        <!-- Action Videos -->
+        <div class="mb-10 w-full max-w-3xl">
+            <h2 class="text-3xl font-bold mb-4 text-center">Let's Sing Along!</h2>
+
+            <div class="now-playing" id="now-playing-2">
+                <span class="now-playing-icon">🎵</span>
+                <span class="text-xl font-bold" id="now-playing-text-2">Now playing: Inky the Mouse</span>
+            </div>
+
+            <div class="video-container">
+                <iframe id="video-player-2" frameborder="0" allowfullscreen=""
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" title="YouTube video player" width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/4Egx_jg-j8w?playsinline=1&amp;controls=1&amp;rel=0&amp;widget_referrer=https%3A%2F%2Fwww.canva.com%2F&amp;enablejsapi=1&amp;origin=https%3A%2F%2Fbee6y4qenaebmrm0.canva-hosted-embed.com&amp;widgetid=2&amp;forigin=https%3A%2F%2Fbee6y4qenaebmrm0.canva-hosted-embed.com%2Fcodelet%2FAAEAEGJlZTZ5NHFlbmFlYm1ybTAAAAAAAZeU_cqK--U4rpL9Y4-8V2fSC7HlFI3wEXe1yylx_EY6WBZwtvQ%2F&amp;aoriginsup=1&amp;aorigins=https%3A%2F%2Fwww.canva.com&amp;gporigin=https%3A%2F%2Fwww.canva.com%2F&amp;vf=1"></iframe>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mb-10">
+            <h2 class="text-3xl font-bold mb-4 text-center">let's do the actions!</h2>
+            <div class="flex flex-wrap justify-center gap-8">
+                <div class="flex flex-col items-center">
+                    <div class="action-button bg-yellow-100" id="action-i" data-start="98" data-end="129"
+                        data-name="Inky the Mouse">
+                        <div class="play-icon">▶️</div>
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="100" cy="100" rx="40" ry="60" fill="#fcd34d"></ellipse>
+                            <circle cx="100" cy="70" r="30" fill="#fcd34d"></circle>
+                            <path d="M80,60 L70,40" stroke="#000" stroke-width="3" fill="none"></path>
+                            <path d="M120,60 L130,40" stroke="#000" stroke-width="3" fill="none"></path>
+                            <circle cx="90" cy="65" r="5" fill="#000"></circle>
+                            <circle cx="110" cy="65" r="5" fill="#000"></circle>
+                            <path d="M90,80 Q100,90 110,80" stroke="#000" stroke-width="3" fill="none"></path>
+                        </svg>
+                        <p class="mt-2 text-2xl font-bold text-center text-yellow-600">inky the mouse</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="action-button bg-blue-100" id="action-p" data-start="129" data-end="162"
+                        data-name="Puff Pink Cake">
+                        <div class="play-icon">▶️</div>
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="70" fill="#93c5fd"></circle>
+                            <circle cx="100" cy="100" r="50" fill="#3b82f6"></circle>
+                            <path d="M80,90 Q100,110 120,90" stroke="#fff" stroke-width="3" fill="none"></path>
+                            <path d="M70,70 L80,80" stroke="#fff" stroke-width="3" fill="none"></path>
+                            <path d="M130,70 L120,80" stroke="#fff" stroke-width="3" fill="none"></path>
+                            <path d="M100,130 L100,150" stroke="#fff" stroke-width="3" fill="none"></path>
+                        </svg>
+                        <p class="mt-2 text-2xl font-bold text-center text-blue-600">puff pink cake</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="action-button bg-orange-100" id="action-n" data-start="162" data-end="193"
+                        data-name="Hear the Aeroplane">
+                        <div class="play-icon">▶️</div>
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50,150 L150,150 L150,50 L50,50 Z" fill="#fdba74"></path>
+                            <path d="M50,50 L150,150" stroke="#fff" stroke-width="3" fill="none"></path>
+                            <path d="M50,150 L150,50" stroke="#fff" stroke-width="3" fill="none"></path>
+                            <path d="M30,30 Q100,10 170,30" stroke="#000" stroke-width="3" fill="none"></path>
+                            <path d="M30,30 Q30,10 50,10" stroke="#000" stroke-width="3" fill="none"></path>
+                            <path d="M170,30 Q170,10 150,10" stroke="#000" stroke-width="3" fill="none"></path>
+                        </svg>
+                        <p class="mt-2 text-2xl font-bold text-center text-orange-600">hear the aeroplane</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-area">
+            <h2 class="text-3xl font-bold mb-6 text-center">Let's Spell Words!</h2>
+
+            <div class="word-selector" id="ipn-word-selector">
+                <button class="word-button active" data-word="pin">pin</button>
+                <button class="word-button" data-word="in">in</button>
+                <button class="word-button" data-word="nip">nip</button>
+                <button class="word-button" data-word="pan">pan</button>
+                <button class="word-button" data-word="nap">nap</button>
+                <button class="word-button" data-word="tap">tap</button>
+                <button class="word-button" data-word="pit">pit</button>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <div class="mb-6">
+                    <button
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold py-3 px-6 rounded-full shadow-lg"
+                        id="listen-ipn-btn">
+                        Listen to the word
+                    </button>
+                </div>
+
+                <div class="flex justify-center gap-4 mb-4">
+                    <div class="phoneme-display" id="phoneme-display-ipn"></div>
+                </div>
+
+                <div class="flex justify-center gap-4 mb-8" id="slot-container-ipn">
+                    <div class="letter-slot" id="ipn-slot-0" data-index="0"></div>
+                    <div class="letter-slot" id="ipn-slot-1" data-index="1"></div>
+                    <div class="letter-slot" id="ipn-slot-2" data-index="2"></div>
+                </div>
+
+                <div class="flex justify-center gap-4 mb-8" id="ipn-letters">
+                    <div class="letter-choice bg-yellow-200 text-yellow-600 draggable" draggable="true" data-letter="i">
+                        i</div>
+                    <div class="letter-choice bg-blue-200 text-blue-600 draggable" draggable="true" data-letter="p">p
+                    </div>
+                    <div class="letter-choice bg-orange-200 text-orange-600 draggable" draggable="true" data-letter="n">
+                        n</div>
+                    <div class="letter-choice bg-green-200 text-green-600 draggable" draggable="true" data-letter="a">a
+                    </div>
+                    <div class="letter-choice bg-purple-200 text-purple-600 draggable" draggable="true" data-letter="t">
+                        t</div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-2xl font-bold py-3 px-6 rounded-full shadow-lg"
+                        id="check-ipn-btn">
+                        Check Answer
+                    </button>
+
+                    <button class="show-answer-btn" id="show-ipn-answer">
+                        Show Answer
+                    </button>
+                </div>
+
+                <div class="answer-display w-full max-w-md" id="ipn-answer-display">
+                    <h3 class="text-2xl font-bold mb-2 text-center">Correct Answer:</h3>
+                    <div class="flex justify-center gap-4 mb-4" id="ipn-answer-phonemes"></div>
+                    <div class="flex justify-center gap-4" id="ipn-answer-letters"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: c/k, e, h -->
+    <section id="section3" class="section bg-purple-100">
+        <h1 class="section-title text-purple-600">Group 3: <span class="text-cyan-500">c/k</span> <span
+                class="text-emerald-500">e</span> <span class="text-rose-500">h</span></h1>
+
+        <!-- Sound Cards -->
+        <div class="flex flex-wrap justify-center gap-8 mb-10">
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-cyan-200 text-cyan-600" onclick="playPhoneme('click')">c/k</div>
+                <p class="mt-2 text-3xl font-bold text-cyan-600">click</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-emerald-200 text-emerald-600" onclick="playPhoneme('egg')">e</div>
+                <p class="mt-2 text-3xl font-bold text-emerald-600">egg</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="sound-card bg-rose-200 text-rose-600" onclick="playPhoneme('hop')">h</div>
+                <p class="mt-2 text-3xl font-bold text-rose-600">hop</p>
+            </div>
+        </div>
+
+        <!-- Action Videos -->
+        <div class="mb-10 w-full max-w-3xl">
+            <h2 class="text-3xl font-bold mb-4 text-center">Let's Sing Along!</h2>
+
+            <div class="now-playing" id="now-playing-3">
+                <span class="now-playing-icon">🎵</span>
+                <span class="text-xl font-bold" id="now-playing-text-3">Now playing: Clicking Castanets</span>
+            </div>
+
+            <div class="video-container">
+                <iframe id="video-player-3" frameborder="0" allowfullscreen=""
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" title="YouTube video player" width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/4Egx_jg-j8w?playsinline=1&amp;controls=1&amp;rel=0&amp;widget_referrer=https%3A%2F%2Fwww.canva.com%2F&amp;enablejsapi=1&amp;origin=https%3A%2F%2Fbee6y4qenaebmrm0.canva-hosted-embed.com&amp;widgetid=3&amp;forigin=https%3A%2F%2Fbee6y4qenaebmrm0.canva-hosted-embed.com%2Fcodelet%2FAAEAEGJlZTZ5NHFlbmFlYm1ybTAAAAAAAZeU_cqK--U4rpL9Y4-8V2fSC7HlFI3wEXe1yylx_EY6WBZwtvQ%2F&amp;aoriginsup=1&amp;aorigins=https%3A%2F%2Fwww.canva.com&amp;gporigin=https%3A%2F%2Fwww.canva.com%2F&amp;vf=1"></iframe>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mb-10">
+            <h2 class="text-3xl font-bold mb-4 text-center">let's do the actions!</h2>
+            <div class="flex flex-wrap justify-center gap-8">
+                <div class="flex flex-col items-center">
+                    <div class="action-button bg-cyan-100" id="action-ck" data-start="193" data-end="240"
+                        data-name="Clicking Castanets">
+                        <div class="play-icon">▶️</div>
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="70" fill="#67e8f9"></circle>
+                            <text x="100" y="120" font-family="Comic Neue" font-size="80" text-anchor="middle"
+                                fill="#0e7490" style="text-transform: lowercase;">k</text>
+                            <text x="100" y="80" font-family="Comic Neue" font-size="80" text-anchor="middle"
+                                fill="#0e7490" style="text-transform: lowercase;">c</text>
+                        </svg>
+                        <p class="mt-2 text-2xl font-bold text-center text-cyan-600">clicking castanets</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="action-button bg-emerald-100" id="action-e" data-start="240" data-end="273"
+                        data-name="Eggs in the Pan">
+                        <div class="play-icon">▶️</div>
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="100" cy="100" rx="60" ry="70" fill="#fef3c7"></ellipse>
+                            <ellipse cx="100" cy="100" rx="40" ry="50" fill="#fde68a"></ellipse>
+                        </svg>
+                        <p class="mt-2 text-2xl font-bold text-center text-emerald-600">eggs in the pan</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="action-button bg-rose-100" id="action-h" data-start="273" data-end="327"
+                        data-name="I Like to Hop">
+                        <div class="play-icon">▶️</div>
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M40,140 Q70,80 100,140 Q130,80 160,140" fill="#a78bfa"></path>
+                            <path d="M70,80 L70,140" stroke="#7c3aed" stroke-width="3" fill="none"></path>
+                            <path d="M130,80 L130,140" stroke="#7c3aed" stroke-width="3" fill="none"></path>
+                            <ellipse cx="100" cy="70" rx="40" ry="30" fill="#a78bfa"></ellipse>
+                            <circle cx="85" cy="65" r="5" fill="#000"></circle>
+                            <circle cx="115" cy="65" r="5" fill="#000"></circle>
+                            <path d="M90,80 Q100,90 110,80" stroke="#000" stroke-width="3" fill="none"></path>
+                        </svg>
+                        <p class="mt-2 text-2xl font-bold text-center text-rose-600">i like to hop</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-area">
+            <h2 class="text-3xl font-bold mb-6 text-center">Let's Spell Words!</h2>
+
+            <div class="word-selector" id="ceh-word-selector">
+                <button class="word-button active" data-word="hen">hen</button>
+                <button class="word-button" data-word="cat">cat</button>
+                <button class="word-button" data-word="hat">hat</button>
+                <button class="word-button" data-word="can">can</button>
+                <button class="word-button" data-word="he">he</button>
+                <button class="word-button" data-word="hic">hic</button>
+                <button class="word-button" data-word="neck">neck</button>
+                <button class="word-button" data-word="peck">peck</button>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <div class="mb-6">
+                    <button
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold py-3 px-6 rounded-full shadow-lg"
+                        id="listen-ceh-btn">
+                        Listen to the word
+                    </button>
+                </div>
+
+                <div class="flex justify-center gap-4 mb-4">
+                    <div class="phoneme-display" id="phoneme-display-ceh"></div>
+                </div>
+
+                <div class="flex justify-center gap-4 mb-8" id="slot-container-ceh">
+                    <div class="letter-slot" id="ceh-slot-0" data-index="0"></div>
+                    <div class="letter-slot" id="ceh-slot-1" data-index="1"></div>
+                    <div class="letter-slot" id="ceh-slot-2" data-index="2"></div>
+                </div>
+
+                <div class="flex justify-center gap-4 mb-8 flex-wrap" id="ceh-letters">
+                    <div class="letter-choice bg-cyan-200 text-cyan-600 draggable" draggable="true" data-letter="c">c
+                    </div>
+                    <div class="letter-choice bg-cyan-200 text-cyan-600 draggable" draggable="true" data-letter="k">k
+                    </div>
+                    <div class="letter-choice bg-emerald-200 text-emerald-600 draggable" draggable="true"
+                        data-letter="e">e</div>
+                    <div class="letter-choice bg-rose-200 text-rose-600 draggable" draggable="true" data-letter="h">h
+                    </div>
+                    <div class="letter-choice bg-green-200 text-green-600 draggable" draggable="true" data-letter="a">a
+                    </div>
+                    <div class="letter-choice bg-purple-200 text-purple-600 draggable" draggable="true" data-letter="t">
+                        t</div>
+                    <div class="letter-choice bg-orange-200 text-orange-600 draggable" draggable="true" data-letter="n">
+                        n</div>
+                    <div class="letter-choice bg-blue-200 text-blue-600 draggable" draggable="true" data-letter="p">p
+                    </div>
+                    <div class="letter-choice bg-yellow-200 text-yellow-600 draggable" draggable="true" data-letter="i">
+                        i</div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-2xl font-bold py-3 px-6 rounded-full shadow-lg"
+                        id="check-ceh-btn">
+                        Check Answer
+                    </button>
+
+                    <button class="show-answer-btn" id="show-ceh-answer">
+                        Show Answer
+                    </button>
+                </div>
+
+                <div class="answer-display w-full max-w-md" id="ceh-answer-display">
+                    <h3 class="text-2xl font-bold mb-2 text-center">Correct Answer:</h3>
+                    <div class="flex justify-center gap-4 mb-4" id="ceh-answer-phonemes"></div>
+                    <div class="flex justify-center gap-4" id="ceh-answer-letters"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="celebration" class="celebration"></div>
+
+    <script>
+        // YouTube API variables
+        let player1, player2, player3;
+        let currentlyPlaying = null;
+
+        // Word data for each section
+        const wordData = {
+            sat: {
+                words: {
+                    'sat': ['s', 'a', 't'],
+                    'at': ['a', 't'],
+                    'as': ['a', 's'],
+                    'tat': ['t', 'a', 't'],
+                    'tas': ['t', 'a', 's']
+                },
+                colors: {
+                    's': 'bg-red-200 text-red-600',
+                    'a': 'bg-green-200 text-green-600',
+                    't': 'bg-purple-200 text-purple-600'
+                }
+            },
+            ipn: {
+                words: {
+                    'pin': ['p', 'i', 'n'],
+                    'in': ['i', 'n'],
+                    'nip': ['n', 'i', 'p'],
+                    'pan': ['p', 'a', 'n'],
+                    'nap': ['n', 'a', 'p'],
+                    'tap': ['t', 'a', 'p'],
+                    'pit': ['p', 'i', 't']
+                },
+                colors: {
+                    'i': 'bg-yellow-200 text-yellow-600',
+                    'p': 'bg-blue-200 text-blue-600',
+                    'n': 'bg-orange-200 text-orange-600',
+                    'a': 'bg-green-200 text-green-600',
+                    't': 'bg-purple-200 text-purple-600'
+                }
+            },
+            ceh: {
+                words: {
+                    'hen': ['h', 'e', 'n'],
+                    'cat': ['c', 'a', 't'],
+                    'hat': ['h', 'a', 't'],
+                    'can': ['c', 'a', 'n'],
+                    'he': ['h', 'e'],
+                    'hic': ['h', 'i', 'c'],
+                    'neck': ['n', 'e', 'c', 'k'],
+                    'peck': ['p', 'e', 'c', 'k']
+                },
+                colors: {
+                    'c': 'bg-cyan-200 text-cyan-600',
+                    'k': 'bg-cyan-200 text-cyan-600',
+                    'e': 'bg-emerald-200 text-emerald-600',
+                    'h': 'bg-rose-200 text-rose-600',
+                    'a': 'bg-green-200 text-green-600',
+                    't': 'bg-purple-200 text-purple-600',
+                    'n': 'bg-orange-200 text-orange-600',
+                    'p': 'bg-blue-200 text-blue-600',
+                    'i': 'bg-yellow-200 text-yellow-600'
+                }
+            }
+        };
+
+        // Current word being spelled for each section
+        let currentWords = {
+            sat: 'sat',
+            ipn: 'pin',
+            ceh: 'hen'
+        };
+
+        // Load YouTube API
+        let tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        let firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Initialize YouTube players when API is ready
+        function onYouTubeIframeAPIReady() {
+            // Player for section 1
+            player1 = new YT.Player('video-player', {
+                height: '100%',
+                width: '100%',
+                videoId: '4Egx_jg-j8w',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+
+            // Player for section 2
+            player2 = new YT.Player('video-player-2', {
+                height: '100%',
+                width: '100%',
+                videoId: '4Egx_jg-j8w',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+
+            // Player for section 3
+            player3 = new YT.Player('video-player-3', {
+                height: '100%',
+                width: '100%',
+                videoId: '4Egx_jg-j8w',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // Handle player state changes
+        function onPlayerStateChange(event) {
+            // If video ends, hide the now playing indicator
+            if (event.data === YT.PlayerState.ENDED || event.data === YT.PlayerState.PAUSED) {
+                document.querySelectorAll('.now-playing').forEach(el => {
+                    el.classList.remove('visible');
+                });
+
+                document.querySelectorAll('.action-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                currentlyPlaying = null;
+            }
+        }
+
+        // Play a specific segment of the video
+        function playVideoSegment(player, startTime, endTime, buttonId, songName, nowPlayingId) {
+            // Stop any currently playing video
+            if (currentlyPlaying) {
+                if (currentlyPlaying.player === player1) player1.stopVideo();
+                if (currentlyPlaying.player === player2) player2.stopVideo();
+                if (currentlyPlaying.player === player3) player3.stopVideo();
+
+                document.querySelectorAll('.action-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                document.querySelectorAll('.now-playing').forEach(el => {
+                    el.classList.remove('visible');
+                });
+            }
+
+            // Set the active button
+            document.getElementById(buttonId).classList.add('active');
+
+            // Show now playing indicator
+            const nowPlaying = document.getElementById(nowPlayingId);
+            const nowPlayingText = document.getElementById(nowPlayingId + '-text');
+            nowPlayingText.textContent = 'Now playing: ' + songName;
+            nowPlaying.classList.add('visible');
+            nowPlaying.style.backgroundColor = '#e0f2fe'; // 淡藍色背景提示
+
+
+            // Play the video segment
+            player.seekTo(startTime);
+            player.playVideo();
+
+            // Set up a timer to stop the video at the end time
+            currentlyPlaying = {
+                player: player,
+                timer: setTimeout(() => {
+                    player.pauseVideo();
+                    document.getElementById(buttonId).classList.remove('active');
+                    nowPlaying.classList.remove('visible');
+                    currentlyPlaying = null;
+                }, (endTime - startTime) * 1000)
+            };
+        }
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize each section
+            initializeSection('sat');
+            initializeSection('ipn');
+            initializeSection('ceh');
+
+            // Set up navigation buttons
+            const sections = document.querySelectorAll('.section');
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+
+            prevButton.addEventListener('click', function () {
+                const currentSection = getCurrentSection();
+                if (currentSection > 0) {
+                    scrollToSection(currentSection - 1);
+                }
+            });
+
+            nextButton.addEventListener('click', function () {
+                const currentSection = getCurrentSection();
+                if (currentSection < sections.length - 1) {
+                    scrollToSection(currentSection + 1);
+                }
+            });
+
+            // Update progress bar on scroll
+            window.addEventListener('scroll', updateProgressBar);
+            updateProgressBar();
+
+            // Set up action buttons for section 1
+            document.getElementById('action-s').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player1, startTime, endTime, 'action-s', songName, 'now-playing');
+            });
+
+            document.getElementById('action-a').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player1, startTime, endTime, 'action-a', songName, 'now-playing');
+            });
+
+            document.getElementById('action-t').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player1, startTime, endTime, 'action-t', songName, 'now-playing');
+            });
+
+            // Set up action buttons for section 2
+            document.getElementById('action-i').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player2, startTime, endTime, 'action-i', songName, 'now-playing-2');
+            });
+
+            document.getElementById('action-p').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player2, startTime, endTime, 'action-p', songName, 'now-playing-2');
+            });
+
+            document.getElementById('action-n').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player2, startTime, endTime, 'action-n', songName, 'now-playing-2');
+            });
+
+            // Set up action buttons for section 3
+            document.getElementById('action-ck').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player3, startTime, endTime, 'action-ck', songName, 'now-playing-3');
+            });
+
+            document.getElementById('action-e').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player3, startTime, endTime, 'action-e', songName, 'now-playing-3');
+            });
+
+            document.getElementById('action-h').addEventListener('click', function () {
+                const startTime = parseInt(this.getAttribute('data-start'));
+                const endTime = parseInt(this.getAttribute('data-end'));
+                const songName = this.getAttribute('data-name');
+                playVideoSegment(player3, startTime, endTime, 'action-h', songName, 'now-playing-3');
+            });
+        });
+
+        // Initialize a section
+        function initializeSection(sectionId) {
+            // Set up word selector
+            const wordSelector = document.getElementById(`${sectionId}-word-selector`);
+            const wordButtons = wordSelector.querySelectorAll('.word-button');
+
+            wordButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const word = this.getAttribute('data-word');
+
+                    // Update active button
+                    wordButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update current word
+                    currentWords[sectionId] = word;
+
+                    // Reset the game
+                    setupWordGame(sectionId, word);
+                });
+            });
+
+            // Set up listen button
+            document.getElementById(`listen-${sectionId}-btn`).addEventListener('click', function () {
+                const word = currentWords[sectionId];
+                speakWord(word);
+
+                // Display phonemes
+                displayPhonemes(sectionId, word);
+            });
+
+            // Set up Check Answer button
+            document.getElementById(`check-${sectionId}-btn`).addEventListener('click', function () {
+                checkAnswer(sectionId, currentWords[sectionId]);
+            });
+
+            // Set up Show Answer button
+            document.getElementById(`show-${sectionId}-answer`).addEventListener('click', function () {
+                showAnswer(sectionId, currentWords[sectionId]);
+            });
+
+            // Initialize with the first word
+            setupWordGame(sectionId, currentWords[sectionId]);
+        }
+
+        // Set up the word game
+        function setupWordGame(sectionId, word) {
+            const slotContainer = document.getElementById(`slot-container-${sectionId}`);
+            const phonemeDisplay = document.getElementById(`phoneme-display-${sectionId}`);
+            const answerDisplay = document.getElementById(`${sectionId}-answer-display`);
+
+            // Clear previous slots and phoneme display
+            slotContainer.innerHTML = '';
+            phonemeDisplay.innerHTML = '';
+            answerDisplay.classList.remove('visible');
+
+            // Create letter slots
+            const letters = wordData[sectionId].words[word];
+            for (let i = 0; i < letters.length; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'letter-slot';
+                slot.id = `${sectionId}-slot-${i}`;
+                slot.setAttribute('data-index', i);
+                slotContainer.appendChild(slot);
+            }
+
+            // Set up drag and drop
+            setupDragAndDrop(sectionId);
+        }
+
+        // Set up drag and drop functionality
+        function setupDragAndDrop(sectionId) {
+            const draggables = document.querySelectorAll(`#${sectionId}-letters .draggable`);
+            const slots = document.querySelectorAll(`#slot-container-${sectionId} .letter-slot`);
+
+            // Set up drag events for all draggable elements
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', function (e) {
+                    this.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', this.getAttribute('data-letter'));
+                });
+
+                draggable.addEventListener('dragend', function () {
+                    this.classList.remove('dragging');
+                });
+            });
+
+            // Set up drop events for all slots
+            slots.forEach(slot => {
+                slot.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    this.classList.add('highlight');
+                });
+
+                slot.addEventListener('dragleave', function () {
+                    this.classList.remove('highlight');
+                });
+
+                slot.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    this.classList.remove('highlight');
+
+                    const letter = e.dataTransfer.getData('text/plain');
+                    this.textContent = letter;
+                    this.setAttribute('data-filled', letter);
+                    this.classList.add('filled');
+
+                    // Play a sound for feedback
+                    playDropSound();
+                });
+            });
+        }
+
+        // Display phonemes for a word
+        function displayPhonemes(sectionId, word) {
+            const phonemeDisplay = document.getElementById(`phoneme-display-${sectionId}`);
+            phonemeDisplay.innerHTML = '';
+
+            const letters = wordData[sectionId].words[word];
+            letters.forEach(letter => {
+                const phonemeButton = document.createElement('button');
+                phonemeButton.className = `phoneme-button ${wordData[sectionId].colors[letter]}`;
+                phonemeButton.textContent = letter;
+                phonemeButton.onclick = () => playPhoneme(letter);
+                phonemeDisplay.appendChild(phonemeButton);
+            });
+        }
+
+        function playPhoneme(letter) {
+            const audio = new Audio(`sounds/${letter}.mp3`);
+            audio.play();
+
+            const el = document.querySelector(`.sound-card[data-letter="${letter}"]`);
+            el.classList.add("highlight");
+
+            audio.onended = () => el.classList.remove("highlight");
+        }
+
+
+        // Check if the answer is correct
+        function checkAnswer(sectionId, word) {
+            const slots = document.querySelectorAll(`#slot-container-${sectionId} .letter-slot`);
+            const letters = wordData[sectionId].words[word];
+
+            let isCorrect = true;
+            let filledSlots = 0;
+
+            // Check if all slots are filled correctly
+            slots.forEach((slot, index) => {
+                const filled = slot.getAttribute('data-filled');
+                if (!filled || filled !== letters[index]) {
+                    isCorrect = false;
+                }
+                if (filled) {
+                    filledSlots++;
+                }
+            });
+
+            // If not all slots are filled, prompt the user
+            if (filledSlots < letters.length) {
+                const utterance = new SpeechSynthesisUtterance("please fill all the letter slots");
+                window.speechSynthesis.speak(utterance);
+                return;
+            }
+
+            if (isCorrect) {
+                celebrate();
+                const utterance = new SpeechSynthesisUtterance("correct! well done!");
+                window.speechSynthesis.speak(utterance);
+            } else {
+                const utterance = new SpeechSynthesisUtterance("try again!");
+                window.speechSynthesis.speak(utterance);
+
+                // Clear the slots
+                slots.forEach(slot => {
+                    slot.textContent = '';
+                    slot.removeAttribute('data-filled');
+                    slot.classList.remove('filled');
+                });
+            }
+        }
+
+        // Show the answer
+        function showAnswer(sectionId, word) {
+            const answerDisplay = document.getElementById(`${sectionId}-answer-display`);
+            const answerPhonemes = document.getElementById(`${sectionId}-answer-phonemes`);
+            const answerLetters = document.getElementById(`${sectionId}-answer-letters`);
+
+            // Clear previous content
+            answerPhonemes.innerHTML = '';
+            answerLetters.innerHTML = '';
+
+            // Show the answer display
+            answerDisplay.classList.add('visible');
+
+            // Add phoneme buttons
+            const letters = wordData[sectionId].words[word];
+            letters.forEach(letter => {
+                const phonemeButton = document.createElement('button');
+                phonemeButton.className = `phoneme-button ${wordData[sectionId].colors[letter]}`;
+                phonemeButton.textContent = letter;
+                phonemeButton.onclick = () => playPhoneme(letter);
+                answerPhonemes.appendChild(phonemeButton);
+            });
+
+            // Add letter display
+            letters.forEach(letter => {
+                const letterDiv = document.createElement('div');
+                letterDiv.className = `letter-slot filled ${wordData[sectionId].colors[letter]}`;
+                letterDiv.textContent = letter;
+                answerLetters.appendChild(letterDiv);
+            });
+
+            // Speak the word
+            speakWord(word);
+        }
+
+        // Get current visible section
+        function getCurrentSection() {
+            const sections = document.querySelectorAll('.section');
+            const windowHeight = window.innerHeight;
+            const scrollTop = window.scrollY;
+
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+
+                if (scrollTop >= sectionTop - windowHeight / 2 &&
+                    scrollTop < sectionTop + sectionHeight - windowHeight / 2) {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+
+        // Scroll to a specific section
+        function scrollToSection(index) {
+            const sections = document.querySelectorAll('.section');
+            if (index >= 0 && index < sections.length) {
+                sections[index].scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrolled = window.scrollY;
+            const progress = (scrolled / windowHeight) * 100;
+
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Play sound for a phoneme
+        function playPhoneme(phoneme) {
+            // In a real implementation, this would play the actual phonics sound file
+            // For now, we'll use the Web Speech API to say the phoneme sound
+            const utterance = new SpeechSynthesisUtterance(phoneme);
+            utterance.rate = 0.7;
+            window.speechSynthesis.speak(utterance);
+
+            // Highlight the corresponding sound card
+            const soundCards = document.querySelectorAll('.sound-card');
+            soundCards.forEach(card => {
+                if (card.textContent.toLowerCase().includes(phoneme.toLowerCase())) {
+                    card.classList.add('highlight');
+                    setTimeout(() => {
+                        card.classList.remove('highlight');
+                    }, 1000);
+                }
+            });
+        }
+
+        // Speak a word using Web Speech API
+        function speakWord(word) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.rate = 0.7;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Play a sound when dropping a letter
+        function playDropSound() {
+            // In a real implementation, this would play a sound effect
+            console.log('Drop sound played');
+        }
+
+        function showCelebration() {
+            const emojis = ['👏', '🌟', '🎉', '🐸'];
+            const container = document.getElementById('celebration');
+            for (let i = 0; i < 10; i++) {
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji';
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + 'vw';
+                container.appendChild(emoji);
+                setTimeout(() => container.removeChild(emoji), 2000);
+            }
+        }
+
+
+        // Celebration animation
+        function celebrate() {
+            const celebrationDiv = document.getElementById('celebration');
+            celebrationDiv.innerHTML = '';
+
+            const emojis = ['🎉', '⭐', '👏', '🌟', '✨', '🎊', '🥳', '🏆'];
+
+            for (let i = 0; i < 20; i++) {
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji';
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + 'vw';
+                emoji.style.animationDelay = Math.random() * 0.5 + 's';
+                celebrationDiv.appendChild(emoji);
+            }
+        }
+
+        function stopAllVideos() {
+            [player1, player2, player3].forEach(p => p && p.stopVideo());
+            document.querySelectorAll('.action-button').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.now-playing').forEach(el => el.classList.remove('visible'));
+        }
+    </script>
+
+    <script>
+        const video = document.getElementById('video-player');
+        const buttons = document.querySelectorAll('.play-button');
+        const nowPlayingText = document.getElementById('now-playing-text');
+        const nowPlayingBox = document.getElementById('now-playing');
+        let currentSegment = null;
+        let segmentTimeout = null;
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const start = parseFloat(button.dataset.start);
+                const end = parseFloat(button.dataset.end);
+                const label = button.innerHTML.split('<br>')[1]?.trim() || '';
+
+                // Toggle pause/play if it's the same segment
+                if (currentSegment?.button === button) {
+                    if (video.paused) {
+                        video.play();
+                        scheduleStop(end);
+                    } else {
+                        video.pause();
+                        clearTimeout(segmentTimeout);
+                    }
+                    return;
+                }
+
+                // New segment
+                clearTimeout(segmentTimeout);
+                currentSegment = {
+                    button,
+                    end
+                };
+
+                video.currentTime = start;
+                video.play();
+                scheduleStop(end);
+
+                // Highlight the active button
+                buttons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Update now playing text
+                nowPlayingText.textContent = 'Now playing: ' + label;
+                nowPlayingBox.classList.add('visible');
+            });
+        });
+
+        function scheduleStop(endTime) {
+            clearTimeout(segmentTimeout);
+            const duration = (endTime - video.currentTime) * 1000;
+            segmentTimeout = setTimeout(() => {
+                video.pause();
+                currentSegment?.button.classList.remove('active');
+                nowPlayingBox.classList.remove('visible');
+                currentSegment = null;
+            }, duration);
+        }
+
+        // In case user pauses manually
+        video.addEventListener('pause', () => clearTimeout(segmentTimeout));
+        video.addEventListener('ended', () => {
+            nowPlayingBox.classList.remove('visible');
+            currentSegment = null;
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crazy Kitchen - English Learning Game</title>
+    <title>Crazy Kitchen - Three-Course Meal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
@@ -194,20 +194,6 @@
             }
         }
 
-        .taste-tag {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .taste-tag:hover {
-            transform: scale(1.1);
-        }
-
-        .taste-tag.selected {
-            background-color: #22c55e;
-            color: white;
-        }
-
         .tooltip {
             position: absolute;
             background-color: rgba(0, 0, 0, 0.8);
@@ -277,6 +263,168 @@
 
         .sentence-container {
             transition: all 0.5s ease;
+        }
+
+        .course-tab {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .course-tab.active {
+            background-color: #22c55e;
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .course-tab.completed {
+            background-color: #4ade80;
+            color: white;
+        }
+
+        .course-tab.completed::after {
+            content: "✓";
+            margin-left: 5px;
+        }
+
+        .course-indicator {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background-color: #22c55e;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 20;
+        }
+
+        .meal-card {
+            transition: all 0.3s ease;
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        .meal-card.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .presentation-container {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .presentation-container.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .presentation-content {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .course-image {
+            width: 80px;
+            height: 80px;
+            background-color: #f3f4f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #22c55e;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .course-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .badge-starter {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-main {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .badge-dessert {
+            background-color: #fce7f3;
+            color: #db2777;
         }
     </style>
     <style>
@@ -667,6 +815,10 @@
             }
         }
 
+        .pointer-events-none {
+            pointer-events: none
+        }
+
         .fixed {
             position: fixed
         }
@@ -687,12 +839,20 @@
             right: 0.5rem
         }
 
+        .right-4 {
+            right: 1rem
+        }
+
         .top-1\/2 {
             top: 50%
         }
 
         .top-2 {
             top: 0.5rem
+        }
+
+        .top-4 {
+            top: 1rem
         }
 
         .z-50 {
@@ -702,6 +862,15 @@
         .mx-auto {
             margin-left: auto;
             margin-right: auto
+        }
+
+        .my-2 {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem
         }
 
         .mb-3 {
@@ -716,12 +885,24 @@
             margin-bottom: 1.5rem
         }
 
+        .mr-2 {
+            margin-right: 0.5rem
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem
+        }
+
         .mt-4 {
             margin-top: 1rem
         }
 
-        .mb-2 {
-            margin-bottom: 0.5rem
+        .mt-6 {
+            margin-top: 1.5rem
+        }
+
+        .mt-8 {
+            margin-top: 2rem
         }
 
         .flex {
@@ -778,8 +959,20 @@
             flex-direction: column
         }
 
+        .flex-wrap {
+            flex-wrap: wrap
+        }
+
+        .items-start {
+            align-items: flex-start
+        }
+
         .items-center {
             align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
         }
 
         .justify-between {
@@ -802,6 +995,12 @@
             --tw-space-y-reverse: 0;
             margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
             margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+        }
+
+        .space-y-8> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(2rem * var(--tw-space-y-reverse))
         }
 
         .overflow-x-auto {
@@ -833,6 +1032,11 @@
             border-color: rgb(187 247 208 / var(--tw-border-opacity, 1))
         }
 
+        .bg-blue-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
+        }
+
         .bg-green-100 {
             --tw-bg-opacity: 1;
             background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
@@ -851,6 +1055,15 @@
         .bg-white {
             --tw-bg-opacity: 1;
             background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1))
+        }
+
+        .p-2 {
+            padding: 0.5rem
         }
 
         .p-3 {
@@ -873,6 +1086,11 @@
         .px-6 {
             padding-left: 1.5rem;
             padding-right: 1.5rem
+        }
+
+        .px-8 {
+            padding-left: 2rem;
+            padding-right: 2rem
         }
 
         .py-2 {
@@ -903,6 +1121,11 @@
             line-height: 2rem
         }
 
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
         .text-4xl {
             font-size: 2.25rem;
             line-height: 2.5rem
@@ -911,6 +1134,11 @@
         .text-lg {
             font-size: 1.125rem;
             line-height: 1.75rem
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem
         }
 
         .text-xl {
@@ -922,6 +1150,10 @@
             font-weight: 700
         }
 
+        .italic {
+            font-style: italic
+        }
+
         .text-blue-500 {
             --tw-text-opacity: 1;
             color: rgb(59 130 246 / var(--tw-text-opacity, 1))
@@ -930,6 +1162,11 @@
         .text-gray-400 {
             --tw-text-opacity: 1;
             color: rgb(156 163 175 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-600 {
+            --tw-text-opacity: 1;
+            color: rgb(75 85 99 / var(--tw-text-opacity, 1))
         }
 
         .text-green-700 {
@@ -947,8 +1184,8 @@
             color: rgb(255 255 255 / var(--tw-text-opacity, 1))
         }
 
-        .opacity-50 {
-            opacity: 0.5
+        .opacity-0 {
+            opacity: 0
         }
 
         .shadow-lg {
@@ -968,6 +1205,16 @@
             filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
         }
 
+        .transition-opacity {
+            transition-property: opacity;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .duration-500 {
+            transition-duration: 500ms
+        }
+
         .hover\:text-gray-600:hover {
             --tw-text-opacity: 1;
             color: rgb(75 85 99 / var(--tw-text-opacity, 1))
@@ -976,6 +1223,10 @@
         @media (min-width: 768px) {
             .md\:inline {
                 display: inline
+            }
+
+            .md\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
             }
 
             .md\:text-5xl {
@@ -1018,101 +1269,80 @@
         </header>
 
         <div class="container mx-auto px-4 py-2">
+            <!-- Course Selection Tabs -->
+            <div class="flex justify-center mb-6">
+                <div class="bg-white rounded-full shadow-lg p-2 flex gap-2">
+                    <div id="starterTab" class="course-tab active px-6 py-3 rounded-full font-bold"
+                        data-course="starter">
+                        🥗 Starter
+                    </div>
+                    <div id="mainTab" class="course-tab px-6 py-3 rounded-full font-bold" data-course="main">
+                        🍲 Main Course
+                    </div>
+                    <div id="dessertTab" class="course-tab px-6 py-3 rounded-full font-bold" data-course="dessert">
+                        🍰 Dessert
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="max-w-md mx-auto mb-6">
+                <div class="flex justify-between text-sm font-bold text-white mb-1">
+                    <span>Course 1: Starter</span>
+                    <span id="progressText">1/3</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 33%"></div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Food Selection Area -->
                 <div class="lg:col-span-2 bg-white rounded-3xl shadow-xl p-6">
                     <!-- Category Tabs -->
                     <div class="flex overflow-x-auto pb-4 gap-3 mb-6">
-                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer active"
-                            data-category="main">
-                            🍔 Main Foods
+                        <div class="category-tab active flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
+                            data-category="starters" style="display: block;">
+                            🥗 Starters
                         </div>
                         <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
-                            data-category="fruits">
-                            🍎 Fruits
+                            data-category="proteins" style="display: block;">
+                            🥩 Proteins
                         </div>
                         <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
-                            data-category="vegetables">
+                            data-category="vegetables" style="display: block;">
                             🥦 Vegetables
                         </div>
                         <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
-                            data-category="desserts">
+                            data-category="sides" style="display: block;">
+                            🍚 Sides
+                        </div>
+                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
+                            data-category="fruits" style="display: none;">
+                            🍎 Fruits
+                        </div>
+                        <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
+                            data-category="desserts" style="display: none;">
                             🍦 Desserts
                         </div>
                         <div class="category-tab flex-shrink-0 bg-green-100 rounded-full px-6 py-3 font-bold text-green-700 cursor-pointer"
-                            data-category="drinks">
+                            data-category="drinks" style="display: none;">
                             🥤 Drinks
                         </div>
                     </div>
 
                     <!-- Food Grid -->
                     <div id="foodGrid" class="food-grid">
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Pizza"
-                            data-emoji="🍕" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🍕</div>
-                            <p class="font-bold">Pizza</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Burger"
-                            data-emoji="🍔" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🍔</div>
-                            <p class="font-bold">Burger</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Sandwich"
-                            data-emoji="🥪" data-tastes="[&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🥪</div>
-                            <p class="font-bold">Sandwich</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Bread"
-                            data-emoji="🍞" data-tastes="[&quot;plain&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🍞</div>
-                            <p class="font-bold">Bread</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Cheese"
-                            data-emoji="🧀" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🧀</div>
-                            <p class="font-bold">Cheese</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Spaghetti"
-                            data-emoji="🍝" data-tastes="[&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🍝</div>
-                            <p class="font-bold">Spaghetti</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Taco"
-                            data-emoji="🌮" data-tastes="[&quot;spicy&quot;,&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🌮</div>
-                            <p class="font-bold">Taco</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Burrito"
-                            data-emoji="🌯" data-tastes="[&quot;spicy&quot;,&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🌯</div>
-                            <p class="font-bold">Burrito</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Rice"
-                            data-emoji="🍚" data-tastes="[&quot;plain&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🍚</div>
-                            <p class="font-bold">Rice</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Egg"
-                            data-emoji="🥚" data-tastes="[&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🥚</div>
-                            <p class="font-bold">Egg</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Bacon"
-                            data-emoji="🥓" data-tastes="[&quot;salty&quot;,&quot;savory&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🥓</div>
-                            <p class="font-bold">Bacon</p>
-                        </div>
-                        <div class="food-item bg-white rounded-xl shadow-lg p-4 text-center" data-name="Sushi"
-                            data-emoji="🍣" data-tastes="[&quot;savory&quot;,&quot;umami&quot;]" draggable="true">
-                            <div class="food-icon mb-2">🍣</div>
-                            <p class="font-bold">Sushi</p>
-                        </div>
+                        <!-- Food items will be loaded here -->
                     </div>
                 </div>
 
                 <!-- Plate and Sentence Builder Area -->
                 <div class="bg-white rounded-3xl shadow-xl p-6 flex flex-col">
-                    <h2 class="text-2xl font-bold text-green-700 mb-4">My Crazy Meal</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-green-700" id="currentCourseTitle">My Starter</h2>
+                        <span id="courseIndicator" class="course-badge badge-starter">Starter</span>
+                    </div>
 
                     <!-- Plate -->
                     <div class="plate w-full aspect-square mb-6 relative" id="plate">
@@ -1124,19 +1354,90 @@
                         <h3 class="text-xl font-bold text-green-700 mb-3">My Sentences:</h3>
 
                         <div class="space-y-4 text-lg sentence-container" id="sentenceContainer">
-                            <p id="sentence1">"I made a meal with <span id="food1" class="sentence-blank">___</span>,
-                                <span id="food2" class="sentence-blank">___</span>, and <span id="food3"
+                            <p id="sentence1">"I made a <span id="courseType">starter</span> with <span id="food1"
+                                    class="sentence-blank">___</span>, <span id="food2"
+                                    class="sentence-blank">___</span>, and <span id="food3"
                                     class="sentence-blank">___</span>."</p>
 
                             <p id="sentence2">"It tastes <span id="taste" class="sentence-blank">___</span>."</p>
                         </div>
 
-                        <button id="speakBtn"
-                            class="btn-action mt-4 bg-green-500 text-white rounded-full py-3 px-6 font-bold flex items-center gap-2 mx-auto">
-                            <span class="text-xl">🗣️</span>
-                            <span>Speak It!</span>
-                        </button>
+                        <div class="flex justify-center mt-4 gap-3">
+                            <button id="speakBtn"
+                                class="btn-action bg-green-500 text-white rounded-full py-3 px-6 font-bold flex items-center gap-2">
+                                <span class="text-xl">🗣️</span>
+                                <span>Speak It!</span>
+                            </button>
+
+                            <button id="nextCourseBtn"
+                                class="btn-action bg-blue-500 text-white rounded-full py-3 px-6 font-bold flex items-center gap-2">
+                                <span>Next Course</span>
+                                <span class="text-xl">➡️</span>
+                            </button>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Completed Courses Display -->
+            <div class="mt-8" id="completedCoursesContainer">
+                <h2 class="text-2xl font-bold text-white mb-4 text-center">My Three-Course Meal</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Starter Card -->
+                    <div id="starterCard" class="meal-card bg-white rounded-2xl shadow-xl p-4 opacity-0">
+                        <div class="flex items-center mb-3">
+                            <div class="course-badge badge-starter">Starter</div>
+                            <h3 class="text-xl font-bold">My Starter</h3>
+                        </div>
+                        <div id="starterItems" class="flex flex-wrap gap-2 mb-3">
+                            <!-- Starter items will be added here -->
+                            <div class="text-gray-400">Not created yet</div>
+                        </div>
+                        <p id="starterDescription" class="text-gray-600 italic">
+                            <!-- Starter description will be added here -->
+                        </p>
+                    </div>
+
+                    <!-- Main Course Card -->
+                    <div id="mainCard" class="meal-card bg-white rounded-2xl shadow-xl p-4 opacity-0">
+                        <div class="flex items-center mb-3">
+                            <div class="course-badge badge-main">Main Course</div>
+                            <h3 class="text-xl font-bold">My Main Course</h3>
+                        </div>
+                        <div id="mainItems" class="flex flex-wrap gap-2 mb-3">
+                            <!-- Main course items will be added here -->
+                            <div class="text-gray-400">Not created yet</div>
+                        </div>
+                        <p id="mainDescription" class="text-gray-600 italic">
+                            <!-- Main course description will be added here -->
+                        </p>
+                    </div>
+
+                    <!-- Dessert Card -->
+                    <div id="dessertCard" class="meal-card bg-white rounded-2xl shadow-xl p-4 opacity-0">
+                        <div class="flex items-center mb-3">
+                            <div class="course-badge badge-dessert">Dessert</div>
+                            <h3 class="text-xl font-bold">My Dessert</h3>
+                        </div>
+                        <div id="dessertItems" class="flex flex-wrap gap-2 mb-3">
+                            <!-- Dessert items will be added here -->
+                            <div class="text-gray-400">Not created yet</div>
+                        </div>
+                        <p id="dessertDescription" class="text-gray-600 italic">
+                            <!-- Dessert description will be added here -->
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Present Meal Button (initially hidden) -->
+                <div class="flex justify-center mt-6">
+                    <button id="presentMealBtn"
+                        class="btn-action bg-yellow-500 text-white rounded-full py-4 px-8 font-bold text-xl flex items-center gap-3 opacity-0 pointer-events-none transition-opacity duration-500">
+                        <span class="text-2xl">✨</span>
+                        <span>Present My Meal!</span>
+                        <span class="text-2xl">✨</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1146,18 +1447,93 @@
 
         <!-- Speech Bubble (initially hidden) -->
         <div id="speechBubble"
-            class="speech-bubble fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-md pop-animation hidden">
-            <p id="speechText" class="text-lg">"I made a meal with Pizza, Spaghetti, and Sushi."<br><br>"It tastes
-                mostly savory with hints of salty and umami."</p>
+            class="speech-bubble fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-md hidden">
+            <p id="speechText" class="text-lg"></p>
             <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
                 onclick="document.getElementById('speechBubble').classList.add('hidden')">✕</button>
+        </div>
+
+        <!-- Presentation Modal -->
+        <div id="presentationContainer" class="presentation-container">
+            <div class="presentation-content">
+                <button id="closePresentation"
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">×</button>
+
+                <h2 class="text-3xl font-bold text-center mb-6">My Delicious Three-Course Meal</h2>
+
+                <div class="space-y-8">
+                    <!-- Starter Presentation -->
+                    <div id="starterPresentation" class="flex items-start opacity-0">
+                        <div class="course-image">🥗</div>
+                        <div>
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="course-badge badge-starter mr-2">Starter</span>
+                                <span id="starterPresentationTitle">Delicious Starter</span>
+                            </h3>
+                            <p id="starterPresentationDesc" class="my-2">
+                                <!-- Starter presentation text will be added here -->
+                            </p>
+                            <div id="starterPresentationItems" class="flex flex-wrap gap-2 mt-1">
+                                <!-- Starter items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Course Presentation -->
+                    <div id="mainPresentation" class="flex items-start opacity-0">
+                        <div class="course-image">🍲</div>
+                        <div>
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="course-badge badge-main mr-2">Main Course</span>
+                                <span id="mainPresentationTitle">Hearty Main Course</span>
+                            </h3>
+                            <p id="mainPresentationDesc" class="my-2">
+                                <!-- Main course presentation text will be added here -->
+                            </p>
+                            <div id="mainPresentationItems" class="flex flex-wrap gap-2 mt-1">
+                                <!-- Main course items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dessert Presentation -->
+                    <div id="dessertPresentation" class="flex items-start opacity-0">
+                        <div class="course-image">🍰</div>
+                        <div>
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="course-badge badge-dessert mr-2">Dessert</span>
+                                <span id="dessertPresentationTitle">Sweet Dessert</span>
+                            </h3>
+                            <p id="dessertPresentationDesc" class="my-2">
+                                <!-- Dessert presentation text will be added here -->
+                            </p>
+                            <div id="dessertPresentationItems" class="flex flex-wrap gap-2 mt-1">
+                                <!-- Dessert items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final Speech -->
+                    <div id="finalSpeech" class="bg-green-50 rounded-xl p-6 border-2 border-green-200 mt-8 opacity-0">
+                        <h3 class="text-xl font-bold text-green-700 mb-3">My Presentation Speech:</h3>
+                        <p id="finalSpeechText" class="text-lg italic">
+                            <!-- Final speech will be added here -->
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         // Game data
         const gameData = {
-            selectedCategory: 'main',
+            currentCourse: 'starter', // starter, main, dessert
+            completedCourses: {
+                starter: null,
+                main: null,
+                dessert: null
+            },
             plateItems: [],
             draggedItem: null,
             dragOffset: {
@@ -1168,65 +1544,168 @@
 
         // Food items by category with taste properties
         const foodItems = {
-            "main": [{
-                    name: "Pizza",
-                    emoji: "🍕",
-                    tastes: ["salty", "savory"]
+            "starters": [{
+                    name: "Salad",
+                    emoji: "🥗",
+                    tastes: ["fresh", "crunchy"]
                 },
                 {
-                    name: "Burger",
-                    emoji: "🍔",
-                    tastes: ["salty", "savory"]
+                    name: "Soup",
+                    emoji: "🍲",
+                    tastes: ["warm", "savory"]
                 },
                 {
-                    name: "Sandwich",
-                    emoji: "🥪",
-                    tastes: ["savory"]
-                },
-                {
-                    name: "Bread",
+                    name: "Bruschetta",
                     emoji: "🍞",
-                    tastes: ["plain"]
+                    tastes: ["crunchy", "savory"]
                 },
                 {
-                    name: "Cheese",
+                    name: "Shrimp",
+                    emoji: "🍤",
+                    tastes: ["savory", "seafood"]
+                },
+                {
+                    name: "Mozzarella",
                     emoji: "🧀",
-                    tastes: ["salty", "savory"]
+                    tastes: ["creamy", "mild"]
                 },
                 {
-                    name: "Spaghetti",
-                    emoji: "🍝",
-                    tastes: ["savory"]
+                    name: "Olives",
+                    emoji: "🫒",
+                    tastes: ["salty", "tangy"]
                 },
                 {
-                    name: "Taco",
-                    emoji: "🌮",
-                    tastes: ["spicy", "savory"]
+                    name: "Hummus",
+                    emoji: "🥙",
+                    tastes: ["creamy", "savory"]
                 },
                 {
-                    name: "Burrito",
-                    emoji: "🌯",
-                    tastes: ["spicy", "savory"]
+                    name: "Spring Roll",
+                    emoji: "🥟",
+                    tastes: ["crunchy", "savory"]
+                }
+            ],
+            "proteins": [{
+                    name: "Chicken",
+                    emoji: "🍗",
+                    tastes: ["savory", "juicy"]
                 },
                 {
-                    name: "Rice",
-                    emoji: "🍚",
-                    tastes: ["plain"]
+                    name: "Steak",
+                    emoji: "🥩",
+                    tastes: ["savory", "rich"]
                 },
                 {
-                    name: "Egg",
+                    name: "Fish",
+                    emoji: "🐟",
+                    tastes: ["light", "seafood"]
+                },
+                {
+                    name: "Tofu",
+                    emoji: "🧊",
+                    tastes: ["mild", "soft"]
+                },
+                {
+                    name: "Eggs",
                     emoji: "🥚",
-                    tastes: ["savory"]
+                    tastes: ["savory", "mild"]
                 },
                 {
                     name: "Bacon",
                     emoji: "🥓",
-                    tastes: ["salty", "savory"]
+                    tastes: ["salty", "crispy"]
                 },
                 {
-                    name: "Sushi",
-                    emoji: "🍣",
-                    tastes: ["savory", "umami"]
+                    name: "Sausage",
+                    emoji: "🌭",
+                    tastes: ["savory", "spicy"]
+                },
+                {
+                    name: "Beans",
+                    emoji: "🫘",
+                    tastes: ["earthy", "hearty"]
+                }
+            ],
+            "vegetables": [{
+                    name: "Broccoli",
+                    emoji: "🥦",
+                    tastes: ["fresh", "crunchy"]
+                },
+                {
+                    name: "Carrot",
+                    emoji: "🥕",
+                    tastes: ["sweet", "crunchy"]
+                },
+                {
+                    name: "Corn",
+                    emoji: "🌽",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Tomato",
+                    emoji: "🍅",
+                    tastes: ["sweet", "juicy"]
+                },
+                {
+                    name: "Potato",
+                    emoji: "🥔",
+                    tastes: ["starchy", "hearty"]
+                },
+                {
+                    name: "Cucumber",
+                    emoji: "🥒",
+                    tastes: ["fresh", "crunchy"]
+                },
+                {
+                    name: "Lettuce",
+                    emoji: "🥬",
+                    tastes: ["fresh", "crisp"]
+                },
+                {
+                    name: "Onion",
+                    emoji: "🧅",
+                    tastes: ["sharp", "pungent"]
+                }
+            ],
+            "sides": [{
+                    name: "Rice",
+                    emoji: "🍚",
+                    tastes: ["plain", "fluffy"]
+                },
+                {
+                    name: "Pasta",
+                    emoji: "🍝",
+                    tastes: ["savory", "hearty"]
+                },
+                {
+                    name: "Bread",
+                    emoji: "🍞",
+                    tastes: ["soft", "mild"]
+                },
+                {
+                    name: "Fries",
+                    emoji: "🍟",
+                    tastes: ["salty", "crispy"]
+                },
+                {
+                    name: "Mashed Potato",
+                    emoji: "🥔",
+                    tastes: ["creamy", "hearty"]
+                },
+                {
+                    name: "Couscous",
+                    emoji: "🌾",
+                    tastes: ["light", "fluffy"]
+                },
+                {
+                    name: "Noodles",
+                    emoji: "🍜",
+                    tastes: ["savory", "slippery"]
+                },
+                {
+                    name: "Quinoa",
+                    emoji: "🌱",
+                    tastes: ["nutty", "healthy"]
                 }
             ],
             "fruits": [{
@@ -1242,7 +1721,7 @@
                 {
                     name: "Orange",
                     emoji: "🍊",
-                    tastes: ["sweet", "sour"]
+                    tastes: ["sweet", "tangy"]
                 },
                 {
                     name: "Grapes",
@@ -1257,98 +1736,17 @@
                 {
                     name: "Watermelon",
                     emoji: "🍉",
-                    tastes: ["sweet", "juicy"]
+                    tastes: ["sweet", "refreshing"]
                 },
                 {
                     name: "Pineapple",
                     emoji: "🍍",
-                    tastes: ["sweet", "sour"]
+                    tastes: ["sweet", "tangy"]
                 },
                 {
                     name: "Peach",
                     emoji: "🍑",
                     tastes: ["sweet", "juicy"]
-                },
-                {
-                    name: "Cherry",
-                    emoji: "🍒",
-                    tastes: ["sweet", "juicy"]
-                },
-                {
-                    name: "Pear",
-                    emoji: "🍐",
-                    tastes: ["sweet", "juicy"]
-                },
-                {
-                    name: "Kiwi",
-                    emoji: "🥝",
-                    tastes: ["sweet", "sour"]
-                },
-                {
-                    name: "Coconut",
-                    emoji: "🥥",
-                    tastes: ["sweet", "creamy"]
-                }
-            ],
-            "vegetables": [{
-                    name: "Broccoli",
-                    emoji: "🥦",
-                    tastes: ["bitter", "crunchy"]
-                },
-                {
-                    name: "Carrot",
-                    emoji: "🥕",
-                    tastes: ["sweet", "crunchy"]
-                },
-                {
-                    name: "Corn",
-                    emoji: "🌽",
-                    tastes: ["sweet", "crunchy"]
-                },
-                {
-                    name: "Tomato",
-                    emoji: "🍅",
-                    tastes: ["sweet", "sour"]
-                },
-                {
-                    name: "Potato",
-                    emoji: "🥔",
-                    tastes: ["plain", "starchy"]
-                },
-                {
-                    name: "Cucumber",
-                    emoji: "🥒",
-                    tastes: ["fresh", "crunchy"]
-                },
-                {
-                    name: "Lettuce",
-                    emoji: "🥬",
-                    tastes: ["fresh", "crunchy"]
-                },
-                {
-                    name: "Onion",
-                    emoji: "🧅",
-                    tastes: ["sharp", "pungent"]
-                },
-                {
-                    name: "Garlic",
-                    emoji: "🧄",
-                    tastes: ["sharp", "pungent"]
-                },
-                {
-                    name: "Avocado",
-                    emoji: "🥑",
-                    tastes: ["creamy", "mild"]
-                },
-                {
-                    name: "Eggplant",
-                    emoji: "🍆",
-                    tastes: ["mild", "soft"]
-                },
-                {
-                    name: "Bell Pepper",
-                    emoji: "🫑",
-                    tastes: ["fresh", "crunchy"]
                 }
             ],
             "desserts": [{
@@ -1377,55 +1775,25 @@
                     tastes: ["sweet", "rich"]
                 },
                 {
-                    name: "Candy",
-                    emoji: "🍬",
-                    tastes: ["sweet"]
-                },
-                {
-                    name: "Lollipop",
-                    emoji: "🍭",
-                    tastes: ["sweet"]
-                },
-                {
-                    name: "Cupcake",
-                    emoji: "🧁",
-                    tastes: ["sweet", "soft"]
-                },
-                {
                     name: "Pie",
                     emoji: "🥧",
-                    tastes: ["sweet"]
-                },
-                {
-                    name: "Pancakes",
-                    emoji: "🥞",
-                    tastes: ["sweet", "soft"]
-                },
-                {
-                    name: "Waffle",
-                    emoji: "🧇",
-                    tastes: ["sweet", "crunchy"]
+                    tastes: ["sweet", "flaky"]
                 },
                 {
                     name: "Pudding",
                     emoji: "🍮",
                     tastes: ["sweet", "creamy"]
+                },
+                {
+                    name: "Cupcake",
+                    emoji: "🧁",
+                    tastes: ["sweet", "fluffy"]
                 }
             ],
             "drinks": [{
-                    name: "Milk",
-                    emoji: "🥛",
-                    tastes: ["creamy", "mild"]
-                },
-                {
-                    name: "Coffee",
-                    emoji: "☕",
-                    tastes: ["bitter", "strong"]
-                },
-                {
-                    name: "Tea",
-                    emoji: "🍵",
-                    tastes: ["mild", "soothing"]
+                    name: "Water",
+                    emoji: "💧",
+                    tastes: ["plain", "refreshing"]
                 },
                 {
                     name: "Juice",
@@ -1438,39 +1806,29 @@
                     tastes: ["sweet", "fizzy"]
                 },
                 {
+                    name: "Coffee",
+                    emoji: "☕",
+                    tastes: ["bitter", "rich"]
+                },
+                {
+                    name: "Tea",
+                    emoji: "🍵",
+                    tastes: ["mild", "soothing"]
+                },
+                {
+                    name: "Milk",
+                    emoji: "🥛",
+                    tastes: ["creamy", "mild"]
+                },
+                {
                     name: "Smoothie",
                     emoji: "🧋",
                     tastes: ["sweet", "fruity"]
                 },
                 {
-                    name: "Water",
-                    emoji: "💧",
-                    tastes: ["plain", "refreshing"]
-                },
-                {
                     name: "Lemonade",
                     emoji: "🍋",
-                    tastes: ["sweet", "sour"]
-                },
-                {
-                    name: "Hot Chocolate",
-                    emoji: "🍫",
-                    tastes: ["sweet", "rich"]
-                },
-                {
-                    name: "Milkshake",
-                    emoji: "🥤",
-                    tastes: ["sweet", "creamy"]
-                },
-                {
-                    name: "Coconut Drink",
-                    emoji: "🥥",
-                    tastes: ["sweet", "tropical"]
-                },
-                {
-                    name: "Bubble Tea",
-                    emoji: "🧋",
-                    tastes: ["sweet", "chewy"]
+                    tastes: ["sweet", "tangy"]
                 }
             ]
         };
@@ -1481,15 +1839,32 @@
         const clearPlateBtn = document.getElementById('clearPlateBtn');
         const newMealBtn = document.getElementById('newMealBtn');
         const categoryTabs = document.querySelectorAll('.category-tab');
+        const courseTabs = document.querySelectorAll('.course-tab');
         const tooltip = document.getElementById('tooltip');
         const speakBtn = document.getElementById('speakBtn');
+        const nextCourseBtn = document.getElementById('nextCourseBtn');
         const sentenceContainer = document.getElementById('sentenceContainer');
+        const presentMealBtn = document.getElementById('presentMealBtn');
+        const presentationContainer = document.getElementById('presentationContainer');
+        const closePresentation = document.getElementById('closePresentation');
+
+        // Course elements
+        const courseType = document.getElementById('courseType');
+        const currentCourseTitle = document.getElementById('currentCourseTitle');
+        const courseIndicator = document.getElementById('courseIndicator');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
 
         // Sentence elements
         const food1Element = document.getElementById('food1');
         const food2Element = document.getElementById('food2');
         const food3Element = document.getElementById('food3');
         const tasteElement = document.getElementById('taste');
+
+        // Course cards
+        const starterCard = document.getElementById('starterCard');
+        const mainCard = document.getElementById('mainCard');
+        const dessertCard = document.getElementById('dessertCard');
 
         // Load foods for category
         function loadFoodsForCategory(category) {
@@ -1577,10 +1952,201 @@
 
                     // Load foods for selected category
                     const category = tab.dataset.category;
-                    gameData.selectedCategory = category;
                     loadFoodsForCategory(category);
                 });
             });
+        }
+
+        // Setup course tabs
+        function setupCourseTabs() {
+            courseTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Check if this course is already completed
+                    const course = tab.dataset.course;
+
+                    // Switch to this course
+                    switchToCourse(course);
+                });
+            });
+        }
+
+        // Switch to a specific course
+        function switchToCourse(course) {
+            // Save current plate items to the current course
+            if (gameData.plateItems.length > 0) {
+                gameData.completedCourses[gameData.currentCourse] = {
+                    items: [...gameData.plateItems],
+                    taste: tasteElement.textContent
+                };
+
+                // Mark the current course tab as completed
+                document.getElementById(`${gameData.currentCourse}Tab`).classList.add('completed');
+
+                // Update the course card
+                updateCourseCard(gameData.currentCourse);
+            }
+
+            // Update current course
+            gameData.currentCourse = course;
+
+            // Update UI
+            updateCourseUI(course);
+
+            // Update active tab
+            courseTabs.forEach(t => t.classList.remove('active'));
+            document.getElementById(`${course}Tab`).classList.add('active');
+
+            // Clear plate or load saved items
+            if (gameData.completedCourses[course]) {
+                // Load saved items
+                loadSavedCourse(course);
+            } else {
+                // Clear plate
+                clearPlate();
+            }
+
+            // Update progress
+            updateProgress();
+
+            // Load appropriate food categories
+            loadAppropriateCategories(course);
+        }
+
+        // Load appropriate food categories based on course
+        function loadAppropriateCategories(course) {
+            // Hide all category tabs first
+            categoryTabs.forEach(tab => {
+                tab.style.display = 'none';
+            });
+
+            // Show relevant categories based on course
+            if (course === 'starter') {
+                showCategories(['starters', 'vegetables', 'sides', 'proteins']);
+                categoryTabs[0].click(); // Click on first visible tab
+            } else if (course === 'main') {
+                showCategories(['proteins', 'vegetables', 'sides', 'starters']);
+                categoryTabs[0].click(); // Click on first visible tab
+            } else if (course === 'dessert') {
+                showCategories(['desserts', 'fruits', 'drinks']);
+                categoryTabs[0].click(); // Click on first visible tab
+            }
+        }
+
+        // Show specific categories
+        function showCategories(categories) {
+            categoryTabs.forEach(tab => {
+                if (categories.includes(tab.dataset.category)) {
+                    tab.style.display = 'block';
+                }
+            });
+        }
+
+        // Update course UI
+        function updateCourseUI(course) {
+            // Update course type in sentence
+            courseType.textContent = course === 'main' ? 'main course' : course;
+
+            // Update course title
+            currentCourseTitle.textContent =
+                `My ${course === 'main' ? 'Main Course' : course.charAt(0).toUpperCase() + course.slice(1)}`;
+
+            // Update course indicator
+            courseIndicator.textContent = course === 'main' ? 'Main Course' : course.charAt(0).toUpperCase() + course
+                .slice(1);
+            courseIndicator.className = `course-badge badge-${course === 'main' ? 'main' : course}`;
+        }
+
+        // Load saved course
+        function loadSavedCourse(course) {
+            const savedCourse = gameData.completedCourses[course];
+
+            // Clear plate
+            clearPlate(false);
+
+            // Load saved items
+            gameData.plateItems = [];
+            savedCourse.items.forEach(item => {
+                addFoodToPlate(item.name, item.emoji, item.tastes, null, null, false);
+            });
+
+            // Update taste
+            tasteElement.textContent = savedCourse.taste;
+        }
+
+        // Update course card
+        function updateCourseCard(course) {
+            const savedCourse = gameData.completedCourses[course];
+            if (!savedCourse) return;
+
+            const card = document.getElementById(`${course}Card`);
+            const itemsContainer = document.getElementById(`${course}Items`);
+            const description = document.getElementById(`${course}Description`);
+
+            // Clear items container
+            itemsContainer.innerHTML = '';
+
+            // Add items
+            savedCourse.items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-gray-100 rounded-full px-3 py-1 flex items-center';
+                itemElement.innerHTML = `
+                    <span class="mr-1">${item.emoji}</span>
+                    <span class="text-sm font-medium">${item.name}</span>
+                `;
+                itemsContainer.appendChild(itemElement);
+            });
+
+            // Update description
+            description.textContent = `It tastes ${savedCourse.taste}.`;
+
+            // Show card
+            card.classList.add('show');
+
+            // Check if all courses are completed
+            checkAllCoursesCompleted();
+        }
+
+        // Check if all courses are completed
+        function checkAllCoursesCompleted() {
+            if (gameData.completedCourses.starter &&
+                gameData.completedCourses.main &&
+                gameData.completedCourses.dessert) {
+                // Show present meal button
+                presentMealBtn.classList.remove('opacity-0');
+                presentMealBtn.classList.add('opacity-100');
+                presentMealBtn.classList.remove('pointer-events-none');
+                presentMealBtn.classList.add('pointer-events-auto');
+            }
+        }
+
+        // Update progress
+        function updateProgress() {
+            let completedCount = 0;
+            let totalCount = 3;
+
+            if (gameData.completedCourses.starter) completedCount++;
+            if (gameData.completedCourses.main) completedCount++;
+            if (gameData.completedCourses.dessert) completedCount++;
+
+            // Add current course if it has items
+            if (gameData.plateItems.length > 0 && !gameData.completedCourses[gameData.currentCourse]) {
+                completedCount += 0.5;
+            }
+
+            const progressPercentage = Math.min(100, Math.round((completedCount / totalCount) * 100));
+            progressFill.style.width = `${progressPercentage}%`;
+            progressText.textContent = `${Math.ceil(completedCount)}/${totalCount}`;
+
+            // Update course indicator text
+            let courseNumber = 1;
+            if (gameData.currentCourse === 'main') courseNumber = 2;
+            if (gameData.currentCourse === 'dessert') courseNumber = 3;
+
+            const courseText = gameData.currentCourse === 'main' ? 'Main Course' :
+                gameData.currentCourse.charAt(0).toUpperCase() + gameData.currentCourse.slice(1);
+
+            document.querySelector('.flex.justify-between.text-sm span:first-child').textContent =
+                `Course ${courseNumber}: ${courseText}`;
         }
 
         // Setup plate drop zone
@@ -1608,10 +2174,13 @@
         }
 
         // Add food to plate
-        function addFoodToPlate(name, emoji, tastes, clientX, clientY) {
-            // Limit to 10 items
-            if (gameData.plateItems.length >= 10) {
-                showTooltip('Your plate is full! Remove some items first.', clientX, clientY);
+        function addFoodToPlate(name, emoji, tastes, clientX, clientY, updateSentences = true) {
+            
+            // Limit to 5 items
+            if (gameData.plateItems.length >= 5) {
+                if (clientX && clientY) {
+                    showTooltip('Your plate is full! Remove some items first.', clientX, clientY);
+                }
                 return;
             }
 
@@ -1680,10 +2249,15 @@
             });
 
             // Update sentence
-            updateSentence();
+            if (updateSentences) {
+                updateSentence();
 
-            // Create confetti effect
-            createConfetti();
+                // Create confetti effect
+                createConfetti();
+            }
+
+            // Update progress
+            updateProgress();
         }
 
         // Remove food from plate
@@ -1702,11 +2276,14 @@
 
                 // Update sentence
                 updateSentence();
+
+                // Update progress
+                updateProgress();
             }, 300);
         }
 
         // Clear plate
-        function clearPlate() {
+        function clearPlate(updateSentences = true) {
             // Animation
             const items = [...plate.querySelectorAll('.plate-item')];
 
@@ -1726,9 +2303,14 @@
             gameData.plateItems = [];
 
             // Update sentence
-            setTimeout(() => {
-                updateSentence();
-            }, items.length * 100 + 300);
+            if (updateSentences) {
+                setTimeout(() => {
+                    updateSentence();
+                }, items.length * 100 + 300);
+            }
+
+            // Update progress
+            updateProgress();
         }
 
         // Generate taste description based on food items
@@ -1757,7 +2339,7 @@
             // Check for weird combinations
             const isWeird = checkForWeirdCombination(sortedTastes);
             if (isWeird) {
-                return "weird!";
+                return "weird but interesting!";
             }
 
             // Generate description based on taste frequencies
@@ -1820,9 +2402,9 @@
                 }
             });
 
-            // If we have both desserts and vegetables, or desserts and main foods, it's weird
+            // If we have both desserts and vegetables, or desserts and proteins, it's weird
             if ((categories.has('desserts') && categories.has('vegetables')) ||
-                (categories.has('desserts') && categories.has('main'))) {
+                (categories.has('desserts') && categories.has('proteins'))) {
                 return true;
             }
 
@@ -1951,7 +2533,8 @@
                 let sentences = [];
 
                 if (food1Element.textContent !== '___') {
-                    let sentence = `"I made a meal with ${food1Element.textContent}`;
+                    let sentence =
+                        `"I made a ${gameData.currentCourse === 'main' ? 'main course' : gameData.currentCourse} with ${food1Element.textContent}`;
 
                     if (food2Element.textContent !== '___') {
                         sentence += `, ${food2Element.textContent}`;
@@ -1985,6 +2568,21 @@
                     speakBtn.classList.remove('shake-animation');
                 }, 500);
 
+                function showSpeechBubble(text) {
+  const bubble = document.getElementById('speechBubble');
+  const sentenceContainer = document.getElementById('sentenceContainer');
+  const rect = sentenceContainer.getBoundingClientRect();
+
+  bubble.style.position = 'absolute';
+  bubble.style.top = `${window.scrollY + rect.bottom + 10}px`;
+  bubble.style.left = `${rect.left}px`;
+  bubble.style.transform = 'none'; // remove center transform
+  bubble.style.display = 'block';
+  bubble.classList.remove('hidden');
+  document.getElementById('speechText').textContent = text;
+}
+
+
                 // Auto-hide speech bubble after a while
                 setTimeout(() => {
                     speechBubble.classList.add('shake-animation');
@@ -1994,6 +2592,215 @@
                     }, 500);
                 }, 6000);
             });
+        }
+
+        // Setup next course button
+        function setupNextCourseButton() {
+            nextCourseBtn.addEventListener('click', () => {
+                // Check if there are items on the plate
+                if (gameData.plateItems.length === 0) {
+                    showTooltip('Add some food to your plate first!',
+                        nextCourseBtn.getBoundingClientRect().left,
+                        nextCourseBtn.getBoundingClientRect().top);
+                    return;
+                }
+
+                // Save current course
+                gameData.completedCourses[gameData.currentCourse] = {
+                    items: [...gameData.plateItems],
+                    taste: tasteElement.textContent
+                };
+
+                // Mark the current course tab as completed
+                document.getElementById(`${gameData.currentCourse}Tab`).classList.add('completed');
+
+                // Update the course card
+                updateCourseCard(gameData.currentCourse);
+
+                // Move to next course
+                let nextCourse;
+                if (gameData.currentCourse === 'starter') {
+                    nextCourse = 'main';
+                } else if (gameData.currentCourse === 'main') {
+                    nextCourse = 'dessert';
+                } else {
+                    // We're done with all courses
+                    showTooltip('All courses completed! Click "Present My Meal" to show your creation!',
+                        nextCourseBtn.getBoundingClientRect().left,
+                        nextCourseBtn.getBoundingClientRect().top);
+                    return;
+                }
+
+                // Switch to next course
+                switchToCourse(nextCourse);
+
+                // Animation
+                nextCourseBtn.classList.add('shake-animation');
+                setTimeout(() => {
+                    nextCourseBtn.classList.remove('shake-animation');
+                }, 500);
+            });
+        }
+
+        // Setup present meal button
+        function setupPresentMealButton() {
+            presentMealBtn.addEventListener('click', () => {
+                // Show presentation modal
+                presentationContainer.classList.add('show');
+
+                // Prepare presentation content
+                preparePresentationContent();
+            });
+
+            // Close presentation button
+            closePresentation.addEventListener('click', () => {
+                presentationContainer.classList.remove('show');
+            });
+        }
+
+        // Prepare presentation content
+        function preparePresentationContent() {
+            // Starter presentation
+            const starterPresentation = document.getElementById('starterPresentation');
+            const starterPresentationDesc = document.getElementById('starterPresentationDesc');
+            const starterPresentationItems = document.getElementById('starterPresentationItems');
+
+            // Main course presentation
+            const mainPresentation = document.getElementById('mainPresentation');
+            const mainPresentationDesc = document.getElementById('mainPresentationDesc');
+            const mainPresentationItems = document.getElementById('mainPresentationItems');
+
+            // Dessert presentation
+            const dessertPresentation = document.getElementById('dessertPresentation');
+            const dessertPresentationDesc = document.getElementById('dessertPresentationDesc');
+            const dessertPresentationItems = document.getElementById('dessertPresentationItems');
+
+            // Final speech
+            const finalSpeech = document.getElementById('finalSpeech');
+            const finalSpeechText = document.getElementById('finalSpeechText');
+
+            // Reset
+            starterPresentationItems.innerHTML = '';
+            mainPresentationItems.innerHTML = '';
+            dessertPresentationItems.innerHTML = '';
+
+            // Populate starter
+            const starter = gameData.completedCourses.starter;
+            starterPresentationDesc.textContent =
+                `I made a starter with ${starter.items.map(item => item.name).join(', ').replace(/,([^,]*)$/, ' and$1')}. It tastes ${starter.taste}.`;
+
+            starter.items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-gray-100 rounded-full px-3 py-1 flex items-center';
+                itemElement.innerHTML = `
+                    <span class="mr-1">${item.emoji}</span>
+                    <span class="text-sm font-medium">${item.name}</span>
+                `;
+                starterPresentationItems.appendChild(itemElement);
+            });
+
+            // Populate main course
+            const main = gameData.completedCourses.main;
+            mainPresentationDesc.textContent =
+                `I made a main course with ${main.items.map(item => item.name).join(', ').replace(/,([^,]*)$/, ' and$1')}. It tastes ${main.taste}.`;
+
+            main.items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-gray-100 rounded-full px-3 py-1 flex items-center';
+                itemElement.innerHTML = `
+                    <span class="mr-1">${item.emoji}</span>
+                    <span class="text-sm font-medium">${item.name}</span>
+                `;
+                mainPresentationItems.appendChild(itemElement);
+            });
+
+            // Populate dessert
+            const dessert = gameData.completedCourses.dessert;
+            dessertPresentationDesc.textContent =
+                `I made a dessert with ${dessert.items.map(item => item.name).join(', ').replace(/,([^,]*)$/, ' and$1')}. It tastes ${dessert.taste}.`;
+
+            dessert.items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-gray-100 rounded-full px-3 py-1 flex items-center';
+                itemElement.innerHTML = `
+                    <span class="mr-1">${item.emoji}</span>
+                    <span class="text-sm font-medium">${item.name}</span>
+                `;
+                dessertPresentationItems.appendChild(itemElement);
+            });
+
+            // Generate final speech
+            const speech = generateFinalSpeech(starter, main, dessert);
+            finalSpeechText.textContent = speech;
+
+            // Animate elements
+            setTimeout(() => {
+                starterPresentation.classList.add('fade-in');
+
+                setTimeout(() => {
+                    mainPresentation.classList.add('fade-in');
+
+                    setTimeout(() => {
+                        dessertPresentation.classList.add('fade-in');
+
+                        setTimeout(() => {
+                            finalSpeech.classList.add('fade-in');
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 500);
+        }
+
+        // Generate final speech
+        function generateFinalSpeech(starter, main, dessert) {
+            // Get main ingredients
+            const starterMainIngredient = starter.items[0]?.name || 'delicious ingredients';
+            const mainMainIngredient = main.items[0]?.name || 'tasty foods';
+            const dessertMainIngredient = dessert.items[0]?.name || 'sweet treats';
+
+            // Get taste descriptions
+            const starterTaste = starter.taste;
+            const mainTaste = main.taste;
+            const dessertTaste = dessert.taste;
+
+            // Generate a creative name for the meal
+            const mealName = generateMealName(starter, main, dessert);
+
+            // Generate speech
+            return `Welcome to my restaurant! Today, I'm proud to present my special three-course meal: "${mealName}". We'll start with a ${starterTaste} ${starterMainIngredient} starter, followed by a ${mainTaste} ${mainMainIngredient} main course. And for dessert, I've prepared a ${dessertTaste} ${dessertMainIngredient} that you'll love! Bon appétit and enjoy your meal!`;
+        }
+
+        // Generate a creative meal name
+        function generateMealName(starter, main, dessert) {
+            // Get adjectives from taste descriptions
+            const starterAdj = getFirstWord(starter.taste);
+            const mainAdj = getFirstWord(main.taste);
+            const dessertAdj = getFirstWord(dessert.taste);
+
+            // Get main ingredients
+            const starterIngredient = starter.items[0]?.name || 'Delight';
+            const mainIngredient = main.items[0]?.name || 'Feast';
+            const dessertIngredient = dessert.items[0]?.name || 'Treat';
+
+            // Generate name patterns
+            const patterns = [
+                `The ${starterAdj} ${starterIngredient} Experience`,
+                `${mainAdj} ${mainIngredient} Extravaganza`,
+                `${dessertAdj} ${dessertIngredient} Trilogy`,
+                `${starterIngredient} to ${dessertIngredient} Adventure`,
+                `${mainAdj} ${mainIngredient} with ${dessertIngredient} Finale`,
+                `Triple Taste Sensation`,
+                `${starterIngredient} Starter Surprise`,
+                `Chef's ${mainIngredient} Special`
+            ];
+
+            return patterns[Math.floor(Math.random() * patterns.length)];
+        }
+
+        // Get first word from a string
+        function getFirstWord(str) {
+            if (!str || str === '___') return 'Delicious';
+            return str.split(' ')[0];
         }
 
         // Generate food tips based on current plate
@@ -2016,33 +2823,59 @@
 
         // Initialize
         function init() {
-            // Load initial foods
-            loadFoodsForCategory('main');
+            // Load initial foods for starter
+            loadAppropriateCategories('starter');
 
             // Setup event listeners
             setupCategoryTabs();
+            setupCourseTabs();
             setupPlateDropZone();
             setupTouchEvents();
             setupSpeakButton();
+            setupNextCourseButton();
+            setupPresentMealButton();
 
             // Clear plate button
-            clearPlateBtn.addEventListener('click', clearPlate);
+            clearPlateBtn.addEventListener('click', () => {
+                clearPlate();
+            });
 
             // New meal button
-            newMealBtn.addEventListener('click', () => {
-                clearPlate();
+    newMealBtn.addEventListener('click', () => {
+        // Reset game
+        gameData.completedCourses = {
+            starter: null,
+            main: null,
+            dessert: null
+        };
 
-                // Show first category
-                categoryTabs[0].click();
+        // Reset course tabs
+        courseTabs.forEach(tab => {
+            tab.classList.remove('completed');
+        });
 
-                // Create confetti
-                createConfetti();
+        // Switch to starter
+        switchToCourse('starter');
 
-                // Show a tip
-                const tip = generateFoodTip();
-                showTooltip(tip, window.innerWidth / 2, window.innerHeight / 2);
-            });
-        }
+        // Hide meal cards
+        starterCard.classList.remove('show');
+        mainCard.classList.remove('show');
+        dessertCard.classList.remove('show');
+
+        // Hide present meal button
+        presentMealBtn.classList.add('opacity-0');
+        presentMealBtn.classList.remove('opacity-100');
+        presentMealBtn.classList.add('pointer-events-none');
+        presentMealBtn.classList.remove('pointer-events-auto');
+
+        // Create confetti effect
+        createConfetti();
+
+        // Show a tip
+        const tip = generateFoodTip();
+        showTooltip(tip, window.innerWidth / 2, window.innerHeight / 2);
+    });
+}
 
         // Start the game
         init();
