@@ -1410,29 +1410,65 @@ function getSVGForLetter(letter) {
 }
 
 
+// ==== 播放音素音效 ====
+if (typeof window.currentAudio === "undefined") {
+  window.currentAudio = null;
+}
+
+function playPhonicsSound(event) {
+  event.stopPropagation();
+
+  const letter = event.currentTarget.getAttribute("data-letter");
+  const groupId = event.currentTarget.closest(".phonics-card")?.getAttribute("data-group");
+  const group = groups.find(g => String(g.id) === groupId);
+
+  if (!group) {
+    console.warn(`找不到 group ID 為 ${groupId} 的資料`);
+    return;
+  }
+
+  const phoneme = group.phonics.find(p => p.letter.toLowerCase() === letter.toLowerCase());
+
+  if (!phoneme || !phoneme.audio) {
+    console.warn(`找不到 ${letter} 的音檔`);
+    return;
+  }
+
+  // 🔇 停止前一個正在播放的音訊
+  if (window.currentAudio) {
+    window.currentAudio.pause();
+    window.currentAudio.currentTime = 0;
+  }
+
+  // ▶️ 播放新的音訊
+  window.currentAudio = new Audio(phoneme.audio);
+  window.currentAudio.play().catch(err => {
+    console.warn(`播放 ${letter} 音檔失敗：`, err);
+  });
+}
+
+
 // ==== 渲染組別按鈕 ====
 function renderGroupButtons() {
-    const groupList = document.getElementById("groupList");
-    groupList.innerHTML = "";
+  const groupList = document.getElementById("groupList");
+  groupList.innerHTML = "";
+  groupList.className = "row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3";
 
-    // ✅ 加入 Bootstrap 的 row + column 設定
-    groupList.className = "row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3";
+  groups.forEach(group => {
+    const themeColor = group.phonics?.[0]?.color || "indigo";
+    const col = document.createElement("div");
+    col.className = "col h-100";
 
-    groups.forEach(group => {
-        const themeColor = group.phonics?.[0]?.color || "indigo"; // fallback to indigo
-        const col = document.createElement("div");
-        col.className = "col h-100";
+    const card = document.createElement("div");
+    card.className = "phonics-card border bg-white overflow-hidden shadow-lg d-flex flex-column h-100";
+    card.classList.add(`theme-${themeColor}`);
+    card.setAttribute("data-group", group.id);
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-label", `${group.title}：${group.letters.join(", ")}`);
+    card.style.cursor = "pointer";
 
-        const card = document.createElement("div");
-        card.className = "phonics-card border bg-white overflow-hidden shadow-lg d-flex flex-column h-100";
-        card.classList.add(`theme-${themeColor}`);
-        card.setAttribute("data-group", group.id);
-        card.setAttribute("role", "button");
-        card.setAttribute("tabindex", "0");
-        card.setAttribute("aria-label", `${group.title}：${group.letters.join(", ")}`);
-        card.style.cursor = "pointer";
-
-        card.innerHTML = `
+    card.innerHTML = `
 <!-- Group Header -->
 <div class="text-center p-3 text-white rounded-top"
      style="background: linear-gradient(to right, var(--color-${themeColor}-600), var(--color-${themeColor}-400));">
@@ -1447,6 +1483,8 @@ function renderGroupButtons() {
 <div class="d-flex justify-content-center gap-3 p-4 flex-wrap bg-white rounded-bottom shadow-sm">
   ${group.letters.map(letter => `
     <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+         data-letter="${letter.toLowerCase()}"
+         onclick="playPhonicsSound(event)"
          style="
            width: 4rem;
            height: 4rem;
@@ -1465,18 +1503,19 @@ function renderGroupButtons() {
 </div>
 `;
 
-
-        card.addEventListener("click", () => {
-            currentGroupId = group.id;
-            renderGroup(group.id);
-            groupList.style.display = "none";
-            document.getElementById("startAdventureBtn").style.display = "none";
-        });
-
-        col.appendChild(card);
-        groupList.appendChild(col);
+    // ✅ 綁定卡片點擊事件（切換頁面）
+    card.addEventListener("click", () => {
+      currentGroupId = group.id;
+      renderGroup(group.id);
+      groupList.style.display = "none";
+      document.getElementById("startAdventureBtn").style.display = "none";
     });
+
+    col.appendChild(card);
+    groupList.appendChild(col);
+  });
 }
+
 
 let currentAudio = null;
 
