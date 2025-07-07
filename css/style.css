@@ -398,6 +398,49 @@ body {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
+/* 音素發音練習 */
+.wave-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 0.3s ease;
+}
+
+.wave-bar-bg {
+  width: 0.6rem;
+  height: 40%;
+  border-radius: 0.25rem;
+  background-color: currentColor;
+  animation: wave 1.2s ease-in-out infinite;
+  opacity: 0.15;
+  filter: blur(4px);
+  box-shadow: 0 0 1.5rem currentColor;
+}
+
+.wave-bar-bg:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar-bg:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar-bg:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar-bg:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.card > *:not(.wave-background) {
+  position: relative;
+  z-index: 1;
+}
+
+
 /* 音素圖片 */
 .phonics-image{
     max-height: 100%;
