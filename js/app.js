@@ -1635,7 +1635,8 @@ group.phonics.forEach(p => {
 
   const waveBg = document.createElement("div");
   waveBg.className = "wave-background";
-  waveBg.style.color = `var(--color-${color}-600)`;
+  waveBg.dataset.originalColor = `var(--color-${color}-600)`; // ✅ 儲存主題色
+  waveBg.style.color = waveBg.dataset.originalColor;
   waveBg.innerHTML = `
     <div class="wave-bar-bg"></div>
     <div class="wave-bar-bg"></div>
@@ -1668,140 +1669,166 @@ group.phonics.forEach(p => {
     </svg>
     聽發音
   `;
+
+  // ✅ 重置波形動畫與顏色
+  function resetWaveBg() {
+    waveBg.classList.remove("active");
+    waveBg.style.color = waveBg.dataset.originalColor;
+    card.classList.remove("bg-success-pale");
+  }
+
+  // ▶️ 播放正確發音
   playBtn.addEventListener("click", () => {
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
+    if (window.isRecording) {
+      alert("錄音中無法播放音訊！");
+      return;
     }
+    stopAllAudio();
+    resetWaveBg();
+
     currentAudio = new Audio(p.audio);
     currentAudio.play();
-    waveBg.style.opacity = "1";
+
+    waveBg.classList.add("active");
+    waveBg.style.color = waveBg.dataset.originalColor;
+
     currentAudio.onended = () => {
-      waveBg.style.opacity = "0";
+      waveBg.classList.remove("active");
+      waveBg.style.color = waveBg.dataset.originalColor;
     };
   });
 
   // 錄音控制（獨立狀態）
-const recordControls = document.createElement("div");
-recordControls.className = "d-flex flex-column align-items-center mt-3";
+  const recordControls = document.createElement("div");
+  recordControls.className = "d-flex flex-column align-items-center mt-3";
 
-// 🔴 錄音中提示 + 倒數
-const statusWrapper = document.createElement("div");
-statusWrapper.className = "d-flex align-items-center gap-2 mt-2";
+  const statusWrapper = document.createElement("div");
+  statusWrapper.className = "d-flex align-items-center gap-2 mt-2";
 
-const statusDot = document.createElement("span");
-statusDot.className = "recording-dot";
-statusDot.style.display = "none";
-statusDot.innerHTML = `🔴 <span class="text-danger fw-bold">錄音中</span>`;
+  const statusDot = document.createElement("span");
+  statusDot.className = "recording-dot";
+  statusDot.style.display = "none";
+  statusDot.innerHTML = `🔴 <span class="text-danger fw-bold">錄音中</span>`;
 
-const timerText = document.createElement("div");
-timerText.className = "recording-timer";
-timerText.style.display = "none";
-timerText.textContent = "錄音中：3 秒";
+  const timerText = document.createElement("div");
+  timerText.className = "recording-timer";
+  timerText.style.display = "none";
+  timerText.textContent = "錄音中：3 秒";
 
-statusWrapper.appendChild(statusDot);
-statusWrapper.appendChild(timerText);
+  statusWrapper.appendChild(statusDot);
+  statusWrapper.appendChild(timerText);
 
-// 按鈕群組
-const btnGroup = document.createElement("div");
-btnGroup.className = "btn-group";
-btnGroup.setAttribute("role", "group");
-btnGroup.setAttribute("aria-label", "錄音控制");
+  const btnGroup = document.createElement("div");
+  btnGroup.className = "btn-group";
+  btnGroup.setAttribute("role", "group");
+  btnGroup.setAttribute("aria-label", "錄音控制");
 
-const recordBtn = document.createElement("button");
-recordBtn.className = "btn btn-outline-secondary";
-recordBtn.innerHTML = `<i class="fas fa-microphone"></i>`;
-recordBtn.title = "開始錄音";
+  const recordBtn = document.createElement("button");
+  recordBtn.className = "btn btn-outline-secondary";
+  recordBtn.innerHTML = `<i class="fas fa-microphone"></i>`;
+  recordBtn.title = "開始錄音";
 
-const stopBtn = document.createElement("button");
-stopBtn.className = "btn btn-outline-danger";
-stopBtn.innerHTML = `<i class="fas fa-stop"></i>`;
-stopBtn.title = "停止錄音";
+  const stopBtn = document.createElement("button");
+  stopBtn.className = "btn btn-outline-danger";
+  stopBtn.innerHTML = `<i class="fas fa-stop"></i>`;
+  stopBtn.title = "停止錄音";
 
-const playStudentBtn = document.createElement("button");
-playStudentBtn.className = "btn btn-outline-primary";
-playStudentBtn.innerHTML = `<i class="fas fa-play"></i>`;
-playStudentBtn.title = "播放學生錄音";
+  const playStudentBtn = document.createElement("button");
+  playStudentBtn.className = "btn btn-outline-primary";
+  playStudentBtn.innerHTML = `<i class="fas fa-play"></i>`;
+  playStudentBtn.title = "播放學生錄音";
 
-// 每張卡片的錄音記憶體
-let localRecorder = null;
-let localChunks = [];
-let localAudioURL = null;
-let countdownInterval = null;
+  let localRecorder = null;
+  let localChunks = [];
+  let localAudioURL = null;
+  let countdownInterval = null;
 
-// 🎙️ 開始錄音
-recordBtn.addEventListener("click", async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  localChunks = [];
-  localRecorder = new MediaRecorder(stream);
+  recordBtn.addEventListener("click", async () => {
+    if (window.isRecording) return;
+    window.isRecording = true;
+    stopAllAudio();
 
-  localRecorder.ondataavailable = e => {
-    if (e.data.size > 0) localChunks.push(e.data);
-  };
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      localChunks = [];
+      localRecorder = new MediaRecorder(stream);
 
-  localRecorder.onstop = () => {
-    const blob = new Blob(localChunks, { type: "audio/webm" });
-    localAudioURL = URL.createObjectURL(blob);
-    playStudentBtn.click(); // 錄音完成後自動播放
-  };
+      localRecorder.ondataavailable = e => {
+        if (e.data.size > 0) localChunks.push(e.data);
+      };
 
-  localRecorder.start();
-  statusDot.style.display = "inline-flex";
-  timerText.style.display = "block";
-  recordBtn.classList.add("recording-pulse");
+      localRecorder.onstop = () => {
+        const blob = new Blob(localChunks, { type: "audio/webm" });
+        localAudioURL = URL.createObjectURL(blob);
+        window.isRecording = false;
+        playStudentBtn.click();
+      };
 
-  // 倒數計時
-  let countdown = 3;
-  timerText.textContent = `錄音中：${countdown} 秒`;
-  countdownInterval = setInterval(() => {
-    countdown--;
-    if (countdown > 0) {
+      localRecorder.start();
+      statusDot.style.display = "inline-flex";
+      timerText.style.display = "block";
+      recordBtn.classList.add("recording-pulse");
+
+      let countdown = 3;
       timerText.textContent = `錄音中：${countdown} 秒`;
-    } else {
-      clearInterval(countdownInterval);
-      timerText.style.display = "none";
+      countdownInterval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+          timerText.textContent = `錄音中：${countdown} 秒`;
+        } else {
+          clearInterval(countdownInterval);
+          timerText.style.display = "none";
+        }
+      }, 1000);
+    } catch (err) {
+      alert("無法啟用麥克風，請確認瀏覽器權限");
+      window.isRecording = false;
     }
-  }, 1000);
-});
+  });
 
-// ⏹️ 停止錄音
-stopBtn.addEventListener("click", () => {
-  if (localRecorder && localRecorder.state !== "inactive") {
-    localRecorder.stop();
-    statusDot.style.display = "none";
-    timerText.style.display = "none";
-    recordBtn.classList.remove("recording-pulse");
-    clearInterval(countdownInterval);
-  }
-});
+  stopBtn.addEventListener("click", () => {
+    if (localRecorder && localRecorder.state !== "inactive") {
+      localRecorder.stop();
+      statusDot.style.display = "none";
+      timerText.style.display = "none";
+      recordBtn.classList.remove("recording-pulse");
+      clearInterval(countdownInterval);
+    }
+  });
 
-// ▶️ 播放學生錄音
-playStudentBtn.addEventListener("click", () => {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-  }
-  if (localAudioURL) {
-    currentAudio = new Audio(localAudioURL);
-    card.classList.add("bg-success-pale");
-    currentAudio.play();
-    currentAudio.onended = () => {
-      card.classList.remove("bg-success-pale");
-    };
-  } else {
-    alert("請先錄音！");
-  }
-});
+  // ▶️ 播放學生錄音
+  playStudentBtn.addEventListener("click", () => {
+    if (window.isRecording) {
+      alert("錄音中無法播放音訊！");
+      return;
+    }
+    stopAllAudio();
+    resetWaveBg();
 
-btnGroup.appendChild(recordBtn);
-btnGroup.appendChild(stopBtn);
-btnGroup.appendChild(playStudentBtn);
-recordControls.appendChild(btnGroup);
-recordControls.appendChild(statusWrapper);
-recordControls.appendChild(timerText);
+    if (localAudioURL) {
+      currentAudio = new Audio(localAudioURL);
+      card.classList.add("bg-success-pale");
 
+      waveBg.classList.add("active");
+      waveBg.style.color = "var(--color-green-500)";
 
+      currentAudio.play();
+      currentAudio.onended = () => {
+        card.classList.remove("bg-success-pale");
+        waveBg.classList.remove("active");
+        waveBg.style.color = waveBg.dataset.originalColor;
+      };
+    } else {
+      alert("請先錄音！");
+    }
+  });
 
+  btnGroup.appendChild(recordBtn);
+  btnGroup.appendChild(stopBtn);
+  btnGroup.appendChild(playStudentBtn);
+  recordControls.appendChild(btnGroup);
+  recordControls.appendChild(statusWrapper);
+  recordControls.appendChild(timerText);
 
   const mouthHint = document.createElement("div");
   mouthHint.className = "mt-4 text-center";
@@ -2811,4 +2838,16 @@ function playStudentRecording() {
 function playCorrectAudio(src) {
   const audio = new Audio(src);
   audio.play();
+}
+
+// === 全域音訊控制 ===
+if (typeof window.currentAudio === "undefined") window.currentAudio = null;
+if (typeof window.isRecording === "undefined") window.isRecording = false;
+
+function stopAllAudio() {
+  if (window.currentAudio) {
+    window.currentAudio.pause();
+    window.currentAudio.currentTime = 0;
+    window.currentAudio = null;
+  }
 }
