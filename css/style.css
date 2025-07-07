@@ -147,6 +147,13 @@ body {
   transition: background-color 0.3s ease;
 }
 
+.btn-group .btn {
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1.1rem;
+}
+
+
 /* === PRIMARY THEME (Indigo 500) === */
 .bg-primary {
   background-color: var(--bs-primary) !important;
@@ -291,6 +298,53 @@ body {
   border-color: var(--color-green-600) !important;
 }
 
+/* === DANGER THEME (Red 500) === */
+.bg-danger {
+  background-color: var(--color-red-500) !important;
+}
+.bg-danger-pale {
+  background-color: var(--color-red-200) !important;
+}
+.text-danger {
+  color: var(--color-red-500) !important;
+}
+.border-danger {
+  border-color: var(--color-red-500) !important;
+}
+
+.btn.btn-danger {
+  background-color: var(--color-red-500) !important;
+  border-color: var(--color-red-500) !important;
+  color: #fff !important;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.btn.btn-danger:hover:not(.disabled),
+.btn.btn-danger:focus:not(.disabled) {
+  background-color: var(--color-red-600) !important;
+  border-color: var(--color-red-600) !important;
+  box-shadow: 0 0.5rem 1rem rgba(239, 68, 68, 0.3) !important;
+}
+.btn.btn-danger:active:not(.disabled) {
+  background-color: var(--color-red-700) !important;
+  border-color: var(--color-red-700) !important;
+}
+
+.btn.btn-outline-danger {
+  background-color: transparent !important;
+  border: 2px solid var(--color-red-500) !important;
+  color: var(--color-red-500) !important;
+  transition: all 0.3s ease;
+}
+.btn.btn-outline-danger:hover:not(.disabled),
+.btn.btn-outline-danger:focus:not(.disabled) {
+  background-color: var(--color-red-500) !important;
+  color: var(--bs-light) !important;
+  box-shadow: 0 0.5rem 1rem rgba(239, 68, 68, 0.2) !important;
+}
+.btn.btn-outline-danger:active:not(.disabled) {
+  background-color: var(--color-red-600) !important;
+  border-color: var(--color-red-600) !important;
+}
 
 /* === TEXT WHITE === */
 .text-white {
@@ -414,6 +468,11 @@ body {
   transition: opacity 0.3s ease;
 }
 
+.wave-background.active {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
 .wave-bar-bg {
   width: 0.6rem;
   height: 40%;
@@ -439,6 +498,38 @@ body {
   position: relative;
   z-index: 1;
 }
+
+.recording-pulse {
+  animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.recording-dot {
+  font-size: 0.95rem;
+  animation: blink 1s infinite;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.recording-timer {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: var(--color-red-600);
+  animation: blink 1s infinite;
+}
+
+
 
 
 /* 音素圖片 */

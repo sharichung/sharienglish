@@ -1502,6 +1502,11 @@ function renderGroup(id) {
   currentGroupId = id;
 updateGlobalPhonicsMap();
 
+// 隱藏首頁 UI
+document.getElementById("groupList").classList.add("d-none");
+document.getElementById("startAdventureBtn").classList.add("d-none");
+
+
   const content = document.getElementById("content");
   const groupTitle = document.getElementById("group-title");
   const groupDescription = document.getElementById("group-description");
@@ -1539,6 +1544,7 @@ updateGlobalPhonicsMap();
   group.songs.forEach(song => {
     const button = document.createElement("button");
     button.className = `btn btn-outline-primary text-center d-flex flex-column align-items-center justify-content-center p-3 shadow-sm`;
+
     button.innerHTML = `
       <span class="fs-2 mb-1">${song.letter}</span>
       <span>${song.label}</span>
@@ -1596,10 +1602,10 @@ updateGlobalPhonicsMap();
   content.appendChild(songSection);
 
   // 發音練習
-  const phonicsSection = document.createElement("section");
-  phonicsSection.className = "mb-5";
+const phonicsSection = document.createElement("section");
+phonicsSection.className = "mb-5";
 
-  phonicsSection.innerHTML = `
+phonicsSection.innerHTML = `
   <h2 class="fs-1 fw-bold text-primary mb-5 d-flex align-items-center border-bottom border-light pb-3">
     <svg class="me-3" style="width: 2.5rem; height: 2.5rem; color: var(--color-indigo-500);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1609,55 +1615,51 @@ updateGlobalPhonicsMap();
   </h2>
 `;
 
-  const phonicsRow = document.createElement("div");
-  phonicsRow.className = "row g-4";
+const phonicsRow = document.createElement("div");
+phonicsRow.className = "row g-4";
 
-  // Determine column width dynamically
-  const count = group.phonics.length;
-  const colWidth = Math.floor(12 / count);
-  const colClass = colWidth > 0 ? `col-12 col-md-${colWidth}` : "col-12";
+const count = group.phonics.length;
+const colWidth = Math.floor(12 / count);
+const colClass = colWidth > 0 ? `col-12 col-md-${colWidth}` : "col-12";
 
-  group.phonics.forEach(p => {
-    const color = p.color || "pink";
+group.phonics.forEach(p => {
+  const color = p.color || "pink";
 
-    const col = document.createElement("div");
-    col.className = `${colClass} d-flex`; // Makes column a flex container
+  const col = document.createElement("div");
+  col.className = `${colClass} d-flex`;
 
-    const card = document.createElement("div");
-    card.className = "card p-4 d-flex flex-column align-items-center shadow w-100 h-100";
-    card.style.backgroundColor = `var(--color-${color}-100)`;
+  const card = document.createElement("div");
+  card.className = "card p-4 d-flex flex-column align-items-center shadow w-100 h-100";
+  card.style.backgroundColor = `var(--color-${color}-100)`;
+  card.style.position = "relative";
 
-    // 建立波形背景容器（預設隱藏）
-    const waveBg = document.createElement("div");
-    waveBg.className = "wave-background";
-    waveBg.style.color = `var(--color-${color}-600)`; // 主題色
-    waveBg.innerHTML = `
-  <div class="wave-bar-bg"></div>
-  <div class="wave-bar-bg"></div>
-  <div class="wave-bar-bg"></div>
-  <div class="wave-bar-bg"></div>
-  <div class="wave-bar-bg"></div>
-`;
-    card.style.position = "relative"; // 確保背景定位正確
-    card.appendChild(waveBg);
+  const waveBg = document.createElement("div");
+  waveBg.className = "wave-background";
+  waveBg.style.color = `var(--color-${color}-600)`;
+  waveBg.innerHTML = `
+    <div class="wave-bar-bg"></div>
+    <div class="wave-bar-bg"></div>
+    <div class="wave-bar-bg"></div>
+    <div class="wave-bar-bg"></div>
+    <div class="wave-bar-bg"></div>
+  `;
+  card.appendChild(waveBg);
 
-
-    const face = document.createElement("div");
-    face.className = "d-flex align-items-center justify-content-center mb-4";
-    face.innerHTML = `
+  const face = document.createElement("div");
+  face.className = "d-flex align-items-center justify-content-center mb-4";
+  face.innerHTML = `
     <span class="display-1 fw-bold me-3" style="color: var(--color-${color}-600);">${p.letter}</span>
     <strong class="fs-2 text-muted">${p.ipa}</strong>
   `;
 
-    const button = document.createElement("button");
-    button.className = `btn w-100 d-flex align-items-center justify-content-center text-white fs-5 theme-${color}`;
-    button.style.backgroundColor = `var(--color-${color}-500)`;
-    button.onmouseenter = () => button.style.backgroundColor = `var(--color-${color}-600)`;
-    button.onmouseleave = () => button.style.backgroundColor = `var(--color-${color}-500)`;
-    button.style.borderRadius = "1rem";
-    button.style.padding = "1rem";
-
-    button.innerHTML = `
+  const playBtn = document.createElement("button");
+  playBtn.className = `btn w-100 d-flex align-items-center justify-content-center text-white fs-5 theme-${color}`;
+  playBtn.style.backgroundColor = `var(--color-${color}-500)`;
+  playBtn.onmouseenter = () => playBtn.style.backgroundColor = `var(--color-${color}-600)`;
+  playBtn.onmouseleave = () => playBtn.style.backgroundColor = `var(--color-${color}-500)`;
+  playBtn.style.borderRadius = "1rem";
+  playBtn.style.padding = "1rem";
+  playBtn.innerHTML = `
     <svg style="width: 2rem; height: 2rem;" class="me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
         d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
@@ -1666,39 +1668,127 @@ updateGlobalPhonicsMap();
     </svg>
     聽發音
   `;
-    button.onclick = () => {
-      // 停止前一個音檔
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
-      currentAudio = new Audio(p.audio);
-      currentAudio.play();
-
-      // 顯示波形背景
-      waveBg.style.opacity = "1";
-
-      currentAudio.onended = () => {
-        waveBg.style.opacity = "0"; // 或 waveBg.remove();
-      };
+  playBtn.addEventListener("click", () => {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+    currentAudio = new Audio(p.audio);
+    currentAudio.play();
+    waveBg.style.opacity = "1";
+    currentAudio.onended = () => {
+      waveBg.style.opacity = "0";
     };
+  });
 
-    const mouthHint = document.createElement("div");
-    mouthHint.className = "mt-4 text-center";
-    mouthHint.innerHTML = `
+  // 錄音控制（獨立狀態）
+const recordControls = document.createElement("div");
+recordControls.className = "d-flex flex-column align-items-center mt-3";
+
+const statusText = document.createElement("div");
+statusText.className = "recording-status text-danger fw-bold mt-2";
+statusText.style.display = "none";
+statusText.textContent = "🔴 錄音中...";
+
+const btnGroup = document.createElement("div");
+btnGroup.className = "btn-group";
+btnGroup.setAttribute("role", "group");
+btnGroup.setAttribute("aria-label", "錄音控制");
+
+const recordBtn = document.createElement("button");
+recordBtn.className = "btn btn-outline-secondary";
+recordBtn.innerHTML = `<i class="fas fa-microphone"></i>`;
+recordBtn.title = "開始錄音";
+
+const stopBtn = document.createElement("button");
+stopBtn.className = "btn btn-outline-danger";
+stopBtn.innerHTML = `<i class="fas fa-stop"></i>`;
+stopBtn.title = "停止錄音";
+
+const playStudentBtn = document.createElement("button");
+playStudentBtn.className = "btn btn-outline-primary";
+playStudentBtn.innerHTML = `<i class="fas fa-play"></i>`;
+playStudentBtn.title = "播放學生錄音";
+
+// 🔊 每張卡片的錄音記憶體
+let localRecorder = null;
+let localChunks = [];
+let localAudioURL = null;
+
+// 🎙️ 開始錄音
+recordBtn.addEventListener("click", async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  localChunks = [];
+  localRecorder = new MediaRecorder(stream);
+
+  localRecorder.ondataavailable = e => {
+    if (e.data.size > 0) localChunks.push(e.data);
+  };
+
+  localRecorder.onstop = () => {
+    const blob = new Blob(localChunks, { type: "audio/webm" });
+    localAudioURL = URL.createObjectURL(blob);
+    playStudentBtn.click(); // ✅ 錄音完成後自動播放
+  };
+
+  localRecorder.start();
+  statusText.style.display = "block";
+  recordBtn.classList.add("recording-pulse");
+});
+
+// ⏹️ 停止錄音
+stopBtn.addEventListener("click", () => {
+  if (localRecorder && localRecorder.state !== "inactive") {
+    localRecorder.stop();
+    statusText.style.display = "none";
+    recordBtn.classList.remove("recording-pulse");
+  }
+});
+
+// ▶️ 播放學生錄音
+playStudentBtn.addEventListener("click", () => {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  if (localAudioURL) {
+    currentAudio = new Audio(localAudioURL);
+    card.classList.add("bg-success-pale");
+    currentAudio.play();
+    currentAudio.onended = () => {
+      card.classList.remove("bg-success-pale");
+    };
+  } else {
+    alert("請先錄音！");
+  }
+});
+
+btnGroup.appendChild(recordBtn);
+btnGroup.appendChild(stopBtn);
+btnGroup.appendChild(playStudentBtn);
+recordControls.appendChild(btnGroup);
+recordControls.appendChild(statusText);
+
+
+
+  const mouthHint = document.createElement("div");
+  mouthHint.className = "mt-4 text-center";
+  mouthHint.innerHTML = `
     <p class="fs-4 text-muted">嘴型提示：</p>
     <p class="fs-5 text-muted">${p.hint}</p>
   `;
 
-    card.appendChild(face);
-    card.appendChild(button);
-    card.appendChild(mouthHint);
-    col.appendChild(card);
-    phonicsRow.appendChild(col);
-  });
+  card.appendChild(face);
+  card.appendChild(playBtn);
+  card.appendChild(recordControls);
+  card.appendChild(mouthHint);
+  col.appendChild(card);
+  phonicsRow.appendChild(col);
+});
 
-  phonicsSection.appendChild(phonicsRow);
-  content.appendChild(phonicsSection);
+phonicsSection.appendChild(phonicsRow);
+content.appendChild(phonicsSection);
+
 
 
 
@@ -2551,6 +2641,11 @@ document.addEventListener("DOMContentLoaded", () => {
   updateGlobalPhonicsMap();
 });
 
+document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+  new bootstrap.Tooltip(el);
+});
+
+
 // ==== 回首頁邏輯 ====
 function goBackToHome() {
   updateHomeContent();
@@ -2631,4 +2726,57 @@ function setupStartButton() {
       console.log("Adventure started!");
     });
   }
+}
+
+// ==== 錄音功能 ====
+let mediaRecorder;
+let recordedChunks = [];
+let studentAudioURL = null;
+
+async function startRecording() {
+const status = document.getElementById("recording-status");
+  if (status) status.style.display = "block";
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  recordedChunks = [];
+  mediaRecorder = new MediaRecorder(stream);
+
+  mediaRecorder.ondataavailable = e => {
+    if (e.data.size > 0) recordedChunks.push(e.data);
+  };
+
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: "audio/webm" });
+    studentAudioURL = URL.createObjectURL(blob);
+  };
+
+  mediaRecorder.start();
+}
+
+function stopRecording() {
+const status = document.getElementById("recording-status");
+  if (status) status.style.display = "none";
+
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
+}
+
+function playStudentRecording() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  if (studentAudioURL) {
+    currentAudio = new Audio(studentAudioURL);
+    currentAudio.play();
+  } else {
+    alert("請先錄音！");
+  }
+}
+
+
+function playCorrectAudio(src) {
+  const audio = new Audio(src);
+  audio.play();
 }
