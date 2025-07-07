@@ -2194,7 +2194,7 @@ function renderGroup(id) {
   const dropArea = document.createElement("div");
   dropArea.className = "bborder border-dashed p-4 mb-4 d-flex flex-wrap align-items-center justify-content-center text-muted text-center fs-6";
   dropArea.innerHTML = "拖放字母到此處進行拼字";
-  dropArea.style.minHeight = "100px";
+  dropArea.style.minHeight = "144px";
   dropArea.style.backgroundColor = "var(--bs-light)";
 
   let draggedSpan = null;
