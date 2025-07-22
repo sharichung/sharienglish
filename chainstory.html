@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Chain Story Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0f9ff;
+            overflow-x: hidden;
+        }
+
+        .comic-font {
+            font-family: 'Comic Neue', cursive;
+        }
+
+        .story-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .mission-card {
+            background-color: #fef3c7;
+            border: 2px dashed #d97706;
+            transform: rotate(-2deg);
+            transition: all 0.3s ease;
+        }
+
+        .mission-card:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .word-bank {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .word-bank.open {
+            max-height: 500px;
+        }
+
+        .btn {
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .story-input {
+            border: 2px dashed #60a5fa;
+            background-color: #f0f7ff;
+        }
+
+        .story-input:focus {
+            border: 2px solid #3b82f6;
+            outline: none;
+        }
+
+        .theme-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pop-animation {
+            animation: pop 0.5s ease;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .bounce-animation {
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .teacher-note {
+            background-color: #e0f2fe;
+            border-left: 4px solid #0ea5e9;
+            font-style: italic;
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem
+        }
+
+        .mr-1 {
+            margin-right: 0.25rem
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem
+        }
+
+        .mr-3 {
+            margin-right: 0.75rem
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem
+        }
+
+        .block {
+            display: block
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .h-40 {
+            height: 10rem
+        }
+
+        .min-h-screen {
+            min-height: 100vh
+        }
+
+        .w-full {
+            width: 100%
+        }
+
+        .max-w-5xl {
+            max-width: 64rem
+        }
+
+        .max-w-none {
+            max-width: none
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr))
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap
+        }
+
+        .items-start {
+            align-items: flex-start
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-end {
+            justify-content: flex-end
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .justify-between {
+            justify-content: space-between
+        }
+
+        .gap-2 {
+            gap: 0.5rem
+        }
+
+        .gap-6 {
+            gap: 1.5rem
+        }
+
+        .space-x-2> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+            margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .space-y-1> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))
+        }
+
+        .space-y-2> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+        }
+
+        .space-y-4> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+        }
+
+        .overflow-hidden {
+            overflow: hidden
+        }
+
+        .rounded {
+            border-radius: 0.25rem
+        }
+
+        .rounded-2xl {
+            border-radius: 1rem
+        }
+
+        .rounded-full {
+            border-radius: 9999px
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem
+        }
+
+        .bg-amber-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 243 199 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(240 253 244 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-indigo-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(224 231 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(243 232 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(250 245 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(168 85 247 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops))
+        }
+
+        .from-blue-500 {
+            --tw-gradient-from: #3b82f6 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(59 130 246 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-green-500 {
+            --tw-gradient-from: #22c55e var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(34 197 94 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-purple-500 {
+            --tw-gradient-from: #a855f7 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(168 85 247 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .to-pink-500 {
+            --tw-gradient-to: #ec4899 var(--tw-gradient-to-position)
+        }
+
+        .to-purple-600 {
+            --tw-gradient-to: #9333ea var(--tw-gradient-to-position)
+        }
+
+        .to-teal-500 {
+            --tw-gradient-to: #14b8a6 var(--tw-gradient-to-position)
+        }
+
+        .p-3 {
+            padding: 0.75rem
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-5 {
+            padding: 1.25rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem
+        }
+
+        .px-8 {
+            padding-left: 2rem;
+            padding-right: 2rem
+        }
+
+        .py-1 {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem
+        }
+
+        .text-7xl {
+            font-size: 4.5rem;
+            line-height: 1
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .font-medium {
+            font-weight: 500
+        }
+
+        .leading-relaxed {
+            line-height: 1.625
+        }
+
+        .text-amber-700 {
+            --tw-text-opacity: 1;
+            color: rgb(180 83 9 / var(--tw-text-opacity, 1))
+        }
+
+        .text-amber-800 {
+            --tw-text-opacity: 1;
+            color: rgb(146 64 14 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-500 {
+            --tw-text-opacity: 1;
+            color: rgb(59 130 246 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-800 {
+            --tw-text-opacity: 1;
+            color: rgb(30 64 175 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-500 {
+            --tw-text-opacity: 1;
+            color: rgb(107 114 128 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-600 {
+            --tw-text-opacity: 1;
+            color: rgb(75 85 99 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-500 {
+            --tw-text-opacity: 1;
+            color: rgb(34 197 94 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-800 {
+            --tw-text-opacity: 1;
+            color: rgb(22 101 52 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-700 {
+            --tw-text-opacity: 1;
+            color: rgb(126 34 206 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-800 {
+            --tw-text-opacity: 1;
+            color: rgb(107 33 168 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .text-yellow-800 {
+            --tw-text-opacity: 1;
+            color: rgb(133 77 14 / var(--tw-text-opacity, 1))
+        }
+
+        .shadow-lg {
+            --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .shadow-md {
+            --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .hover\:bg-blue-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-green-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-purple-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(147 51 234 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-yellow-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(202 138 4 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:text-blue-700:hover {
+            --tw-text-opacity: 1;
+            color: rgb(29 78 216 / var(--tw-text-opacity, 1))
+        }
+
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .md\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
+            }
+
+            .md\:p-8 {
+                padding: 2rem
+            }
+
+            .md\:text-5xl {
+                font-size: 3rem;
+                line-height: 1
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lg\:col-span-1 {
+                grid-column: span 1 / span 1
+            }
+
+            .lg\:col-span-2 {
+                grid-column: span 2 / span 2
+            }
+
+            .lg\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1243.0" data-gr-ext-installed="">
+    <div id="app" class="min-h-screen p-4 md:p-8">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="max-w-5xl mx-auto">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white text-center mb-8 shadow-lg pop-animation">
+            <h1 class="text-4xl md:text-5xl font-bold comic-font mb-2 flex items-center justify-center gap-3">
+                <span class="bounce-animation">🦸‍♂️</span>
+                The Chain Story Game
+                <span class="bounce-animation">🦸‍♀️</span>
+            </h1>
+            <p class="text-xl mb-2">Interactive ESL Storytelling for 1-on-1 Zoom Lessons</p>
+            <div class="flex justify-center gap-4 mt-2">
+                <span class="text-3xl bounce-animation">📚</span>
+                <span class="text-3xl bounce-animation">🎨</span>
+                <span class="text-3xl bounce-animation">🦄</span>
+                <span class="text-3xl bounce-animation">🚀</span>
+            </div>
+            </div>
+
+            <div class="teacher-note p-4 rounded-lg mb-6 shadow-md">
+            <p class="text-sm flex items-center gap-2">
+                <span class="text-2xl bounce-animation">👩‍🏫</span>
+                <strong>Teacher Note:</strong> This game is designed for you to control while
+                screen sharing. Your student will participate by speaking or choosing options verbally.
+            </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-5 shadow-lg pop-animation border-4 border-blue-100">
+                <div class="text-center mb-3">
+                <span class="text-4xl bounce-animation">🎯</span>
+                </div>
+                <h3 class="text-lg font-bold text-center mb-2 comic-font text-blue-500">Learning Goals</h3>
+                <ul class="text-sm space-y-1 text-center">
+                <li><span class="text-green-500">✔️</span> Practice creative writing</li>
+                <li><span class="text-green-500">✔️</span> Use grammar in context</li>
+                <li><span class="text-green-500">✔️</span> Build vocabulary</li>
+                <li><span class="text-green-500">✔️</span> Develop speaking skills</li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-lg pop-animation border-4 border-purple-100">
+                <div class="text-center mb-3">
+                <span class="text-4xl bounce-animation">🎮</span>
+                </div>
+                <h3 class="text-lg font-bold text-center mb-2 comic-font text-purple-500">How to Play</h3>
+                <ol class="text-sm space-y-1 text-center"></ol>
+                <li><span class="text-yellow-500">1️⃣</span> Choose a story theme</li>
+                <li><span class="text-yellow-500">2️⃣</span> Take turns adding sentences</li>
+                <li><span class="text-yellow-500">3️⃣</span> Follow the mission cards</li>
+                <li><span class="text-yellow-500">4️⃣</span> Complete the story together</li>
+                <li><span class="text-yellow-500">5️⃣</span> Read and reflect on your story</li>
+                </ol>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-lg pop-animation border-4 border-pink-100">
+                <div class="text-center mb-3">
+                <span class="text-4xl bounce-animation">⚙️</span>
+                </div>
+                <h3 class="text-lg font-bold text-center mb-2 comic-font text-pink-500">Game Features</h3>
+                <ul class="text-sm space-y-1 text-center"></ul>
+                <li><span class="text-blue-400">🌟</span> Story starter prompts</li>
+                <li><span class="text-blue-400">🌟</span> Mission cards for guidance</li>
+                <li><span class="text-blue-400">🌟</span> Word banks for support</li>
+                <li><span class="text-blue-400">🌟</span> Fun visuals and animations</li>
+                <li><span class="text-blue-400">🌟</span> Final story display</li>
+                </ul>
+            </div>
+            </div>
+
+            <button id="start-btn"
+            class="bg-gradient-to-r from-green-500 to-teal-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full mx-auto block text-xl btn shadow-lg bounce-animation transition-all duration-300">
+            <span class="mr-2">🚦</span> Start Game!
+            </button>
+        </div>
+
+        <!-- Theme Selection Screen -->
+        <div id="theme-screen" class="max-w-5xl mx-auto hidden">
+            <div class="bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl p-6 text-white text-center mb-8">
+                <h1 class="text-4xl font-bold comic-font mb-2">Choose a Story Theme</h1>
+                <p class="text-xl">Pick a theme to start your adventure!</p>
+            </div>
+
+            <div class="teacher-note p-4 rounded-lg mb-6">
+                <p class="text-sm">👩‍🏫 <strong>Teacher Note:</strong> Ask your student which theme sounds most
+                    interesting. Click on their choice.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="theme-card bg-white rounded-xl overflow-hidden shadow-lg" data-theme="school">
+                    <div class="h-40 bg-amber-100 flex items-center justify-center">
+                        <span class="text-7xl">🏫</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-bold text-xl mb-1">A Crazy Day at School</h3>
+                        <p class="text-sm text-gray-600">"Today at school, something very unusual happened..."</p>
+                    </div>
+                </div>
+
+                <div class="theme-card bg-white rounded-xl overflow-hidden shadow-lg" data-theme="robot">
+                    <div class="h-40 bg-blue-100 flex items-center justify-center">
+                        <span class="text-7xl">🤖</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-bold text-xl mb-1">The Lost Robot</h3>
+                        <p class="text-sm text-gray-600">"I found a small robot in the park, and it needed help..."</p>
+                    </div>
+                </div>
+
+                <div class="theme-card bg-white rounded-xl overflow-hidden shadow-lg" data-theme="picnic">
+                    <div class="h-40 bg-green-100 flex items-center justify-center">
+                        <span class="text-7xl">🧺</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-bold text-xl mb-1">My Picnic Disaster</h3>
+                        <p class="text-sm text-gray-600">"Our family picnic was going well until..."</p>
+                    </div>
+                </div>
+
+                <div class="theme-card bg-white rounded-xl overflow-hidden shadow-lg" data-theme="library">
+                    <div class="h-40 bg-purple-100 flex items-center justify-center">
+                        <span class="text-7xl">📚</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-bold text-xl mb-1">The Mystery in the Library</h3>
+                        <p class="text-sm text-gray-600">"While reading in the library, I heard a strange noise..."</p>
+                    </div>
+                </div>
+
+                <div class="theme-card bg-white rounded-xl overflow-hidden shadow-lg" data-theme="space">
+                    <div class="h-40 bg-indigo-100 flex items-center justify-center">
+                        <span class="text-7xl">🚀</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-bold text-xl mb-1">I Woke Up in Space!</h3>
+                        <p class="text-sm text-gray-600">"This morning, I opened my eyes and I was on a spaceship..."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="theme-card bg-white rounded-xl overflow-hidden shadow-lg" data-theme="random">
+                    <div class="h-40 bg-yellow-100 flex items-center justify-center">
+                        <span class="text-7xl">🎲</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-bold text-xl mb-1">Random Adventure</h3>
+                        <p class="text-sm text-gray-600">"Let's see where our imagination takes us!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="max-w-5xl mx-auto hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="theme-title" class="text-3xl font-bold comic-font text-purple-700">A Crazy Day at School</h2>
+                <div class="flex space-x-2">
+                    <button id="restart-btn"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg btn flex items-center">
+                        <span class="mr-1">🔄</span> New Story
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column - Story Building -->
+                <div class="lg:col-span-2">
+                    <div class="story-container p-6 mb-6">
+                        <div class="flex items-center mb-4">
+                            <div id="theme-icon" class="text-4xl mr-3">🏫</div>
+                            <h3 id="story-prompt" class="text-xl font-bold">Today at school, something very unusual
+                                happened...</h3>
+                        </div>
+
+                        <div class="teacher-note p-3 rounded-lg mb-4 text-sm">
+                            <p>👩‍🏫 <strong>Teacher Note:</strong> Ask your student to think about what might happen in
+                                this story. Take turns adding sentences.</p>
+                        </div>
+
+                        <div id="story-sentences" class="space-y-4 mb-6">
+                            <!-- Story sentences will be added here -->
+                            <div class="story-input-container flex items-center">
+                                <span class="text-gray-500 mr-2">1.</span>
+                                <input type="text" class="story-input w-full p-3 rounded-lg"
+                                    placeholder="Type the first sentence here...">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <button id="add-sentence-btn"
+                                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg btn">
+                                Add Sentence
+                            </button>
+                            <button id="finish-story-btn"
+                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg btn hidden">
+                                Finish Story
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Mission Cards & Word Banks -->
+                <div class="lg:col-span-1">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold mb-3 flex items-center">
+                            <span class="text-2xl mr-2">🎯</span> Current Mission
+                        </h3>
+                        <div id="mission-card" class="mission-card p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2 text-amber-800">Mission #1</h4>
+                            <p class="text-amber-700">Use a <strong>past tense verb</strong> in your sentence.</p>
+                            <div class="flex justify-end mt-2">
+                                <span class="text-2xl">🕒</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="text-2xl mr-2">📝</span> Word Bank
+                            </h3>
+                            <button id="toggle-word-bank" class="text-blue-500 hover:text-blue-700 text-sm font-medium">
+                                Show Words
+                            </button>
+                        </div>
+
+                        <div id="word-bank" class="word-bank bg-white rounded-lg shadow-md px-4 pt-4 pb-4">
+                            <div id="word-bank-content" class="space-y-4">
+                                <!-- Word bank content will change based on mission -->
+                                <div>
+                                    <h4 class="font-bold text-sm text-gray-500 mb-2">Past Tense Verbs:</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">walked</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">saw</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">found</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">heard</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">felt</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">ran</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">jumped</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">played</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <h3 class="text-xl font-bold mb-3 flex items-center">
+                            <span class="text-2xl mr-2">💡</span> Story Tips
+                        </h3>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">✓</span>
+                                <span>Use descriptive words to make your story interesting.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">✓</span>
+                                <span>Think about who, what, where, when, and why.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 mr-2">✓</span>
+                                <span>Add a surprise or something unexpected!</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Story Screen -->
+        <div id="final-screen" class="max-w-5xl mx-auto hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-6 text-white text-center mb-8">
+                <h1 class="text-4xl font-bold comic-font mb-2">Your Amazing Story!</h1>
+                <p class="text-xl">Let's read what you created together</p>
+            </div>
+
+            <div class="teacher-note p-4 rounded-lg mb-6">
+                <p class="text-sm">👩‍🏫 <strong>Teacher Note:</strong> Ask your student to read the story aloud. Help
+                    with pronunciation and discuss any new vocabulary.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="lg:col-span-2">
+                    <div class="story-container p-6">
+                        <div class="flex items-center mb-4">
+                            <div id="final-theme-icon" class="text-4xl mr-3">🏫</div>
+                            <h3 id="final-story-title" class="text-2xl font-bold comic-font">A Crazy Day at School</h3>
+                        </div>
+
+                        <div id="final-story-content" class="prose max-w-none mb-6 text-lg leading-relaxed">
+                            <!-- Final story content will be inserted here -->
+                        </div>
+
+                        <div class="flex justify-center mt-6">
+                            <button id="new-story-btn"
+                                class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full btn">
+                                Create Another Story
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <span class="text-2xl mr-2">🤔</span> Reflection Questions
+                        </h3>
+
+                        <div class="space-y-4 mb-6">
+                            <div class="bg-purple-50 p-3 rounded-lg">
+                                <p class="font-medium text-purple-800">Which part of the story was your favorite?</p>
+                            </div>
+
+                            <div class="bg-blue-50 p-3 rounded-lg">
+                                <p class="font-medium text-blue-800">What new words did you use today?</p>
+                            </div>
+
+                            <div class="bg-green-50 p-3 rounded-lg">
+                                <p class="font-medium text-green-800">If you could add one more sentence, what would it
+                                    be?</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-800 mb-2">Language Focus:</h4>
+                            <div id="language-focus" class="text-sm">
+                                <p>Great job using <strong>past tense verbs</strong> in your story!</p>
+                                <p class="mt-2">You also used some excellent <strong>descriptive adjectives</strong>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Game state
+            const gameState = {
+                currentScreen: 'welcome',
+                theme: '',
+                themeIcon: '',
+                themePrompt: '',
+                sentences: [],
+                currentSentence: 1,
+                maxSentences: 5,
+                missions: [{
+                        id: 1,
+                        text: 'Use a <strong>past tense verb</strong> in your sentence.',
+                        icon: '🕒',
+                        wordBank: 'pastVerbs'
+                    },
+                    {
+                        id: 2,
+                        text: 'Include a <strong>feeling word</strong> in your sentence.',
+                        icon: '😊',
+                        wordBank: 'feelings'
+                    },
+                    {
+                        id: 3,
+                        text: 'Mention a <strong>place</strong> in your sentence.',
+                        icon: '🏙️',
+                        wordBank: 'places'
+                    },
+                    {
+                        id: 4,
+                        text: 'Use a <strong>describing word</strong> (adjective).',
+                        icon: '🎨',
+                        wordBank: 'adjectives'
+                    },
+                    {
+                        id: 5,
+                        text: 'Include <strong>someone else</strong> in your sentence.',
+                        icon: '👥',
+                        wordBank: 'people'
+                    }
+                ],
+                wordBanks: {
+                    pastVerbs: [
+                        'walked', 'ran', 'jumped', 'saw', 'heard', 'found', 'felt', 'played',
+                        'talked', 'looked', 'asked', 'answered', 'opened', 'closed', 'started',
+                        'stopped', 'tried', 'wanted', 'needed', 'helped'
+                    ],
+                    feelings: [
+                        'happy', 'sad', 'excited', 'scared', 'surprised', 'worried', 'confused',
+                        'nervous', 'proud', 'disappointed', 'curious', 'angry', 'calm', 'shocked',
+                        'embarrassed', 'tired', 'bored', 'interested', 'amazed', 'relieved'
+                    ],
+                    places: [
+                        'classroom', 'playground', 'library', 'cafeteria', 'gym', 'office',
+                        'hallway', 'park', 'home', 'garden', 'beach', 'forest', 'mountain',
+                        'city', 'village', 'store', 'museum', 'zoo', 'hospital', 'restaurant'
+                    ],
+                    adjectives: [
+                        'big', 'small', 'tall', 'short', 'loud', 'quiet', 'bright', 'dark',
+                        'beautiful', 'ugly', 'clean', 'dirty', 'hot', 'cold', 'new', 'old',
+                        'fast', 'slow', 'hard', 'soft', 'heavy', 'light', 'strong', 'weak'
+                    ],
+                    people: [
+                        'friend', 'teacher', 'classmate', 'principal', 'parent', 'sister',
+                        'brother', 'cousin', 'neighbor', 'stranger', 'doctor', 'police officer',
+                        'firefighter', 'scientist', 'artist', 'musician', 'athlete', 'chef',
+                        'driver', 'shopkeeper'
+                    ],
+                    connectors: [
+                        'and', 'but', 'because', 'so', 'when', 'after', 'before', 'while',
+                        'if', 'although', 'since', 'until', 'as', 'even though', 'therefore'
+                    ]
+                },
+                themes: {
+                    school: {
+                        title: 'A Crazy Day at School',
+                        icon: '🏫',
+                        prompt: 'Today at school, something very unusual happened...'
+                    },
+                    robot: {
+                        title: 'The Lost Robot',
+                        icon: '🤖',
+                        prompt: 'I found a small robot in the park, and it needed help...'
+                    },
+                    picnic: {
+                        title: 'My Picnic Disaster',
+                        icon: '🧺',
+                        prompt: 'Our family picnic was going well until...'
+                    },
+                    library: {
+                        title: 'The Mystery in the Library',
+                        icon: '📚',
+                        prompt: 'While reading in the library, I heard a strange noise...'
+                    },
+                    space: {
+                        title: 'I Woke Up in Space!',
+                        icon: '🚀',
+                        prompt: 'This morning, I opened my eyes and I was on a spaceship...'
+                    }
+                }
+            };
+
+            // DOM elements
+            const screens = {
+                welcome: document.getElementById('welcome-screen'),
+                theme: document.getElementById('theme-screen'),
+                game: document.getElementById('game-screen'),
+                final: document.getElementById('final-screen')
+            };
+
+            // Navigation functions
+            function showScreen(screenName) {
+                gameState.currentScreen = screenName;
+
+                // Hide all screens
+                Object.values(screens).forEach(screen => {
+                    screen.classList.add('hidden');
+                });
+
+                // Show the requested screen
+                screens[screenName].classList.remove('hidden');
+            }
+
+            // Start button click
+            document.getElementById('start-btn').addEventListener('click', function () {
+                showScreen('theme');
+            });
+
+            // Theme selection
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.addEventListener('click', function () {
+                    const themeKey = this.dataset.theme;
+
+                    if (themeKey === 'random') {
+                        // Choose a random theme
+                        const themeKeys = Object.keys(gameState.themes);
+                        const randomIndex = Math.floor(Math.random() * themeKeys.length);
+                        selectTheme(themeKeys[randomIndex]);
+                    } else {
+                        selectTheme(themeKey);
+                    }
+
+                    showScreen('game');
+                });
+            });
+
+            function selectTheme(themeKey) {
+                const theme = gameState.themes[themeKey];
+                gameState.theme = themeKey;
+                gameState.themeIcon = theme.icon;
+                gameState.themePrompt = theme.prompt;
+
+                // Update the game screen with theme info
+                document.getElementById('theme-title').textContent = theme.title;
+                document.getElementById('theme-icon').textContent = theme.icon;
+                document.getElementById('story-prompt').textContent = theme.prompt;
+
+                // Reset game state
+                gameState.sentences = [];
+                gameState.currentSentence = 1;
+
+                // Clear any existing sentences
+                document.getElementById('story-sentences').innerHTML = `
+                    <div class="story-input-container flex items-center">
+                        <span class="text-gray-500 mr-2">1.</span>
+                        <input type="text" class="story-input w-full p-3 rounded-lg" placeholder="Type the first sentence here...">
+                    </div>
+                `;
+
+                // Update mission card
+                updateMissionCard();
+
+                // Hide finish button, show add button
+                document.getElementById('add-sentence-btn').classList.remove('hidden');
+                document.getElementById('finish-story-btn').classList.add('hidden');
+            }
+
+            // Word bank toggle
+            document.getElementById('toggle-word-bank').addEventListener('click', function () {
+                const wordBank = document.getElementById('word-bank');
+                const toggleBtn = document.getElementById('toggle-word-bank');
+
+                if (wordBank.classList.contains('open')) {
+                    wordBank.classList.remove('open');
+                    toggleBtn.textContent = 'Show Words';
+                } else {
+                    wordBank.classList.add('open');
+                    toggleBtn.textContent = 'Hide Words';
+                }
+            });
+
+            // Update mission card
+            function updateMissionCard() {
+                const missionIndex = (gameState.currentSentence - 1) % gameState.missions.length;
+                const mission = gameState.missions[missionIndex];
+                const missionCard = document.getElementById('mission-card');
+
+                missionCard.innerHTML = `
+                    <h4 class="font-bold text-lg mb-2 text-amber-800">Mission #${gameState.currentSentence}</h4>
+                    <p class="text-amber-700">${mission.text}</p>
+                    <div class="flex justify-end mt-2">
+                        <span class="text-2xl">${mission.icon}</span>
+                    </div>
+                `;
+
+                // Update word bank based on mission
+                updateWordBank(mission.wordBank);
+            }
+
+            // Update word bank
+            function updateWordBank(wordBankType) {
+                const words = gameState.wordBanks[wordBankType];
+                const wordBankContent = document.getElementById('word-bank-content');
+
+                let title = 'Words to Use:';
+                switch (wordBankType) {
+                    case 'pastVerbs':
+                        title = 'Past Tense Verbs:';
+                        break;
+                    case 'feelings':
+                        title = 'Feeling Words:';
+                        break;
+                    case 'places':
+                        title = 'Places:';
+                        break;
+                    case 'adjectives':
+                        title = 'Describing Words:';
+                        break;
+                    case 'people':
+                        title = 'People:';
+                        break;
+                }
+
+                let wordHTML = '';
+                words.forEach(word => {
+                    wordHTML +=
+                        `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">${word}</span>`;
+                });
+
+                wordBankContent.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-500 mb-2">${title}</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${wordHTML}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-500 mb-2">Connecting Words:</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${gameState.wordBanks.connectors.map(word => 
+                                `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">${word}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Add sentence button
+            document.getElementById('add-sentence-btn').addEventListener('click', function () {
+                const sentenceInput = document.querySelector('.story-input-container:last-child input');
+                const sentence = sentenceInput.value.trim();
+
+                if (sentence) {
+                    // Save the sentence
+                    gameState.sentences.push(sentence);
+
+                    // Increment sentence counter
+                    gameState.currentSentence++;
+
+                    // Check if we've reached the max sentences
+                    if (gameState.currentSentence > gameState.maxSentences) {
+                        // Show finish button, hide add button
+                        document.getElementById('add-sentence-btn').classList.add('hidden');
+                        document.getElementById('finish-story-btn').classList.remove('hidden');
+                    } else {
+                        // Add a new input field
+                        const storyContainer = document.getElementById('story-sentences');
+                        const newInputContainer = document.createElement('div');
+                        newInputContainer.className = 'story-input-container flex items-center';
+                        newInputContainer.innerHTML = `
+                            <span class="text-gray-500 mr-2">${gameState.currentSentence}.</span>
+                            <input type="text" class="story-input w-full p-3 rounded-lg" placeholder="Type the next sentence here...">
+                        `;
+                        storyContainer.appendChild(newInputContainer);
+
+                        // Update mission card
+                        updateMissionCard();
+
+                        // Focus the new input
+                        newInputContainer.querySelector('input').focus();
+                    }
+                } else {
+                    // Shake the input to indicate it's required
+                    sentenceInput.classList.add('border-red-500');
+                    setTimeout(() => {
+                        sentenceInput.classList.remove('border-red-500');
+                    }, 1000);
+                }
+            });
+
+            // Finish story button
+            document.getElementById('finish-story-btn').addEventListener('click', function () {
+                const sentenceInput = document.querySelector('.story-input-container:last-child input');
+                const sentence = sentenceInput.value.trim();
+
+                if (sentence) {
+                    // Save the final sentence
+                    gameState.sentences.push(sentence);
+
+                    // Show the final story
+                    showFinalStory();
+
+                    // Navigate to final screen
+                    showScreen('final');
+                } else {
+                    // Shake the input to indicate it's required
+                    sentenceInput.classList.add('border-red-500');
+                    setTimeout(() => {
+                        sentenceInput.classList.remove('border-red-500');
+                    }, 1000);
+                }
+            });
+
+            // Show final story
+            function showFinalStory() {
+                const theme = gameState.themes[gameState.theme];
+
+                // Update title and icon
+                document.getElementById('final-theme-icon').textContent = theme.icon;
+                document.getElementById('final-story-title').textContent = theme.title;
+
+                // Combine all sentences into a paragraph
+                const storyContent = document.getElementById('final-story-content');
+                let storyHTML = `<p>${theme.prompt}</p><p>`;
+                gameState.sentences.forEach((sentence, index) => {
+                    storyHTML += sentence + ' ';
+                });
+                storyHTML += '</p>';
+
+                storyContent.innerHTML = storyHTML;
+
+                // Update language focus based on missions used
+                updateLanguageFocus();
+            }
+
+            // Update language focus section
+            function updateLanguageFocus() {
+                const languageFocus = document.getElementById('language-focus');
+                let focusHTML =
+                    '<p>Great job completing your story! You practiced:</p><ul class="list-disc pl-5 mt-2">';
+
+                // Add language points based on missions used
+                const usedMissions = gameState.missions.slice(0, Math.min(gameState.sentences.length, gameState
+                    .missions.length));
+
+                usedMissions.forEach(mission => {
+                    let focusPoint = '';
+                    switch (mission.wordBank) {
+                        case 'pastVerbs':
+                            focusPoint = 'Using <strong>past tense verbs</strong>';
+                            break;
+                        case 'feelings':
+                            focusPoint = 'Expressing <strong>emotions and feelings</strong>';
+                            break;
+                        case 'places':
+                            focusPoint = 'Describing <strong>locations and settings</strong>';
+                            break;
+                        case 'adjectives':
+                            focusPoint = 'Using <strong>descriptive adjectives</strong>';
+                            break;
+                        case 'people':
+                            focusPoint = 'Including <strong>characters and people</strong>';
+                            break;
+                    }
+                    focusHTML += `<li>${focusPoint}</li>`;
+                });
+
+                focusHTML += '</ul>';
+                languageFocus.innerHTML = focusHTML;
+            }
+
+            // New story button
+            document.getElementById('new-story-btn').addEventListener('click', function () {
+                showScreen('theme');
+            });
+
+            // Restart button
+            document.getElementById('restart-btn').addEventListener('click', function () {
+                showScreen('theme');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -758,7 +758,7 @@ const groups = [{
     "id": 10,
     "title": "第 10 組：v, oo, oo",
     "description": "學習v音與oo的兩種發音（長音與短音）",
-    "letters": ["v", "oo", "oo"],
+    "letters": ["v", "oo", "oo-"],
     "songs": [{
         "letter": "v",
         "label": "V 歌曲",
@@ -783,18 +783,18 @@ const groups = [{
         "hint": "上齒輕觸下唇，聲帶震動發出「v」音"
       },
       {
-        "letter": "oo (長)",
-        "ipa": "/uː/",
-        "audio": "audio/oo-long.mp3",
-        "color": "pink",
-        "hint": "嘴唇圓張，發出長音「嗚」"
-      },
-      {
-        "letter": "oo (短)",
+        "letter": "oo",
         "ipa": "/ʊ/",
         "audio": "audio/oo-short.mp3",
         "color": "pink",
         "hint": "嘴唇略圓，發出短促的「烏」音"
+      },
+      {
+        "letter": "oo-",
+        "ipa": "/uː/",
+        "audio": "audio/oo-long.mp3",
+        "color": "pink",
+        "hint": "嘴唇圓張，發出長音「嗚」"
       }
     ],
     "cards": [{
@@ -803,13 +803,13 @@ const groups = [{
         "draggable": true
       },
       {
-        "letter": "oo (長)",
-        "label": "OO /uː/",
+        "letter": "oo",
+        "label": "OO /ʊ/",
         "draggable": true
       },
       {
-        "letter": "oo (短)",
-        "label": "OO /ʊ/",
+        "letter": "oo-",
+        "label": "OO /uː/",
         "draggable": true
       }
     ],
@@ -818,14 +818,14 @@ const groups = [{
         "word": "Violin"
       },
       {
-        "letter": " oo ",
-        "word": "Moon",
-        "accepts": ["oo (長)"]
+        "letter": "oo",
+        "word": "Book",
+        "accepts": ["oo"]
       },
       {
         "letter": "oo",
-        "word": "Book",
-        "accepts": ["oo (短)"]
+        "word": "Moon",
+        "accepts": ["oo-"]
       }
     ],
     "spellingPractice": {
@@ -1383,7 +1383,7 @@ function playPhonicsSound(event) {
   event.stopPropagation();
 
   const letter = event.currentTarget.getAttribute("data-letter");
-  const groupId = event.currentTarget.closest(".phonics-card")?.getAttribute("data-group");
+  const groupId = event.currentTarget.closest(".phonics-card") ?.getAttribute("data-group");
   const group = groups.find(g => String(g.id) === groupId);
 
   if (!group) {
@@ -1500,11 +1500,11 @@ function renderGroup(id) {
   if (!group) return;
 
   currentGroupId = id;
-updateGlobalPhonicsMap();
+  updateGlobalPhonicsMap();
 
-// 隱藏首頁 UI
-document.getElementById("groupList").classList.add("d-none");
-document.getElementById("startAdventureBtn").classList.add("d-none");
+  // 隱藏首頁 UI
+  document.getElementById("groupList").classList.add("d-none");
+  document.getElementById("startAdventureBtn").classList.add("d-none");
 
 
   const content = document.getElementById("content");
@@ -1602,10 +1602,10 @@ document.getElementById("startAdventureBtn").classList.add("d-none");
   content.appendChild(songSection);
 
   // 發音練習
-const phonicsSection = document.createElement("section");
-phonicsSection.className = "mb-5";
+  const phonicsSection = document.createElement("section");
+  phonicsSection.className = "mb-5";
 
-phonicsSection.innerHTML = `
+  phonicsSection.innerHTML = `
   <h2 class="fs-1 fw-bold text-primary mb-5 d-flex align-items-center border-bottom border-light pb-3">
     <svg class="me-3" style="width: 2.5rem; height: 2.5rem; color: var(--color-indigo-500);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1615,52 +1615,52 @@ phonicsSection.innerHTML = `
   </h2>
 `;
 
-const phonicsRow = document.createElement("div");
-phonicsRow.className = "row g-4";
+  const phonicsRow = document.createElement("div");
+  phonicsRow.className = "row g-4";
 
-const count = group.phonics.length;
-const colWidth = Math.floor(12 / count);
-const colClass = colWidth > 0 ? `col-12 col-md-${colWidth}` : "col-12";
+  const count = group.phonics.length;
+  const colWidth = Math.floor(12 / count);
+  const colClass = colWidth > 0 ? `col-12 col-md-${colWidth}` : "col-12";
 
-group.phonics.forEach(p => {
-  const color = p.color || "pink";
+  group.phonics.forEach(p => {
+    const color = p.color || "pink";
 
-  const col = document.createElement("div");
-  col.className = `${colClass} d-flex`;
+    const col = document.createElement("div");
+    col.className = `${colClass} d-flex`;
 
-  const card = document.createElement("div");
-  card.className = "card p-4 d-flex flex-column align-items-center shadow w-100 h-100";
-  card.style.backgroundColor = `var(--color-${color}-100)`;
-  card.style.position = "relative";
+    const card = document.createElement("div");
+    card.className = "card p-4 d-flex flex-column align-items-center shadow w-100 h-100";
+    card.style.backgroundColor = `var(--color-${color}-100)`;
+    card.style.position = "relative";
 
-  const waveBg = document.createElement("div");
-  waveBg.className = "wave-background";
-  waveBg.dataset.originalColor = `var(--color-${color}-600)`; // ✅ 儲存主題色
-  waveBg.style.color = waveBg.dataset.originalColor;
-  waveBg.innerHTML = `
+    const waveBg = document.createElement("div");
+    waveBg.className = "wave-background";
+    waveBg.dataset.originalColor = `var(--color-${color}-600)`; // ✅ 儲存主題色
+    waveBg.style.color = waveBg.dataset.originalColor;
+    waveBg.innerHTML = `
     <div class="wave-bar-bg"></div>
     <div class="wave-bar-bg"></div>
     <div class="wave-bar-bg"></div>
     <div class="wave-bar-bg"></div>
     <div class="wave-bar-bg"></div>
   `;
-  card.appendChild(waveBg);
+    card.appendChild(waveBg);
 
-  const face = document.createElement("div");
-  face.className = "d-flex align-items-center justify-content-center mb-4";
-  face.innerHTML = `
+    const face = document.createElement("div");
+    face.className = "d-flex align-items-center justify-content-center mb-4";
+    face.innerHTML = `
     <span class="display-1 fw-bold me-3" style="color: var(--color-${color}-600);">${p.letter}</span>
     <strong class="fs-2 text-muted">${p.ipa}</strong>
   `;
 
-  const playBtn = document.createElement("button");
-  playBtn.className = `btn w-100 d-flex align-items-center justify-content-center text-white fs-5 theme-${color}`;
-  playBtn.style.backgroundColor = `var(--color-${color}-500)`;
-  playBtn.onmouseenter = () => playBtn.style.backgroundColor = `var(--color-${color}-600)`;
-  playBtn.onmouseleave = () => playBtn.style.backgroundColor = `var(--color-${color}-500)`;
-  playBtn.style.borderRadius = "1rem";
-  playBtn.style.padding = "1rem";
-  playBtn.innerHTML = `
+    const playBtn = document.createElement("button");
+    playBtn.className = `btn w-100 d-flex align-items-center justify-content-center text-white fs-5 theme-${color}`;
+    playBtn.style.backgroundColor = `var(--color-${color}-500)`;
+    playBtn.onmouseenter = () => playBtn.style.backgroundColor = `var(--color-${color}-600)`;
+    playBtn.onmouseleave = () => playBtn.style.backgroundColor = `var(--color-${color}-500)`;
+    playBtn.style.borderRadius = "1rem";
+    playBtn.style.padding = "1rem";
+    playBtn.innerHTML = `
     <svg style="width: 2rem; height: 2rem;" class="me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
         d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
@@ -1670,183 +1670,187 @@ group.phonics.forEach(p => {
     聽發音
   `;
 
-  // ✅ 重置波形動畫與顏色
-  function resetWaveBg() {
-    waveBg.classList.remove("active");
-    waveBg.style.color = waveBg.dataset.originalColor;
-    card.classList.remove("bg-success-pale");
-  }
-
-  // ▶️ 播放正確發音
-  playBtn.addEventListener("click", () => {
-    if (window.isRecording) {
-      alert("錄音中無法播放音訊！");
-      return;
-    }
-    stopAllAudio();
-    resetWaveBg();
-
-    currentAudio = new Audio(p.audio);
-    currentAudio.play();
-
-    waveBg.classList.add("active");
-    waveBg.style.color = waveBg.dataset.originalColor;
-
-    currentAudio.onended = () => {
+    // ✅ 重置波形動畫與顏色
+    function resetWaveBg() {
       waveBg.classList.remove("active");
       waveBg.style.color = waveBg.dataset.originalColor;
-    };
-  });
-
-  // 錄音控制（獨立狀態）
-  const recordControls = document.createElement("div");
-  recordControls.className = "d-flex flex-column align-items-center mt-3";
-
-  const statusWrapper = document.createElement("div");
-  statusWrapper.className = "d-flex align-items-center gap-2 mt-2";
-
-  const statusDot = document.createElement("span");
-  statusDot.className = "recording-dot";
-  statusDot.style.display = "none";
-  statusDot.innerHTML = `🔴 <span class="text-danger fw-bold">錄音中</span>`;
-
-  const timerText = document.createElement("div");
-  timerText.className = "recording-timer";
-  timerText.style.display = "none";
-  timerText.textContent = "錄音中：3 秒";
-
-  statusWrapper.appendChild(statusDot);
-  statusWrapper.appendChild(timerText);
-
-  const btnGroup = document.createElement("div");
-  btnGroup.className = "btn-group";
-  btnGroup.setAttribute("role", "group");
-  btnGroup.setAttribute("aria-label", "錄音控制");
-
-  const recordBtn = document.createElement("button");
-  recordBtn.className = "btn btn-outline-secondary";
-  recordBtn.innerHTML = `<i class="fas fa-microphone"></i>`;
-  recordBtn.title = "開始錄音";
-
-  const stopBtn = document.createElement("button");
-  stopBtn.className = "btn btn-outline-danger";
-  stopBtn.innerHTML = `<i class="fas fa-stop"></i>`;
-  stopBtn.title = "停止錄音";
-
-  const playStudentBtn = document.createElement("button");
-  playStudentBtn.className = "btn btn-outline-primary";
-  playStudentBtn.innerHTML = `<i class="fas fa-play"></i>`;
-  playStudentBtn.title = "播放學生錄音";
-
-  let localRecorder = null;
-  let localChunks = [];
-  let localAudioURL = null;
-  let countdownInterval = null;
-
-  recordBtn.addEventListener("click", async () => {
-    if (window.isRecording) return;
-    window.isRecording = true;
-    stopAllAudio();
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      localChunks = [];
-      localRecorder = new MediaRecorder(stream);
-
-      localRecorder.ondataavailable = e => {
-        if (e.data.size > 0) localChunks.push(e.data);
-      };
-
-      localRecorder.onstop = () => {
-        const blob = new Blob(localChunks, { type: "audio/webm" });
-        localAudioURL = URL.createObjectURL(blob);
-        window.isRecording = false;
-        playStudentBtn.click();
-      };
-
-      localRecorder.start();
-      statusDot.style.display = "inline-flex";
-      timerText.style.display = "block";
-      recordBtn.classList.add("recording-pulse");
-
-      let countdown = 3;
-      timerText.textContent = `錄音中：${countdown} 秒`;
-      countdownInterval = setInterval(() => {
-        countdown--;
-        if (countdown > 0) {
-          timerText.textContent = `錄音中：${countdown} 秒`;
-        } else {
-          clearInterval(countdownInterval);
-          timerText.style.display = "none";
-        }
-      }, 1000);
-    } catch (err) {
-      alert("無法啟用麥克風，請確認瀏覽器權限");
-      window.isRecording = false;
+      card.classList.remove("bg-success-pale");
     }
-  });
 
-  stopBtn.addEventListener("click", () => {
-    if (localRecorder && localRecorder.state !== "inactive") {
-      localRecorder.stop();
-      statusDot.style.display = "none";
-      timerText.style.display = "none";
-      recordBtn.classList.remove("recording-pulse");
-      clearInterval(countdownInterval);
-    }
-  });
+    // ▶️ 播放正確發音
+    playBtn.addEventListener("click", () => {
+      if (window.isRecording) {
+        alert("錄音中無法播放音訊！");
+        return;
+      }
+      stopAllAudio();
+      resetWaveBg();
 
-  // ▶️ 播放學生錄音
-  playStudentBtn.addEventListener("click", () => {
-    if (window.isRecording) {
-      alert("錄音中無法播放音訊！");
-      return;
-    }
-    stopAllAudio();
-    resetWaveBg();
-
-    if (localAudioURL) {
-      currentAudio = new Audio(localAudioURL);
-      card.classList.add("bg-success-pale");
+      currentAudio = new Audio(p.audio);
+      currentAudio.play();
 
       waveBg.classList.add("active");
-      waveBg.style.color = "var(--color-green-500)";
+      waveBg.style.color = waveBg.dataset.originalColor;
 
-      currentAudio.play();
       currentAudio.onended = () => {
-        card.classList.remove("bg-success-pale");
         waveBg.classList.remove("active");
         waveBg.style.color = waveBg.dataset.originalColor;
       };
-    } else {
-      alert("請先錄音！");
-    }
-  });
+    });
 
-  btnGroup.appendChild(recordBtn);
-  btnGroup.appendChild(stopBtn);
-  btnGroup.appendChild(playStudentBtn);
-  recordControls.appendChild(btnGroup);
-  recordControls.appendChild(statusWrapper);
-  recordControls.appendChild(timerText);
+    // 錄音控制（獨立狀態）
+    const recordControls = document.createElement("div");
+    recordControls.className = "d-flex flex-column align-items-center mt-3";
 
-  const mouthHint = document.createElement("div");
-  mouthHint.className = "mt-4 text-center";
-  mouthHint.innerHTML = `
+    const statusWrapper = document.createElement("div");
+    statusWrapper.className = "d-flex align-items-center gap-2 mt-2";
+
+    const statusDot = document.createElement("span");
+    statusDot.className = "recording-dot";
+    statusDot.style.display = "none";
+    statusDot.innerHTML = `🔴 <span class="text-danger fw-bold">錄音中</span>`;
+
+    const timerText = document.createElement("div");
+    timerText.className = "recording-timer";
+    timerText.style.display = "none";
+    timerText.textContent = "錄音中：3 秒";
+
+    statusWrapper.appendChild(statusDot);
+    statusWrapper.appendChild(timerText);
+
+    const btnGroup = document.createElement("div");
+    btnGroup.className = "btn-group";
+    btnGroup.setAttribute("role", "group");
+    btnGroup.setAttribute("aria-label", "錄音控制");
+
+    const recordBtn = document.createElement("button");
+    recordBtn.className = "btn btn-outline-secondary";
+    recordBtn.innerHTML = `<i class="fas fa-microphone"></i>`;
+    recordBtn.title = "開始錄音";
+
+    const stopBtn = document.createElement("button");
+    stopBtn.className = "btn btn-outline-danger";
+    stopBtn.innerHTML = `<i class="fas fa-stop"></i>`;
+    stopBtn.title = "停止錄音";
+
+    const playStudentBtn = document.createElement("button");
+    playStudentBtn.className = "btn btn-outline-primary";
+    playStudentBtn.innerHTML = `<i class="fas fa-play"></i>`;
+    playStudentBtn.title = "播放學生錄音";
+
+    let localRecorder = null;
+    let localChunks = [];
+    let localAudioURL = null;
+    let countdownInterval = null;
+
+    recordBtn.addEventListener("click", async () => {
+      if (window.isRecording) return;
+      window.isRecording = true;
+      stopAllAudio();
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true
+        });
+        localChunks = [];
+        localRecorder = new MediaRecorder(stream);
+
+        localRecorder.ondataavailable = e => {
+          if (e.data.size > 0) localChunks.push(e.data);
+        };
+
+        localRecorder.onstop = () => {
+          const blob = new Blob(localChunks, {
+            type: "audio/webm"
+          });
+          localAudioURL = URL.createObjectURL(blob);
+          window.isRecording = false;
+          playStudentBtn.click();
+        };
+
+        localRecorder.start();
+        statusDot.style.display = "inline-flex";
+        timerText.style.display = "block";
+        recordBtn.classList.add("recording-pulse");
+
+        let countdown = 3;
+        timerText.textContent = `錄音中：${countdown} 秒`;
+        countdownInterval = setInterval(() => {
+          countdown--;
+          if (countdown > 0) {
+            timerText.textContent = `錄音中：${countdown} 秒`;
+          } else {
+            clearInterval(countdownInterval);
+            timerText.style.display = "none";
+          }
+        }, 1000);
+      } catch (err) {
+        alert("無法啟用麥克風，請確認瀏覽器權限");
+        window.isRecording = false;
+      }
+    });
+
+    stopBtn.addEventListener("click", () => {
+      if (localRecorder && localRecorder.state !== "inactive") {
+        localRecorder.stop();
+        statusDot.style.display = "none";
+        timerText.style.display = "none";
+        recordBtn.classList.remove("recording-pulse");
+        clearInterval(countdownInterval);
+      }
+    });
+
+    // ▶️ 播放學生錄音
+    playStudentBtn.addEventListener("click", () => {
+      if (window.isRecording) {
+        alert("錄音中無法播放音訊！");
+        return;
+      }
+      stopAllAudio();
+      resetWaveBg();
+
+      if (localAudioURL) {
+        currentAudio = new Audio(localAudioURL);
+        card.classList.add("bg-success-pale");
+
+        waveBg.classList.add("active");
+        waveBg.style.color = "var(--color-green-500)";
+
+        currentAudio.play();
+        currentAudio.onended = () => {
+          card.classList.remove("bg-success-pale");
+          waveBg.classList.remove("active");
+          waveBg.style.color = waveBg.dataset.originalColor;
+        };
+      } else {
+        alert("請先錄音！");
+      }
+    });
+
+    btnGroup.appendChild(recordBtn);
+    btnGroup.appendChild(stopBtn);
+    btnGroup.appendChild(playStudentBtn);
+    recordControls.appendChild(btnGroup);
+    recordControls.appendChild(statusWrapper);
+    recordControls.appendChild(timerText);
+
+    const mouthHint = document.createElement("div");
+    mouthHint.className = "mt-4 text-center";
+    mouthHint.innerHTML = `
     <p class="fs-4 text-muted">嘴型提示：</p>
     <p class="fs-5 text-muted">${p.hint}</p>
   `;
 
-  card.appendChild(face);
-  card.appendChild(playBtn);
-  card.appendChild(recordControls);
-  card.appendChild(mouthHint);
-  col.appendChild(card);
-  phonicsRow.appendChild(col);
-});
+    card.appendChild(face);
+    card.appendChild(playBtn);
+    card.appendChild(recordControls);
+    card.appendChild(mouthHint);
+    col.appendChild(card);
+    phonicsRow.appendChild(col);
+  });
 
-phonicsSection.appendChild(phonicsRow);
-content.appendChild(phonicsSection);
+  phonicsSection.appendChild(phonicsRow);
+  content.appendChild(phonicsSection);
 
 
 
@@ -1957,24 +1961,28 @@ content.appendChild(phonicsSection);
     card.addEventListener("click", () => {
       if (matchedLetters.has(c.letter)) return;
       if (selectedSide === "right" && selectedLetter) {
-        // 已選右側，這次點左側，進行配對
         // 找到右側被選的圖片卡
-        const imgObj = group.images.find(img => img.letter === selectedElem.dataset.letter);
-        const accepts = imgObj?.accepts || [imgObj?.letter];
-        if (accepts.includes(c.letter)) {
+        const imgObj = group.images.find(img =>
+          (img.accepts || [img.letter])
+          .map(l => l.toLowerCase())
+          .includes(selectedLetter.toLowerCase())
+        );
+        // 用 word+letter 當 key，避免覆蓋
+        const imageKey = imgObj.word + "_" + imgObj.letter;
+        const accepts = (imgObj?.accepts || [imgObj?.letter]).map(l => l.toLowerCase());
+        if (accepts.includes(c.letter.toLowerCase())) {
           // 配對成功
           matchedLetters.add(c.letter);
 
-          // 更新 matchedImages
-          if (!matchedImages[imgObj.letter]) matchedImages[imgObj.letter] = new Set();
-          matchedImages[imgObj.letter].add(c.letter);
+          if (!matchedImages[imageKey]) matchedImages[imageKey] = new Set();
+          matchedImages[imageKey].add(c.letter);
 
           // 標記字母卡
           card.classList.add("success-celebrate");
           card.style.pointerEvents = "none";
 
           // 標記圖片卡（只有當所有 accepts 都配對過才 disable）
-          if (matchedImages[imgObj.letter].size === accepts.length) {
+          if (matchedImages[imageKey].size === accepts.length) {
             selectedElem.classList.add("success-celebrate");
             selectedElem.style.pointerEvents = "none";
           }
@@ -2015,13 +2023,9 @@ content.appendChild(phonicsSection);
         } else {
           // 配對錯誤
           card.classList.add("border-danger", "danger-pulse-shake");
-
-          // Remove visual feedback after animation completes
           setTimeout(() => {
             card.classList.remove("border-danger", "danger-pulse-shake");
-          }, 600); // Match the duration of the CSS animation
-
-          // Update live region for screen readers
+          }, 600);
           let live = document.getElementById("match-live");
           if (!live) {
             live = document.createElement("div");
@@ -2032,7 +2036,6 @@ content.appendChild(phonicsSection);
           }
           live.textContent = "配對錯誤，請再試一次";
         }
-
       } else {
         // 先選左側
         if (selectedElem) {
@@ -2103,21 +2106,20 @@ content.appendChild(phonicsSection);
     card.appendChild(cardBody);
 
     card.addEventListener("click", () => {
-      // 取得可接受的字母陣列
       const accepts = i.accepts || [i.letter];
-      // 這張圖片卡已經全部配對完就不能再配對
-      if (matchedImages[i.letter] && matchedImages[i.letter].size === accepts.length) return;
+      const imageKey = i.word + "_" + i.letter;
+      if (matchedImages[imageKey] && matchedImages[imageKey].size === accepts.length) return;
       if (selectedSide === "left" && selectedLetter) {
-        if (accepts.includes(selectedLetter)) {
+        if (accepts.map(l => l.toLowerCase()).includes(selectedLetter.toLowerCase())) {
           // 配對成功
           matchedLetters.add(selectedLetter);
 
           // 更新 matchedImages
-          if (!matchedImages[i.letter]) matchedImages[i.letter] = new Set();
-          matchedImages[i.letter].add(selectedLetter);
+          if (!matchedImages[imageKey]) matchedImages[imageKey] = new Set();
+          matchedImages[imageKey].add(selectedLetter);
 
           // 標記圖片卡（只有當所有 accepts 都配對過才 disable）
-          if (matchedImages[i.letter].size === accepts.length) {
+          if (matchedImages[imageKey].size === accepts.length) {
             card.classList.add("success-celebrate");
             card.style.pointerEvents = "none";
           }
@@ -2443,11 +2445,11 @@ content.appendChild(phonicsSection);
       }
 
       const phonics = groups
-  .flatMap(g => g.phonics)
-  .find(p => p.letter.toLowerCase() === letter.toLowerCase());
+        .flatMap(g => g.phonics)
+        .find(p => p.letter.toLowerCase() === letter.toLowerCase());
 
       // 如果找不到，就從全域對照表找
-      const audioSrc = phonics?.audio || globalPhonicsMap[letter.toLowerCase()];
+      const audioSrc = phonics ?.audio || globalPhonicsMap[letter.toLowerCase()];
       if (audioSrc) {
         currentAudio = new Audio(audioSrc);
         currentAudio.play();
@@ -2609,27 +2611,27 @@ content.appendChild(phonicsSection);
   }
 
   // 下一關按鈕
-const nextGroup = groups.find(g => g.id === group.nextGroupId);
-if (nextGroup) {
-  const nextCol = document.createElement("div");
-  nextCol.className = "col-auto ms-auto"; // ms-auto 讓下一關靠右
+  const nextGroup = groups.find(g => g.id === group.nextGroupId);
+  if (nextGroup) {
+    const nextCol = document.createElement("div");
+    nextCol.className = "col-auto ms-auto"; // ms-auto 讓下一關靠右
 
-  const nextBtn = document.createElement("a");
-  nextBtn.href = "#";
-  nextBtn.className = "btn btn-outline-primary";
-  nextBtn.innerHTML = `下一關：${nextGroup.title}<i class="fa fa-arrow-right ms-2"></i>`;
+    const nextBtn = document.createElement("a");
+    nextBtn.href = "#";
+    nextBtn.className = "btn btn-outline-primary";
+    nextBtn.innerHTML = `下一關：${nextGroup.title}<i class="fa fa-arrow-right ms-2"></i>`;
 
-  nextBtn.onclick = e => {
-    e.preventDefault();
-    renderGroup(nextGroup.id); // ✅ 所有狀態更新與內容重建都集中在這裡
-  };
+    nextBtn.onclick = e => {
+      e.preventDefault();
+      renderGroup(nextGroup.id); // ✅ 所有狀態更新與內容重建都集中在這裡
+    };
 
-  nextCol.appendChild(nextBtn);
-  btnRow.appendChild(nextCol);
-}
-
-content.appendChild(btnRow);
+    nextCol.appendChild(nextBtn);
+    btnRow.appendChild(nextCol);
   }
+
+  content.appendChild(btnRow);
+}
 
 
 // ==== 開始冒險按鈕 ====
@@ -2793,10 +2795,12 @@ let recordedChunks = [];
 let studentAudioURL = null;
 
 async function startRecording() {
-const status = document.getElementById("recording-status");
+  const status = document.getElementById("recording-status");
   if (status) status.style.display = "block";
 
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true
+  });
   recordedChunks = [];
   mediaRecorder = new MediaRecorder(stream);
 
@@ -2805,7 +2809,9 @@ const status = document.getElementById("recording-status");
   };
 
   mediaRecorder.onstop = () => {
-    const blob = new Blob(recordedChunks, { type: "audio/webm" });
+    const blob = new Blob(recordedChunks, {
+      type: "audio/webm"
+    });
     studentAudioURL = URL.createObjectURL(blob);
   };
 
@@ -2813,7 +2819,7 @@ const status = document.getElementById("recording-status");
 }
 
 function stopRecording() {
-const status = document.getElementById("recording-status");
+  const status = document.getElementById("recording-status");
   if (status) status.style.display = "none";
 
   if (mediaRecorder && mediaRecorder.state !== "inactive") {
