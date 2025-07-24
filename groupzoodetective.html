@@ -1,0 +1,1152 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoo Detective: Who Am I?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(135deg, #6EE7B7 0%, #3B82F6 100%);
+            height: 100vh;
+        }
+
+        .game-container {
+            background-color: #fff;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 8px solid #FFD166;
+        }
+
+        .btn {
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+        }
+
+        .btn-yes {
+            background-color: #06D6A0;
+            color: white;
+            box-shadow: 0 4px 0 #05B384;
+        }
+
+        .btn-yes:hover {
+            box-shadow: 0 6px 0 #05B384;
+        }
+
+        .btn-yes:active {
+            box-shadow: 0 2px 0 #05B384;
+        }
+
+        .btn-no {
+            background-color: #EF476F;
+            color: white;
+            box-shadow: 0 4px 0 #D23D60;
+        }
+
+        .btn-no:hover {
+            box-shadow: 0 6px 0 #D23D60;
+        }
+
+        .btn-no:active {
+            box-shadow: 0 2px 0 #D23D60;
+        }
+
+        .btn-reveal {
+            background-color: #FFD166;
+            color: #333;
+            box-shadow: 0 4px 0 #E6BC5C;
+        }
+
+        .btn-reveal:hover {
+            box-shadow: 0 6px 0 #E6BC5C;
+        }
+
+        .btn-reveal:active {
+            box-shadow: 0 2px 0 #E6BC5C;
+        }
+
+        .btn-next {
+            background-color: #118AB2;
+            color: white;
+            box-shadow: 0 4px 0 #0F7A9B;
+        }
+
+        .btn-next:hover {
+            box-shadow: 0 6px 0 #0F7A9B;
+        }
+
+        .btn-next:active {
+            box-shadow: 0 2px 0 #0F7A9B;
+        }
+
+        .animal-image {
+            width: 100%;
+            height: 280px;
+            object-fit: contain;
+            transition: all 0.5s ease;
+        }
+
+        .animal-silhouette {
+            filter: brightness(0);
+            opacity: 0.6;
+        }
+
+        .question-mark {
+            font-size: 120px;
+            color: #118AB2;
+            text-shadow: 3px 3px 0 #FFD166;
+        }
+
+        .student-turn {
+            background-color: #118AB2;
+            color: white;
+            border-radius: 16px;
+            padding: 15px;
+            transform: scale(0);
+            animation: popIn 0.5s forwards;
+            box-shadow: 0 6px 0 #0F7A9B;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+
+            70% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .star {
+            display: inline-block;
+            color: #FFD166;
+            font-size: 2rem;
+            margin: 0 2px;
+            animation: spin 1s forwards;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: scale(0) rotate(0deg);
+            }
+
+            80% {
+                transform: scale(1.2) rotate(360deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .celebration.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .celebration-content {
+            background-color: white;
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 8px solid #FFD166;
+        }
+
+        .celebration.show .celebration-content {
+            transform: scale(1);
+        }
+
+        .setup-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .setup-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 8px solid #FFD166;
+        }
+
+        .teacher-instructions {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #118AB2;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .animal-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            text-shadow: 2px 2px 0 #FFD166;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .animal-name.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tag {
+            background-color: #EF476F;
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .absolute {
+            position: absolute
+        }
+
+        .relative {
+            position: relative
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem
+        }
+
+        .block {
+            display: block
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .h-40 {
+            height: 10rem
+        }
+
+        .h-72 {
+            height: 18rem
+        }
+
+        .w-full {
+            width: 100%
+        }
+
+        .max-w-4xl {
+            max-width: 56rem
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .justify-between {
+            justify-content: space-between
+        }
+
+        .gap-2 {
+            gap: 0.5rem
+        }
+
+        .space-x-4> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(1rem * var(--tw-space-x-reverse));
+            margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .rounded-2xl {
+            border-radius: 1rem
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem
+        }
+
+        .border-2 {
+            border-width: 2px
+        }
+
+        .border-gray-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(209 213 219 / var(--tw-border-opacity, 1))
+        }
+
+        .bg-blue-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .p-3 {
+            padding: 0.75rem
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .font-semibold {
+            font-weight: 600
+        }
+
+        .text-gray-600 {
+            --tw-text-opacity: 1;
+            color: rgb(75 85 99 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-700 {
+            --tw-text-opacity: 1;
+            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-800 {
+            --tw-text-opacity: 1;
+            color: rgb(31 41 55 / var(--tw-text-opacity, 1))
+        }
+
+        .focus\:border-blue-500:focus {
+            --tw-border-opacity: 1;
+            border-color: rgb(59 130 246 / var(--tw-border-opacity, 1))
+        }
+
+        .focus\:outline-none:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center p-4" data-new-gr-c-s-check-loaded="14.1245.0" data-gr-ext-installed=""
+    data-new-gr-c-s-loaded="14.1245.0">
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="setup-screen">
+        <div class="setup-container">
+            <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Zoo Detective Setup</h2>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Enter Student Names (one per line):</label>
+                <textarea id="student-names"
+                    class="w-full h-40 p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                    placeholder="John
+Emma
+Michael
+Sophia"></textarea>
+            </div>
+
+            <button id="start-game-btn" class="btn btn-next w-full">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div class="game-container w-full max-w-4xl p-6">
+        
+
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Zoo Detective: Who Am I?</h1>
+            <div id="score-container" class="text-xl font-semibold">
+                Stars: <span id="score">0</span>
+            </div>
+        </div>
+
+
+        <!-- Animal Display -->
+        <div class="bg-blue-100 rounded-2xl p-6 mb-6">
+            <div class="flex justify-center items-center h-72 mb-4 relative">
+                <div id="question-mark-container" class="absolute">
+                    <div class="question-mark">?</div>
+                </div>
+                <img id="animal-image" class="animal-image animal-silhouette" src="" alt="Mystery Animal">
+            </div>
+
+            <div class="text-center">
+                <h2 class="text-2xl font-bold mb-2 text-gray-800">Ask a question to find out who I am!</h2>
+                <div id="animal-name" class="animal-name mb-4"></div>
+
+                <div class="flex flex-wrap justify-center gap-2 mb-6">
+                    <div class="tag">Has fur?</div>
+                    <div class="tag">Lives in water?</div>
+                    <div class="tag">Can fly?</div>
+                    <div class="tag">Is it big?</div>
+                    <div class="tag">Has a long neck?</div>
+                </div>
+
+                <div class="flex justify-center space-x-4 mb-6">
+                    <button id="yes-btn" class="btn btn-yes">Yes</button>
+                    <button id="no-btn" class="btn btn-no">No</button>
+                    <button id="reveal-btn" class="btn btn-reveal">Reveal</button>
+                </div>
+
+                
+            </div>
+        </div>
+
+        <!-- Student Turn Display -->
+        <div id="student-turn-container" class="mb-6 hidden">
+            <div class="student-turn">
+                <p class="text-center text-xl mb-1">It's</p>
+                <h2 id="current-student" class="text-4xl font-bold text-center">STUDENT NAME</h2>
+                <p class="text-center text-xl mt-1">turn!</p>
+            </div>
+        </div>
+
+        <div class="flex justify-center items-center mb-4 relativ"><button id="next-student-btn" class="btn btn-next">Pick a Student</button></div>
+        
+
+        <div class="text-center text-gray-600">
+            <p>Students should ask: "Does it have fur?", "Can it swim?", "Is it big?", etc.</p>
+            <p class="mt-2">After all questions, students can guess: "I think it's a lion!"</p>
+        </div>
+    </div>
+
+    <!-- Celebration Modal -->
+    <div id="celebration" class="celebration">
+        <div class="celebration-content">
+            <h2 class="text-4xl font-bold mb-4 text-gray-800">
+                <span class="star">★</span>
+                Correct!
+                <span class="star">★</span>
+            </h2>
+            <p id="celebration-text" class="text-2xl mb-6">You guessed it! It's a Lion!</p>
+            <button id="next-animal-btn" class="btn btn-next">Next Animal</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Animal data
+            const animals = [{
+                    name: "Elephant",
+                    image: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjU2LDM4NGMtNzAuNywwLTEyOC01Ny4zLTEyOC0xMjhWMTI4YzAtNzAuNyw1Ny4zLTEyOCwxMjgtMTI4czEyOCw1Ny4zLDEyOCwxMjh2MTI4QzM4NCwzMjYuNywzMjYuNywzODQsMjU2LDM4NHoiIGZpbGw9IiNhM2EzYTMiLz48cGF0aCBkPSJNNDgwLDM4NGMwLDUzLTQzLDk2LTk2LDk2cy05Ni00My05Ni05NnM0My05Niw5Ni05NlM0ODAsNDMxLDQ4MCwzODR6IiBmaWxsPSIjYTNhM2EzIi8+PHBhdGggZD0iTTMyLDM4NGMwLDUzLTQzLDk2LTk2LDk2cy05Ni00My05Ni05NnM0My05Niw5Ni05NlMzMiw0MzEsMzIsMzg0eiIgZmlsbD0iI2EzYTNhMyIvPjxjaXJjbGUgY3g9IjIwOCIgY3k9IjE5MiIgcj0iMTYiIGZpbGw9IiMzMzMiLz48Y2lyY2xlIGN4PSIzMDQiIGN5PSIxOTIiIHI9IjE2IiBmaWxsPSIjMzMzIi8+PHBhdGggZD0iTTI1NiwyNDBjLTI2LjUsMC00OCwyMS41LTQ4LDQ4czIxLjUsNDgsNDgsNDhzNDgtMjEuNSw0OC00OFMyODIuNSwyNDAsMjU2LDI0MHoiIGZpbGw9IiM3MDcwNzAiLz48L3N2Zz4=",
+                    facts: ["I have a long trunk", "I have big ears", "I am the largest land animal",
+                        "I have tusks", "I live in Africa and Asia"
+                    ]
+                },
+                {
+                    name: "Lion",
+                    image: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjU2LDMyYy03NC4yLDAtMTM0LjUsNjAuMy0xMzQuNSwxMzQuNXM2MC4zLDEzNC41LDEzNC41LDEzNC41czEzNC41LTYwLjMsMTM0LjUtMTM0LjVTMzMwLjIsMzIsMjU2LDMyeiIgZmlsbD0iI2U4YWM0YiIvPjxwYXRoIGQ9Ik0yNTYsMzAxYy00MS40LDAtNzYuNSwyMS42LTk2LjksNTQuNC0zLjIsNS4xLTIsMTEuOSwyLjksMTUuNywyOS4yLDIyLjksNjAuMiwzNC45LDk0LDM0LjlzNjQuOC0xMiw5NC0zNC45YzQuOS0zLjgsNi4xLTEwLjYsMi45LTE1LjdDMzMyLjUsMzIyLjYsMjk3LjQsMzAxLDI1NiwzMDF6IiBmaWxsPSIjZThhYzRiIi8+PGNpcmNsZSBjeD0iMTkyIiBjeT0iMjA4IiByPSIxNiIgZmlsbD0iIzMzMyIvPjxjaXJjbGUgY3g9IjMyMCIgY3k9IjIwOCIgcj0iMTYiIGZpbGw9IiMzMzMiLz48cGF0aCBkPSJNMjU2LDI0MGMtMjYuNSwwLTQ4LDIxLjUtNDgsNDhzMjEuNSw0OCw0OCw0OHM0OC0yMS41LDQ4LTQ4UzI4Mi41LDI0MCwyNTYsMjQweiIgZmlsbD0iI2M3OGMzNSIvPjwvc3ZnPg==",
+                    facts: ["I am the king of the jungle", "I have a mane", "I roar loudly",
+                        "I live in Africa", "I hunt in groups called prides"
+                    ]
+                },
+                {
+                    name: "Penguin",
+                    image: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjU2LDMyYy03NC4yLDAtMTM0LjUsNjAuMy0xMzQuNSwxMzQuNXM2MC4zLDEzNC41LDEzNC41LDEzNC41czEzNC41LTYwLjMsMTM0LjUtMTM0LjVTMzMwLjIsMzIsMjU2LDMyeiIgZmlsbD0iIzMzMyIvPjxwYXRoIGQ9Ik0yNTYsMzAxYy00MS40LDAtNzYuNSwyMS42LTk2LjksNTQuNC0zLjIsNS4xLTIsMTEuOSwyLjksMTUuNywyOS4yLDIyLjksNjAuMiwzNC45LDk0LDM0LjlzNjQuOC0xMiw5NC0zNC45YzQuOS0zLjgsNi4xLTEwLjYsMi45LTE1LjdDMzMyLjUsMzIyLjYsMjk3LjQsMzAxLDI1NiwzMDF6IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTkyIiBjeT0iMTkyIiByPSIxNiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjMyMCIgY3k9IjE5MiIgcj0iMTYiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMjU2LDI0MGMtMjYuNSwwLTQ4LDIxLjUtNDgsNDhzMjEuNSw0OCw0OCw0OHM0OC0yMS41LDQ4LTQ4UzI4Mi41LDI0MCwyNTYsMjQweiIgZmlsbD0iI2ZmYTUwMCIvPjwvc3ZnPg==",
+                    facts: ["I live in Antarctica", "I can't fly but I'm a great swimmer",
+                        "I have black and white feathers", "I waddle when I walk", "I eat fish"
+                    ]
+                },
+                {
+                    name: "Giraffe",
+                    image: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjU2LDMyYy03NC4yLDAtMTM0LjUsNjAuMy0xMzQuNSwxMzQuNXM2MC4zLDEzNC41LDEzNC41LDEzNC41czEzNC41LTYwLjMsMTM0LjUtMTM0LjVTMzMwLjIsMzIsMjU2LDMyeiIgZmlsbD0iI2YwYzQxOSIvPjxwYXRoIGQ9Ik0yNTYsMzAxYy00MS40LDAtNzYuNSwyMS42LTk2LjksNTQuNC0zLjIsNS4xLTIsMTEuOSwyLjksMTUuNywyOS4yLDIyLjksNjAuMiwzNC45LDk0LDM0LjlzNjQuOC0xMiw5NC0zNC45YzQuOS0zLjgsNi4xLTEwLjYsMi45LTE1LjdDMzMyLjUsMzIyLjYsMjk3LjQsMzAxLDI1NiwzMDF6IiBmaWxsPSIjZThhYzRiIi8+PGNpcmNsZSBjeD0iMTkyIiBjeT0iMTYwIiByPSIxNiIgZmlsbD0iIzMzMyIvPjxjaXJjbGUgY3g9IjMyMCIgY3k9IjE2MCIgcj0iMTYiIGZpbGw9IiMzMzMiLz48cGF0aCBkPSJNMjU2LDI0MGMtMjYuNSwwLTQ4LDIxLjUtNDgsNDhzMjEuNSw0OCw0OCw0OHM0OC0yMS41LDQ4LTQ4UzI4Mi41LDI0MCwyNTYsMjQweiIgZmlsbD0iI2M3OGMzNSIvPjwvc3ZnPg==",
+                    facts: ["I have a very long neck", "I have spots on my body", "I am the tallest animal",
+                        "I eat leaves from tall trees", "I live in Africa"
+                    ]
+                },
+                {
+                    name: "Monkey",
+                    image: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjU2LDQ4QzE0MS4xLDQ4LDQ4LDE0MS4xLDQ4LDI1NnM5My4xLDIwOCwyMDgsMjA4czIwOC05My4xLDIwOC0yMDhTMzcwLjksNDgsMjU2LDQ4eiIgZmlsbD0iIzk5NjYzMyIvPjxjaXJjbGUgY3g9IjE5MiIgY3k9IjE5MiIgcj0iMTYiIGZpbGw9IiMzMzMiLz48Y2lyY2xlIGN4PSIzMjAiIGN5PSIxOTIiIHI9IjE2IiBmaWxsPSIjMzMzIi8+PHBhdGggZD0iTTI1NiwzMzZjLTMwLjksMC01NiwyNS4xLTU2LDU2czI1LjEsNTYsNTYsNTZzNTYtMjUuMSw1Ni01NlMyODYuOSwzMzYsMjU2LDMzNnoiIGZpbGw9IiM3NzRkMjYiLz48cGF0aCBkPSJNMjU2LDI0MGMtMjYuNSwwLTQ4LDIxLjUtNDgsNDhzMjEuNSw0OCw0OCw0OHM0OC0yMS41LDQ4LTQ4UzI4Mi41LDI0MCwyNTYsMjQweiIgZmlsbD0iIzc3NGQyNiIvPjwvc3ZnPg==",
+                    facts: ["I love to climb trees", "I eat bananas", "I have a long tail",
+                        "I can swing from branches", "I live in jungles"
+                    ]
+                }
+            ];
+
+            // Game state
+            let currentAnimalIndex = 0;
+            let isRevealed = false;
+            let score = 0;
+            let students = [];
+            let currentStudentIndex = -1;
+            let studentsWhoAsked = [];
+
+            // DOM elements
+            const setupScreen = document.getElementById('setup-screen');
+            const studentNamesInput = document.getElementById('student-names');
+            const startGameBtn = document.getElementById('start-game-btn');
+            const animalImage = document.getElementById('animal-image');
+            const animalName = document.getElementById('animal-name');
+            const questionMarkContainer = document.getElementById('question-mark-container');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const revealBtn = document.getElementById('reveal-btn');
+            const nextStudentBtn = document.getElementById('next-student-btn');
+            const currentStudentDisplay = document.getElementById('current-student');
+            const studentTurnContainer = document.getElementById('student-turn-container');
+            const celebration = document.getElementById('celebration');
+            const celebrationText = document.getElementById('celebration-text');
+            const nextAnimalBtn = document.getElementById('next-animal-btn');
+            const scoreDisplay = document.getElementById('score');
+
+            // Sound effects (using AudioContext API)
+            let audioContext;
+
+            function initAudio() {
+                audioContext = new(window.AudioContext || window.webkitAudioContext)();
+            }
+
+            function playSound(type) {
+                if (!audioContext) return;
+
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                switch (type) {
+                    case 'yes':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        break;
+                    case 'no':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(349.23, audioContext.currentTime); // F4
+                        oscillator.frequency.setValueAtTime(293.66, audioContext.currentTime + 0.2); // D4
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        break;
+                    case 'correct':
+                        // Play a happy melody
+                        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                        const durations = [0, 0.2, 0.4, 0.6];
+
+                        notes.forEach((note, i) => {
+                            const noteOsc = audioContext.createOscillator();
+                            const noteGain = audioContext.createGain();
+
+                            noteOsc.connect(noteGain);
+                            noteGain.connect(audioContext.destination);
+
+                            noteOsc.type = 'sine';
+                            noteOsc.frequency.setValueAtTime(note, audioContext.currentTime + durations[
+                                i]);
+
+                            noteGain.gain.setValueAtTime(0, audioContext.currentTime + durations[i]);
+                            noteGain.gain.linearRampToValueAtTime(0.5, audioContext.currentTime +
+                                durations[i] + 0.05);
+                            noteGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime +
+                                durations[i] + 0.3);
+
+                            noteOsc.start(audioContext.currentTime + durations[i]);
+                            noteOsc.stop(audioContext.currentTime + durations[i] + 0.3);
+                        });
+                        break;
+                }
+            }
+
+            // Game functions
+            function startGame() {
+                // Get student names
+                const names = studentNamesInput.value.trim().split('\n').filter(name => name.trim() !== '');
+
+                if (names.length === 0) {
+                    alert('Please enter at least one student name.');
+                    return;
+                }
+
+                students = names;
+                setupScreen.style.display = 'none';
+
+                // Initialize game
+                loadAnimal(currentAnimalIndex);
+                updateScore();
+
+                // Initialize audio
+                initAudio();
+            }
+
+            function loadAnimal(index) {
+                const animal = animals[index];
+                animalImage.src = animal.image;
+                animalName.textContent = animal.name;
+
+                // Reset state
+                isRevealed = false;
+                animalImage.classList.add('animal-silhouette');
+                animalName.classList.remove('revealed');
+                questionMarkContainer.style.display = 'block';
+
+                // Reset student turn tracking
+                studentsWhoAsked = [];
+                currentStudentIndex = -1;
+                studentTurnContainer.classList.add('hidden');
+            }
+
+            function revealAnimal() {
+                if (isRevealed) return;
+
+                isRevealed = true;
+                animalImage.classList.remove('animal-silhouette');
+                animalName.classList.add('revealed');
+                questionMarkContainer.style.display = 'none';
+
+                // Show celebration
+                celebrationText.textContent = `You guessed it! It's a ${animals[currentAnimalIndex].name}!`;
+                celebration.classList.add('show');
+
+                // Play sound and confetti
+                playSound('correct');
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: {
+                        y: 0.6
+                    }
+                });
+
+                // Add score
+                score++;
+                updateScore();
+            }
+
+            function nextAnimal() {
+                currentAnimalIndex = (currentAnimalIndex + 1) % animals.length;
+                celebration.classList.remove('show');
+                loadAnimal(currentAnimalIndex);
+            }
+
+            function nextStudent() {
+                // If all students have asked a question, show a message
+                if (studentsWhoAsked.length >= students.length) {
+                    alert("All students have asked a question! Now they can guess the animal.");
+                    return;
+                }
+
+                // Get a random student who hasn't asked yet
+                let availableStudents = students.filter(student => !studentsWhoAsked.includes(student));
+
+                // If all students have asked, reset the list
+                if (availableStudents.length === 0) {
+                    studentsWhoAsked = [];
+                    availableStudents = [...students];
+                }
+
+                const randomIndex = Math.floor(Math.random() * availableStudents.length);
+                const selectedStudent = availableStudents[randomIndex];
+
+                // Add to the list of students who asked
+                studentsWhoAsked.push(selectedStudent);
+
+                // Update display
+                currentStudentDisplay.textContent = selectedStudent.toUpperCase();
+                studentTurnContainer.classList.remove('hidden');
+            }
+
+            function updateScore() {
+                scoreDisplay.textContent = score;
+            }
+
+            function handleYesClick() {
+                playSound('yes');
+
+                // Visual feedback
+                yesBtn.classList.add('scale-110');
+                setTimeout(() => {
+                    yesBtn.classList.remove('scale-110');
+                }, 200);
+            }
+
+            function handleNoClick() {
+                playSound('no');
+
+                // Visual feedback
+                noBtn.classList.add('scale-110');
+                setTimeout(() => {
+                    noBtn.classList.remove('scale-110');
+                }, 200);
+            }
+
+            // Event listeners
+            startGameBtn.addEventListener('click', startGame);
+            revealBtn.addEventListener('click', revealAnimal);
+            nextAnimalBtn.addEventListener('click', nextAnimal);
+            nextStudentBtn.addEventListener('click', nextStudent);
+            yesBtn.addEventListener('click', handleYesClick);
+            noBtn.addEventListener('click', handleNoClick);
+        });
+    </script>
+
+</body>
+
+</html>
