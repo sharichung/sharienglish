@@ -786,8 +786,7 @@
     </style>
 </head>
 
-<body class="flex items-center justify-center p-4" data-new-gr-c-s-check-loaded="14.1245.0" data-gr-ext-installed=""
-    data-new-gr-c-s-loaded="14.1245.0">
+<body class="flex items-center justify-center p-4" data-new-gr-c-s-check-loaded="14.1245.0" data-gr-ext-installed="">
     <div class="container bg-white rounded-3xl shadow-xl p-8 relative overflow-hidden">
         <!-- Header -->
         <div class="text-center mb-8">
@@ -796,7 +795,7 @@
         </div>
 
         <!-- Input Section -->
-        <div id="inputSection" class="mb-8 hidden">
+        <div id="inputSection" class="mb-8">
             <label for="studentNames" class="block text-lg font-semibold mb-2 text-indigo-700">Enter Student Names
                 (comma-separated):</label>
             <textarea id="studentNames"
@@ -810,12 +809,12 @@
         </div>
 
         <!-- Game Section (initially hidden) -->
-        <div id="gameSection" class="">
+        <div id="gameSection" class="hidden">
             <!-- Student Display -->
             <div class="bg-indigo-100 rounded-2xl p-6 mb-6 min-h-[200px] flex items-center justify-center">
-                <div id="studentDisplay" class="student-name text-5xl font-bold text-center text-indigo-700"
-                    style="animation: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0s 1 normal none running popIn;">
-                    Ready for a new round!</div>
+                <div id="studentDisplay" class="student-name text-5xl font-bold text-center text-indigo-700">
+                    Ready to start!
+                </div>
             </div>
 
             <!-- Controls -->
@@ -832,7 +831,8 @@
 
             <!-- Status -->
             <div class="mt-6 text-center">
-                <p id="statusText" class="text-lg font-medium text-gray-600">Students remaining: 4</p>
+                <p id="statusText" class="text-lg font-medium text-gray-600">Students remaining: <span
+                        id="remainingCount">0</span></p>
             </div>
         </div>
 

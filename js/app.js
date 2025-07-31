@@ -1164,8 +1164,689 @@ const groups = [{
         "surf", "turn", "blur", "purse"
       ]
     },
-    "nextGroupId": null
-  }
+    "nextGroupId": 15
+  },
+  {
+  "id": 15,
+  "title": "第 15 組：wh, ph, kn, wr",
+  "description": "學習複合拼音與開頭不發音字母，如wh, ph, kn, wr",
+  "letters": ["wh", "ph", "kn", "wr"],
+  "songs": [{
+      "letter": "wh",
+      "label": "WH 歌曲",
+      "audio": "audio/wh-song.mp3"
+    },
+    {
+      "letter": "ph",
+      "label": "PH 歌曲",
+      "audio": "audio/ph-song.mp3"
+    },
+    {
+      "letter": "kn",
+      "label": "KN 歌曲",
+      "audio": "audio/kn-song.mp3"
+    },
+    {
+      "letter": "wr",
+      "label": "WR 歌曲",
+      "audio": "audio/wr-song.mp3"
+    }
+  ],
+  "phonics": [{
+      "letter": "wh",
+      "ipa": "/w/ 或 /h/",
+      "audio": "audio/wh.mp3",
+      "color": "teal",
+      "hint": "美式 wh 發 /w/，如 what；英式 wh 接近 /h/，如 who"
+    },
+    {
+      "letter": "ph",
+      "ipa": "/f/",
+      "audio": "audio/ph.mp3",
+      "color": "teal",
+      "hint": "ph 發 /f/ 音，常見於 photo, elephant 等字"
+    },
+    {
+      "letter": "kn",
+      "ipa": "/n/",
+      "audio": "audio/kn.mp3",
+      "color": "teal",
+      "hint": "k 不發音，kn 發 /n/ 音，如 know, knife"
+    },
+    {
+      "letter": "wr",
+      "ipa": "/r/",
+      "audio": "audio/wr.mp3",
+      "color": "teal",
+      "hint": "w 不發音，wr 發 /r/ 音，如 write, wrist"
+    }
+  ],
+  "cards": [{
+      "letter": "wh",
+      "label": "WH /w/",
+      "draggable": true
+    },
+    {
+      "letter": "ph",
+      "label": "PH /f/",
+      "draggable": true
+    },
+    {
+      "letter": "kn",
+      "label": "KN /n/",
+      "draggable": true
+    },
+    {
+      "letter": "wr",
+      "label": "WR /r/",
+      "draggable": true
+    }
+  ],
+  "images": [{
+      "letter": "wh",
+      "word": "Wheel"
+    },
+    {
+      "letter": "ph",
+      "word": "Phone"
+    },
+    {
+      "letter": "kn",
+      "word": "Knife"
+    },
+    {
+      "letter": "wr",
+      "word": "Wrist"
+    }
+  ],
+  "spellingPractice": {
+    "words": [
+      "what", "when", "wheel", "whale",
+      "phone", "photo", "graph", "elephant",
+      "know", "knife", "knee", "knock",
+      "write", "wrist", "wrong", "wrap"
+    ]
+  },
+  "nextGroupId": 16
+},
+{
+  "id": 16,
+  "title": "第 16 組：aw, au, ey, ew",
+  "description": "學習雙母音與長母音拼音，如aw, au, ey, ew",
+  "letters": ["aw", "au", "ey", "ew"],
+  "songs": [{
+      "letter": "aw",
+      "label": "AW 歌曲",
+      "audio": "audio/aw-song.mp3"
+    },
+    {
+      "letter": "au",
+      "label": "AU 歌曲",
+      "audio": "audio/au-song.mp3"
+    },
+    {
+      "letter": "ey",
+      "label": "EY 歌曲",
+      "audio": "audio/ey-song.mp3"
+    },
+    {
+      "letter": "ew",
+      "label": "EW 歌曲",
+      "audio": "audio/ew-song.mp3"
+    }
+  ],
+  "phonics": [{
+      "letter": "aw",
+      "ipa": "/ɔː/",
+      "audio": "audio/aw.mp3",
+      "color": "red",
+      "hint": "發音如 saw, claw，嘴巴微圓、聲音低沉"
+    },
+    {
+      "letter": "au",
+      "ipa": "/ɔː/",
+      "audio": "audio/au.mp3",
+      "color": "ed",
+      "hint": "與 aw 同音，如 author, fault"
+    },
+    {
+      "letter": "ey",
+      "ipa": "/iː/ 或 /eɪ/",
+      "audio": "audio/ey.mp3",
+      "color": "red",
+      "hint": "可發 /iː/（key）或 /eɪ/（they）視字而定"
+    },
+    {
+      "letter": "ew",
+      "ipa": "/juː/ 或 /uː/",
+      "audio": "audio/ew.mp3",
+      "color": "red",
+      "hint": "如 new /njuː/ 或 stew /stuː/，有英美差異"
+    }
+  ],
+  "cards": [{
+      "letter": "aw",
+      "label": "AW /ɔː/",
+      "draggable": true
+    },
+    {
+      "letter": "au",
+      "label": "AU /ɔː/",
+      "draggable": true
+    },
+    {
+      "letter": "ey",
+      "label": "EY /iː/",
+      "draggable": true
+    },
+    {
+      "letter": "ew",
+      "label": "EW /juː/",
+      "draggable": true
+    }
+  ],
+  "images": [{
+      "letter": "aw",
+      "word": "Saw"
+    },
+    {
+      "letter": "au",
+      "word": "Author"
+    },
+    {
+      "letter": "ey",
+      "word": "Key"
+    },
+    {
+      "letter": "ew",
+      "word": "Stew"
+    }
+  ],
+  "spellingPractice": {
+    "words": [
+      "saw", "paw", "claw", "draw",
+      "author", "fault", "haunt", "pause",
+      "key", "they", "money", "turkey",
+      "new", "grew", "threw", "chew"
+    ]
+  },
+  "nextGroupId": 17
+},
+{
+  "id": 17,
+  "title": "第 17 組：air, ear, ure",
+  "description": "學習帶 r 的母音結合，如 air, ear, ure",
+  "letters": ["air", "ear", "ure"],
+  "songs": [{
+      "letter": "air",
+      "label": "AIR 歌曲",
+      "audio": "audio/air-song.mp3"
+    },
+    {
+      "letter": "ear",
+      "label": "EAR 歌曲",
+      "audio": "audio/ear-song.mp3"
+    },
+    {
+      "letter": "ure",
+      "label": "URE 歌曲",
+      "audio": "audio/ure-song.mp3"
+    }
+  ],
+  "phonics": [{
+      "letter": "air",
+      "ipa": "/eə/",
+      "audio": "audio/air.mp3",
+      "color": "indigo",
+      "hint": "air 發音如 hair, fair；嘴型扁平，尾音略帶兒化"
+    },
+    {
+      "letter": "ear",
+      "ipa": "/ɪə/",
+      "audio": "audio/ear.mp3",
+      "color": "indigo",
+      "hint": "如 ear, near；嘴型變化大，音調升降明顯"
+    },
+    {
+      "letter": "ure",
+      "ipa": "/ʊə/",
+      "audio": "audio/ure.mp3",
+      "color": "indigo",
+      "hint": "如 pure, cure；嘴唇略圓後向下展開"
+    }
+  ],
+  "cards": [{
+      "letter": "air",
+      "label": "AIR /eə/",
+      "draggable": true
+    },
+    {
+      "letter": "ear",
+      "label": "EAR /ɪə/",
+      "draggable": true
+    },
+    {
+      "letter": "ure",
+      "label": "URE /ʊə/",
+      "draggable": true
+    }
+  ],
+  "images": [{
+      "letter": "air",
+      "word": "Chair"
+    },
+    {
+      "letter": "ear",
+      "word": "Ear"
+    },
+    {
+      "letter": "ure",
+      "word": "Treasure"
+    }
+  ],
+  "spellingPractice": {
+    "words": [
+      "air", "pair", "hair", "fair",
+      "ear", "dear", "fear", "clear",
+      "pure", "sure", "cure", "secure"
+    ]
+  },
+  "nextGroupId": 18
+},
+{
+  "id": 18,
+  "title": "第 18 組：-tion, -sion, silent e",
+  "description": "學習拼寫結尾規則與 silent e 的音變功能",
+  "letters": ["-tion", "-sion", "silent e"],
+  "songs": [{
+      "letter": "-tion",
+      "label": "TION 歌曲",
+      "audio": "audio/tion-song.mp3"
+    },
+    {
+      "letter": "-sion",
+      "label": "SION 歌曲",
+      "audio": "audio/sion-song.mp3"
+    },
+    {
+      "letter": "silent e",
+      "label": "Silent E 歌曲",
+      "audio": "audio/silent-e-song.mp3"
+    }
+  ],
+  "phonics": [{
+      "letter": "-tion",
+      "ipa": "/ʃən/",
+      "audio": "audio/tion.mp3",
+      "color": "yellow",
+      "hint": "發 /ʃən/ 音，如 action, station，常為名詞結尾"
+    },
+    {
+      "letter": "-sion",
+      "ipa": "/ʒən/ 或 /ʃən/",
+      "audio": "audio/sion.mp3",
+      "color": "yellow",
+      "hint": "有時發 /ʒən/（decision），有時發 /ʃən/（mission）"
+    },
+    {
+      "letter": "silent e",
+      "ipa": "長母音提示",
+      "audio": "audio/silent-e.mp3",
+      "color": "yellow",
+      "hint": "結尾 e 不發音，但讓前母音變長，例如 bike, tape"
+    }
+  ],
+  "cards": [{
+      "letter": "-tion",
+      "label": "TION /ʃən/",
+      "draggable": true
+    },
+    {
+      "letter": "-sion",
+      "label": "SION /ʒən/",
+      "draggable": true
+    },
+    {
+      "letter": "silent e",
+      "label": "Silent E",
+      "draggable": true
+    }
+  ],
+  "images": [{
+      "letter": "-tion",
+      "word": "Station"
+    },
+    {
+      "letter": "-sion",
+      "word": "Decision"
+    },
+    {
+      "letter": "silent e",
+      "word": "Bike"
+    }
+  ],
+  "spellingPractice": {
+    "words": [
+      "station", "action", "caution", "motion",
+      "mission", "vision", "decision", "television",
+      "bike", "make", "tape", "hope",
+      "cube", "game", "pine", "rope"
+    ]
+  },
+  "nextGroupId": 19
+},
+{
+  "id": 19,
+  "title": "第 19 組：igh, dge, tch",
+  "description": "挑戰式拼音結尾，如igh, dge, tch，強化語音拼寫敏感度",
+  "letters": ["igh", "dge", "tch"],
+  "songs": [{
+      "letter": "igh",
+      "label": "IGH 歌曲",
+      "audio": "audio/igh-song.mp3"
+    },
+    {
+      "letter": "dge",
+      "label": "DGE 歌曲",
+      "audio": "audio/dge-song.mp3"
+    },
+    {
+      "letter": "tch",
+      "label": "TCH 歌曲",
+      "audio": "audio/tch-song.mp3"
+    }
+  ],
+  "phonics": [{
+      "letter": "igh",
+      "ipa": "/aɪ/",
+      "audio": "audio/igh.mp3",
+      "color": "green",
+      "hint": "igh 發 /aɪ/，如 light, high，是複合母音表現"
+    },
+    {
+      "letter": "dge",
+      "ipa": "/dʒ/",
+      "audio": "audio/dge.mp3",
+      "color": "green",
+      "hint": "dge 發 /dʒ/，常用在短母音後，如 bridge, edge"
+    },
+    {
+      "letter": "tch",
+      "ipa": "/tʃ/",
+      "audio": "audio/tch.mp3",
+      "color": "green",
+      "hint": "tch 發 /tʃ/，多見於短母音後，如 catch, match"
+    }
+  ],
+  "cards": [{
+      "letter": "igh",
+      "label": "IGH /aɪ/",
+      "draggable": true
+    },
+    {
+      "letter": "dge",
+      "label": "DGE /dʒ/",
+      "draggable": true
+    },
+    {
+      "letter": "tch",
+      "label": "TCH /tʃ/",
+      "draggable": true
+    }
+  ],
+  "images": [{
+      "letter": "igh",
+      "word": "Light"
+    },
+    {
+      "letter": "dge",
+      "word": "Bridge"
+    },
+    {
+      "letter": "tch",
+      "word": "Match"
+    }
+  ],
+  "spellingPractice": {
+    "words": [
+      "high", "light", "bright", "night",
+      "edge", "bridge", "badge", "wedge",
+      "catch", "match", "ditch", "hatch"
+    ]
+  },
+  "nextGroupId": 20
+},
+{
+  "id": 20,
+  "title": "第 20 組：Magic E 家族（a_e, e_e, i_e, o_e, u_e）",
+  "description": "透過 silent e 改變母音音質，學習五大 split digraph 結構：a_e, e_e, i_e, o_e, u_e",
+  "letters": ["a_e", "e_e", "i_e", "o_e", "u_e"],
+  "songs": [{
+      "letter": "a_e",
+      "label": "A_E 歌曲",
+      "audio": "audio/a-e-song.mp3"
+    },
+    {
+      "letter": "e_e",
+      "label": "E_E 歌曲",
+      "audio": "audio/e-e-song.mp3"
+    },
+    {
+      "letter": "i_e",
+      "label": "I_E 歌曲",
+      "audio": "audio/i-e-song.mp3"
+    },
+    {
+      "letter": "o_e",
+      "label": "O_E 歌曲",
+      "audio": "audio/o-e-song.mp3"
+    },
+    {
+      "letter": "u_e",
+      "label": "U_E 歌曲",
+      "audio": "audio/u-e-song.mp3"
+    }
+  ],
+  "phonics": [{
+      "letter": "a_e",
+      "ipa": "/eɪ/",
+      "audio": "audio/a-e.mp3",
+      "color": "pink",
+      "hint": "a_e 發 /eɪ/，如 cake, tape；a 前有 silent e 變長音"
+    },
+    {
+      "letter": "e_e",
+      "ipa": "/iː/",
+      "audio": "audio/e-e.mp3",
+      "color": "pink",
+      "hint": "e_e 發 /iː/，如 theme, these；e 加 silent e 變長音"
+    },
+    {
+      "letter": "i_e",
+      "ipa": "/aɪ/",
+      "audio": "audio/i-e.mp3",
+      "color": "pink",
+      "hint": "i_e 發 /aɪ/，如 bike, time；i 前 silent e 變長音"
+    },
+    {
+      "letter": "o_e",
+      "ipa": "/əʊ/",
+      "audio": "audio/o-e.mp3",
+      "color": "pink",
+      "hint": "o_e 發 /əʊ/，如 rope, home；o 前 silent e 變長音"
+    },
+    {
+      "letter": "u_e",
+      "ipa": "/juː/ 或 /uː/",
+      "audio": "audio/u-e.mp3",
+      "color": "pink",
+      "hint": "u_e 可發 /juː/（cube）或 /uː/（flute），視詞而定"
+    }
+  ],
+  "cards": [{
+      "letter": "a_e",
+      "label": "A_E /eɪ/",
+      "draggable": true
+    },
+    {
+      "letter": "e_e",
+      "label": "E_E /iː/",
+      "draggable": true
+    },
+    {
+      "letter": "i_e",
+      "label": "I_E /aɪ/",
+      "draggable": true
+    },
+    {
+      "letter": "o_e",
+      "label": "O_E /əʊ/",
+      "draggable": true
+    },
+    {
+      "letter": "u_e",
+      "label": "U_E /juː/",
+      "draggable": true
+    }
+  ],
+  "images": [{
+      "letter": "a_e",
+      "word": "Cake"
+    },
+    {
+      "letter": "e_e",
+      "word": "Theme"
+    },
+    {
+      "letter": "i_e",
+      "word": "Bike"
+    },
+    {
+      "letter": "o_e",
+      "word": "Rope"
+    },
+    {
+      "letter": "u_e",
+      "word": "Cube"
+    }
+  ],
+  "spellingPractice": {
+    "words": [
+      "cake", "tape", "name", "game",
+      "theme", "scene", "these",
+      "bike", "time", "slide", "line",
+      "hope", "rope", "bone", "home",
+      "cube", "flute", "mute", "rule"
+    ]
+  },
+  "nextGroupId": 21
+},
+{
+  "id": 21,
+  "title": "第 21 組：前綴詞練習（un-, re-, pre-, dis-）",
+  "description": "學習常見前綴詞組合，理解un-, re-, pre-, dis-在單字中的含義與拼音變化",
+  "letters": ["un-", "re-", "pre-", "dis-"],
+  "songs": [{
+      "letter": "un-",
+      "label": "UN- 歌曲",
+      "audio": "audio/un-song.mp3"
+    },
+    {
+      "letter": "re-",
+      "label": "RE- 歌曲",
+      "audio": "audio/re-song.mp3"
+    },
+    {
+      "letter": "pre-",
+      "label": "PRE- 歌曲",
+      "audio": "audio/pre-song.mp3"
+    },
+    {
+      "letter": "dis-",
+      "label": "DIS- 歌曲",
+      "audio": "audio/dis-song.mp3"
+    }
+  ],
+  "phonics": [{
+      "letter": "un-",
+      "ipa": "/ʌn/",
+      "audio": "audio/un.mp3",
+      "color": "purple",
+      "hint": "表示否定或相反，如 unhappy, unfair"
+    },
+    {
+      "letter": "re-",
+      "ipa": "/riː/ 或 /rɛ/",
+      "audio": "audio/re.mp3",
+      "color": "purple",
+      "hint": "表示再次或回覆，如 redo, return"
+    },
+    {
+      "letter": "pre-",
+      "ipa": "/priː/",
+      "audio": "audio/pre.mp3",
+      "color": "purple",
+      "hint": "表示在之前，如 preview, preschool"
+    },
+    {
+      "letter": "dis-",
+      "ipa": "/dɪs/",
+      "audio": "audio/dis.mp3",
+      "color": "purple",
+      "hint": "表示否定、移除、相反，如 dislike, disappear"
+    }
+  ],
+  "cards": [{
+      "letter": "un-",
+      "label": "UN- /ʌn/",
+      "draggable": true
+    },
+    {
+      "letter": "re-",
+      "label": "RE- /riː/",
+      "draggable": true
+    },
+    {
+      "letter": "pre-",
+      "label": "PRE- /priː/",
+      "draggable": true
+    },
+    {
+      "letter": "dis-",
+      "label": "DIS- /dɪs/",
+      "draggable": true
+    }
+  ],
+  "images": [{
+      "letter": "un-",
+      "word": "Unhappy"
+    },
+    {
+      "letter": "re-",
+      "word": "Return"
+    },
+    {
+      "letter": "pre-",
+      "word": "Preview"
+    },
+    {
+      "letter": "dis-",
+      "word": "Disappear"
+    }
+  ],
+  "spellingPractice": {
+    "words": [
+      "unhappy", "unfair", "unclear", "undo",
+      "redo", "retell", "return", "replay",
+      "preview", "preschool", "preheat", "prepare",
+      "dislike", "disagree", "disappear", "disconnect"
+    ]
+  },
+  "nextGroupId": 22
+}
+
+
+
 
 
 ];
