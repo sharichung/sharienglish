@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction Adventure Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #FFB6C1 100%);
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 2.8rem;
+            color: #FF6B6B;
+            text-shadow: 3px 3px 0px #FFE66D;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-8px);
+            }
+
+            60% {
+                transform: translateY(-4px);
+            }
+        }
+
+        .reset-btn {
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #FF5252;
+            transform: translateY(-2px);
+        }
+
+        .progress-container {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-text {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .progress-stars {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .progress-star {
+            font-size: 2rem;
+            transition: all 0.4s ease;
+            color: #DDD;
+        }
+
+        .progress-star.completed {
+            color: #FFD700;
+            transform: scale(1.2);
+            animation: star-glow 1.5s ease-in-out;
+        }
+
+        @keyframes star-glow {
+
+            0%,
+            100% {
+                transform: scale(1.2);
+            }
+
+            50% {
+                transform: scale(1.4) rotate(72deg);
+            }
+        }
+
+        .adventure-map {
+            position: relative;
+            background: linear-gradient(45deg, #98FB98 0%, #87CEEB 30%, #DDA0DD 70%, #F0E68C 100%);
+            border-radius: 25px;
+            padding: 40px;
+            min-height: 700px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* SVG decorative elements */
+        .map-decorations {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .land-blob {
+            fill: rgba(144, 238, 144, 0.3);
+            stroke: rgba(34, 139, 34, 0.5);
+            stroke-width: 2;
+        }
+
+        .dotted-path {
+            fill: none;
+            stroke: #8B4513;
+            stroke-width: 4;
+            stroke-dasharray: 8, 6;
+            stroke-linecap: round;
+            opacity: 0.7;
+            transition: all 0.5s ease;
+        }
+
+        .locations-grid {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 30px;
+            height: 100%;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .location {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            border: 4px solid #DDD;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .location:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .location.completed {
+            border-color: #4ECDC4;
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .location.completed::after {
+            content: '✓';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #FFD700;
+            color: #333;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .location-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .location-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Special positioning for treasure chest */
+        .treasure-chest {
+            grid-column: 2 / 4;
+            grid-row: 4;
+            font-size: 6rem;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.6s ease;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        .treasure-chest.visible {
+            opacity: 1;
+            transform: scale(1);
+            animation: treasure-bounce 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes treasure-bounce {
+            from {
+                transform: scale(1) translateY(0);
+            }
+
+            to {
+                transform: scale(1.1) translateY(-15px);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            animation: modal-appear 0.4s ease-out;
+        }
+
+        @keyframes modal-appear {
+            from {
+                transform: scale(0.7) translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            color: #FF6B6B;
+            margin-bottom: 25px;
+        }
+
+        .modal-question {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 30px;
+            background: #F0F8FF;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 6px solid #4ECDC4;
+        }
+
+        .complete-btn {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.3rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .complete-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            animation: confetti-fall 4s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2001;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-modal.active {
+            display: flex;
+        }
+
+        .success-content {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+            padding: 50px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            animation: success-appear 0.6s ease-out;
+        }
+
+        @keyframes success-appear {
+            from {
+                transform: scale(0.5) translateY(-100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .success-message {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .play-again-btn {
+            background: white;
+            color: #FF6B6B;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .play-again-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1500;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-yes {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .confirm-no {
+            background: #DDD;
+            color: #333;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 1200px) {
+            .locations-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                gap: 25px;
+            }
+
+            .location {
+                width: 120px;
+                height: 120px;
+            }
+
+            .treasure-chest {
+                grid-column: 2;
+                grid-row: 5;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2rem;
+            }
+
+            .adventure-map {
+                min-height: 600px;
+                padding: 20px;
+            }
+
+            .locations-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(7, 1fr);
+                gap: 20px;
+            }
+
+            .location {
+                width: 100px;
+                height: 100px;
+                padding: 15px;
+            }
+
+            .location-icon {
+                font-size: 2rem;
+            }
+
+            .location-name {
+                font-size: 0.75rem;
+            }
+
+            .treasure-chest {
+                grid-column: 1 / 3;
+                grid-row: 7;
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1249.0" data-gr-ext-installed="">
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">🗺️ Introduction Adventure Map 🗺️</h1>
+            <button class="reset-btn" onclick="showConfirmReset()">🔄 Reset Game</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-text">Adventure Progress: <span id="progressCount">0</span>/13 Completed</div>
+            <div class="progress-stars">
+                <i class="fa-regular fa-star progress-star" id="star1"></i>
+                <i class="fa-regular fa-star progress-star" id="star2"></i>
+                <i class="fa-regular fa-star progress-star" id="star3"></i>
+                <i class="fa-regular fa-star progress-star" id="star4"></i>
+                <i class="fa-regular fa-star progress-star" id="star5"></i>
+                <i class="fa-regular fa-star progress-star" id="star6"></i>
+                <i class="fa-regular fa-star progress-star" id="star7"></i>
+                <i class="fa-regular fa-star progress-star" id="star8"></i>
+                <i class="fa-regular fa-star progress-star" id="star9"></i>
+                <i class="fa-regular fa-star progress-star" id="star10"></i>
+                <i class="fa-regular fa-star progress-star" id="star11"></i>
+                <i class="fa-regular fa-star progress-star" id="star12"></i>
+                <i class="fa-regular fa-star progress-star" id="star13"></i>
+            </div>
+        </div>
+
+        <div class="adventure-map">
+            <!-- SVG decorative elements -->
+            <svg class="map-decorations" viewBox="0 0 1000 600" id="mapDecorations">
+                <!-- Land blobs behind location clusters -->
+                <ellipse class="land-blob" cx="200" cy="150" rx="180" ry="120"></ellipse>
+                <ellipse class="land-blob" cx="800" cy="150" rx="180" ry="120"></ellipse>
+                <ellipse class="land-blob" cx="200" cy="350" rx="180" ry="120"></ellipse>
+                <ellipse class="land-blob" cx="800" cy="350" rx="180" ry="120"></ellipse>
+                <ellipse class="land-blob" cx="500" cy="450" rx="200" ry="100"></ellipse>
+
+                <!-- Dotted paths connecting the areas -->
+                <path class="dotted-path" d="M 380 150 L 500 120 L 620 150" id="path1"></path>
+                <path class="dotted-path" d="M 200 270 L 180 250 L 200 230" id="path2"></path>
+                <path class="dotted-path" d="M 800 270 L 820 250 L 800 230" id="path3"></path>
+                <path class="dotted-path" d="M 380 350 L 500 380 L 620 350" id="path4"></path>
+                <path class="dotted-path" d="M 300 400 L 350 430 L 400 450" id="path5"></path>
+                <path class="dotted-path" d="M 700 400 L 650 430 L 600 450" id="path6"></path>
+            </svg>
+
+            <div class="locations-grid">
+                <!-- Row 1 -->
+                <div class="location" data-location="name" onclick="openChallenge('name')">
+                    <div class="location-icon">👋</div>
+                    <div class="location-name">My Name</div>
+                </div>
+
+                <div class="location" data-location="age" onclick="openChallenge('age')">
+                    <div class="location-icon">🎂</div>
+                    <div class="location-name">My Age</div>
+                </div>
+
+                <div class="location" data-location="school" onclick="openChallenge('school')">
+                    <div class="location-icon">🏫</div>
+                    <div class="location-name">My School</div>
+                </div>
+
+                <div class="location" data-location="family" onclick="openChallenge('family')">
+                    <div class="location-icon">👨‍👩‍👧‍👦</div>
+                    <div class="location-name">My Family</div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="location" data-location="color" onclick="openChallenge('color')">
+                    <div class="location-icon">🌈</div>
+                    <div class="location-name">My Favorite Colour</div>
+                </div>
+
+                <div class="location" data-location="animal" onclick="openChallenge('animal')">
+                    <div class="location-icon">🐶</div>
+                    <div class="location-name">My Favorite Animal</div>
+                </div>
+
+                <div class="location" data-location="food" onclick="openChallenge('food')">
+                    <div class="location-icon">🍕</div>
+                    <div class="location-name">My Favorite Food</div>
+                </div>
+
+                <div class="location" data-location="hobbies" onclick="openChallenge('hobbies')">
+                    <div class="location-icon">⚽</div>
+                    <div class="location-name">My Hobbies</div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="location" data-location="book" onclick="openChallenge('book')">
+                    <div class="location-icon">📚</div>
+                    <div class="location-name">My Favorite Book</div>
+                </div>
+
+                <div class="location" data-location="subject" onclick="openChallenge('subject')">
+                    <div class="location-icon">📖</div>
+                    <div class="location-name">My Favorite Subject</div>
+                </div>
+
+                <div class="location" data-location="music" onclick="openChallenge('music')">
+                    <div class="location-icon">🎵</div>
+                    <div class="location-name">My Favorite Music</div>
+                </div>
+
+                <div class="location" data-location="friend" onclick="openChallenge('friend')">
+                    <div class="location-icon">👫</div>
+                    <div class="location-name">My Best Friend</div>
+                </div>
+
+                <!-- Row 4 - Dream location -->
+                <div class="location" data-location="dream" onclick="openChallenge('dream')">
+                    <div class="location-icon">⭐</div>
+                    <div class="location-name">My Dream</div>
+                </div>
+
+                <!-- Treasure chest appears here when all completed -->
+                <div class="treasure-chest" id="treasureChest" onclick="celebrateVictory()">
+                    💰
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
+    <div class="modal" id="challengeModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">👋</div>
+            <h2 class="modal-title" id="modalTitle">My Name Challenge</h2>
+            <div class="modal-question" id="modalQuestion">
+                What is your name?<br>
+                <small style="color: #666;">Student should answer out loud in English!</small>
+            </div>
+            <button class="complete-btn" onclick="completeChallenge()">✅ Complete Challenge</button>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-title">🎉 Congratulations! 🎉</div>
+            <div class="success-message">Great job! You finished your<br>self-introduction adventure!</div>
+            <button class="play-again-btn" onclick="playAgain()">🎮 Play Again</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-content">
+            <div class="confirm-title">Are you sure you want to reset the game?</div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-yes" onclick="confirmReset()">Yes, Reset</button>
+                <button class="confirm-btn confirm-no" onclick="hideConfirmReset()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Celebration Container -->
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // Game state
+        let completedLocations = 0;
+        let currentLocation = '';
+
+        // Location data with all 13 topics
+        const locations = {
+            name: {
+                icon: '👋',
+                title: 'My Name Challenge',
+                question: 'What is your name?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            age: {
+                icon: '🎂',
+                title: 'My Age Challenge',
+                question: 'How old are you?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            school: {
+                icon: '🏫',
+                title: 'My School Challenge',
+                question: 'What school do you go to?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            family: {
+                icon: '👨‍👩‍👧‍👦',
+                title: 'My Family Challenge',
+                question: 'Who is in your family?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            color: {
+                icon: '🌈',
+                title: 'My Favorite Colour Challenge',
+                question: 'What is your favorite colour?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            animal: {
+                icon: '🐶',
+                title: 'My Favorite Animal Challenge',
+                question: 'What animal do you like?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            food: {
+                icon: '🍕',
+                title: 'My Favorite Food Challenge',
+                question: 'What food do you like?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            hobbies: {
+                icon: '⚽',
+                title: 'My Hobbies Challenge',
+                question: 'What are your hobbies?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            book: {
+                icon: '📚',
+                title: 'My Favorite Book Challenge',
+                question: 'What is your favorite book?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            subject: {
+                icon: '📖',
+                title: 'My Favorite Subject Challenge',
+                question: 'What subject do you like at school?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            music: {
+                icon: '🎵',
+                title: 'My Favorite Music Challenge',
+                question: 'What kind of music do you like?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            friend: {
+                icon: '👫',
+                title: 'My Best Friend Challenge',
+                question: 'Who is your best friend?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            },
+            dream: {
+                icon: '⭐',
+                title: 'My Dream Challenge',
+                question: 'What is your dream?<br><small style="color: #666;">Student should answer out loud in English!</small>'
+            }
+        };
+
+        // Path variations for replay freshness
+        const pathVariations = [
+            // Original paths
+            [
+                "M 380 150 L 620 150",
+                "M 200 270 L 200 230",
+                "M 800 270 L 800 230",
+                "M 380 350 L 620 350",
+                "M 300 400 L 400 450",
+                "M 700 400 L 600 450"
+            ],
+            // Variation 1 - slightly different curves
+            [
+                "M 380 150 Q 500 130 620 150",
+                "M 200 270 Q 180 250 200 230",
+                "M 800 270 Q 820 250 800 230",
+                "M 380 350 Q 500 370 620 350",
+                "M 300 400 Q 350 425 400 450",
+                "M 700 400 Q 650 425 600 450"
+            ],
+            // Variation 2 - different connection pattern
+            [
+                "M 380 150 L 500 120 L 620 150",
+                "M 200 270 L 180 250 L 200 230",
+                "M 800 270 L 820 250 L 800 230",
+                "M 380 350 L 500 380 L 620 350",
+                "M 300 400 L 350 430 L 400 450",
+                "M 700 400 L 650 430 L 600 450"
+            ]
+        ];
+
+        // Open challenge modal
+        function openChallenge(location) {
+            // Don't open if already completed
+            if (document.querySelector(`[data-location="${location}"]`).classList.contains('completed')) {
+                return;
+            }
+
+            currentLocation = location;
+            const locationData = locations[location];
+
+            document.getElementById('modalIcon').textContent = locationData.icon;
+            document.getElementById('modalTitle').textContent = locationData.title;
+            document.getElementById('modalQuestion').innerHTML = locationData.question;
+            document.getElementById('challengeModal').classList.add('active');
+        }
+
+        // Complete challenge
+        function completeChallenge() {
+            // Close modal
+            document.getElementById('challengeModal').classList.remove('active');
+
+            // Mark location as completed
+            const locationElement = document.querySelector(`[data-location="${currentLocation}"]`);
+            locationElement.classList.add('completed');
+
+            // Update progress
+            completedLocations++;
+            document.getElementById('progressCount').textContent = completedLocations;
+
+            // Update FontAwesome star
+            const star = document.getElementById(`star${completedLocations}`);
+            star.className = 'fa-solid fa-star progress-star completed';
+
+            // Check if all locations completed
+            if (completedLocations === 13) {
+                setTimeout(() => {
+                    showTreasureChest();
+                }, 500);
+            }
+        }
+
+        // Show treasure chest
+        function showTreasureChest() {
+            const treasureChest = document.getElementById('treasureChest');
+            treasureChest.classList.add('visible');
+        }
+
+        // Celebrate victory
+        function celebrateVictory() {
+            // Show success modal
+            document.getElementById('successModal').classList.add('active');
+
+            // Create confetti
+            createConfetti();
+        }
+
+        // Create confetti animation
+        function createConfetti() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98FB98'];
+
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                celebration.appendChild(confetti);
+
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 7000);
+            }
+        }
+
+        // Play again function
+        function playAgain() {
+            resetGame();
+            document.getElementById('successModal').classList.remove('active');
+        }
+
+        // Show confirmation modal
+        function showConfirmReset() {
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // Hide confirmation modal
+        function hideConfirmReset() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        // Confirm reset
+        function confirmReset() {
+            resetGame();
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        // Reset game function
+        function resetGame() {
+            // Reset progress
+            completedLocations = 0;
+            document.getElementById('progressCount').textContent = '0';
+
+            // Reset all stars to outlined
+            for (let i = 1; i <= 13; i++) {
+                const star = document.getElementById(`star${i}`);
+                star.className = 'fa-regular fa-star progress-star';
+            }
+
+            // Reset all locations
+            const allLocations = document.querySelectorAll('.location');
+            allLocations.forEach(location => {
+                location.classList.remove('completed');
+            });
+
+            // Hide treasure chest
+            const treasureChest = document.getElementById('treasureChest');
+            treasureChest.classList.remove('visible');
+
+            // Hide success modal if visible
+            document.getElementById('successModal').classList.remove('active');
+
+            // Randomize path connections for freshness
+            randomizePaths();
+        }
+
+        // Randomize SVG paths for replay variety
+        function randomizePaths() {
+            const randomVariation = pathVariations[Math.floor(Math.random() * pathVariations.length)];
+            const paths = document.querySelectorAll('.dotted-path');
+
+            paths.forEach((path, index) => {
+                if (randomVariation[index]) {
+                    path.setAttribute('d', randomVariation[index]);
+                }
+            });
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('challengeModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        document.getElementById('confirmModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        // Add keyboard support for accessibility
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                document.getElementById('challengeModal').classList.remove('active');
+                document.getElementById('confirmModal').classList.remove('active');
+            }
+        });
+
+        // Initialize with random paths on load
+        window.addEventListener('load', function () {
+            randomizePaths();
+        });
+    </script>
+
+</body>
+
+</html>
