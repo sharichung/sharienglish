@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bunny Hop Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-container {
+            background: linear-gradient(180deg, #87CEEB, #98FB98);
+            border: 4px solid #228B22;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-width: 90vw;
+            width: 800px;
+            position: relative;
+        }
+
+        .score-board {
+            color: #2F4F4F;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .distance-meter {
+            font-size: 18px;
+            color: #4169E1;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 60%, #90EE90 60%, #228B22 100%);
+            border: 3px solid #228B22;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 160px;
+            background: linear-gradient(180deg, #90EE90, #228B22);
+            border-top: 3px solid #32CD32;
+        }
+
+        .rabbit {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            left: 100px;
+            background: #FFF8DC;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            border: 3px solid #DEB887;
+            transition: transform 0.1s ease-out;
+            z-index: 10;
+        }
+
+        .rabbit::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 25px;
+            background: #FFF8DC;
+            border: 2px solid #DEB887;
+            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+            top: -20px;
+            left: 8px;
+            transform: rotate(-15deg);
+        }
+
+        .rabbit::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 25px;
+            background: #FFF8DC;
+            border: 2px solid #DEB887;
+            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+            top: -20px;
+            right: 8px;
+            transform: rotate(15deg);
+        }
+
+        .rabbit-face {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 6px;
+            height: 6px;
+            background: #000;
+            border-radius: 50%;
+            box-shadow: 14px 0 0 #000, 7px 8px 0 -2px #FF69B4;
+        }
+
+        .rabbit.jumping {
+            animation: hop 0.6s ease-out;
+        }
+
+        @keyframes hop {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(-15deg) scale(1.1);
+            }
+
+            100% {
+                transform: rotate(0deg) scale(1);
+            }
+        }
+
+        .obstacle {
+            position: absolute;
+            background: #8B4513;
+            border-radius: 8px;
+            border: 2px solid #654321;
+        }
+
+        .gap {
+            position: absolute;
+            background: #4169E1;
+            border-radius: 12px;
+            border: 3px solid #1E90FF;
+            box-shadow: inset 0 0 20px rgba(30, 144, 255, 0.5);
+        }
+
+        .fruit {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: float 2s ease-in-out infinite;
+            z-index: 5;
+        }
+
+        .fruit.cherry {
+            background: radial-gradient(circle at 30% 30%, #FF6B6B, #DC143C);
+            box-shadow: 0 0 10px rgba(220, 20, 60, 0.6);
+        }
+
+        .fruit.orange {
+            background: radial-gradient(circle at 30% 30%, #FFA500, #FF8C00);
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.6);
+        }
+
+        .fruit.grape {
+            background: radial-gradient(circle at 30% 30%, #9370DB, #8A2BE2);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.6);
+        }
+
+        .jackpot-apple {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #FF4500, #DC143C);
+            border-radius: 50%;
+            border: 3px solid #FFD700;
+            animation: jackpotPulse 1s ease-in-out infinite;
+            z-index: 5;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        .jackpot-apple::before {
+            content: '★';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFD700;
+            font-size: 16px;
+            animation: sparkle 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes jackpotPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes sparkle {
+            0% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .controls {
+            margin-top: 15px;
+            text-align: center;
+            color: #2F4F4F;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .mobile-controls {
+            display: none;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .jump-btn {
+            background: linear-gradient(145deg, #32CD32, #228B22);
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.1s ease;
+            user-select: none;
+        }
+
+        .jump-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #2F4F4F;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            border: 4px solid #32CD32;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-over h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #228B22;
+        }
+
+        .restart-btn {
+            background: linear-gradient(145deg, #32CD32, #228B22);
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .score-popup {
+            position: absolute;
+            color: #FFD700;
+            font-size: 20px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 20;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: flex;
+            }
+
+            .game-container {
+                width: 95vw;
+                padding: 15px;
+            }
+
+            .score-board {
+                font-size: 20px;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            .game-area {
+                height: 350px;
+            }
+        }
+    </style>
+    <style>
+        @keyframes fadeUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1248.0" data-gr-ext-installed="">
+    <div class="game-container">
+        <div class="score-board">
+            <div>SCORE: <span id="score">750</span></div>
+            <div class="distance-meter">Distance: <span id="distance">180</span>m</div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <div class="ground"></div>
+            <div class="rabbit" id="rabbit" style="bottom: 110px;">
+                <div class="rabbit-face"></div>
+            </div>
+            <div class="gap" style="left: -620px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: -364.112px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: -106.599px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 393.536px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 834.022px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: -932px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: -681.539px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: -471.675px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 296.317px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 543.24px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 1086.84px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 1557.84px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 405.266px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 622.694px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 837.098px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 1124.02px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 1338.27px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 639.191px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 1196.77px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 1466.62px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: 1717.06px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="obstacle" style="left: -1500px; bottom: 160px; width: 60px; height: 80px;"></div>
+            <div class="gap" style="left: -1263.49px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="gap" style="left: -982.817px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="obstacle" style="left: -774.524px; bottom: 160px; width: 60px; height: 80px;"></div>
+            <div class="obstacle" style="left: -482.62px; bottom: 160px; width: 60px; height: 80px;"></div>
+            <div class="gap" style="left: -196.836px; bottom: 0px; width: 80px; height: 160px;"></div>
+            <div class="obstacle" style="left: 50.935px; bottom: 160px; width: 60px; height: 80px;"></div>
+            <div class="fruit orange" style="left: -1600px; bottom: 247.873px; display: none;"></div>
+            <div class="fruit cherry" style="left: -1435.56px; bottom: 204.726px;"></div>
+            <div class="fruit grape" style="left: -1209.02px; bottom: 279.647px; display: none;"></div>
+            <div class="fruit orange" style="left: -1036.37px; bottom: 296.238px;"></div>
+            <div class="fruit orange" style="left: -792.944px; bottom: 249.552px; display: none;"></div>
+            <div class="fruit cherry" style="left: -615.779px; bottom: 202.294px;"></div>
+            <div class="fruit orange" style="left: -429.954px; bottom: 236.927px; display: none;"></div>
+            <div class="fruit grape" style="left: -197.081px; bottom: 226.566px; display: none;"></div>
+            <div class="jackpot-apple" style="left: 100px; bottom: 250px; display: none;"></div>
+        </div>
+
+        <div class="controls">
+            Press SPACEBAR or ↑ arrow to jump!
+        </div>
+
+        <div class="mobile-controls">
+            <button class="jump-btn" id="jumpBtn">HOP!</button>
+        </div>
+
+        <div class="game-over" id="gameOver" style="display: block;">
+            <h2 id="gameOverTitle">Congratulations! You got the jackpot!</h2>
+            <p>Final Score: <span id="finalScore">750</span></p>
+            <p>Distance Traveled: <span id="finalDistance">180</span>m</p>
+            <button class="restart-btn" onclick="restartGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        class BunnyHopGame {
+            constructor() {
+                this.rabbit = document.getElementById('rabbit');
+                this.gameArea = document.getElementById('gameArea');
+                this.scoreElement = document.getElementById('score');
+                this.distanceElement = document.getElementById('distance');
+                this.gameOverScreen = document.getElementById('gameOver');
+                this.finalScoreElement = document.getElementById('finalScore');
+                this.finalDistanceElement = document.getElementById('finalDistance');
+                this.gameOverTitle = document.getElementById('gameOverTitle');
+
+                this.rabbitY = 240; // Ground level
+                this.rabbitVelocity = 0;
+                this.gravity = 0.8;
+                this.jumpPower = -15;
+                this.isJumping = false;
+                this.gameSpeed = 2;
+                this.score = 0;
+                this.distance = 0;
+                this.gameRunning = true;
+
+                this.obstacles = [];
+                this.fruits = [];
+                this.jackpotApple = null;
+                this.gameElements = [];
+
+                this.levelLength = 2000; // Total level length
+                this.cameraX = 0;
+
+                this.init();
+                this.setupControls();
+                this.generateLevel();
+                this.gameLoop();
+            }
+
+            init() {
+                this.rabbit.style.bottom = (400 - this.rabbitY - 50) + 'px';
+                this.updateScore();
+                this.updateDistance();
+            }
+
+            setupControls() {
+                // Keyboard controls
+                document.addEventListener('keydown', (e) => {
+                    if ((e.code === 'Space' || e.key === 'ArrowUp') && this.gameRunning) {
+                        e.preventDefault();
+                        this.jump();
+                    }
+                });
+
+                // Mobile controls
+                document.getElementById('jumpBtn').addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    if (this.gameRunning) this.jump();
+                });
+
+                document.getElementById('jumpBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (this.gameRunning) this.jump();
+                });
+            }
+
+            jump() {
+                if (!this.isJumping || this.rabbitVelocity > -5) {
+                    this.rabbitVelocity = this.jumpPower;
+                    this.isJumping = true;
+                    this.rabbit.classList.add('jumping');
+
+                    setTimeout(() => {
+                        this.rabbit.classList.remove('jumping');
+                    }, 600);
+                }
+            }
+
+            generateLevel() {
+                // Generate obstacles (gaps and blocks)
+                for (let x = 300; x < this.levelLength; x += 200 + Math.random() * 100) {
+                    if (Math.random() < 0.6) {
+                        // Create gap
+                        const gap = document.createElement('div');
+                        gap.className = 'gap';
+                        gap.style.left = x + 'px';
+                        gap.style.bottom = '0px';
+                        gap.style.width = '80px';
+                        gap.style.height = '160px';
+                        this.gameArea.appendChild(gap);
+                        this.obstacles.push({
+                            element: gap,
+                            x: x,
+                            y: 0,
+                            width: 80,
+                            height: 160,
+                            type: 'gap'
+                        });
+                    } else {
+                        // Create block obstacle
+                        const block = document.createElement('div');
+                        block.className = 'obstacle';
+                        block.style.left = x + 'px';
+                        block.style.bottom = '160px';
+                        block.style.width = '60px';
+                        block.style.height = '80px';
+                        this.gameArea.appendChild(block);
+                        this.obstacles.push({
+                            element: block,
+                            x: x,
+                            y: 160,
+                            width: 60,
+                            height: 80,
+                            type: 'block'
+                        });
+                    }
+                }
+
+                // Generate fruits
+                const fruitTypes = ['cherry', 'orange', 'grape'];
+                for (let x = 200; x < this.levelLength - 200; x += 150 + Math.random() * 100) {
+                    const fruit = document.createElement('div');
+                    const fruitType = fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
+                    fruit.className = `fruit ${fruitType}`;
+
+                    const fruitY = 200 + Math.random() * 100;
+                    fruit.style.left = x + 'px';
+                    fruit.style.bottom = fruitY + 'px';
+
+                    this.gameArea.appendChild(fruit);
+                    this.fruits.push({
+                        element: fruit,
+                        x: x,
+                        y: fruitY,
+                        collected: false,
+                        type: fruitType
+                    });
+                }
+
+                // Generate jackpot apple at the end
+                const jackpot = document.createElement('div');
+                jackpot.className = 'jackpot-apple';
+                jackpot.style.left = (this.levelLength - 100) + 'px';
+                jackpot.style.bottom = '250px';
+                this.gameArea.appendChild(jackpot);
+
+                this.jackpotApple = {
+                    element: jackpot,
+                    x: this.levelLength - 100,
+                    y: 250,
+                    collected: false
+                };
+            }
+
+            updatePhysics() {
+                if (!this.gameRunning) return;
+
+                // Apply gravity
+                this.rabbitVelocity += this.gravity;
+                this.rabbitY += this.rabbitVelocity;
+
+                // Ground collision
+                if (this.rabbitY >= 240) {
+                    this.rabbitY = 240;
+                    this.rabbitVelocity = 0;
+                    this.isJumping = false;
+                }
+
+                // Update rabbit position
+                this.rabbit.style.bottom = (400 - this.rabbitY - 50) + 'px';
+
+                // Move camera
+                this.cameraX += this.gameSpeed;
+                this.distance = Math.floor(this.cameraX / 10);
+                this.updateDistance();
+
+                // Move all elements
+                this.obstacles.forEach(obstacle => {
+                    obstacle.element.style.left = (obstacle.x - this.cameraX) + 'px';
+                });
+
+                this.fruits.forEach(fruit => {
+                    fruit.element.style.left = (fruit.x - this.cameraX) + 'px';
+                });
+
+                if (this.jackpotApple) {
+                    this.jackpotApple.element.style.left = (this.jackpotApple.x - this.cameraX) + 'px';
+                }
+            }
+
+            checkCollisions() {
+                if (!this.gameRunning) return;
+
+                const rabbitLeft = 100;
+                const rabbitRight = rabbitLeft + 50;
+                const rabbitTop = 400 - this.rabbitY - 50;
+                const rabbitBottom = 400 - this.rabbitY;
+
+                // Check obstacle collisions
+                this.obstacles.forEach(obstacle => {
+                    const obsLeft = obstacle.x - this.cameraX;
+                    const obsRight = obsLeft + obstacle.width;
+                    const obsTop = 400 - obstacle.y - obstacle.height;
+                    const obsBottom = 400 - obstacle.y;
+
+                    if (rabbitRight > obsLeft && rabbitLeft < obsRight &&
+                        rabbitBottom > obsTop && rabbitTop < obsBottom) {
+
+                        if (obstacle.type === 'gap' && this.rabbitY >= 240) {
+                            // Fell into gap
+                            this.gameOver('Oops! Bunny fell into the water!');
+                        } else if (obstacle.type === 'block') {
+                            // Hit block
+                            this.gameOver('Bonk! Bunny hit an obstacle!');
+                        }
+                    }
+                });
+
+                // Check fruit collection
+                this.fruits.forEach(fruit => {
+                    if (!fruit.collected) {
+                        const fruitLeft = fruit.x - this.cameraX;
+                        const fruitRight = fruitLeft + 20;
+                        const fruitTop = 400 - fruit.y - 20;
+                        const fruitBottom = 400 - fruit.y;
+
+                        if (rabbitRight > fruitLeft && rabbitLeft < fruitRight &&
+                            rabbitBottom > fruitTop && rabbitTop < fruitBottom) {
+
+                            fruit.collected = true;
+                            fruit.element.style.display = 'none';
+                            this.score += 50;
+                            this.updateScore();
+                            this.showScorePopup(fruitLeft, fruitTop, '+50');
+                        }
+                    }
+                });
+
+                // Check jackpot collection
+                if (this.jackpotApple && !this.jackpotApple.collected) {
+                    const appleLeft = this.jackpotApple.x - this.cameraX;
+                    const appleRight = appleLeft + 40;
+                    const appleTop = 400 - this.jackpotApple.y - 40;
+                    const appleBottom = 400 - this.jackpotApple.y;
+
+                    if (rabbitRight > appleLeft && rabbitLeft < appleRight &&
+                        rabbitBottom > appleTop && rabbitTop < appleBottom) {
+
+                        this.jackpotApple.collected = true;
+                        this.jackpotApple.element.style.display = 'none';
+                        this.score += 500;
+                        this.updateScore();
+                        this.showScorePopup(appleLeft, appleTop, '+500 JACKPOT!');
+
+                        // End game successfully
+                        setTimeout(() => {
+                            this.gameOver('Congratulations! You got the jackpot!');
+                        }, 1000);
+                    }
+                }
+
+                // Check if reached end without jackpot
+                if (this.cameraX >= this.levelLength - 200 && this.gameRunning) {
+                    this.gameOver('Level Complete!');
+                }
+            }
+
+            showScorePopup(x, y, text) {
+                const popup = document.createElement('div');
+                popup.className = 'score-popup';
+                popup.textContent = text;
+                popup.style.left = x + 'px';
+                popup.style.top = y + 'px';
+                popup.style.animation = 'fadeUp 1.5s ease-out forwards';
+
+                this.gameArea.appendChild(popup);
+
+                setTimeout(() => {
+                    if (popup.parentNode) {
+                        popup.parentNode.removeChild(popup);
+                    }
+                }, 1500);
+            }
+
+            updateScore() {
+                this.scoreElement.textContent = this.score;
+            }
+
+            updateDistance() {
+                this.distanceElement.textContent = this.distance;
+            }
+
+            gameOver(message) {
+                this.gameRunning = false;
+                this.gameOverTitle.textContent = message;
+                this.finalScoreElement.textContent = this.score;
+                this.finalDistanceElement.textContent = this.distance;
+                this.gameOverScreen.style.display = 'block';
+            }
+
+            gameLoop() {
+                this.updatePhysics();
+                this.checkCollisions();
+
+                if (this.gameRunning) {
+                    requestAnimationFrame(() => this.gameLoop());
+                }
+            }
+        }
+
+        // Add fadeUp animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeUp {
+                0% { opacity: 1; transform: translateY(0); }
+                100% { opacity: 0; transform: translateY(-40px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize game
+        let game;
+
+        function startGame() {
+            game = new BunnyHopGame();
+        }
+
+        function restartGame() {
+            // Clear existing game
+            document.getElementById('gameOver').style.display = 'none';
+            document.querySelectorAll('.obstacle, .fruit, .jackpot-apple, .score-popup').forEach(el => el.remove());
+
+            // Start new game
+            startGame();
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', startGame);
+    </script>
+
+</body>
+
+</html>

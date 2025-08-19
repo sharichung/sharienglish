@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Hustle Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .game-container {
+            width: 95%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px;
+            text-align: center;
+            min-height: 600px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Title Screen */
+        .title-screen {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            position: relative;
+        }
+
+        .title {
+            font-size: 3.5em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0px #fff;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .character {
+            font-size: 8em;
+            margin: 20px 0;
+            animation: wiggle 3s infinite;
+        }
+
+        @keyframes wiggle {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(5deg);
+            }
+
+            75% {
+                transform: rotate(-5deg);
+            }
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        /* Instructions Screen */
+        .instructions {
+            background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .instructions h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .instruction-list {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .instruction-list li {
+            margin: 15px 0;
+            padding-left: 10px;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            background: linear-gradient(45deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .money {
+            color: #27ae60;
+        }
+
+        .reputation {
+            color: #e74c3c;
+        }
+
+        .challenge-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 3px solid #3498db;
+        }
+
+        .challenge-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .situation {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            border-left: 5px solid #3498db;
+        }
+
+        .resources {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .resources h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .resource-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .resource-item {
+            background: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .teacher-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn-great {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+
+        .btn-good {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+
+        .btn-needs {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .btn-bad {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+        }
+
+        /* Twist Card */
+        .twist-card {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
+            font-size: 1.3em;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Summary Screen */
+        .summary-screen {
+            background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .summary-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .vocabulary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .vocab-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .vocab-word {
+            background: #6c5ce7;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        /* Final Screen */
+        .final-screen {
+            background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+        }
+
+        .trophy {
+            font-size: 6em;
+            margin: 20px 0;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .money-animation {
+            animation: moneyPop 0.6s ease-out;
+        }
+
+        @keyframes moneyPop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+                color: #27ae60;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5em;
+            }
+
+            .character {
+                font-size: 6em;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .teacher-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1248.0" data-gr-ext-installed="">
+    <div class="game-container">
+        <!-- Title Screen -->
+        <div class="screen active" id="titleScreen">
+            <h1 class="title">Creative Hustle Challenge</h1>
+            <div class="character">🤑💰</div>
+            <p style="font-size: 1.2em; margin: 20px 0; color: #2c3e50;">Turn your ideas into money!</p>
+            <button class="btn" onclick="showInstructions()">📖 Instructions</button>
+            <button class="btn btn-secondary" onclick="startGame()">🚀 Start Game</button>
+            <button class="btn btn-danger" onclick="exitGame()">❌ Exit</button>
+        </div>
+
+        <!-- Instructions Screen -->
+        <div class="screen" id="instructionsScreen">
+            <h2>How to Play</h2>
+            <div class="instruction-list">
+                <h3>🎯 Goal: Make money with creative ideas!</h3>
+                <ul>
+                    <li><strong>Student:</strong> Look at the situation and resources, then speak your business idea in
+                        English!</li>
+                    <li><strong>Teacher:</strong> Listen to the idea and click how good it is</li>
+                    <li><strong>Great ideas</strong> earn more money and reputation</li>
+                    <li><strong>Watch out</strong> for twist cards that change everything!</li>
+                    <li><strong>Learn new words</strong> each round to improve your English</li>
+                    <li><strong>Play 10 rounds</strong> and see what title you earn!</li>
+                </ul>
+                <p style="margin-top: 20px; font-weight: bold;">Remember: Be creative, speak clearly, and have fun! 🌟
+                </p>
+            </div>
+            <button class="btn" onclick="showTitle()">⬅️ Back</button>
+            <button class="btn btn-secondary" onclick="startGame()">🚀 Start Game</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="screen" id="gameScreen">
+            <div class="top-bar">
+                <div class="stat">
+                    <div class="stat-label">💰 Money</div>
+                    <div class="stat-value money" id="moneyDisplay">$0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">⭐ Reputation</div>
+                    <div class="stat-value reputation" id="reputationDisplay">Beginner</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">📅 Day</div>
+                    <div class="stat-value" id="dayDisplay">1</div>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <h3 class="challenge-title">💡 Your Challenge</h3>
+                <div class="situation" id="situationText">
+                    Loading challenge...
+                </div>
+                <div class="resources">
+                    <h4>🛠️ Available Resources:</h4>
+                    <div class="resource-list" id="resourceList">
+                        <!-- Resources will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="twistCard" class="twist-card" style="display: none;">
+                <h3>🎲 Plot Twist!</h3>
+                <p id="twistText"></p>
+                <button class="btn" onclick="handleTwist()">OK, Continue!</button>
+            </div>
+
+            <div class="teacher-controls">
+                <button class="btn btn-great" onclick="rateIdea('great')">🌟 Great Idea! (+$100)</button>
+                <button class="btn btn-good" onclick="rateIdea('good')">👍 Good Idea! (+$50)</button>
+                <button class="btn btn-needs" onclick="rateIdea('needs')">🤔 Needs Work (+$20)</button>
+                <button class="btn btn-bad" onclick="rateIdea('bad')">😕 Bad Idea (+$0)</button>
+            </div>
+        </div>
+
+        <!-- Summary Screen -->
+        <div class="screen" id="summaryScreen">
+            <h2>📊 Day Summary</h2>
+            <div class="summary-card">
+                <h3 id="summaryTitle">Day 1 Complete!</h3>
+                <p><strong>💰 Money Earned Today:</strong> <span id="todayMoney">$0</span></p>
+                <p><strong>⭐ Reputation:</strong> <span id="summaryReputation">Beginner</span></p>
+                <p><strong>📈 Performance:</strong> <span id="performanceComment">Keep trying!</span></p>
+
+                <div class="vocabulary">
+                    <h4>📚 New Business Words</h4>
+                    <p>Practice these words for better ideas:</p>
+                    <div class="vocab-words" id="vocabWords">
+                        <!-- Vocabulary words will be populated here -->
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="nextDay()">➡️ Next Day</button>
+        </div>
+
+        <!-- Final Screen -->
+        <div class="screen" id="finalScreen">
+            <h2>🎉 Game Complete!</h2>
+            <div class="trophy">🏆</div>
+            <div class="summary-card">
+                <h3 id="finalTitle">Your Final Title</h3>
+                <p><strong>💰 Total Money:</strong> <span id="finalMoney">$0</span></p>
+                <p><strong>⭐ Final Reputation:</strong> <span id="finalReputation">Beginner</span></p>
+                <p id="finalMessage">Great job learning English and being creative!</p>
+            </div>
+            <button class="btn btn-secondary" onclick="playAgain()">🔄 Play Again</button>
+            <button class="btn" onclick="showTitle()">🏠 Main Menu</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data
+        const challenges = [{
+                situation: "You are stuck at home with $20 and need to make more money",
+                resources: ["computer", "phone", "baking skills", "bicycle"]
+            },
+            {
+                situation: "Your town is hosting a big festival this weekend",
+                resources: ["art supplies", "camera", "cooking skills", "friends to help"]
+            },
+            {
+                situation: "A new park just opened near your house",
+                resources: ["sports equipment", "music skills", "pet dog", "wagon"]
+            },
+            {
+                situation: "It's summer vacation and kids are bored",
+                resources: ["games", "craft supplies", "backyard", "teaching skills"]
+            },
+            {
+                situation: "Your neighbor is going on vacation for two weeks",
+                resources: ["free time", "garden tools", "cleaning supplies", "car"]
+            },
+            {
+                situation: "There's a big storm coming and people need help",
+                resources: ["strong arms", "truck", "tools", "weather app"]
+            },
+            {
+                situation: "Your school is having a talent show next month",
+                resources: ["musical instrument", "costume materials", "video camera", "editing skills"]
+            },
+            {
+                situation: "The local library wants to attract more young visitors",
+                resources: ["storytelling skills", "board games", "art supplies", "social media knowledge"]
+            },
+            {
+                situation: "Your grandma has too many vegetables in her garden",
+                resources: ["fresh vegetables", "recipe book", "kitchen", "neighborhood connections"]
+            },
+            {
+                situation: "A new shopping mall opened but it's empty",
+                resources: ["performance skills", "colorful signs", "social media", "group of friends"]
+            },
+            {
+                situation: "Your city wants to be more environmentally friendly",
+                resources: ["recycling knowledge", "bicycle", "reusable bags", "community contacts"]
+            },
+            {
+                situation: "Local pet owners are very busy with work",
+                resources: ["love for animals", "flexible schedule", "nearby park", "reliable transportation"]
+            },
+            {
+                situation: "Students at your school struggle with homework",
+                resources: ["good grades", "patience", "quiet study space", "online tools"]
+            },
+            {
+                situation: "Your town has many elderly people living alone",
+                resources: ["technology skills", "kind personality", "free afternoons", "grocery store nearby"]
+            },
+            {
+                situation: "Local restaurants throw away food at closing time",
+                resources: ["food safety knowledge", "transportation", "social media", "community connections"]
+            },
+            {
+                situation: "Your area has many tourists but they get lost easily",
+                resources: ["local knowledge", "smartphone", "friendly personality", "language skills"]
+            },
+            {
+                situation: "Kids in your neighborhood love video games but parents worry",
+                resources: ["gaming skills", "educational games", "community center access", "parent communication"]
+            },
+            {
+                situation: "Your local gym is losing members to online fitness",
+                resources: ["fitness knowledge", "social media skills", "creative ideas", "community connections"]
+            },
+            {
+                situation: "Small businesses in your area need help with technology",
+                resources: ["computer skills", "website knowledge", "social media experience", "teaching ability"]
+            },
+            {
+                situation: "Your community wants to celebrate local culture more",
+                resources: ["cultural knowledge", "event planning skills", "artistic talents",
+                    "community connections"
+                ]
+            }
+        ];
+
+        const twists = [{
+                text: "🌧️ Rain ruined your outdoor plan!",
+                effect: {
+                    money: -20,
+                    reputation: 0
+                }
+            },
+            {
+                text: "👥 A friend offers to help for free!",
+                effect: {
+                    money: 30,
+                    reputation: 1
+                }
+            },
+            {
+                text: "📱 A famous YouTuber promotes your service!",
+                effect: {
+                    money: 100,
+                    reputation: 2
+                }
+            },
+            {
+                text: "🚗 Your transportation breaks down!",
+                effect: {
+                    money: -30,
+                    reputation: 0
+                }
+            },
+            {
+                text: "🎁 A customer gives you a big tip!",
+                effect: {
+                    money: 50,
+                    reputation: 1
+                }
+            },
+            {
+                text: "📰 The local newspaper writes about you!",
+                effect: {
+                    money: 40,
+                    reputation: 2
+                }
+            },
+            {
+                text: "😷 You get sick and can't work for a day!",
+                effect: {
+                    money: -25,
+                    reputation: 0
+                }
+            },
+            {
+                text: "🏆 You win a small business contest!",
+                effect: {
+                    money: 75,
+                    reputation: 2
+                }
+            },
+            {
+                text: "👨‍👩‍👧‍👦 Your family helps spread the word!",
+                effect: {
+                    money: 35,
+                    reputation: 1
+                }
+            },
+            {
+                text: "💡 You discover a better way to do it!",
+                effect: {
+                    money: 60,
+                    reputation: 1
+                }
+            }
+        ];
+
+        const vocabulary = [
+            "entrepreneur", "profit", "customer", "service", "product", "marketing", "business plan",
+            "investment", "revenue", "expenses", "competition", "innovation", "brand", "target market",
+            "advertising", "networking", "partnership", "startup", "franchise", "budget", "sales",
+            "demand", "supply", "quality", "value", "growth", "strategy", "opportunity", "risk"
+        ];
+
+        const reputationLevels = [
+            "Beginner", "Learning", "Trying", "Getting Better", "Good", "Great", "Excellent", "Amazing",
+            "Superstar", "Legend"
+        ];
+
+        // Game State
+        let gameState = {
+            money: 0,
+            reputation: 0,
+            day: 1,
+            todayMoney: 0,
+            currentChallenge: null,
+            twistActive: false
+        };
+
+        // Game Functions
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showTitle() {
+            showScreen('titleScreen');
+        }
+
+        function showInstructions() {
+            showScreen('instructionsScreen');
+        }
+
+        function exitGame() {
+            if (confirm('Are you sure you want to exit?')) {
+                window.close();
+            }
+        }
+
+        function startGame() {
+            gameState = {
+                money: 0,
+                reputation: 0,
+                day: 1,
+                todayMoney: 0,
+                currentChallenge: null,
+                twistActive: false
+            };
+            loadNewChallenge();
+            showScreen('gameScreen');
+        }
+
+        function loadNewChallenge() {
+            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+            gameState.currentChallenge = challenge;
+
+            document.getElementById('situationText').textContent = challenge.situation;
+
+            const resourceList = document.getElementById('resourceList');
+            resourceList.innerHTML = '';
+            challenge.resources.forEach(resource => {
+                const resourceItem = document.createElement('div');
+                resourceItem.className = 'resource-item';
+                resourceItem.textContent = resource;
+                resourceList.appendChild(resourceItem);
+            });
+
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('moneyDisplay').textContent = `$${gameState.money}`;
+            document.getElementById('reputationDisplay').textContent = reputationLevels[Math.min(gameState.reputation,
+                reputationLevels.length - 1)];
+            document.getElementById('dayDisplay').textContent = gameState.day;
+        }
+
+        function rateIdea(rating) {
+            if (gameState.twistActive) return;
+
+            let moneyEarned = 0;
+            let reputationGained = 0;
+
+            switch (rating) {
+                case 'great':
+                    moneyEarned = 100;
+                    reputationGained = 2;
+                    break;
+                case 'good':
+                    moneyEarned = 50;
+                    reputationGained = 1;
+                    break;
+                case 'needs':
+                    moneyEarned = 20;
+                    reputationGained = 0;
+                    break;
+                case 'bad':
+                    moneyEarned = 0;
+                    reputationGained = 0;
+                    break;
+            }
+
+            gameState.money += moneyEarned;
+            gameState.todayMoney += moneyEarned;
+            gameState.reputation += reputationGained;
+
+            // Animate money change
+            const moneyDisplay = document.getElementById('moneyDisplay');
+            moneyDisplay.classList.add('money-animation');
+            setTimeout(() => moneyDisplay.classList.remove('money-animation'), 600);
+
+            updateDisplay();
+
+            // Random chance for twist
+            if (Math.random() < 0.3) {
+                showTwist();
+            } else {
+                setTimeout(showSummary, 1000);
+            }
+        }
+
+        function showTwist() {
+            const twist = twists[Math.floor(Math.random() * twists.length)];
+            document.getElementById('twistText').textContent = twist.text;
+            document.getElementById('twistCard').style.display = 'block';
+            gameState.twistActive = true;
+            gameState.currentTwist = twist;
+        }
+
+        function handleTwist() {
+            const twist = gameState.currentTwist;
+            gameState.money += twist.effect.money;
+            gameState.todayMoney += twist.effect.money;
+            gameState.reputation += twist.effect.reputation;
+
+            document.getElementById('twistCard').style.display = 'none';
+            gameState.twistActive = false;
+
+            updateDisplay();
+            setTimeout(showSummary, 500);
+        }
+
+        function showSummary() {
+            document.getElementById('summaryTitle').textContent = `Day ${gameState.day} Complete!`;
+            document.getElementById('todayMoney').textContent = `$${gameState.todayMoney}`;
+            document.getElementById('summaryReputation').textContent = reputationLevels[Math.min(gameState.reputation,
+                reputationLevels.length - 1)];
+
+            // Performance comment
+            let comment = "Keep trying!";
+            if (gameState.todayMoney >= 80) comment = "Amazing work today! 🌟";
+            else if (gameState.todayMoney >= 50) comment = "Great job! 👍";
+            else if (gameState.todayMoney >= 30) comment = "Good effort! 😊";
+
+            document.getElementById('performanceComment').textContent = comment;
+
+            // Show random vocabulary words
+            const vocabContainer = document.getElementById('vocabWords');
+            vocabContainer.innerHTML = '';
+            const shuffled = vocabulary.sort(() => 0.5 - Math.random());
+            const selectedWords = shuffled.slice(0, 3);
+
+            selectedWords.forEach(word => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'vocab-word';
+                wordElement.textContent = word;
+                vocabContainer.appendChild(wordElement);
+            });
+
+            showScreen('summaryScreen');
+        }
+
+        function nextDay() {
+            gameState.day++;
+            gameState.todayMoney = 0;
+
+            if (gameState.day > 10) {
+                showFinalScreen();
+            } else {
+                loadNewChallenge();
+                showScreen('gameScreen');
+            }
+        }
+
+        function showFinalScreen() {
+            let title = "Creative Starter";
+            let message = "Great job learning English and being creative!";
+
+            if (gameState.money >= 800) {
+                title = "🌟 Business Genius";
+                message = "Incredible! You're a natural entrepreneur!";
+            } else if (gameState.money >= 600) {
+                title = "💼 Idea Pro";
+                message = "Excellent work! You have amazing business ideas!";
+            } else if (gameState.money >= 400) {
+                title = "🚀 Creative Hustler";
+                message = "Well done! You're getting really good at this!";
+            } else if (gameState.money >= 200) {
+                title = "💡 Idea Builder";
+                message = "Good job! Keep practicing your creative thinking!";
+            }
+
+            document.getElementById('finalTitle').textContent = title;
+            document.getElementById('finalMoney').textContent = `$${gameState.money}`;
+            document.getElementById('finalReputation').textContent = reputationLevels[Math.min(gameState.reputation,
+                reputationLevels.length - 1)];
+            document.getElementById('finalMessage').textContent = message;
+
+            showScreen('finalScreen');
+        }
+
+        function playAgain() {
+            startGame();
+        }
+
+        // Initialize game
+        updateDisplay();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Interview Activity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .spotlight {
+            min-height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timer-bar {
+            transition: width 1s linear;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .feedback-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            padding: 2rem 4rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 5;
+        }
+
+        .mission-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: rotate(-1deg);
+            transition: all 0.3s ease;
+        }
+
+        .mission-card:hover {
+            transform: rotate(0deg) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .relative {
+            position: relative
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem
+        }
+
+        .block {
+            display: block
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .h-4 {
+            height: 1rem
+        }
+
+        .w-full {
+            width: 100%
+        }
+
+        .max-w-5xl {
+            max-width: 64rem
+        }
+
+        .max-w-md {
+            max-width: 28rem
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr))
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .justify-between {
+            justify-content: space-between
+        }
+
+        .gap-2 {
+            gap: 0.5rem
+        }
+
+        .gap-4 {
+            gap: 1rem
+        }
+
+        .space-x-12> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(3rem * var(--tw-space-x-reverse));
+            margin-left: calc(3rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .space-x-2> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+            margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .overflow-hidden {
+            overflow: hidden
+        }
+
+        .rounded-full {
+            border-radius: 9999px
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem
+        }
+
+        .border {
+            border-width: 1px
+        }
+
+        .border-gray-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(209 213 219 / var(--tw-border-opacity, 1))
+        }
+
+        .border-indigo-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(165 180 252 / var(--tw-border-opacity, 1))
+        }
+
+        .border-pink-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(249 168 212 / var(--tw-border-opacity, 1))
+        }
+
+        .bg-amber-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(245 158 11 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gray-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-600 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-indigo-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(224 231 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-indigo-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(99 102 241 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-indigo-600 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(79 70 229 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-pink-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(252 231 243 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-pink-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(236 72 153 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(168 85 247 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-teal-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(20 184 166 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1))
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-3 {
+            padding: 0.75rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .p-8 {
+            padding: 2rem
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem
+        }
+
+        .py-1 {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .font-medium {
+            font-weight: 500
+        }
+
+        .font-semibold {
+            font-weight: 600
+        }
+
+        .italic {
+            font-style: italic
+        }
+
+        .text-gray-600 {
+            --tw-text-opacity: 1;
+            color: rgb(75 85 99 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-700 {
+            --tw-text-opacity: 1;
+            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-600 {
+            --tw-text-opacity: 1;
+            color: rgb(79 70 229 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-700 {
+            --tw-text-opacity: 1;
+            color: rgb(67 56 202 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-800 {
+            --tw-text-opacity: 1;
+            color: rgb(55 48 163 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-900 {
+            --tw-text-opacity: 1;
+            color: rgb(49 46 129 / var(--tw-text-opacity, 1))
+        }
+
+        .text-pink-800 {
+            --tw-text-opacity: 1;
+            color: rgb(157 23 77 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .shadow-md {
+            --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .hover\:bg-amber-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(217 119 6 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-blue-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-green-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-green-700:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(21 128 61 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-indigo-700:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(67 56 202 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-pink-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(219 39 119 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-purple-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(147 51 234 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-teal-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(13 148 136 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-yellow-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(202 138 4 / var(--tw-bg-opacity, 1))
+        }
+
+        .focus\:outline-none:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px
+        }
+
+        .focus\:ring-2:focus {
+            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
+        }
+
+        .focus\:ring-indigo-500:focus {
+            --tw-ring-opacity: 1;
+            --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity, 1))
+        }
+
+        @media (min-width: 768px) {
+            .md\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
+            }
+        }
+    </style>
+</head>
+
+<body class="p-4" data-new-gr-c-s-check-loaded="14.1246.0" data-gr-ext-installed="">
+    <div class="max-w-5xl mx-auto">
+        <!-- Setup Panel (initially visible) -->
+        <div id="setup-panel" class="bg-white rounded-xl p-6 shadow-md mb-6">
+            <h1 class="text-3xl font-bold text-indigo-800 mb-6 text-center">Interview Each Other</h1>
+            <h2 class="text-2xl font-bold text-indigo-700 mb-4">Class Setup</h2>
+            <div class="mb-4">
+                <label for="student-names" class="block text-gray-700 mb-2">Enter student names (one per line):</label>
+                <textarea id="student-names" rows="6"
+                    class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+            <button id="save-students-btn"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg w-full text-lg">
+                Start Activity
+            </button>
+        </div>
+
+        <!-- Main Content (initially hidden) -->
+        <div id="main-content" class="hidden">
+            <!-- Header with minimal controls -->
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-3xl font-bold text-indigo-900">Interview Activity</h1>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">
+                        Set: <span id="set-counter">0</span> • Question: <span id="question-counter">0</span>/5
+                    </span>
+                </div>
+            </div>
+
+            <!-- Mission Card (initially hidden) -->
+            <div id="mission-card" class="mission-card mb-6 hidden">
+                <h3 id="mission-title" class="text-2xl font-bold mb-2"></h3>
+                <p id="mission-description" class="text-lg"></p>
+            </div>
+
+            <!-- Main Spotlight Area -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+                <div class="spotlight p-8 relative">
+                    <!-- Role Assignments -->
+                    <div id="roles-container" class="mb-8 text-center fade-in">
+                        <div class="flex justify-center space-x-12">
+                            <div class="text-center">
+                                <span
+                                    class="role-badge bg-indigo-100 text-indigo-800 border border-indigo-300 mb-2">Interviewer</span>
+                                <h3 id="interviewer-name" class="text-2xl font-bold text-indigo-800"></h3>
+                            </div>
+                            <div class="text-center">
+                                <span
+                                    class="role-badge bg-pink-100 text-pink-800 border border-pink-300 mb-2">Answerer</span>
+                                <h3 id="answerer-name" class="text-2xl font-bold text-pink-800"></h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question Display -->
+                    <div id="question-container" class="text-center mb-8 fade-in">
+                        <h2 id="question-text" class="text-4xl font-bold text-indigo-900 mb-6"></h2>
+                        <div id="hint-container">
+                            <h3 class="text-xl font-semibold text-gray-600 mb-2">Hint for Answerer:</h3>
+                            <p id="hint-text" class="text-2xl text-indigo-600 italic"></p>
+                        </div>
+                    </div>
+
+                    <!-- Timer Display -->
+                    <div class="max-w-md mx-auto">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-lg font-medium text-gray-700">Time Remaining:</span>
+                            <span id="timer" class="text-lg font-bold text-indigo-700">2:00</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div id="timer-bar" class="timer-bar bg-indigo-500 h-4 rounded-full" style="width: 100%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Overlay (hidden by default) -->
+                    <div id="feedback-overlay" class="overlay hidden flex items-center justify-center">
+                        <div id="feedback-message" class="feedback-message bg-white hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel (minimal and at bottom) -->
+            <div class="grid grid-cols-3 gap-4">
+                <button id="new-set-btn"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg">
+                    New Set
+                </button>
+                <button id="next-question-btn"
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
+                    Next Question
+                </button>
+                <button id="timer-btn"
+                    class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg">
+                    Start Timer
+                </button>
+            </div>
+
+            <!-- Feedback Buttons -->
+            <div class="mt-6 bg-white rounded-xl p-4 shadow-md">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">Teacher Feedback:</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <button
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg feedback-btn"
+                        data-feedback="Great answer! ✅">
+                        Great answer! ✅
+                    </button>
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg feedback-btn"
+                        data-feedback="Good effort! 👍">
+                        Good effort! 👍
+                    </button>
+                    <button
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg feedback-btn"
+                        data-feedback="Try again 🔄">
+                        Try again 🔄
+                    </button>
+                    <button
+                        class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg feedback-btn"
+                        data-feedback="Nice creativity! 💡">
+                        Nice creativity! 💡
+                    </button>
+                    <button class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg feedback-btn"
+                        data-feedback="Perfect answer! ⭐">
+                        Perfect answer! ⭐
+                    </button>
+                    <button class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg feedback-btn"
+                        data-feedback="Excellent English! 🏆">
+                        Excellent English! 🏆
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Questions and hints array
+        const questionsData = [{
+                question: "What do you eat for breakfast?",
+                hint: "I eat ... / My favorite breakfast is ..."
+            },
+            {
+                question: "What is your favorite hobby?",
+                hint: "My favorite hobby is ... / I like to ..."
+            },
+            {
+                question: "Do you like watching cartoons? Why or why not?",
+                hint: "Yes, I like watching cartoons because ... / No, I don't like because ..."
+            },
+            {
+                question: "What games do you like to play?",
+                hint: "I like to play ... / My favorite game is ..."
+            },
+            {
+                question: "What is your favorite animal and why?",
+                hint: "My favorite animal is ... because ..."
+            },
+            {
+                question: "How do you get to school?",
+                hint: "I go to school by ... / I walk / I take the bus ..."
+            },
+            {
+                question: "What is your favorite subject at school?",
+                hint: "My favorite subject is ... because ..."
+            },
+            {
+                question: "Describe your best friend.",
+                hint: "My best friend is ... / He/She is ..."
+            },
+            {
+                question: "What do you do on weekends?",
+                hint: "On weekends, I usually ... / I like to ..."
+            },
+            {
+                question: "What is your favorite movie or TV show?",
+                hint: "My favorite movie/TV show is ... because ..."
+            },
+            {
+                question: "What do you want to be when you grow up?",
+                hint: "I want to be a ... / When I grow up, I want to ..."
+            },
+            {
+                question: "What is your favorite food?",
+                hint: "My favorite food is ... / I like to eat ..."
+            },
+            {
+                question: "Do you like reading books? Which one is your favorite?",
+                hint: "Yes, I like reading ... / My favorite book is ..."
+            },
+            {
+                question: "What is your favorite sport?",
+                hint: "My favorite sport is ... / I like to play ..."
+            },
+            {
+                question: "Can you describe your family?",
+                hint: "My family has ... people. / I have ... brothers and sisters."
+            },
+            {
+                question: "What is your favorite season? Why?",
+                hint: "My favorite season is ... because ..."
+            },
+            {
+                question: "What did you do last weekend?",
+                hint: "Last weekend, I ... / I went to ..."
+            },
+            {
+                question: "Do you have a pet? Tell me about it.",
+                hint: "Yes, I have a ... / No, I don't have a pet."
+            },
+            {
+                question: "What is your favorite color and why?",
+                hint: "My favorite color is ... because ..."
+            },
+            {
+                question: "What is your favorite holiday?",
+                hint: "My favorite holiday is ... because ..."
+            },
+            {
+                question: "What do you usually do after school?",
+                hint: "After school, I usually ... / I like to ..."
+            },
+            {
+                question: "What is your favorite song or music?",
+                hint: "My favorite song is ... / I like ... music."
+            },
+            {
+                question: "Have you ever been to another country? Which one?",
+                hint: "Yes, I have been to ... / No, I haven't."
+            },
+            {
+                question: "What do you like to do with your friends?",
+                hint: "I like to ... with my friends."
+            },
+            {
+                question: "What is your favorite drink?",
+                hint: "My favorite drink is ... / I like to drink ..."
+            },
+            {
+                question: "What do you do when you feel sad?",
+                hint: "When I feel sad, I ..."
+            },
+            {
+                question: "Can you describe your bedroom?",
+                hint: "My bedroom is ... / I have a ..."
+            },
+            {
+                question: "What is your favorite cartoon character?",
+                hint: "My favorite cartoon character is ... because ..."
+            },
+            {
+                question: "What do you like to do outside?",
+                hint: "I like to ... outside."
+            },
+            {
+                question: "What is something new you want to learn?",
+                hint: "I want to learn ..."
+            }
+        ];
+
+        // Creative "How to Ask" missions
+        const missionCards = [{
+                title: "Add 'Why?'!",
+                description: "Ask the question and then say 'Why?' to get a deeper answer."
+            },
+            {
+                title: "Give Your Own Answer First!",
+                description: "Say your own answer before asking your partner!"
+            },
+            {
+                title: "Ask with Emotion!",
+                description: "Use excited, surprised, or dramatic tone when asking!"
+            },
+            {
+                title: "Use Hand Gestures!",
+                description: "Use your hands to help explain the question."
+            },
+            {
+                title: "Make it Personal!",
+                description: "Add 'What about you?' after asking the question."
+            },
+            {
+                title: "Ask for Examples!",
+                description: "Say 'Can you give me an example?' after the question."
+            },
+            {
+                title: "Create a Scenario!",
+                description: "Start with 'Imagine you are...' before asking the question."
+            },
+            {
+                title: "Ask for Three Things!",
+                description: "Ask them to name three things in their answer."
+            },
+            {
+                title: "Use 'How' and 'What'!",
+                description: "Change the question to start with 'How' or 'What'."
+            },
+            {
+                title: "Compare Two Things!",
+                description: "Ask them to compare two things in their answer."
+            }
+        ];
+
+        // Variables
+        let studentList = [];
+        let usedQuestions = [];
+        let currentSetQuestions = [];
+        let currentQuestionIndex = 0;
+        let currentSetIndex = 0;
+        let timerInterval;
+        let timeLeft = 120; // 2 minutes in seconds
+        let isTimerRunning = false;
+
+        // DOM Elements
+        const setupPanel = document.getElementById('setup-panel');
+        const mainContent = document.getElementById('main-content');
+        const studentNamesInput = document.getElementById('student-names');
+        const saveStudentsBtn = document.getElementById('save-students-btn');
+        const newSetBtn = document.getElementById('new-set-btn');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const timerBtn = document.getElementById('timer-btn');
+        const setCounter = document.getElementById('set-counter');
+        const questionCounter = document.getElementById('question-counter');
+        const questionText = document.getElementById('question-text');
+        const hintText = document.getElementById('hint-text');
+        const interviewerName = document.getElementById('interviewer-name');
+        const answererName = document.getElementById('answerer-name');
+        const timerElement = document.getElementById('timer');
+        const timerBar = document.getElementById('timer-bar');
+        const feedbackBtns = document.querySelectorAll('.feedback-btn');
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const missionCard = document.getElementById('mission-card');
+        const missionTitle = document.getElementById('mission-title');
+        const missionDescription = document.getElementById('mission-description');
+
+        // Save student names
+        saveStudentsBtn.addEventListener('click', function () {
+            const names = studentNamesInput.value.trim().split('\n').filter(name => name.trim() !== '');
+
+            if (names.length < 2) {
+                alert('Please enter at least 2 student names.');
+                return;
+            }
+
+            studentList = names;
+            setupPanel.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+
+            // Start first set automatically
+            startNewSet();
+        });
+
+        // Get 5 random questions that haven't been used yet
+        function getRandomQuestionSet() {
+            // Reset used questions if we've used most of them
+            if (usedQuestions.length >= questionsData.length - 5) {
+                usedQuestions = [];
+            }
+
+            let availableQuestions = questionsData.filter((_, index) => !usedQuestions.includes(index));
+            let questionSet = [];
+
+            // Get exactly 5 random questions
+            for (let i = 0; i < 5; i++) {
+                if (availableQuestions.length === 0) {
+                    // If we run out, reset and get more
+                    usedQuestions = [];
+                    availableQuestions = questionsData.filter((_, index) => !usedQuestions.includes(index));
+                }
+
+                let randomIndex = Math.floor(Math.random() * availableQuestions.length);
+                let question = availableQuestions[randomIndex];
+                let questionIndex = questionsData.indexOf(question);
+
+                questionSet.push(questionIndex);
+                usedQuestions.push(questionIndex);
+                availableQuestions.splice(randomIndex, 1);
+            }
+
+            return questionSet;
+        }
+
+        // Assign roles and start a new set
+        function startNewSet() {
+            // Shuffle student list and pick two students
+            const shuffledStudents = [...studentList].sort(() => 0.5 - Math.random());
+            const interviewer = shuffledStudents[0];
+            const answerer = shuffledStudents[1];
+
+            // Display student names
+            interviewerName.textContent = interviewer;
+            answererName.textContent = answerer;
+
+            // Get a random mission card
+            const randomMission = missionCards[Math.floor(Math.random() * missionCards.length)];
+            missionTitle.textContent = `${interviewer}'s Bonus Mission: ${randomMission.title}`;
+            missionDescription.textContent = randomMission.description;
+            missionCard.classList.remove('hidden');
+
+            // Get a new set of questions
+            currentSetQuestions = getRandomQuestionSet();
+            currentQuestionIndex = 0;
+            currentSetIndex++;
+
+            // Update counters
+            setCounter.textContent = currentSetIndex;
+
+            // Show first question
+            displayCurrentQuestion();
+        }
+
+        // Display the current question
+        function displayCurrentQuestion() {
+            // Reset any feedback
+            hideFeedback();
+
+            // Reset timer
+            resetTimer();
+
+            // Get current question data
+            const questionIndex = currentSetQuestions[currentQuestionIndex];
+            const questionData = questionsData[questionIndex];
+
+            // Display question and hint
+            questionText.textContent = questionData.question;
+            hintText.textContent = questionData.hint;
+
+            // Update question counter
+            questionCounter.textContent = `${currentQuestionIndex + 1}/5`;
+        }
+
+        // Move to the next question
+        function nextQuestion() {
+            currentQuestionIndex++;
+
+            // Check if we've reached the end of the current set
+            if (currentQuestionIndex >= currentSetQuestions.length) {
+                // End of set - show celebration
+                questionText.textContent = "Set Complete!";
+                hintText.textContent = "Great job! Click 'New Set' to continue with new students.";
+                questionCounter.textContent = `5/5`;
+
+                // Launch confetti celebration
+                launchConfetti();
+            } else {
+                displayCurrentQuestion();
+            }
+        }
+
+        // Timer functions
+        function toggleTimer() {
+            if (isTimerRunning) {
+                resetTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (isTimerRunning) return;
+
+            isTimerRunning = true;
+            timerBtn.textContent = 'Reset Timer';
+            timerBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+            timerBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    timerBtn.textContent = 'Start Timer';
+                    timerBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+                    timerBtn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timeLeft = 120;
+            updateTimerDisplay();
+            timerBtn.textContent = 'Start Timer';
+            timerBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+            timerBtn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            // Update progress bar
+            const percentage = (timeLeft / 120) * 100;
+            timerBar.style.width = `${percentage}%`;
+
+            // Change color based on time remaining
+            if (timeLeft <= 30) {
+                timerBar.classList.remove('bg-indigo-500', 'bg-yellow-500');
+                timerBar.classList.add('bg-red-500');
+            } else if (timeLeft <= 60) {
+                timerBar.classList.remove('bg-indigo-500', 'bg-red-500');
+                timerBar.classList.add('bg-yellow-500');
+            } else {
+                timerBar.classList.remove('bg-yellow-500', 'bg-red-500');
+                timerBar.classList.add('bg-indigo-500');
+            }
+        }
+
+        // Show feedback
+        function showFeedback(feedback) {
+            feedbackOverlay.classList.remove('hidden');
+            feedbackMessage.classList.remove('hidden');
+
+            // Set feedback message and style
+            feedbackMessage.textContent = feedback;
+
+            // Add appropriate color based on feedback
+            feedbackMessage.className = 'feedback-message fade-in';
+
+            if (feedback.includes('Great')) {
+                feedbackMessage.classList.add('bg-green-100', 'text-green-800', 'border-2', 'border-green-500',
+                    'text-5xl', 'font-bold');
+            } else if (feedback.includes('Good')) {
+                feedbackMessage.classList.add('bg-blue-100', 'text-blue-800', 'border-2', 'border-blue-500', 'text-5xl',
+                    'font-bold');
+            } else if (feedback.includes('Try')) {
+                feedbackMessage.classList.add('bg-yellow-100', 'text-yellow-800', 'border-2', 'border-yellow-500',
+                    'text-5xl', 'font-bold');
+            } else if (feedback.includes('Perfect')) {
+                feedbackMessage.classList.add('bg-pink-100', 'text-pink-800', 'border-2', 'border-pink-500', 'text-5xl',
+                    'font-bold');
+            } else if (feedback.includes('Excellent')) {
+                feedbackMessage.classList.add('bg-teal-100', 'text-teal-800', 'border-2', 'border-teal-500', 'text-5xl',
+                    'font-bold');
+            } else {
+                feedbackMessage.classList.add('bg-purple-100', 'text-purple-800', 'border-2', 'border-purple-500',
+                    'text-5xl', 'font-bold');
+            }
+
+            // Hide feedback after 3 seconds
+            setTimeout(hideFeedback, 3000);
+        }
+
+        function hideFeedback() {
+            feedbackOverlay.classList.add('hidden');
+            feedbackMessage.classList.add('hidden');
+        }
+
+        // Confetti celebration
+        function launchConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: {
+                    y: 0.6
+                }
+            });
+
+            // Show a celebratory feedback
+            setTimeout(() => {
+                showFeedback("Set Complete! 🎉");
+            }, 500);
+        }
+
+        // Event listeners
+        newSetBtn.addEventListener('click', startNewSet);
+        nextQuestionBtn.addEventListener('click', nextQuestion);
+        timerBtn.addEventListener('click', toggleTimer);
+
+        // Add event listeners to feedback buttons
+        feedbackBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                showFeedback(btn.dataset.feedback);
+            });
+        });
+
+        // Click overlay to dismiss feedback
+        feedbackOverlay.addEventListener('click', hideFeedback);
+
+        // Initialize timer display
+        updateTimerDisplay();
+
+        // Default student names for testing (can be removed in production)
+        studentNamesInput.value = "Emma\nLiam\nOlivia\nNoah\nAva\nEthan\nSophia\nMason";
+    </script>
+
+</body>
+
+</html>

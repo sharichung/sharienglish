@@ -415,7 +415,7 @@ const groups = [{
     "spellingPractice": {
       "words": [
         "up", "gun", "gum",
-        "got", "gut", "dog", "mud",
+        "got", "gut", "dog",
         "pod", "pun", "pop", "pot",
         "mud", "mug", "rug", "run",
         "dump", "punk", "pump"
