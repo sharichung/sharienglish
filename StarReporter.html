@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Reporter - English Learning Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 300px;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .left-panel {
+            background: linear-gradient(145deg, #ffffff, #f0f4ff);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .main-studio {
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .right-panel {
+            background: linear-gradient(145deg, #ffffff, #f0f4ff);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 24px;
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .current-prompt {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .prompt-category {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .prompt-text {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .prompt-rewards {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .reward-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .example-sentences {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .example-title {
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .example-item {
+            background: #e2e8f0;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #2d3748;
+            border-left: 4px solid #667eea;
+        }
+
+        .studio-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: all 0.5s ease;
+        }
+
+        .studio-background.city {
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+        }
+
+        .studio-background.jungle {
+            background: linear-gradient(180deg, #228B22 0%, #32CD32 100%);
+        }
+
+        .studio-background.space {
+            background: linear-gradient(180deg, #191970 0%, #4B0082 100%);
+        }
+
+        .news-desk {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 120px;
+            background: linear-gradient(145deg, #8B4513, #A0522D);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .news-desk::before {
+            content: "📺 STAR NEWS 📺";
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .reporter-avatar {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        .prop-hat {
+            position: absolute;
+            bottom: 240px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 10;
+            animation: bounce 2s infinite;
+        }
+
+        .prop-hat.show {
+            opacity: 1;
+        }
+
+        .microphone {
+            position: absolute;
+            bottom: 200px;
+            left: 60%;
+            font-size: 40px;
+            animation: sway 3s ease-in-out infinite;
+        }
+
+        @keyframes sway {
+
+            0%,
+            100% {
+                transform: rotate(-5deg);
+            }
+
+            50% {
+                transform: rotate(5deg);
+            }
+        }
+
+        .camera {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            font-size: 50px;
+            animation: blink 4s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes blink {
+
+            0%,
+            90%,
+            100% {
+                opacity: 1;
+            }
+
+            95% {
+                opacity: 0.3;
+            }
+        }
+
+        .speech-bubble {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        .score-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-item {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .score-number {
+            font-family: 'Fredoka One', cursive;
+            font-size: 32px;
+            color: #b45309;
+            margin-bottom: 5px;
+        }
+
+        .score-label {
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .teacher-controls {
+            margin-top: 30px;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        .shop-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .shop-title {
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7fafc;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .shop-item.unlocked {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .shop-item.active {
+            background: #bee3f8;
+            color: #2a4365;
+            font-weight: 600;
+        }
+
+        .shop-price {
+            font-weight: 600;
+            color: #b45309;
+        }
+
+        .shop-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .shop-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .floating-star {
+            position: absolute;
+            font-size: 30px;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.5);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.2);
+            }
+        }
+
+        .floating-coin {
+            position: absolute;
+            font-size: 25px;
+            pointer-events: none;
+            animation: coinDrop 1.5s ease-out forwards;
+        }
+
+        @keyframes coinDrop {
+            0% {
+                opacity: 1;
+                transform: translateY(-50px) rotate(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(50px) rotate(360deg);
+            }
+        }
+
+        .completion-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 25px 35px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.4);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            text-align: center;
+        }
+
+        .completion-message.show {
+            opacity: 1;
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .celebration-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .celebration-content {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500, #48bb78, #667eea);
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.5s ease;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .celebration-overlay.show .celebration-content {
+            transform: scale(1);
+        }
+
+        .celebration-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: celebrationPulse 2s infinite;
+        }
+
+        @keyframes celebrationPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .celebration-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+
+        .celebration-stat {
+            text-align: center;
+        }
+
+        .celebration-stat-number {
+            font-family: 'Fredoka One', cursive;
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .celebration-stat-label {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .play-again-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.6);
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: fireworkExplode 2s ease-out infinite;
+        }
+
+        @keyframes fireworkExplode {
+            0% {
+                opacity: 1;
+                transform: scale(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confettiFall 3s linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .celebration-star {
+            position: absolute;
+            font-size: 30px;
+            animation: celebrationStarFly 4s ease-in-out infinite;
+        }
+
+        @keyframes celebrationStarFly {
+            0% {
+                transform: translateX(-100px) translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(100px) translateY(-50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                height: auto;
+            }
+
+            .left-panel,
+            .right-panel {
+                order: 2;
+            }
+
+            .main-studio {
+                order: 1;
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1249.0" data-gr-ext-installed="">
+    <div class="game-container">
+        <!-- Left Panel: Current Prompt and Examples -->
+        <div class="left-panel">
+            <h2 class="panel-title">📋 Current Mission</h2>
+
+            <div class="current-prompt" id="currentPrompt">
+                <div class="prompt-category" id="promptCategory">🎤 Self-Introduction</div>
+                <div class="prompt-text" id="promptText">Tell us your name and how old you are!</div>
+                <div class="prompt-rewards">
+                    <div class="reward-item">⭐ <span id="promptStars">2</span> Stars</div>
+                    <div class="reward-item">🪙 <span id="promptCoins">3</span> Coins</div>
+                </div>
+            </div>
+
+            <div class="example-sentences">
+                <div class="example-title">💡 Example Sentences:</div>
+                <div id="exampleContent">
+                    <div class="example-item">"Hello! My name is Sarah and I'm 11 years old."</div>
+                    <div class="example-item">"Hi everyone! I'm Tom and I'm 10 years old."</div>
+                    <div class="example-item">"Good morning! I'm Maria and I'm 12 years old."</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Studio Area -->
+        <div class="main-studio">
+            <div class="studio-background city" id="studioBackground"></div>
+
+            <div class="camera" onclick="cameraClick()">📹</div>
+            <div class="microphone">🎤</div>
+            <div class="prop-hat" id="propHat">🎩</div>
+
+            <div class="speech-bubble show" id="speechBubble">
+                <div id="bubbleText">Welcome to Star Reporter! Complete prompts to earn stars and coins! 🌟</div>
+            </div>
+
+            <div class="reporter-avatar" onclick="avatarClick()">👨‍💼</div>
+            <div class="news-desk"></div>
+
+            <div class="completion-message" id="completionMessage">
+                🎉 Great job! You earned your rewards! 🎉
+            </div>
+        </div>
+
+        <!-- Celebration Overlay -->
+        <div class="celebration-overlay" id="celebrationOverlay">
+            <div class="celebration-content">
+                <div class="celebration-title">🎉 Congratulations! 🎉</div>
+                <div style="font-size: 24px; margin-bottom: 20px; font-weight: 600;">
+                    You completed 20 reports!
+                </div>
+                <div class="celebration-stats">
+                    <div class="celebration-stat">
+                        <div class="celebration-stat-number" id="finalStars">0</div>
+                        <div class="celebration-stat-label">⭐ Total Stars</div>
+                    </div>
+                    <div class="celebration-stat">
+                        <div class="celebration-stat-number" id="finalCoins">0</div>
+                        <div class="celebration-stat-label">🪙 Total Coins</div>
+                    </div>
+                </div>
+                <div style="font-size: 18px; margin-bottom: 20px; opacity: 0.9;">
+                    You're an amazing Star Reporter! 🌟
+                </div>
+                <button class="play-again-btn" onclick="playAgain()">
+                    🎮 Play Again
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Score and Controls -->
+        <div class="right-panel">
+            <h2 class="panel-title">🏆 Reporter Stats</h2>
+
+            <div class="score-section">
+                <div class="score-item">
+                    <div class="score-number" id="starCount">0</div>
+                    <div class="score-label">⭐ Stars Earned</div>
+                </div>
+
+                <div class="score-item">
+                    <div class="score-number" id="coinCount">0</div>
+                    <div class="score-label">🪙 News Coins</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+            <div style="text-align: center; font-size: 14px; color: #4a5568; margin-bottom: 20px;">
+                Progress: <span id="progressText">0/20</span> prompts completed
+            </div>
+
+            <div class="teacher-controls">
+                <h3 style="font-size: 18px; margin-bottom: 15px; color: #4a5568; text-align: center;">👩‍🏫 Teacher
+                    Controls</h3>
+
+                <button class="control-btn next-btn" onclick="nextPrompt()">
+                    ✅ Complete &amp; Next Prompt
+                </button>
+
+                <button class="control-btn restart-btn" onclick="restartGame()">
+                    🔄 Restart Game
+                </button>
+            </div>
+
+            <div class="shop-section">
+                <div class="shop-title">🛍️ Unlock with Coins</div>
+
+                <div class="shop-item" id="hatItem">
+                    <span>🎩 Reporter Hat</span>
+                    <div>
+                        <span class="shop-price">5🪙</span>
+                        <button class="shop-btn" onclick="buyItem('hat', 5)" id="hatBtn" disabled="">Buy</button>
+                    </div>
+                </div>
+
+                <div class="shop-item" id="jungleItem">
+                    <span>🌴 Jungle Studio</span>
+                    <div>
+                        <span class="shop-price">8🪙</span>
+                        <button class="shop-btn" onclick="buyItem('jungle', 8)" id="jungleBtn" disabled="">Buy</button>
+                    </div>
+                </div>
+
+                <div class="shop-item" id="spaceItem">
+                    <span>🚀 Space Studio</span>
+                    <div>
+                        <span class="shop-price">12🪙</span>
+                        <button class="shop-btn" onclick="buyItem('space', 12)" id="spaceBtn" disabled="">Buy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stars = 0;
+        let coins = 0;
+        let currentPromptIndex = 0;
+        let completedPrompts = 0;
+        let currentBackground = 'city';
+        let unlockedItems = {
+            hat: false,
+            jungle: false,
+            space: false
+        };
+
+        const prompts = [
+            // Self-Introduction (5 prompts)
+            {
+                category: "🎤 Self-Introduction",
+                text: "Tell us your name and how old you are!",
+                stars: 2,
+                coins: 3,
+                examples: [
+                    '"Hello! My name is Sarah and I\'m 11 years old."',
+                    '"Hi everyone! I\'m Tom and I\'m 10 years old."',
+                    '"Good morning! I\'m Maria and I\'m 12 years old."'
+                ]
+            },
+            {
+                category: "🎤 Self-Introduction",
+                text: "What's your favorite hobby or activity?",
+                stars: 2,
+                coins: 3,
+                examples: [
+                    '"My favorite hobby is playing soccer with my friends."',
+                    '"I love reading adventure books and drawing pictures."',
+                    '"I enjoy playing piano and listening to music."'
+                ]
+            },
+            {
+                category: "🎤 Self-Introduction",
+                text: "Tell us about your favorite food!",
+                stars: 2,
+                coins: 3,
+                examples: [
+                    '"My favorite food is pizza with lots of cheese!"',
+                    '"I love eating chocolate ice cream on hot days."',
+                    '"My mom makes the best spaghetti in the world!"'
+                ]
+            },
+            {
+                category: "🎤 Self-Introduction",
+                text: "Introduce yourself as a news reporter!",
+                stars: 3,
+                coins: 4,
+                examples: [
+                    '"Good evening! I\'m Reporter Alex bringing you the news!"',
+                    '"Hello viewers! This is Emma reporting live from Star News!"',
+                    '"Welcome to the show! I\'m your host, Reporter Sam!"'
+                ]
+            },
+            {
+                category: "🎤 Self-Introduction",
+                text: "Tell us about your family or pets!",
+                stars: 2,
+                coins: 3,
+                examples: [
+                    '"I have a little sister and a fluffy cat named Whiskers."',
+                    '"My family has three people: me, mom, and dad."',
+                    '"I have a golden dog who loves to play fetch!"'
+                ]
+            },
+
+            // Mini News Reports (5 prompts)
+            {
+                category: "📰 Mini News Report",
+                text: "Report about something amazing that happened at school!",
+                stars: 3,
+                coins: 4,
+                examples: [
+                    '"Breaking news: Students discovered a rainbow in the playground today!"',
+                    '"This just in: Our school library got 100 new adventure books!"',
+                    '"Special report: A friendly squirrel visited our classroom window!"'
+                ]
+            },
+            {
+                category: "📰 Mini News Report",
+                text: "Create a weather report with magical weather!",
+                stars: 3,
+                coins: 5,
+                examples: [
+                    '"Weather update: It\'s raining colorful candy today!"',
+                    '"Tomorrow expect sunny skies with floating bubbles!"',
+                    '"This week we\'ll have snow that tastes like vanilla ice cream!"'
+                ]
+            },
+            {
+                category: "📰 Mini News Report",
+                text: "Report about an animal doing something funny!",
+                stars: 3,
+                coins: 4,
+                examples: [
+                    '"Breaking: A cat learned to play piano at the local park!"',
+                    '"News flash: Penguins were seen dancing at the zoo today!"',
+                    '"Update: A dog opened its own ice cream stand downtown!"'
+                ]
+            },
+            {
+                category: "📰 Mini News Report",
+                text: "Tell us about a discovery in your neighborhood!",
+                stars: 3,
+                coins: 4,
+                examples: [
+                    '"Local news: Children found a treasure map in the sandbox!"',
+                    '"Breaking story: A magical tree grew overnight in the park!"',
+                    '"Special report: Neighbors discovered a secret garden!"'
+                ]
+            },
+            {
+                category: "📰 Mini News Report",
+                text: "Report about your favorite superhero saving the day!",
+                stars: 4,
+                coins: 5,
+                examples: [
+                    '"Hero news: Super Cat rescued all the fish from the pet store!"',
+                    '"Breaking: Captain Kindness helped everyone with their homework!"',
+                    '"Update: Wonder Girl stopped all the vegetables from escaping!"'
+                ]
+            },
+
+            // Creative Challenges (5 prompts)
+            {
+                category: "✨ Creative Challenge",
+                text: "Describe your magical pet!",
+                stars: 4,
+                coins: 6,
+                examples: [
+                    '"My magical pet dragon loves to eat ice cream and breathe rainbow fire!"',
+                    '"I have a unicorn that can fly and makes flowers grow wherever it walks!"',
+                    '"My pet phoenix sings beautiful songs and its feathers glow at night!"'
+                ]
+            },
+            {
+                category: "✨ Creative Challenge",
+                text: "Tell us about an alien visitor!",
+                stars: 4,
+                coins: 6,
+                examples: [
+                    '"The alien visitor has three purple eyes and speaks in musical notes!"',
+                    '"Our space friend is green, has four arms, and loves eating pizza!"',
+                    '"The alien can change colors and communicates through funny dances!"'
+                ]
+            },
+            {
+                category: "✨ Creative Challenge",
+                text: "What would your dream world look like?",
+                stars: 4,
+                coins: 6,
+                examples: [
+                    '"In my dream world, trees grow cookies and rivers flow with chocolate milk!"',
+                    '"My perfect world has floating islands and houses made of candy!"',
+                    '"Everything would be made of soft clouds and it would rain gummy bears!"'
+                ]
+            },
+            {
+                category: "✨ Creative Challenge",
+                text: "If you were a superhero, what would your power be?",
+                stars: 4,
+                coins: 6,
+                examples: [
+                    '"My superpower would be making people laugh with magical jokes!"',
+                    '"I could turn any food into ice cream with just a touch!"',
+                    '"My power would be talking to animals and understanding their secrets!"'
+                ]
+            },
+            {
+                category: "✨ Creative Challenge",
+                text: "What would happen if animals could talk?",
+                stars: 4,
+                coins: 6,
+                examples: [
+                    '"If animals could talk, my cat would probably complain about everything!"',
+                    '"Dogs would tell us where they hide all their favorite toys!"',
+                    '"Birds would give us weather reports from high up in the sky!"'
+                ]
+            }
+        ];
+
+        function updatePromptDisplay() {
+            const prompt = prompts[currentPromptIndex];
+            document.getElementById('promptCategory').textContent = prompt.category;
+            document.getElementById('promptText').textContent = prompt.text;
+            document.getElementById('promptStars').textContent = prompt.stars;
+            document.getElementById('promptCoins').textContent = prompt.coins;
+
+            // Update examples
+            const exampleContent = document.getElementById('exampleContent');
+            exampleContent.innerHTML = '';
+            prompt.examples.forEach(example => {
+                const div = document.createElement('div');
+                div.className = 'example-item';
+                div.textContent = example;
+                exampleContent.appendChild(div);
+            });
+
+            showSpeechBubble(`Ready for your next challenge! ${prompt.text}`);
+        }
+
+        function nextPrompt() {
+            const prompt = prompts[currentPromptIndex];
+
+            // Award stars and coins
+            stars += prompt.stars;
+            coins += prompt.coins;
+            completedPrompts++;
+
+            updateScore();
+            createRewardAnimations(prompt.stars, prompt.coins);
+            showCompletionMessage();
+
+            // Check if completed 20 prompts
+            if (completedPrompts >= 20) {
+                setTimeout(() => {
+                    showCelebration();
+                }, 2000);
+                return;
+            }
+
+            // Move to next prompt
+            currentPromptIndex = (currentPromptIndex + 1) % prompts.length;
+
+            setTimeout(() => {
+                updatePromptDisplay();
+            }, 2000);
+        }
+
+        function createRewardAnimations(starsEarned, coinsEarned) {
+            const studio = document.querySelector('.main-studio');
+
+            // Create star animations
+            for (let i = 0; i < starsEarned; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.textContent = '⭐';
+                    star.className = 'floating-star';
+                    star.style.left = Math.random() * 80 + 10 + '%';
+                    star.style.top = Math.random() * 60 + 20 + '%';
+                    studio.appendChild(star);
+
+                    setTimeout(() => star.remove(), 2000);
+                }, i * 200);
+            }
+
+            // Create coin animations
+            for (let i = 0; i < coinsEarned; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.textContent = '🪙';
+                    coin.className = 'floating-coin';
+                    coin.style.left = Math.random() * 80 + 10 + '%';
+                    coin.style.top = Math.random() * 60 + 20 + '%';
+                    studio.appendChild(coin);
+
+                    setTimeout(() => coin.remove(), 1500);
+                }, i * 150);
+            }
+        }
+
+        function showCompletionMessage() {
+            const message = document.getElementById('completionMessage');
+            message.classList.add('show');
+
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 2000);
+        }
+
+        function updateScore() {
+            document.getElementById('starCount').textContent = stars;
+            document.getElementById('coinCount').textContent = coins;
+            document.getElementById('progressText').textContent = `${completedPrompts}/20`;
+
+            // Update progress bar (out of 20 prompts)
+            const progress = (completedPrompts / 20) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Update shop buttons
+            updateShopButtons();
+        }
+
+        function updateShopButtons() {
+            const hatBtn = document.getElementById('hatBtn');
+            const jungleBtn = document.getElementById('jungleBtn');
+            const spaceBtn = document.getElementById('spaceBtn');
+
+            hatBtn.disabled = coins < 5 || unlockedItems.hat;
+            jungleBtn.disabled = coins < 8 || unlockedItems.jungle;
+            spaceBtn.disabled = coins < 12 || unlockedItems.space;
+
+            if (unlockedItems.hat) {
+                document.getElementById('hatItem').classList.add('unlocked');
+                hatBtn.textContent = 'Owned';
+            }
+            if (unlockedItems.jungle) {
+                document.getElementById('jungleItem').classList.add('unlocked');
+                jungleBtn.textContent = 'Owned';
+            }
+            if (unlockedItems.space) {
+                document.getElementById('spaceItem').classList.add('unlocked');
+                spaceBtn.textContent = 'Owned';
+            }
+        }
+
+        function buyItem(item, cost) {
+            if (coins >= cost && !unlockedItems[item]) {
+                coins -= cost;
+                unlockedItems[item] = true;
+
+                if (item === 'hat') {
+                    document.getElementById('propHat').classList.add('show');
+                    showSpeechBubble('Looking stylish with your new reporter hat! 🎩');
+                } else if (item === 'jungle') {
+                    changeBackground('jungle');
+                    showSpeechBubble('Welcome to the Jungle News Studio! 🌴');
+                } else if (item === 'space') {
+                    changeBackground('space');
+                    showSpeechBubble('Broadcasting from Space Station News! 🚀');
+                }
+
+                updateScore();
+            }
+        }
+
+        function changeBackground(bg) {
+            currentBackground = bg;
+            const background = document.getElementById('studioBackground');
+            background.className = `studio-background ${bg}`;
+
+            // Update active background in shop
+            document.querySelectorAll('.shop-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            if (bg === 'jungle') {
+                document.getElementById('jungleItem').classList.add('active');
+            } else if (bg === 'space') {
+                document.getElementById('spaceItem').classList.add('active');
+            }
+        }
+
+        function showCelebration() {
+            // Update final stats
+            document.getElementById('finalStars').textContent = stars;
+            document.getElementById('finalCoins').textContent = coins;
+
+            // Show celebration overlay
+            const overlay = document.getElementById('celebrationOverlay');
+            overlay.classList.add('show');
+
+            // Create celebration animations
+            createCelebrationAnimations();
+
+            // Visual feedback for celebration
+            const studio = document.querySelector('.main-studio');
+            studio.style.filter = 'brightness(1.5) saturate(1.3)';
+            setTimeout(() => studio.style.filter = 'brightness(1) saturate(1)', 5000);
+        }
+
+        function createCelebrationAnimations() {
+            const overlay = document.getElementById('celebrationOverlay');
+
+            // Create fireworks
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 100 + '%';
+                    firework.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                    overlay.appendChild(firework);
+
+                    setTimeout(() => firework.remove(), 2000);
+                }, i * 100);
+            }
+
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    overlay.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+
+            // Create flying stars
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'celebration-star';
+                    star.textContent = '⭐';
+                    star.style.top = Math.random() * 80 + 10 + '%';
+                    star.style.animationDelay = Math.random() * 2 + 's';
+                    overlay.appendChild(star);
+
+                    setTimeout(() => star.remove(), 4000);
+                }, i * 200);
+            }
+        }
+
+        function playAgain() {
+            // Hide celebration overlay
+            document.getElementById('celebrationOverlay').classList.remove('show');
+
+            // Reset game
+            restartGame();
+        }
+
+        function restartGame() {
+            stars = 0;
+            coins = 0;
+            currentPromptIndex = 0;
+            completedPrompts = 0;
+            currentBackground = 'city';
+            unlockedItems = {
+                hat: false,
+                jungle: false,
+                space: false
+            };
+
+            // Reset UI
+            changeBackground('city');
+            document.getElementById('propHat').classList.remove('show');
+            document.querySelectorAll('.shop-item').forEach(item => {
+                item.classList.remove('unlocked', 'active');
+            });
+            document.querySelectorAll('.shop-btn').forEach(btn => {
+                btn.textContent = 'Buy';
+            });
+
+            updateScore();
+            updatePromptDisplay();
+            showSpeechBubble('Welcome back to Star News! Ready for a fresh start? 🌟');
+        }
+
+        function showSpeechBubble(text) {
+            const bubble = document.getElementById('speechBubble');
+            const bubbleText = document.getElementById('bubbleText');
+
+            bubble.classList.remove('show');
+
+            setTimeout(() => {
+                bubbleText.textContent = text;
+                bubble.classList.add('show');
+            }, 200);
+        }
+
+        function avatarClick() {
+            const messages = [
+                "I'm ready to report the news! 📺",
+                "This is going to be an amazing story! ✨",
+                "Let's make this the best news show ever! 🌟",
+                "I love being a Star Reporter! 🎤"
+            ];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            showSpeechBubble(randomMessage);
+        }
+
+        function cameraClick() {
+            showSpeechBubble("Camera rolling! Action! 📹✨");
+
+            // Visual feedback
+            const studio = document.querySelector('.main-studio');
+            studio.style.filter = 'brightness(1.3)';
+            setTimeout(() => studio.style.filter = 'brightness(1)', 300);
+        }
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function () {
+            updatePromptDisplay();
+            updateScore();
+            showSpeechBubble('Welcome to Star Reporter! Complete prompts to earn stars and coins! 🌟');
+        });
+    </script>
+
+</body>
+
+</html>
