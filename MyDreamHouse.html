@@ -1,0 +1,2541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dream House - English Learning Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .game-title {
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .draggable {
+            cursor: grab;
+            transition: transform 0.2s;
+        }
+
+        .draggable:hover {
+            transform: scale(1.05);
+        }
+
+        .draggable.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .room {
+            min-height: 120px;
+            border: 3px dashed #cbd5e1;
+            transition: all 0.3s;
+        }
+
+        .room.drag-over {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+        }
+
+        .placed-item {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .placed-item:hover {
+            transform: scale(1.1);
+        }
+
+        .spin-animation {
+            animation: spin 2s linear;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .bounce {
+            animation: bounce 0.6s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .action-update {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-update.place {
+            border-color: #10b981;
+            color: #065f46;
+            background: rgba(209, 250, 229, 0.95);
+        }
+
+        .action-update.move {
+            border-color: #3b82f6;
+            color: #1e3a8a;
+            background: rgba(219, 234, 254, 0.95);
+        }
+
+        .action-update.remove {
+            border-color: #ef4444;
+            color: #991b1b;
+            background: rgba(254, 226, 226, 0.95);
+        }
+
+        .action-update.reward {
+            border-color: #f59e0b;
+            color: #92400e;
+            background: rgba(254, 243, 199, 0.95);
+        }
+
+        .action-update.click {
+            border-color: #8b5cf6;
+            color: #581c87;
+            background: rgba(237, 233, 254, 0.95);
+        }
+
+        .action-update.special {
+            border-color: #ec4899;
+            color: #831843;
+            background: rgba(252, 231, 243, 0.95);
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sparkle {
+
+            0%,
+            100% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        .celebration-modal {
+            animation: celebration-bounce 0.5s ease-out;
+        }
+
+        @keyframes celebration-bounce {
+            0% {
+                transform: scale(0.3) rotate(-10deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05) rotate(2deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .pointer-events-none {
+            pointer-events: none
+        }
+
+        .fixed {
+            position: fixed
+        }
+
+        .inset-0 {
+            inset: 0px
+        }
+
+        .bottom-4 {
+            bottom: 1rem
+        }
+
+        .left-4 {
+            left: 1rem
+        }
+
+        .right-4 {
+            right: 1rem
+        }
+
+        .z-40 {
+            z-index: 40
+        }
+
+        .z-50 {
+            z-index: 50
+        }
+
+        .mx-4 {
+            margin-left: 1rem;
+            margin-right: 1rem
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mt-4 {
+            margin-top: 1rem
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .h-8 {
+            height: 2rem
+        }
+
+        .min-h-screen {
+            min-height: 100vh
+        }
+
+        .min-h-24 {
+            min-height: 6rem
+        }
+
+        .w-8 {
+            width: 2rem
+        }
+
+        .max-w-2xl {
+            max-width: 42rem
+        }
+
+        .max-w-7xl {
+            max-width: 80rem
+        }
+
+        .max-w-md {
+            max-width: 28rem
+        }
+
+        .flex-1 {
+            flex: 1 1 0%
+        }
+
+        .flex-shrink-0 {
+            flex-shrink: 0
+        }
+
+        .cursor-pointer {
+            cursor: pointer
+        }
+
+        .cursor-not-allowed {
+            cursor: not-allowed
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr))
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
+
+        .grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr))
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap
+        }
+
+        .items-start {
+            align-items: flex-start
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .justify-between {
+            justify-content: space-between
+        }
+
+        .gap-2 {
+            gap: 0.5rem
+        }
+
+        .gap-3 {
+            gap: 0.75rem
+        }
+
+        .gap-4 {
+            gap: 1rem
+        }
+
+        .gap-6 {
+            gap: 1.5rem
+        }
+
+        .space-y-2> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+        }
+
+        .rounded {
+            border-radius: 0.25rem
+        }
+
+        .rounded-2xl {
+            border-radius: 1rem
+        }
+
+        .rounded-3xl {
+            border-radius: 1.5rem
+        }
+
+        .rounded-full {
+            border-radius: 9999px
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem
+        }
+
+        .border-2 {
+            border-width: 2px
+        }
+
+        .border-l-4 {
+            border-left-width: 4px
+        }
+
+        .border-t-2 {
+            border-top-width: 2px
+        }
+
+        .border-blue-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(191 219 254 / var(--tw-border-opacity, 1))
+        }
+
+        .border-blue-400 {
+            --tw-border-opacity: 1;
+            border-color: rgb(96 165 250 / var(--tw-border-opacity, 1))
+        }
+
+        .border-gray-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(229 231 235 / var(--tw-border-opacity, 1))
+        }
+
+        .border-green-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(187 247 208 / var(--tw-border-opacity, 1))
+        }
+
+        .border-indigo-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(199 210 254 / var(--tw-border-opacity, 1))
+        }
+
+        .border-orange-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(254 215 170 / var(--tw-border-opacity, 1))
+        }
+
+        .border-pink-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(251 207 232 / var(--tw-border-opacity, 1))
+        }
+
+        .border-purple-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(233 213 255 / var(--tw-border-opacity, 1))
+        }
+
+        .border-purple-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(216 180 254 / var(--tw-border-opacity, 1))
+        }
+
+        .border-red-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(254 202 202 / var(--tw-border-opacity, 1))
+        }
+
+        .border-yellow-200 {
+            --tw-border-opacity: 1;
+            border-color: rgb(254 240 138 / var(--tw-border-opacity, 1))
+        }
+
+        .border-yellow-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(253 224 71 / var(--tw-border-opacity, 1))
+        }
+
+        .bg-black {
+            --tw-bg-opacity: 1;
+            background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(96 165 250 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gray-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(156 163 175 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gray-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(107 114 128 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(74 222 128 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(240 253 244 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-indigo-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(224 231 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-orange-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 237 213 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-orange-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(251 146 60 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-pink-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(252 231 243 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-pink-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(244 114 182 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(243 232 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(233 213 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(192 132 252 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-purple-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(250 245 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-red-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-red-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(248 113 113 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-red-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-100 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-200 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 240 138 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-400 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(250 204 21 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-yellow-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-opacity-50 {
+            --tw-bg-opacity: 0.5
+        }
+
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops))
+        }
+
+        .from-blue-100 {
+            --tw-gradient-from: #dbeafe var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(219 234 254 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-blue-50 {
+            --tw-gradient-from: #eff6ff var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(239 246 255 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-orange-500 {
+            --tw-gradient-from: #f97316 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(249 115 22 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-purple-100 {
+            --tw-gradient-from: #f3e8ff var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(243 232 255 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .from-yellow-100 {
+            --tw-gradient-from: #fef9c3 var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(254 249 195 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .to-orange-100 {
+            --tw-gradient-to: #ffedd5 var(--tw-gradient-to-position)
+        }
+
+        .to-pink-100 {
+            --tw-gradient-to: #fce7f3 var(--tw-gradient-to-position)
+        }
+
+        .to-purple-100 {
+            --tw-gradient-to: #f3e8ff var(--tw-gradient-to-position)
+        }
+
+        .to-purple-50 {
+            --tw-gradient-to: #faf5ff var(--tw-gradient-to-position)
+        }
+
+        .to-red-600 {
+            --tw-gradient-to: #dc2626 var(--tw-gradient-to-position)
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-2 {
+            padding: 0.5rem
+        }
+
+        .p-3 {
+            padding: 0.75rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .p-8 {
+            padding: 2rem
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem
+        }
+
+        .py-1 {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem
+        }
+
+        .pt-4 {
+            padding-top: 1rem
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem
+        }
+
+        .text-base {
+            font-size: 1rem;
+            line-height: 1.5rem
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .font-medium {
+            font-weight: 500
+        }
+
+        .font-semibold {
+            font-weight: 600
+        }
+
+        .leading-relaxed {
+            line-height: 1.625
+        }
+
+        .text-blue-600 {
+            --tw-text-opacity: 1;
+            color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-700 {
+            --tw-text-opacity: 1;
+            color: rgb(29 78 216 / var(--tw-text-opacity, 1))
+        }
+
+        .text-blue-800 {
+            --tw-text-opacity: 1;
+            color: rgb(30 64 175 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-500 {
+            --tw-text-opacity: 1;
+            color: rgb(107 114 128 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-700 {
+            --tw-text-opacity: 1;
+            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-800 {
+            --tw-text-opacity: 1;
+            color: rgb(31 41 55 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-600 {
+            --tw-text-opacity: 1;
+            color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-800 {
+            --tw-text-opacity: 1;
+            color: rgb(22 101 52 / var(--tw-text-opacity, 1))
+        }
+
+        .text-indigo-800 {
+            --tw-text-opacity: 1;
+            color: rgb(55 48 163 / var(--tw-text-opacity, 1))
+        }
+
+        .text-orange-600 {
+            --tw-text-opacity: 1;
+            color: rgb(234 88 12 / var(--tw-text-opacity, 1))
+        }
+
+        .text-orange-800 {
+            --tw-text-opacity: 1;
+            color: rgb(154 52 18 / var(--tw-text-opacity, 1))
+        }
+
+        .text-pink-800 {
+            --tw-text-opacity: 1;
+            color: rgb(157 23 77 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-600 {
+            --tw-text-opacity: 1;
+            color: rgb(147 51 234 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-700 {
+            --tw-text-opacity: 1;
+            color: rgb(126 34 206 / var(--tw-text-opacity, 1))
+        }
+
+        .text-purple-800 {
+            --tw-text-opacity: 1;
+            color: rgb(107 33 168 / var(--tw-text-opacity, 1))
+        }
+
+        .text-red-800 {
+            --tw-text-opacity: 1;
+            color: rgb(153 27 27 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .text-white\/80 {
+            color: rgb(255 255 255 / 0.8)
+        }
+
+        .text-white\/90 {
+            color: rgb(255 255 255 / 0.9)
+        }
+
+        .text-yellow-600 {
+            --tw-text-opacity: 1;
+            color: rgb(202 138 4 / var(--tw-text-opacity, 1))
+        }
+
+        .text-yellow-800 {
+            --tw-text-opacity: 1;
+            color: rgb(133 77 14 / var(--tw-text-opacity, 1))
+        }
+
+        .opacity-50 {
+            opacity: 0.5
+        }
+
+        .shadow-2xl {
+            --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .transition-transform {
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .hover\:scale-110:hover {
+            --tw-scale-x: 1.1;
+            --tw-scale-y: 1.1;
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .hover\:bg-blue-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-gray-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(75 85 99 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-green-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-red-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:from-orange-600:hover {
+            --tw-gradient-from: #ea580c var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(234 88 12 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .hover\:to-red-700:hover {
+            --tw-gradient-to: #b91c1c var(--tw-gradient-to-position)
+        }
+
+        .hover\:text-gray-700:hover {
+            --tw-text-opacity: 1;
+            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
+        }
+
+        .disabled\:cursor-not-allowed:disabled {
+            cursor: not-allowed
+        }
+
+        .disabled\:opacity-50:disabled {
+            opacity: 0.5
+        }
+
+        @media (min-width: 768px) {
+            .md\:text-6xl {
+                font-size: 3.75rem;
+                line-height: 1
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lg\:col-span-1 {
+                grid-column: span 1 / span 1
+            }
+
+            .lg\:col-span-3 {
+                grid-column: span 3 / span 3
+            }
+
+            .lg\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .lg\:grid-cols-4 {
+                grid-template-columns: repeat(4, minmax(0, 1fr))
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-4" data-new-gr-c-s-check-loaded="14.1252.0" data-gr-ext-installed="">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="game-title text-4xl md:text-6xl text-white mb-2">🏠 My Dream House 🏠</h1>
+            <p class="text-xl text-white/90">Drag items to build your house and make sentences!</p>
+            <p class="text-lg text-white/80">💡 Tip: Right-click or long-press items to remove them!</p>
+        </div>
+
+        <!-- Task Panel - Redesigned for compact layout -->
+
+            <!-- Main Task Layout: Task on left, Mystery Boxes on right -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+
+                <!-- Left Side: Current Task & Completion -->
+                <div class="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-4 border-2 border-yellow-300">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-orange-600 mb-2">📝 Current Task:</h3>
+                            <p id="taskDescription" class="text-base font-semibold text-gray-800 mb-2">Place an item in
+                                any room to get started!</p>
+                            <div id="taskTip" class="bg-blue-50 border-l-4 border-blue-400 p-2 mb-2 rounded">
+                                <p class="text-sm text-blue-700 font-medium">💡 <span id="taskTipText">Drag any
+                                        furniture from the shop to a room to begin!</span></p>
+                            </div>
+                            <span class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold">
+                                🎁 Reward: <span id="taskReward">1</span> Mystery Box
+                            </span>
+                        </div>
+                        <!-- Task Completion Button - Right side of task -->
+                        <div class="flex-shrink-0">
+                            <button id="completeTask"
+                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-xl transition-all text-sm">
+                                ✅ Complete!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Mystery Boxes Section -->
+                <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-4 border-2 border-purple-300">
+                    <h3 class="text-lg font-bold text-purple-600 mb-3 text-center">🎁 Mystery Boxes</h3>
+                    <div class="flex items-center justify-center gap-3">
+                        <!-- Mystery Box Counter -->
+                        <div class="bg-purple-200 rounded-xl px-4 py-2 text-center">
+                            <div class="text-xl font-bold text-purple-700" id="luckyDrawCount">0</div>
+                            <div class="text-xs text-purple-600 font-semibold">Available</div>
+                        </div>
+                        <!-- Mystery Box Button -->
+                        <button id="mysteryBox"
+                            class="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-2 px-4 rounded-xl hover:from-orange-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm opacity-50 cursor-not-allowed"
+                            disabled="">
+                            📦 Open Box!
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Sidebar with Items -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-3xl p-6 shadow-2xl">
+                    <h2 class="text-2xl font-bold text-purple-600 mb-4 text-center">🛋️ Furniture Shop</h2>
+
+
+                    <!-- Color Palette -->
+                    <div class="border-t-2 border-gray-200 pt-4 mb-6">
+                        <h3 class="text-lg font-bold text-gray-700 mb-3 text-center">🎨 Pick a Color</h3>
+                        <div class="grid grid-cols-4 gap-2">
+                            <div class="h-8 bg-red-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="red"></div>
+                            <div class="h-8 bg-blue-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="blue"></div>
+                            <div class="h-8 bg-green-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="green"></div>
+                            <div class="h-8 bg-yellow-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="yellow"></div>
+                            <div class="h-8 bg-purple-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="purple"></div>
+                            <div class="h-8 bg-pink-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="pink"></div>
+                            <div class="h-8 bg-orange-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="orange"></div>
+                            <div class="h-8 bg-gray-400 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                                data-color="gray"></div>
+                        </div>
+                    </div>
+
+                    <!-- Regular Items -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="draggable bg-blue-100 rounded-2xl p-3 text-center border-2 border-blue-200"
+                            draggable="true" data-item="bed" data-room="bedroom">
+                            <div class="text-3xl mb-1">🛏️</div>
+                            <div class="text-sm font-semibold text-blue-800">Bed</div>
+                        </div>
+                        <div class="draggable bg-green-100 rounded-2xl p-3 text-center border-2 border-green-200"
+                            draggable="true" data-item="sofa" data-room="living room">
+                            <div class="text-3xl mb-1">🛋️</div>
+                            <div class="text-sm font-semibold text-green-800">Sofa</div>
+                        </div>
+                        <div class="draggable bg-red-100 rounded-2xl p-3 text-center border-2 border-red-200"
+                            draggable="true" data-item="tv" data-room="living room">
+                            <div class="text-3xl mb-1">📺</div>
+                            <div class="text-sm font-semibold text-red-800">TV</div>
+                        </div>
+                        <div class="draggable bg-yellow-100 rounded-2xl p-3 text-center border-2 border-yellow-200"
+                            draggable="true" data-item="lamp" data-room="bedroom">
+                            <div class="text-3xl mb-1">💡</div>
+                            <div class="text-sm font-semibold text-yellow-800">Lamp</div>
+                        </div>
+                        <div class="draggable bg-purple-100 rounded-2xl p-3 text-center border-2 border-purple-200"
+                            draggable="true" data-item="bookshelf" data-room="living room">
+                            <div class="text-3xl mb-1">📚</div>
+                            <div class="text-sm font-semibold text-purple-800">Bookshelf</div>
+                        </div>
+                        <div class="draggable bg-pink-100 rounded-2xl p-3 text-center border-2 border-pink-200"
+                            draggable="true" data-item="table" data-room="kitchen">
+                            <div class="text-3xl mb-1">🪑</div>
+                            <div class="text-sm font-semibold text-pink-800">Table</div>
+                        </div>
+                        <div class="draggable bg-indigo-100 rounded-2xl p-3 text-center border-2 border-indigo-200"
+                            draggable="true" data-item="fridge" data-room="kitchen">
+                            <div class="text-3xl mb-1">🧊</div>
+                            <div class="text-sm font-semibold text-indigo-800">Fridge</div>
+                        </div>
+                        <div class="draggable bg-orange-100 rounded-2xl p-3 text-center border-2 border-orange-200"
+                            draggable="true" data-item="piano" data-room="living room">
+                            <div class="text-3xl mb-1">🎹</div>
+                            <div class="text-sm font-semibold text-orange-800">Piano</div>
+                        </div>
+                    </div>
+<!-- Special Items Area -->
+                        <div id="specialItems" class="mt-4 grid grid-cols-2 gap-3 mt-3"></div>
+
+                    
+                </div>
+            </div>
+
+            <!-- House Layout -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-3xl p-6 shadow-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-purple-600">🏡 My Dream House</h2>
+                        <div class="flex gap-3">
+                            <button id="houseTour"
+                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-2xl transition-all">
+                                🚶 House Tour
+                            </button>
+                            <button id="resetHouse"
+                                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-2xl transition-all">
+                                🔄 Reset House
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- House Rooms -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="room bg-blue-50 rounded-2xl p-4 border-2 border-blue-200" data-room="bedroom">
+                            <h3 class="text-lg font-bold text-blue-600 mb-2 text-center">🛏️ Bedroom</h3>
+                            <div class="room-items min-h-24 flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="room bg-green-50 rounded-2xl p-4 border-2 border-green-200" data-room="living room">
+                            <h3 class="text-lg font-bold text-green-600 mb-2 text-center">🛋️ Living Room</h3>
+                            <div class="room-items min-h-24 flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="room bg-yellow-50 rounded-2xl p-4 border-2 border-yellow-200" data-room="kitchen">
+                            <h3 class="text-lg font-bold text-yellow-600 mb-2 text-center">🍳 Kitchen</h3>
+                            <div class="room-items min-h-24 flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="room bg-purple-50 rounded-2xl p-4 border-2 border-purple-200" data-room="garden">
+                            <h3 class="text-lg font-bold text-purple-600 mb-2 text-center">🌻 Garden</h3>
+                            <div class="room-items min-h-24 flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Current Sentence Display -->
+                    <div id="sentenceDisplay"
+                        class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-4 mb-4 text-center hidden">
+                        <h3 class="text-lg font-bold text-purple-600 mb-2">📝 Your Sentence:</h3>
+                        <p id="currentSentence" class="text-xl font-semibold text-gray-800"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Updates Area -->
+        <div class="fixed bottom-4 left-4 right-4 z-40 pointer-events-none">
+            <div id="actionUpdates" class="max-w-md mx-auto space-y-2"></div>
+        </div>
+
+        <!-- House Tour Pop-up -->
+        <div id="houseTourModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-3xl p-8 max-w-2xl mx-4 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-purple-600">🚶 House Tour</h2>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
+                </div>
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-6">
+                    <p id="houseTourText" class="text-lg text-gray-800 leading-relaxed"></p>
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button id="speakTour"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-2xl transition-all">
+                        🔊 Read Aloud
+                    </button>
+                    <button id="closeTour"
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-2xl transition-all">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let houseItems = {};
+        let specialItemCounter = 0;
+        let luckyDraws = 0;
+        let currentTask = null;
+        let selectedColor = null;
+        let usedSpecialItems = new Set(); // Track used special items
+        let currentSpeech = null; // Track current speech synthesis
+
+        // Special items for mystery box
+        const specialItems = [{
+                name: 'trampoline',
+                emoji: '🤸',
+                room: 'garden'
+            },
+            {
+                name: 'dragon',
+                emoji: '🐉',
+                room: 'garden'
+            },
+            {
+                name: 'candy machine',
+                emoji: '🍭',
+                room: 'living room'
+            },
+            {
+                name: 'rocket',
+                emoji: '🚀',
+                room: 'garden'
+            },
+            {
+                name: 'unicorn',
+                emoji: '🦄',
+                room: 'bedroom'
+            },
+            {
+                name: 'treasure chest',
+                emoji: '💎',
+                room: 'bedroom'
+            },
+            {
+                name: 'robot',
+                emoji: '🤖',
+                room: 'living room'
+            },
+            {
+                name: 'magic wand',
+                emoji: '🪄',
+                room: 'bedroom'
+            },
+            {
+                name: 'telescope',
+                emoji: '🔭',
+                room: 'bedroom'
+            },
+            {
+                name: 'magic carpet',
+                emoji: '🧞',
+                room: 'living room'
+            },
+            {
+                name: 'treehouse',
+                emoji: '🏠',
+                room: 'garden'
+            },
+            {
+                name: 'unicorn statue',
+                emoji: '🦄',
+                room: 'garden'
+            },
+            {
+                name: 'slide',
+                emoji: '🛝',
+                room: 'garden'
+            },
+            {
+                name: 'aquarium',
+                emoji: '🐠',
+                room: 'living room'
+            },
+            {
+                name: 'giant teddy',
+                emoji: '🧸',
+                room: 'bedroom'
+            },
+            {
+                name: 'garden gnome',
+                emoji: '🧙',
+                room: 'garden'
+            },
+            {
+                name: 'floating chair',
+                emoji: '🪑',
+                room: 'living room'
+            },
+            {
+                name: 'disco ball',
+                emoji: '🪩',
+                room: 'living room'
+            },
+            {
+                name: 'swing',
+                emoji: '🏊',
+                room: 'garden'
+            },
+            {
+                name: 'secret bookshelf',
+                emoji: '📚',
+                room: 'bedroom'
+            },
+            {
+                name: 'crystal ball',
+                emoji: '🔮',
+                room: 'bedroom'
+            },
+            {
+                name: 'mini castle',
+                emoji: '🏰',
+                room: 'garden'
+            }
+        ];
+
+        // Task definitions with eligibility requirements and tips
+        const tasks = [{
+                description: "Introduce an item you placed",
+                reward: 1,
+                type: "item",
+                requiresItems: true,
+                requiresSpecialItems: false,
+                tip: "Say: 'This is my [item name]. I put it in my [room name] because...'"
+            },
+            {
+                description: "Introduce a room with 2 or more items",
+                reward: 2,
+                type: "room",
+                requiresItems: true,
+                requiresSpecialItems: false,
+                minItemsInRoom: 2,
+                tip: "Say: 'In my [room name], I have a [item 1], a [item 2], and a [item 3].'"
+            },
+            {
+                description: "Give a tour of your whole house",
+                reward: 3,
+                type: "house",
+                requiresItems: true,
+                requiresSpecialItems: false,
+                tip: "Start with: 'Welcome to my dream house! Let me show you around...'"
+            },
+            {
+                description: "Describe your favorite room",
+                reward: 2,
+                type: "room",
+                requiresItems: true,
+                requiresSpecialItems: false,
+                tip: "Say: 'My favorite room is the [room name] because it has...'"
+            },
+            {
+                description: "Tell me about a special item in your house",
+                reward: 2,
+                type: "special",
+                requiresItems: true,
+                requiresSpecialItems: true,
+                tip: "Say: 'My special item is a [item name]. It's amazing because...'"
+            },
+            {
+                description: "Explain why you chose certain items for a room",
+                reward: 2,
+                type: "room",
+                requiresItems: true,
+                requiresSpecialItems: false,
+                tip: "Say: 'I chose these items for my [room] because they make it perfect for...'"
+            },
+            {
+                description: "Compare two different rooms in your house",
+                reward: 2,
+                type: "house",
+                requiresItems: true,
+                requiresSpecialItems: false,
+                minRoomsWithItems: 2,
+                tip: "Say: 'My [room 1] is different from my [room 2] because...'"
+            },
+            {
+                description: "Describe what makes your special item magical",
+                reward: 3,
+                type: "special",
+                requiresItems: true,
+                requiresSpecialItems: true,
+                tip: "Say: 'My [special item] is magical because it can...'"
+            }
+        ];
+
+        // Initialize drag and drop
+        function initializeDragAndDrop() {
+            // Add event listeners to draggable items
+            document.querySelectorAll('.draggable').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Add event listeners to rooms
+            document.querySelectorAll('.room').forEach(room => {
+                room.addEventListener('dragover', handleDragOver);
+                room.addEventListener('drop', handleDrop);
+                room.addEventListener('dragenter', handleDragEnter);
+                room.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', JSON.stringify({
+                item: e.target.dataset.item,
+                emoji: e.target.querySelector('div').textContent,
+                name: e.target.querySelector('div:last-child').textContent
+            }));
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            const room = e.currentTarget.dataset.room;
+
+            if (data.isPlaced) {
+                // Moving existing item between rooms
+                moveItemBetweenRooms(data, room);
+            } else {
+                // Adding new item from sidebar
+                addItemToRoom(data, room);
+            }
+        }
+
+        function removeItemFromRoom(itemElement, itemName, room) {
+            // Remove from DOM with animation
+            itemElement.style.transform = 'scale(0)';
+            itemElement.style.opacity = '0';
+
+            setTimeout(() => {
+                if (itemElement.parentNode) {
+                    itemElement.parentNode.removeChild(itemElement);
+                }
+            }, 300);
+
+            // Remove from house items data
+            if (houseItems[room]) {
+                const itemIndex = houseItems[room].indexOf(itemName);
+                if (itemIndex > -1) {
+                    houseItems[room].splice(itemIndex, 1);
+                }
+            }
+
+            // Show removal confirmation
+            showActionUpdate(`You removed a ${itemName} from the ${room}! 🗑️`, 'remove');
+        }
+
+        function moveItemBetweenRooms(itemData, newRoom) {
+            const originalRoom = itemData.originalRoom;
+
+            // Remove from original room's data
+            if (houseItems[originalRoom]) {
+                const itemIndex = houseItems[originalRoom].indexOf(itemData.name);
+                if (itemIndex > -1) {
+                    houseItems[originalRoom].splice(itemIndex, 1);
+                }
+            }
+
+            // Remove from original room's DOM
+            const originalRoomElement = document.querySelector(`[data-room="${originalRoom}"] .room-items`);
+            const draggedElement = document.querySelector('.dragging');
+            if (draggedElement && originalRoomElement.contains(draggedElement)) {
+                originalRoomElement.removeChild(draggedElement);
+            }
+
+            // Add to new room
+            const newRoomElement = document.querySelector(`[data-room="${newRoom}"] .room-items`);
+
+            const placedItem = document.createElement('div');
+            placedItem.className = 'placed-item bg-white rounded-xl p-2 shadow-lg border-2 border-gray-200 text-center';
+            placedItem.innerHTML = `
+                <div class="text-2xl mb-1">${itemData.emoji}</div>
+                <div class="text-xs font-semibold text-gray-700">${itemData.name}</div>
+            `;
+
+            // Add event listeners
+            placedItem.addEventListener('click', () => {
+                generateSentence(itemData.name, newRoom);
+                showActionUpdate(`You clicked on the ${itemData.name}! 👆`, 'click');
+            });
+
+            // Add right-click event for removal
+            placedItem.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                removeItemFromRoom(placedItem, itemData.name, newRoom);
+            });
+
+            // Add long-press for mobile removal
+            let pressTimer;
+            placedItem.addEventListener('touchstart', (e) => {
+                pressTimer = setTimeout(() => {
+                    removeItemFromRoom(placedItem, itemData.name, newRoom);
+                }, 800);
+            });
+
+            placedItem.addEventListener('touchend', () => {
+                clearTimeout(pressTimer);
+            });
+
+            placedItem.addEventListener('touchmove', () => {
+                clearTimeout(pressTimer);
+            });
+
+            // Make draggable
+            placedItem.draggable = true;
+            placedItem.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    item: itemData.item,
+                    emoji: itemData.emoji,
+                    name: itemData.name,
+                    isPlaced: true,
+                    originalRoom: newRoom
+                }));
+                placedItem.classList.add('dragging');
+            });
+
+            placedItem.addEventListener('dragend', (e) => {
+                placedItem.classList.remove('dragging');
+            });
+
+            newRoomElement.appendChild(placedItem);
+            placedItem.classList.add('bounce');
+
+            // Update house items data
+            if (!houseItems[newRoom]) houseItems[newRoom] = [];
+            houseItems[newRoom].push(itemData.name);
+
+            // Show move confirmation
+            showActionUpdate(`You moved the ${itemData.name} to the ${newRoom}! 📦`, 'move');
+        }
+
+        function addItemToRoom(itemData, room) {
+            const roomElement = document.querySelector(`[data-room="${room}"] .room-items`);
+
+            // Apply selected color if any
+            let colorClass = 'bg-white';
+            let colorName = '';
+            if (selectedColor) {
+                colorClass = `bg-${selectedColor}-200`;
+                colorName = selectedColor + ' ';
+            }
+
+            // Create placed item
+            const placedItem = document.createElement('div');
+            placedItem.className =
+                `placed-item ${colorClass} rounded-xl p-2 shadow-lg border-2 border-gray-200 text-center`;
+            placedItem.innerHTML = `
+                <div class="text-2xl mb-1">${itemData.emoji}</div>
+                <div class="text-xs font-semibold text-gray-700">${colorName}${itemData.name}</div>
+            `;
+
+            // Add click event for sentence generation
+            placedItem.addEventListener('click', () => {
+                generateSentence(colorName + itemData.name, room);
+                showActionUpdate(`You clicked on the ${colorName}${itemData.name}! 👆`, 'click');
+            });
+
+            // Add right-click event for removal
+            placedItem.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                removeItemFromRoom(placedItem, colorName + itemData.name, room);
+            });
+
+            // Add long-press for mobile removal
+            let pressTimer;
+            placedItem.addEventListener('touchstart', (e) => {
+                pressTimer = setTimeout(() => {
+                    removeItemFromRoom(placedItem, colorName + itemData.name, room);
+                }, 800);
+            });
+
+            placedItem.addEventListener('touchend', () => {
+                clearTimeout(pressTimer);
+            });
+
+            placedItem.addEventListener('touchmove', () => {
+                clearTimeout(pressTimer);
+            });
+
+            // Make placed items draggable
+            placedItem.draggable = true;
+            placedItem.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    item: itemData.item || itemData.name.toLowerCase(),
+                    emoji: itemData.emoji,
+                    name: colorName + itemData.name,
+                    isPlaced: true,
+                    originalRoom: room
+                }));
+                placedItem.classList.add('dragging');
+            });
+
+            placedItem.addEventListener('dragend', (e) => {
+                placedItem.classList.remove('dragging');
+            });
+
+            roomElement.appendChild(placedItem);
+            placedItem.classList.add('bounce');
+
+            // Store in house items
+            if (!houseItems[room]) houseItems[room] = [];
+            houseItems[room].push(colorName + itemData.name);
+
+            // Show placement confirmation
+            showActionUpdate(`You placed a ${colorName}${itemData.name} in the ${room}! ✅`, 'place');
+
+            // Show sentence
+            generateSentence(colorName + itemData.name, room);
+
+            // Only award Mystery Boxes if current task is specifically about placing items
+            if (currentTask && (currentTask.type === "starter" || currentTask.type === "item")) {
+                luckyDraws += currentTask.reward;
+                updateLuckyDrawDisplay();
+                showActionUpdate(
+                    `Great job! You earned ${currentTask.reward} mystery box${currentTask.reward > 1 ? 'es' : ''}! 🎁`,
+                    'reward');
+                // Generate new task after completing placement task
+                generateNewTask();
+            }
+
+            // Reset selected color
+            selectedColor = null;
+            document.querySelectorAll('[data-color]').forEach(color => {
+                color.classList.remove('ring-4', 'ring-gray-400');
+            });
+        }
+
+        // Check if player has any special items placed in house
+        function hasSpecialItems() {
+            for (let room in houseItems) {
+                for (let item of houseItems[room]) {
+                    // Check if item matches any special item name
+                    const itemName = item.toLowerCase().replace(/^(red|blue|green|yellow|purple|pink|orange|gray)\s+/,
+                        '');
+                    if (specialItems.some(special => special.name.toLowerCase() === itemName)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Check if player has any items placed in house
+        function hasAnyItems() {
+            for (let room in houseItems) {
+                if (houseItems[room] && houseItems[room].length > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Check if player has a room with minimum number of items
+        function hasRoomWithMinItems(minItems) {
+            for (let room in houseItems) {
+                if (houseItems[room] && houseItems[room].length >= minItems) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Count rooms that have at least one item
+        function countRoomsWithItems() {
+            let count = 0;
+            for (let room in houseItems) {
+                if (houseItems[room] && houseItems[room].length > 0) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // Check if a task is eligible based on current game state
+        function isTaskEligible(task) {
+            // If task requires items but player has none, not eligible
+            if (task.requiresItems && !hasAnyItems()) {
+                return false;
+            }
+
+            // If task requires special items but player has none, not eligible
+            if (task.requiresSpecialItems && !hasSpecialItems()) {
+                return false;
+            }
+
+            // If task requires minimum items in a room
+            if (task.minItemsInRoom && !hasRoomWithMinItems(task.minItemsInRoom)) {
+                return false;
+            }
+
+            // If task requires multiple rooms with items
+            if (task.minRoomsWithItems && countRoomsWithItems() < task.minRoomsWithItems) {
+                return false;
+            }
+
+            return true;
+        }
+
+        function generateNewTask() {
+            // Filter tasks to only eligible ones
+            const eligibleTasks = tasks.filter(task => isTaskEligible(task));
+
+            // If no eligible tasks, show a default starter task
+            if (eligibleTasks.length === 0) {
+                currentTask = {
+                    description: "Place an item in any room to get started!",
+                    reward: 1,
+                    type: "starter",
+                    tip: "Drag any furniture from the shop to a room to begin!"
+                };
+            } else {
+                // Pick random eligible task
+                const randomTask = eligibleTasks[Math.floor(Math.random() * eligibleTasks.length)];
+                currentTask = randomTask;
+            }
+
+            document.getElementById('taskDescription').textContent = currentTask.description;
+            document.getElementById('taskReward').textContent = currentTask.reward;
+            document.getElementById('taskTipText').textContent = currentTask.tip ||
+                "Complete this task to earn Mystery Boxes!";
+        }
+
+        function completeTask() {
+            if (currentTask) {
+                luckyDraws += currentTask.reward;
+                updateLuckyDrawDisplay();
+                generateNewTask();
+
+                // Show completion message
+                showActionUpdate(
+                    `Great job! You earned ${currentTask.reward} mystery box${currentTask.reward > 1 ? 'es' : ''}! 🎁`,
+                    'reward');
+            }
+        }
+
+        function updateLuckyDrawDisplay() {
+            document.getElementById('luckyDrawCount').textContent = luckyDraws;
+            const mysteryBoxBtn = document.getElementById('mysteryBox');
+            if (luckyDraws > 0) {
+                mysteryBoxBtn.disabled = false;
+                mysteryBoxBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                mysteryBoxBtn.disabled = true;
+                mysteryBoxBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function generateSentence(item, room) {
+            const sentences = [
+                `In my ${room}, there is a ${item}.`,
+                `I have a ${item} in my ${room}.`,
+                `My ${room} has a beautiful ${item}.`,
+                `I want a ${item} in the ${room}.`
+            ];
+
+            const sentence = sentences[Math.floor(Math.random() * sentences.length)];
+
+            document.getElementById('currentSentence').textContent = sentence;
+            document.getElementById('sentenceDisplay').classList.remove('hidden');
+        }
+
+        // Action update display function
+        function showActionUpdate(message, type) {
+            const actionArea = document.getElementById('actionUpdates');
+
+            // Create new update element
+            const updateElement = document.createElement('div');
+            updateElement.className = `action-update ${type} opacity-0 transform translate-y-4`;
+            updateElement.textContent = message;
+
+            // Add to container
+            actionArea.appendChild(updateElement);
+
+            // Animate in
+            setTimeout(() => {
+                updateElement.classList.remove('opacity-0', 'translate-y-4');
+                updateElement.classList.add('opacity-100', 'translate-y-0');
+            }, 50);
+
+            // Remove after 4 seconds
+            setTimeout(() => {
+                updateElement.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => {
+                    if (updateElement.parentNode) {
+                        updateElement.parentNode.removeChild(updateElement);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Mystery box functionality
+        document.getElementById('mysteryBox').addEventListener('click', function () {
+            if (luckyDraws > 0) {
+                this.classList.add('bounce');
+                luckyDraws--;
+                updateLuckyDrawDisplay();
+
+                setTimeout(() => {
+                    this.classList.remove('bounce');
+
+                    // Filter out already used special items
+                    const availableItems = specialItems.filter(item => !usedSpecialItems.has(item
+                    .name));
+
+                    if (availableItems.length > 0) {
+                        const randomItem = availableItems[Math.floor(Math.random() * availableItems
+                            .length)];
+                        addSpecialItem(randomItem);
+                        usedSpecialItems.add(randomItem.name);
+                        showMysteryBoxCelebration(randomItem);
+                    } else {
+                        // All special items used, give a regular item instead
+                        showActionUpdate(
+                            "All special items have been used! Here's a bonus regular item! 🎁",
+                            'special');
+                        const regularItems = [{
+                                name: 'chair',
+                                emoji: '🪑',
+                                room: 'living room'
+                            },
+                            {
+                                name: 'mirror',
+                                emoji: '🪞',
+                                room: 'bedroom'
+                            },
+                            {
+                                name: 'plant',
+                                emoji: '🪴',
+                                room: 'living room'
+                            }
+                        ];
+                        const randomRegular = regularItems[Math.floor(Math.random() * regularItems
+                            .length)];
+                        addSpecialItem(randomRegular);
+                        showMysteryBoxCelebration(randomRegular);
+                    }
+                }, 600);
+            }
+        });
+
+        // Task completion functionality
+        document.getElementById('completeTask').addEventListener('click', completeTask);
+
+        // Color palette functionality
+        document.querySelectorAll('[data-color]').forEach(colorBtn => {
+            colorBtn.addEventListener('click', function () {
+                // Remove previous selection
+                document.querySelectorAll('[data-color]').forEach(btn => {
+                    btn.classList.remove('ring-4', 'ring-gray-400');
+                });
+
+                // Add selection to clicked color
+                this.classList.add('ring-4', 'ring-gray-400');
+                selectedColor = this.dataset.color;
+            });
+        });
+
+        function addSpecialItem(item) {
+            const specialItemsContainer = document.getElementById('specialItems');
+            specialItemCounter++;
+
+            const specialItem = document.createElement('div');
+            specialItem.className =
+                'draggable bg-gradient-to-br from-yellow-200 to-orange-200 rounded-2xl p-3 text-center border-2 border-yellow-300 bounce';
+            specialItem.draggable = true;
+            specialItem.dataset.item = item.name;
+            specialItem.innerHTML = `
+                <div class="text-3xl mb-1">${item.emoji}</div>
+                <div class="text-xs font-semibold text-orange-800">${item.name}</div>
+            `;
+
+            // Add drag events
+            specialItem.addEventListener('dragstart', handleDragStart);
+            specialItem.addEventListener('dragend', handleDragEnd);
+
+            specialItemsContainer.appendChild(specialItem);
+        }
+
+        // Mystery Box Celebration Pop-up
+        function showMysteryBoxCelebration(item) {
+            // Create celebration modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="celebration-modal bg-gradient-to-br from-yellow-200 via-pink-200 to-purple-200 rounded-3xl p-8 max-w-md mx-4 shadow-2xl text-center relative overflow-hidden">
+                    <div class="confetti-container absolute inset-0 pointer-events-none"></div>
+                    <div class="sparkles-container absolute inset-0 pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-purple-600 mb-4 bounce">🎉 Mystery Box Opened! 🎉</h2>
+                    
+                    <div class="item-showcase bg-white rounded-2xl p-6 mb-6 border-4 border-yellow-300 shadow-lg">
+                        <div class="text-6xl mb-3 bounce">${item.emoji}</div>
+                        <h3 class="text-2xl font-bold text-gray-800 capitalize">${item.name}</h3>
+                        <p class="text-lg text-gray-600 mt-2">You got a special ${item.name}!</p>
+                    </div>
+                    
+                    <button class="celebration-close bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-3 px-6 rounded-2xl hover:from-green-600 hover:to-blue-600 transition-all text-lg">
+                        Awesome! 🌟
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Create confetti
+            createConfetti(modal.querySelector('.confetti-container'));
+
+            // Create sparkles
+            createSparkles(modal.querySelector('.sparkles-container'));
+
+            // Close button functionality
+            modal.querySelector('.celebration-close').addEventListener('click', () => {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(modal);
+                }, 300);
+            });
+
+            // Show action update
+            showActionUpdate(`You obtained a ${item.name} from the Mystery Box! ⭐`, 'special');
+        }
+
+        function createConfetti(container) {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    left: ${Math.random() * 100}%;
+                    animation: confetti-fall ${2 + Math.random() * 3}s linear infinite;
+                    animation-delay: ${Math.random() * 2}s;
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                `;
+                container.appendChild(confetti);
+            }
+        }
+
+        function createSparkles(container) {
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.textContent = '✨';
+                sparkle.style.cssText = `
+                    position: absolute;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: sparkle ${1 + Math.random() * 2}s ease-in-out infinite;
+                    animation-delay: ${Math.random() * 2}s;
+                    font-size: ${12 + Math.random() * 8}px;
+                `;
+                container.appendChild(sparkle);
+            }
+        }
+
+        // House tour functionality
+        document.getElementById('houseTour').addEventListener('click', function () {
+            let tourText = generateHouseTourText();
+            document.getElementById('houseTourText').textContent = tourText;
+            document.getElementById('houseTourModal').classList.remove('hidden');
+        });
+
+        function generateHouseTourText() {
+            let tourText = "Welcome to my dream house! ";
+            let hasItems = false;
+
+            // Define room order for logical flow
+            const roomOrder = ['bedroom', 'living room', 'kitchen', 'garden'];
+
+            roomOrder.forEach(room => {
+                if (houseItems[room] && houseItems[room].length > 0) {
+                    hasItems = true;
+                    const items = houseItems[room];
+
+                    // Group items by both type and color (treat colored items as distinct)
+                    const itemCounts = {};
+                    items.forEach(item => {
+                        // Use the full item name (including color) as the key for grouping
+                        const key = item.toLowerCase();
+
+                        if (!itemCounts[key]) {
+                            itemCounts[key] = {
+                                count: 0,
+                                displayName: item
+                            };
+                        }
+                        itemCounts[key].count++;
+                    });
+
+                    // Convert to array and create descriptions
+                    const itemDescriptions = Object.values(itemCounts).map(itemInfo => {
+                        if (itemInfo.count === 1) {
+                            return addArticle(itemInfo.displayName);
+                        } else {
+                            return `${numberToWord(itemInfo.count)} ${pluralize(itemInfo.displayName)}`;
+                        }
+                    });
+
+                    // Create sentence based on number of different items
+                    if (itemDescriptions.length === 1) {
+                        tourText += `In my ${room}, there is ${itemDescriptions[0]}. `;
+                    } else if (itemDescriptions.length === 2) {
+                        tourText += `In my ${room}, I have ${itemDescriptions[0]} and ${itemDescriptions[1]}. `;
+                    } else {
+                        // For 3 or more different items, use proper list format
+                        const lastItem = itemDescriptions[itemDescriptions.length - 1];
+                        const otherItems = itemDescriptions.slice(0, -1);
+                        tourText += `In my ${room}, I have ${otherItems.join(', ')}, and ${lastItem}. `;
+                    }
+                }
+            });
+
+            if (!hasItems) {
+                tourText = "My house is empty right now. Let me add some furniture to make it cozy!";
+            } else {
+                tourText += "This is my wonderful dream house!";
+            }
+
+            return tourText;
+        }
+
+        function numberToWord(num) {
+            const numbers = {
+                2: 'two',
+                3: 'three',
+                4: 'four',
+                5: 'five',
+                6: 'six',
+                7: 'seven',
+                8: 'eight',
+                9: 'nine',
+                10: 'ten'
+            };
+            return numbers[num] || num.toString();
+        }
+
+        function pluralize(word) {
+            // Simple pluralization rules
+            const lowerWord = word.toLowerCase();
+
+            // Special cases
+            const irregulars = {
+                'piano': 'pianos',
+                'sofa': 'sofas',
+                'candy machine': 'candy machines',
+                'treasure chest': 'treasure chests',
+                'magic wand': 'magic wands'
+            };
+
+            if (irregulars[lowerWord]) {
+                return irregulars[lowerWord];
+            }
+
+            // Regular pluralization
+            if (lowerWord.endsWith('s') || lowerWord.endsWith('sh') || lowerWord.endsWith('ch') || lowerWord.endsWith(
+                    'x') || lowerWord.endsWith('z')) {
+                return word + 'es';
+            } else if (lowerWord.endsWith('y') && !/[aeiou]y$/.test(lowerWord)) {
+                return word.slice(0, -1) + 'ies';
+            } else {
+                return word + 's';
+            }
+        }
+
+        function addArticle(item) {
+            // Add appropriate article (a/an) before the item
+            const vowels = ['a', 'e', 'i', 'o', 'u'];
+            const firstLetter = item.toLowerCase().charAt(0);
+
+            // Handle color prefixes
+            const words = item.toLowerCase().split(' ');
+            const mainWord = words[words.length - 1]; // Get the last word (the actual item)
+            const firstLetterOfMainWord = mainWord.charAt(0);
+
+            if (vowels.includes(firstLetterOfMainWord)) {
+                return `an ${item}`;
+            } else {
+                return `a ${item}`;
+            }
+        }
+
+        // Modal functionality
+        document.getElementById('closeModal').addEventListener('click', function () {
+            // Stop any current speech when closing modal
+            if (currentSpeech) {
+                speechSynthesis.cancel();
+                currentSpeech = null;
+            }
+            document.getElementById('houseTourModal').classList.add('hidden');
+        });
+
+        document.getElementById('closeTour').addEventListener('click', function () {
+            // Stop any current speech when closing modal
+            if (currentSpeech) {
+                speechSynthesis.cancel();
+                currentSpeech = null;
+            }
+            document.getElementById('houseTourModal').classList.add('hidden');
+        });
+
+        document.getElementById('speakTour').addEventListener('click', function () {
+            const tourText = document.getElementById('houseTourText').textContent;
+            if ('speechSynthesis' in window) {
+                // Stop any current speech
+                if (currentSpeech) {
+                    speechSynthesis.cancel();
+                }
+
+                const utterance = new SpeechSynthesisUtterance(tourText);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.2;
+
+                // Track the current speech
+                currentSpeech = utterance;
+
+                // Clear tracking when speech ends
+                utterance.onend = () => {
+                    currentSpeech = null;
+                };
+
+                speechSynthesis.speak(utterance);
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('houseTourModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                // Stop any current speech when closing modal
+                if (currentSpeech) {
+                    speechSynthesis.cancel();
+                    currentSpeech = null;
+                }
+                this.classList.add('hidden');
+            }
+        });
+
+        // Reset house functionality
+        document.getElementById('resetHouse').addEventListener('click', function () {
+            document.querySelectorAll('.room-items').forEach(room => {
+                room.innerHTML = '';
+            });
+            document.getElementById('specialItems').innerHTML = '';
+            houseItems = {};
+            luckyDraws = 0;
+            selectedColor = null;
+            usedSpecialItems.clear(); // Reset used special items
+            document.getElementById('sentenceDisplay').classList.add('hidden');
+            document.getElementById('taskDescription').textContent =
+            'Place an item in any room to get started!';
+            document.getElementById('taskReward').textContent = '1';
+            updateLuckyDrawDisplay();
+
+            // Reset color selection
+            document.querySelectorAll('[data-color]').forEach(color => {
+                color.classList.remove('ring-4', 'ring-gray-400');
+            });
+        });
+
+        // Stop speech on page unload/refresh
+        window.addEventListener('beforeunload', function () {
+            if (currentSpeech) {
+                speechSynthesis.cancel();
+                currentSpeech = null;
+            }
+        });
+
+        // Initialize the game
+        initializeDragAndDrop();
+        generateNewTask();
+        updateLuckyDrawDisplay();
+    </script>
+
+</body>
+
+</html>
