@@ -1,0 +1,3612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Business Tycoon - English Learning Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            width: 95%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .title {
+            font-size: 3em;
+            color: #FF6B6B;
+            text-shadow: 3px 3px 0px #FFE66D;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .shop-visual {
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(45deg, #FF9A9E 0%, #FECFEF 50%, #FECFEF 100%);
+            border: 5px solid #FF6B6B;
+            border-radius: 20px;
+            margin: 20px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .shop-visual::before {
+            content: "🏪";
+            font-size: 4em;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .money-display {
+            font-size: 2em;
+            color: #4ECDC4;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* DISABLED BUTTON STYLING: Visual feedback for unavailable actions */
+        .btn:disabled,
+        .option-btn:disabled {
+            background: #cccccc !important;
+            color: #666666 !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn:disabled:hover,
+        .option-btn:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-green {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+        }
+
+        .btn-blue {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .btn-yellow {
+            background: linear-gradient(45deg, #FFE66D, #FF6B6B);
+        }
+
+        .btn-purple {
+            background: linear-gradient(45deg, #A8EDEA, #FED6E3);
+            color: #333;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            min-width: 120px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .game-visual {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 250px;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shop-scene {
+            font-size: 6em;
+            animation: float 3s ease-in-out infinite;
+            z-index: 5;
+            position: relative;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .customers {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 2em;
+            animation: walk 4s linear infinite;
+            z-index: 10;
+        }
+
+        @keyframes walk {
+            0% {
+                left: -50px;
+            }
+
+            100% {
+                left: calc(100% + 50px);
+            }
+        }
+
+        /* UPGRADE VISUALS: Visual elements for purchased upgrades */
+        .upgrade-visual {
+            position: absolute;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s ease;
+        }
+
+        .upgrade-visual.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Better Table upgrade visual */
+        .upgrade-table {
+            bottom: 40px;
+            right: 30px;
+            font-size: 3em;
+            z-index: 3;
+            animation: tableWobble 4s ease-in-out infinite;
+        }
+
+        @keyframes tableWobble {
+
+            0%,
+            100% {
+                transform: rotate(-2deg);
+            }
+
+            50% {
+                transform: rotate(2deg);
+            }
+        }
+
+        /* Fancy Sign upgrade visual */
+        .upgrade-sign {
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5em;
+            z-index: 6;
+            animation: signGlow 3s ease-in-out infinite;
+        }
+
+        .upgrade-sign.visible {
+            transform: translateX(-50%) scale(1);
+        }
+
+        @keyframes signGlow {
+
+            0%,
+            100% {
+                text-shadow: 0 0 10px #FFE66D, 0 0 20px #FF6B6B;
+                transform: translateX(-50%) scale(1);
+            }
+
+            50% {
+                text-shadow: 0 0 20px #FFE66D, 0 0 30px #FF6B6B, 0 0 40px #4ECDC4;
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        /* Better Location upgrade visual - changes background */
+        .game-visual.premium-location {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 50%, #4ECDC4 100%);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .upgrade-location-elements {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            z-index: 2;
+            animation: locationSparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes locationSparkle {
+
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Upgrade purchase animation */
+        @keyframes upgradeAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.2) rotate(90deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .upgrade-visual.just-purchased {
+            animation: upgradeAppear 0.8s ease-out;
+        }
+
+        /* Sparkle effect for new upgrades */
+        .upgrade-sparkles {
+            position: absolute;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .sparkle {
+            position: absolute;
+            font-size: 1.5em;
+            animation: sparkleFloat 1.5s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.5);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1.2);
+            }
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            /* MODAL PADDING FIX: Reduced top/bottom padding for flush header/footer alignment */
+            padding: 0 30px;
+            /* Only left/right padding for readability */
+            border-radius: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            /* MODAL HEIGHT FIX: Limit modal height and make content scrollable */
+            max-height: 80vh;
+            overflow-y: auto;
+            /* SCROLL STYLING: Smooth scrolling and visual indicators */
+            scroll-behavior: smooth;
+        }
+
+        /* SCROLL STYLING: Custom scrollbar for better visual appearance */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* MODAL HEADER FIX: Ensure header stays visible during scroll */
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            /* MODAL PADDING FIX: Added top padding for proper spacing from modal edge */
+            padding: 20px;
+            /* Top padding matches original modal padding */
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* MODAL CONTENT SPACING: Add proper spacing for scrollable content */
+        .modal-scrollable-content {
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+
+        /* MODAL FOOTER: Ensure footer button is properly spaced */
+        .modal-footer {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            /* MODAL PADDING FIX: Removed top padding for flush alignment, added bottom padding */
+            padding: 0 0 30px 0;
+            /* Only bottom padding to prevent clipping */
+            margin-top: 20px;
+            border-top: 2px solid #f0f0f0;
+            z-index: 10;
+        }
+
+        /* UI/UX IMPROVEMENT: Enhanced tabbed interface for products */
+        .product-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 20px 0 0 0;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-tab {
+            background: transparent;
+            color: #666;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            position: relative;
+            min-width: 140px;
+        }
+
+        .product-tab.active {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            color: white;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .product-tab:hover:not(.active) {
+            background: rgba(78, 205, 196, 0.1);
+            color: #4ECDC4;
+        }
+
+        .product-info {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #4ECDC4;
+        }
+
+        .product-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .product-stat {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .product-stat .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .product-stat .value {
+            font-size: 1.1em;
+            color: #4ECDC4;
+            margin-top: 5px;
+        }
+
+        .modal h2 {
+            color: #FF6B6B;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .option-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ADVERTISING SALE EVENT: Styling for free advertising promotion */
+        .advertising-sale {
+            position: relative;
+            background: linear-gradient(45deg, #FFE66D, #4ECDC4) !important;
+            box-shadow: 0 0 15px rgba(255, 230, 109, 0.5);
+            animation: saleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes saleGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(255, 230, 109, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(255, 230, 109, 0.8);
+            }
+        }
+
+        .advertising-sale::before {
+            content: "🎉 FREE TODAY! 🎉";
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF6B6B;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .sale-price {
+            color: #4ECDC4;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .sale-tooltip {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 20;
+        }
+
+        .advertising-sale:hover .sale-tooltip {
+            opacity: 1;
+        }
+
+        .event-card {
+            background: linear-gradient(45deg, #FFE66D, #FF6B6B);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-card h3 {
+            font-size: 2em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
+        }
+
+        .event-card p {
+            font-size: 1.3em;
+            color: #333;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .vocabulary-box {
+            background: linear-gradient(45deg, #A8EDEA, #FED6E3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .vocabulary-box h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .market-news {
+            background: linear-gradient(45deg, #FFE66D, #FF9A9E);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .market-news h4 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .market-news p {
+            color: #333;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .vocab-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .vocab-word {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* UI/UX IMPROVEMENT: Product breakdown grid styling */
+        .product-breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .product-breakdown-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            border-left: 5px solid;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .product-breakdown-card.lemonade {
+            border-left-color: #FFE66D;
+        }
+
+        .product-breakdown-card.peach {
+            border-left-color: #FFB347;
+        }
+
+        .product-breakdown-card.strawberry {
+            border-left-color: #FF6B9D;
+        }
+
+        .product-breakdown-card .product-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-breakdown-card .product-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .product-breakdown-card .stat {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .product-breakdown-card .stat .label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .product-breakdown-card .stat .value {
+            color: #4ECDC4;
+            font-weight: bold;
+        }
+
+        .instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .instructions h3 {
+            color: #FF6B6B;
+            margin-bottom: 15px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .summary-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .summary-card .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .achievements-section {
+            margin: 30px 0;
+        }
+
+        .achievements-section h3 {
+            color: #FF6B6B;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .achievement-badge {
+            background: linear-gradient(45deg, #FFE66D, #FF6B6B);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .achievement-badge .badge-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .achievement-badge .badge-title {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .achievement-badge .badge-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* UPGRADE CARDS: Responsive grid container with optimized spacing */
+        .upgrade-cards-container {
+            display: grid;
+            /* RESPONSIVE GRID: Auto-fit cards with optimal width range for all screen sizes */
+            gap: 16px;
+            justify-content: center;
+            margin: 15px 0;
+            padding: 0;
+        }
+
+        /* REDESIGNED UPGRADE CARD: Cleaner, more intuitive layout with compact spacing */
+        .upgrade-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            /* COMPACT DIMENSIONS: Reduced height for better fit */
+            width: 100%;
+            min-height: 200px;
+            /* OPTIMIZED PADDING: Minimal padding for compact layout */
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .upgrade-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .upgrade-card.owned {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+        }
+
+        .upgrade-card.owned::after {
+            content: "OWNED";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4ECDC4;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+            z-index: 5;
+        }
+
+        /* TOP ROW: Icon + title on left, buy button on right */
+        .upgrade-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .upgrade-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .upgrade-icon {
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .upgrade-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+
+        /* SECOND ROW: Cost and effect side by side */
+        .upgrade-info-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .upgrade-cost {
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .upgrade-effect {
+            font-size: 0.8rem;
+            background: rgba(255, 230, 109, 0.15);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #FFE66D;
+            border: 1px solid rgba(255, 230, 109, 0.2);
+            text-align: center;
+            flex: 1;
+        }
+
+        /* REQUIREMENTS SECTION: Compact layout with horizontal grouping */
+        .upgrade-requirements {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* MAIN REQUIREMENTS ROW: Money, customers, and product types in horizontal layout */
+        .requirements-main-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .requirement-main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3px 4px;
+            border-radius: 3px;
+            font-weight: 500;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .requirement-label {
+            font-size: 0.9em;
+            margin-bottom: 2px;
+            text-align: center;
+        }
+
+        .requirement-value {
+            font-size: 0.8rem;
+            margin-bottom: 2px;
+        }
+
+        /* INVENTORY ROW: Clean horizontal layout with colored counters */
+        .requirement-inventory {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 4px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .inventory-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 30px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* REQUIREMENT STATUS: Clear visual distinction between met/unmet */
+        .requirement-met {
+            background: rgba(76, 175, 80, 0.25);
+            color: #C8E6C9;
+        }
+
+        .requirement-not-met {
+            background: rgba(244, 67, 54, 0.25);
+            color: #FFCDD2;
+        }
+
+        .inventory-item.requirement-met {
+            background: rgba(76, 175, 80, 0.3);
+            color: #C8E6C9;
+        }
+
+        .inventory-item.requirement-not-met {
+            background: rgba(244, 67, 54, 0.3);
+            color: #FFCDD2;
+        }
+
+        /* COMPACT PROGRESS BARS: Integrated into requirement items */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 1px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 2px rgba(76, 175, 80, 0.4);
+        }
+
+        /* BUY BUTTON: Positioned in top row alongside header */
+        .upgrade-button {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            min-width: 60px;
+            height: fit-content;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .upgrade-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .upgrade-button:disabled {
+            background: #999999 !important;
+            color: #666666 !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+            transform: none !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        /* RESPONSIVE TOOLTIP: Positioned below button to avoid layout breaks */
+        .upgrade-button:disabled[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            z-index: 1000;
+            max-width: 180px;
+            white-space: normal;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 4px;
+        }
+
+        .upgrade-button:disabled[data-tooltip]:hover::before {
+            content: "";
+            position: absolute;
+            top: 95%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid transparent;
+            border-bottom-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+        }
+
+        /* RESPONSIVE BREAKPOINTS: Optimized for all screen sizes and Zoom compatibility */
+
+        /* TABLET AND SMALL LAPTOP: 768px - 1024px */
+        @media (max-width: 1024px) {
+            .upgrade-cards-container {
+                /* TABLET GRID: 2 cards per row on medium screens */
+                gap: 14px;
+            }
+
+            .upgrade-card {
+                /* TABLET CARD: Slightly smaller for better fit */
+                max-width: 340px;
+                min-height: 235px;
+                padding: 14px 95px 14px 14px;
+            }
+        }
+
+        /* MOBILE AND SMALL TABLETS: Up to 768px */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2em;
+            }
+
+            .game-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                /* MOBILE MODAL: Optimized height for upgrade cards */
+                max-height: 85vh;
+                /* MODAL PADDING FIX: Mobile padding follows same pattern - only left/right */
+                padding: 0 16px;
+                /* Only horizontal padding on mobile */
+            }
+
+            .upgrade-cards-container {
+                /* MOBILE GRID: Single column layout */
+                gap: 12px;
+                margin: 10px 0;
+            }
+
+            .upgrade-card {
+                /* MOBILE CARD: Full width with compact height */
+                max-width: 100%;
+                min-height: 220px;
+                padding: 12px 85px 12px 12px;
+            }
+
+            .upgrade-header {
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .upgrade-icon {
+                font-size: 2em;
+            }
+
+            .upgrade-title {
+                font-size: 1.1em;
+            }
+
+            .upgrade-button {
+                /* MOBILE BUTTON: Smaller but still accessible */
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                min-width: 70px;
+                top: 8px;
+                right: 8px;
+            }
+
+            /* MOBILE MODAL HEADER: Reduce padding on mobile */
+            .modal-header {
+                /* MODAL PADDING FIX: Mobile header maintains top padding for proper spacing */
+                padding: 20px 0 12px 0;
+                /* Reduced but consistent top padding on mobile */
+                margin-bottom: 12px;
+            }
+
+            /* MOBILE MODAL CONTENT: Adjust spacing for mobile */
+            .modal-scrollable-content {
+                padding: 0 4px;
+            }
+        }
+
+        /* VERY SMALL SCREENS: Up to 480px */
+        @media (max-width: 480px) {
+            .upgrade-card {
+                /* SMALL MOBILE: Ultra-compact design */
+                min-height: 200px;
+                padding: 10px 75px 10px 10px;
+            }
+
+            .upgrade-info-row {
+                gap: 6px;
+                margin-bottom: 10px;
+            }
+
+            .upgrade-cost,
+            .upgrade-effect {
+                font-size: 0.8rem;
+                padding: 5px 8px;
+            }
+
+            .upgrade-requirements {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+
+            .requirement-main {
+                margin-bottom: 4px;
+                padding: 3px 5px;
+            }
+
+            .progress-bar {
+                width: 40px;
+                height: 5px;
+            }
+
+            .inventory-item {
+                font-size: 0.7em;
+                min-width: 30px;
+                padding: 1px 3px;
+            }
+
+            .upgrade-button {
+                /* SMALL MOBILE BUTTON: Minimal but functional */
+                padding: 6px 10px;
+                font-size: 0.7em;
+                min-width: 60px;
+            }
+        }
+
+        /* ZOOM COMPATIBILITY: Ensure readability during screen sharing */
+        @media (max-width: 1200px) and (max-height: 800px) {
+            .modal-content {
+                /* ZOOM MODAL: Optimized for screen sharing scenarios */
+                max-height: 75vh;
+            }
+
+            .upgrade-cards-container {
+                /* ZOOM GRID: Ensure cards fit in shared screen view */
+            }
+
+            .upgrade-card {
+                /* ZOOM CARD: Compact but readable during screen sharing */
+                min-height: 210px;
+            }
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1252.0" data-gr-ext-installed="">
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen active">
+            <h1 class="title">🏪 Mini Business Tycoon 🏪</h1>
+            <div class="shop-visual">
+            </div>
+            <div class="money-display">💰 Starting Money: $50 💰</div>
+            <button class="btn btn-green" onclick="showInstructions()">📖 Instructions</button>
+            <button class="btn btn-blue" onclick="startGame()">🚀 Start Game</button>
+            <button class="btn btn-yellow" onclick="resetGame()">🔄 Reset Game</button>
+        </div>
+
+        <!-- Instructions Screen -->
+        <div id="instructionsScreen" class="screen">
+            <h2 class="title">How to Play</h2>
+            <div class="instructions">
+                <h3>🎯 Game Rules:</h3>
+                <ul>
+                    <li><strong>Student speaks in English</strong> - Tell the teacher what you want to do!</li>
+                    <li><strong>Teacher clicks buttons</strong> - The teacher will click based on your commands</li>
+                    <li><strong>Learn business words</strong> - New vocabulary appears each day</li>
+                    <li><strong>Make money</strong> - Buy supplies, sell products, and grow your business!</li>
+                    <li><strong>Watch for events</strong> - Special cards can help or challenge you</li>
+                </ul>
+
+                <h3>💬 Example Commands:</h3>
+                <ul>
+                    <li>"I want to buy supplies"</li>
+                    <li>"Let's advertise our shop"</li>
+                    <li>"I think we should upgrade"</li>
+                    <li>"Can we sell our products now?"</li>
+                </ul>
+
+                <h3>🎯 Goal:</h3>
+                <ul>
+                    <li>Survive 10 days and become a Business Tycoon!</li>
+                    <li>Learn new English words about business and money</li>
+                    <li>Have fun making decisions together!</li>
+                </ul>
+            </div>
+            <button class="btn btn-blue" onclick="showStartScreen()">⬅️ Back to Start</button>
+            <button class="btn btn-green" onclick="startGame()">🚀 Start Game</button>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div class="stat-box">
+                    <div class="stat-label">💰 Money</div>
+                    <div class="stat-value" id="moneyDisplay">$50.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">📦 Inventory</div>
+                    <div class="stat-value" id="inventoryDisplay">🍋0 🍑0 🍓0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⚡ Actions Left</div>
+                    <div class="stat-value" id="actionsDisplay">8</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">📅 Day</div>
+                    <div class="stat-value" id="dayDisplay">1</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⭐ Level</div>
+                    <div class="stat-value" id="levelDisplay">Beginner</div>
+                </div>
+            </div>
+
+            <div class="game-visual" id="gameVisual">
+                <div class="shop-scene">🏪</div>
+                <div class="customers">🚶🏻‍➡️🚶🏻‍♀️‍➡️</div>
+
+                <!-- UPGRADE VISUALS: Container for upgrade visual elements -->
+                <div id="upgradeVisualsContainer">
+                    <!-- Table upgrade visual -->
+                    <div id="tableUpgrade" class="upgrade-visual upgrade-table">🪑</div>
+
+                    <!-- Sign upgrade visual -->
+                    <div id="signUpgrade" class="upgrade-visual upgrade-sign">🪧✨</div>
+
+                    <!-- Location upgrade elements -->
+                    <div id="locationUpgrade" class="upgrade-visual upgrade-location-elements">🌟🏆</div>
+                </div>
+
+                <!-- Sparkle effects container -->
+                <div id="upgradeSparkles" class="upgrade-sparkles"></div>
+            </div>
+
+            <div class="vocabulary-box">
+                <h4>📚 Today's Business Words:</h4>
+                <div class="vocab-words" id="todayVocab"></div>
+            </div>
+
+            <div class="market-news" id="marketNews">
+                <h4>📰 Market News:</h4>
+                <p id="marketNewsText">All product prices are stable today. | Today's Prices: 🍋 Lemonade: $2.00 | 🍑
+                    Peach: $3.00 | 🍓 Strawberry: $4.00</p>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-green" id="buyButton" onclick="showBuyModal()">🛒 Buy Supplies</button>
+                <button class="btn btn-blue" id="sellButton" onclick="showSellModal()" disabled="">💰 Sell
+                    Products</button>
+                <button class="btn btn-yellow" id="advertiseButton" onclick="showAdvertiseModal()">📢 Advertise</button>
+                <button class="btn btn-purple" id="upgradeButton">⬆️ Upgrade Shop</button>
+                <button class="btn" onclick="endDay()">🌙 End Day</button>
+            </div>
+        </div>
+
+        <!-- End of Day Screen -->
+        <div id="dayEndScreen" class="screen">
+            <h2 class="title">📊 Day Summary</h2>
+
+            <!-- MULTI-PRODUCT: Overall totals -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h4>💵 Total Revenue</h4>
+                    <div class="value" id="revenueDisplay">$0</div>
+                </div>
+                <div class="summary-card">
+                    <h4>💸 Total Costs</h4>
+                    <div class="value" id="costsDisplay">$0</div>
+                </div>
+                <div class="summary-card">
+                    <h4>📈 Total Profit</h4>
+                    <div class="value" id="profitDisplay">$0</div>
+                </div>
+                <div class="summary-card">
+                    <h4>👥 Total Customers</h4>
+                    <div class="value" id="customersDisplay">0</div>
+                </div>
+            </div>
+
+            <!-- UI/UX IMPROVEMENT: Enhanced per-product breakdown -->
+            <div class="vocabulary-box">
+                <h4>📊 Sales by Product:</h4>
+                <div id="productBreakdown" class="product-breakdown-grid"></div>
+            </div>
+
+            <div id="spoilageAlert" class="event-card"
+                style="display: none; background: linear-gradient(45deg, #FF6B6B, #FF8E8E);">
+                <h3>💔 Spoilage Alert!</h3>
+                <p id="spoilageText"></p>
+            </div>
+            <div class="vocabulary-box">
+                <h4>🎓 Words You Learned Today:</h4>
+                <div class="vocab-words" id="learnedVocab"></div>
+            </div>
+            <button class="btn btn-green" onclick="nextDay()">➡️ Continue to Next Day</button>
+        </div>
+
+        <!-- Final Results Screen -->
+        <div id="resultsScreen" class="screen">
+            <h2 class="title">🎉 Final Results!</h2>
+            <div class="shop-visual">
+                <div id="finalShopLevel">🏪</div>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h4>💰 Final Money</h4>
+                    <div class="value" id="finalMoney">$0</div>
+                </div>
+                <div class="summary-card">
+                    <h4>🏆 Business Level</h4>
+                    <div class="value" id="businessLevel">Beginner</div>
+                </div>
+                <div class="summary-card">
+                    <h4>📚 Words Learned</h4>
+                    <div class="value" id="totalWords">0</div>
+                </div>
+                <div class="summary-card">
+                    <h4>👥 Total Customers</h4>
+                    <div class="value" id="totalCustomers">0</div>
+                </div>
+            </div>
+
+            <div class="achievements-section">
+                <h3>🏅 Achievements Unlocked!</h3>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Achievements will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <button class="btn btn-green" onclick="showStartScreen()">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="buyModal" class="modal">
+        <div class=" modal-header modal-content">
+            <h2>🛒 Buy Supplies</h2>
+            <p>Choose a product to buy for your shop:</p>
+
+            <!-- MULTI-PRODUCT: Product selection tabs -->
+            <div class="product-tabs" id="buyProductTabs">
+                <button class="product-tab active" onclick="selectBuyProduct('lemonade')">🍋 Lemonade</button>
+                <button class="product-tab" onclick="selectBuyProduct('peach')">🍑 Peach Juice</button>
+                <button class="product-tab" onclick="selectBuyProduct('strawberry')">🍓 Strawberry Smoothie</button>
+            </div>
+
+            <!-- MULTI-PRODUCT: Selected product info -->
+            <div class="product-info" id="buyProductInfo">
+                <div id="buyProductDetails"></div>
+                <div class="product-stats" id="buyProductStats"></div>
+            </div>
+
+            <div class="option-grid" id="buyOptions">
+                <!-- Options will be populated by JavaScript -->
+            </div>
+            <button class="btn" onclick="closeModal('buyModal')">❌ Cancel</button>
+        </div>
+    </div>
+
+    <div id="sellModal" class="modal">
+        <div class="modal-content modal-header">
+            <h2>💰 Sell Products</h2>
+            <p>Choose which product to sell and set the price:</p>
+
+            <!-- MULTI-PRODUCT: Product selection tabs -->
+            <div class="product-tabs" id="sellProductTabs">
+                <button class="product-tab active" onclick="selectSellProduct('lemonade')">🍋 Lemonade</button>
+                <button class="product-tab" onclick="selectSellProduct('peach')">🍑 Peach Juice</button>
+                <button class="product-tab" onclick="selectSellProduct('strawberry')">🍓 Strawberry Smoothie</button>
+            </div>
+
+            <!-- MULTI-PRODUCT: Selected product info -->
+            <div class="product-info" id="sellProductInfo">
+                <div id="sellProductDetails"></div>
+                <div class="product-stats" id="sellProductStats"></div>
+            </div>
+
+            <div class="option-grid" id="sellOptions">
+                <!-- Options will be populated by JavaScript -->
+            </div>
+            <button class="btn" onclick="closeModal('sellModal')">❌ Cancel</button>
+        </div>
+    </div>
+
+    <div id="advertiseModal" class="modal">
+        <div class="modal-content modal-header">
+            <h2>📢 Advertise Your Shop</h2>
+            <p>How do you want to advertise?</p>
+            <div class="option-grid">
+                <button class="option-btn" onclick="advertise('flyers', 5)">📄 Make Flyers<br>$5</button>
+                <button class="option-btn" onclick="advertise('signs', 10)">🪧 Put Up Signs<br>$10</button>
+                <button class="option-btn" onclick="advertise('social', 15)">📱 Social Media<br>$15</button>
+            </div>
+            <button class="btn" onclick="closeModal('advertiseModal')">❌ Cancel</button>
+        </div>
+    </div>
+
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content">
+            <!-- MODAL HEADER FIX: Sticky header that stays visible during scroll -->
+            <div class="modal-header">
+                <h2>⬆️ Upgrade Your Shop</h2>
+                <p>Choose an upgrade to improve your business:</p>
+            </div>
+
+            <!-- MODAL CONTENT SPACING: Scrollable content area with proper spacing -->
+            <div class="modal-scrollable-content">
+                <!-- UPGRADE CARDS: Container for card-style upgrade display -->
+                <div id="upgradeCardsContainer" class="upgrade-cards-container">
+                    <!-- Upgrade cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- MODAL FOOTER: Close button stays at bottom -->
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('upgradeModal')">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="eventModal" class="modal">
+        <div class="modal-content modal-header">
+            <div class="event-card">
+                <h3>🎲 Random Event!</h3>
+                <p id="eventText"></p>
+            </div>
+            <button class="btn btn-green" onclick="closeModal('eventModal')">✅ OK</button>
+        </div>
+    </div>
+
+    <div id="bankruptcyModal" class="modal">
+        <div class="modal-content modal-header">
+            <div class="event-card" style="background: linear-gradient(45deg, #FF6B6B, #FF8E8E);">
+                <h3>💸 Financial Crisis!</h3>
+                <p>You have no money left! Choose what to do:</p>
+            </div>
+            <div class="option-grid">
+                <button class="option-btn" onclick="takeLoan()">🏦 Take a Loan<br>($30 + $5 daily interest)</button>
+                <button class="option-btn" onclick="declareBankruptcy()">💔 Declare Bankruptcy<br>(Game Over)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MULTI-PRODUCT SYSTEM: Define all available products with their properties
+        const products = {
+            lemonade: {
+                name: 'Lemonade',
+                emoji: '🍋',
+                baseBuyPrice: 2.00, // DYNAMIC PRICING: Base price for fluctuation calculations
+                buyPrice: 2.00, // Current day's price (will fluctuate)
+                sellPriceBase: 3.00,
+                shelfLife: 3, // days before spoiling
+                color: '#FFE66D',
+                description: 'Classic and reliable'
+            },
+            peach: {
+                name: 'Peach Juice',
+                emoji: '🍑',
+                baseBuyPrice: 3.00, // DYNAMIC PRICING: Base price for fluctuation calculations
+                buyPrice: 3.00, // Current day's price (will fluctuate)
+                sellPriceBase: 4.50,
+                shelfLife: 2, // days before spoiling
+                color: '#FFB347',
+                description: 'Sweet and popular'
+            },
+            strawberry: {
+                name: 'Strawberry Smoothie',
+                emoji: '🍓',
+                baseBuyPrice: 4.00, // DYNAMIC PRICING: Base price for fluctuation calculations
+                buyPrice: 4.00, // Current day's price (will fluctuate)
+                sellPriceBase: 6.00,
+                shelfLife: 1, // days before spoiling (high risk, high reward)
+                color: '#FF6B9D',
+                description: 'Premium but risky'
+            }
+        };
+
+        // Game State - Updated for multi-product support
+        let gameState = {
+            money: 50,
+            day: 1,
+            advertising: 0,
+            upgrades: [],
+            learnedWords: new Set(),
+            actionsLeft: 8, // DAILY ACTION LIMIT: Confirmed at 8 actions per day as requested
+            totalCustomersServed: 0,
+            bestProfitDay: 0,
+            dailyProfits: [],
+            hasLoan: false,
+            loanAmount: 0,
+            // REBALANCED: Lifetime statistics for upgrade requirements and achievements
+            lifetimeStats: {
+                productsSold: {
+                    lemonade: 0,
+                    peach: 0,
+                    strawberry: 0
+                },
+                totalRevenue: 0,
+                totalProfit: 0,
+                bestSingleDay: {
+                    revenue: 0,
+                    customers: 0,
+                    profit: 0
+                }
+            },
+            // MULTI-PRODUCT INVENTORY: Each product has separate inventory and batches
+            inventory: {
+                lemonade: 0,
+                peach: 0,
+                strawberry: 0
+            },
+            // MULTI-PRODUCT BATCHES: Track purchase dates for spoilage calculation
+            productBatches: {
+                lemonade: [], // [{amount: number, day: number}]
+                peach: [],
+                strawberry: []
+            },
+            // MULTI-PRODUCT TRANSACTION TRACKING: Separate tracking per product type
+            dailyTransactions: {
+                sales: {
+                    lemonade: [], // [{quantity: number, price: number, revenue: number}]
+                    peach: [],
+                    strawberry: []
+                },
+                purchases: {
+                    lemonade: [], // [{quantity: number, cost: number}]
+                    peach: [],
+                    strawberry: []
+                },
+                expenses: [], // {type: string, amount: number}
+                spoilage: {
+                    lemonade: 0,
+                    peach: 0,
+                    strawberry: 0
+                }
+            }
+        };
+
+        // Business Vocabulary
+        const businessVocabulary = [
+            'profit', 'revenue', 'customer', 'inventory', 'supplies', 'advertise',
+            'upgrade', 'investment', 'budget', 'expenses', 'income', 'sales',
+            'marketing', 'business', 'entrepreneur', 'competition', 'demand',
+            'quality', 'service', 'location', 'price', 'discount', 'promotion'
+        ];
+
+        // DYNAMIC PRICING: Market news templates for price fluctuations
+        const marketNewsTemplates = [{
+                text: "☀️ Hot weather increases demand for cold drinks!",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 0.8,
+                        peach: 0.85,
+                        strawberry: 0.9
+                    }
+                }
+            },
+            {
+                text: "🌧️ Rainy season affects fruit supply chains.",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 1.2,
+                        peach: 1.25,
+                        strawberry: 1.15
+                    }
+                }
+            },
+            {
+                text: "🚚 Transportation costs are up this week.",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 1.15,
+                        peach: 1.2,
+                        strawberry: 1.1
+                    }
+                }
+            },
+            {
+                text: "🍋 Lemon harvest is excellent! Prices drop.",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 0.7,
+                        peach: 1.0,
+                        strawberry: 1.0
+                    }
+                }
+            },
+            {
+                text: "🍑 Peach shortage reported in local markets.",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 1.0,
+                        peach: 1.4,
+                        strawberry: 1.0
+                    }
+                }
+            },
+            {
+                text: "🍓 Strawberry season brings lower prices!",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 1.0,
+                        peach: 1.0,
+                        strawberry: 0.75
+                    }
+                }
+            },
+            {
+                text: "📈 All fruit prices are stable today.",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 1.0,
+                        peach: 1.0,
+                        strawberry: 1.0
+                    }
+                }
+            },
+            {
+                text: "💰 Economic boom increases all supply costs.",
+                effect: {
+                    priceMultiplier: {
+                        lemonade: 1.3,
+                        peach: 1.25,
+                        strawberry: 1.35
+                    }
+                }
+            }
+        ];
+
+        // Random Events
+        const randomEvents = [{
+                text: "☀️ Beautiful sunny day! More customers come to your shop.",
+                effect: {
+                    customers: 1.5
+                }
+            },
+            {
+                text: "🌧️ Rainy weather keeps customers away.",
+                effect: {
+                    customers: 0.5
+                }
+            },
+            {
+                text: "🎉 Local festival brings lots of people!",
+                effect: {
+                    customers: 2.0
+                }
+            },
+            {
+                text: "🏆 You win a small business award! Get $20 bonus.",
+                effect: {
+                    money: 20
+                }
+            },
+            {
+                text: "🚚 Supply truck is late. Inventory costs more today.",
+                effect: {
+                    supplyCost: 1.5
+                }
+            },
+            {
+                text: "👥 A competitor opens nearby. Fewer customers today.",
+                effect: {
+                    customers: 0.7
+                }
+            },
+            {
+                text: "📺 You're featured on local news! More customers!",
+                effect: {
+                    customers: 1.8
+                }
+            },
+            {
+                text: "💡 You have a great idea! No cost for advertising today.",
+                effect: {
+                    freeAd: true
+                }
+            },
+            {
+                text: "⛈️ Storm damaged some of your inventory!",
+                effect: {
+                    spoilProducts: {
+                        lemonade: 3,
+                        peach: 2,
+                        strawberry: 1
+                    }
+                }
+            },
+            {
+                text: "🎁 A friend gives you free lemons!",
+                effect: {
+                    freeProducts: {
+                        lemonade: 5
+                    }
+                }
+            },
+            {
+                text: "🍑 Neighbor shares fresh peaches with you!",
+                effect: {
+                    freeProducts: {
+                        peach: 4
+                    }
+                }
+            },
+            {
+                text: "🍓 Local farm gives you free strawberries!",
+                effect: {
+                    freeProducts: {
+                        strawberry: 3
+                    }
+                }
+            },
+            {
+                text: "🐛 Bugs got into your storage! Lost some inventory.",
+                effect: {
+                    spoilProducts: {
+                        lemonade: 2,
+                        peach: 1,
+                        strawberry: 1
+                    }
+                }
+            },
+            {
+                text: "🚛 Wholesale delivery mistake - free products for you!",
+                effect: {
+                    freeProducts: {
+                        lemonade: 8,
+                        peach: 6,
+                        strawberry: 4
+                    }
+                }
+            }
+        ];
+
+        // Screen Management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showStartScreen() {
+            showScreen('startScreen');
+        }
+
+        function showInstructions() {
+            showScreen('instructionsScreen');
+        }
+
+        function startGame() {
+            resetGameState();
+
+            // DYNAMIC PRICING: Set market news and prices for day 1
+            setDailyMarketNews();
+            updateDailyPrices();
+
+            updateDisplay();
+            showTodayVocabulary();
+            showScreen('gameScreen');
+
+            // Random chance for event on first day
+            if (Math.random() < 0.3) {
+                setTimeout(() => showRandomEvent(), 1000);
+            }
+        }
+
+        function resetGame() {
+            resetGameState();
+            showStartScreen();
+        }
+
+        function resetGameState() {
+            gameState = {
+                money: 50,
+                day: 1,
+                advertising: 0,
+                upgrades: [],
+                learnedWords: new Set(),
+                actionsLeft: 8, // DAILY ACTION LIMIT: Confirmed at 8 actions per day as requested
+                totalCustomersServed: 0,
+                bestProfitDay: 0,
+                dailyProfits: [],
+                hasLoan: false,
+                loanAmount: 0,
+                // UPGRADE EFFECTS: Reset upgrade bonuses
+                upgradeEffects: {
+                    maxCustomersBonus: 0, // +10 from Better Table
+                    customerArrivalBonus: 0, // +20% from Fancy Sign  
+                    profitMultiplier: 1.0 // +10% from Better Location
+                },
+                // REBALANCED: Reset lifetime statistics
+                lifetimeStats: {
+                    productsSold: {
+                        lemonade: 0,
+                        peach: 0,
+                        strawberry: 0
+                    },
+                    totalRevenue: 0,
+                    totalProfit: 0,
+                    bestSingleDay: {
+                        revenue: 0,
+                        customers: 0,
+                        profit: 0
+                    }
+                },
+                // MULTI-PRODUCT: Reset all product inventories
+                inventory: {
+                    lemonade: 0,
+                    peach: 0,
+                    strawberry: 0
+                },
+                // MULTI-PRODUCT: Reset all product batches
+                productBatches: {
+                    lemonade: [],
+                    peach: [],
+                    strawberry: []
+                },
+                // MULTI-PRODUCT: Reset all transaction tracking
+                dailyTransactions: {
+                    sales: {
+                        lemonade: [],
+                        peach: [],
+                        strawberry: []
+                    },
+                    purchases: {
+                        lemonade: [],
+                        peach: [],
+                        strawberry: []
+                    },
+                    expenses: [],
+                    spoilage: {
+                        lemonade: 0,
+                        peach: 0,
+                        strawberry: 0
+                    }
+                }
+            };
+        }
+
+        // CLICK EVENT FIX: Ensure upgrade button click event is properly bound at all times
+        function bindUpgradeButtonEvent() {
+            const upgradeButton = document.getElementById('upgradeButton');
+            if (upgradeButton) {
+                // Remove any existing event listeners to prevent duplicates
+                upgradeButton.removeEventListener('click', handleUpgradeButtonClick);
+                // Add the event listener back
+                upgradeButton.addEventListener('click', handleUpgradeButtonClick);
+            }
+        }
+
+        // CLICK EVENT FIX: Dedicated click handler for upgrade button
+        function handleUpgradeButtonClick(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Only proceed if button is not disabled
+            if (!event.target.disabled) {
+                showUpgradeModal();
+            }
+        }
+
+        // Display Updates
+        function updateDisplay() {
+            // FORMAT: Always display money with exactly 2 decimal places to avoid floating-point display issues
+            document.getElementById('moneyDisplay').textContent = `$${gameState.money.toFixed(2)}`;
+
+            // MULTI-PRODUCT: Display inventory for all products with emojis
+            const inventoryText =
+                `🍋${gameState.inventory.lemonade} 🍑${gameState.inventory.peach} 🍓${gameState.inventory.strawberry}`;
+            document.getElementById('inventoryDisplay').textContent = inventoryText;
+
+            document.getElementById('dayDisplay').textContent = gameState.day;
+            document.getElementById('levelDisplay').textContent = getBusinessLevel();
+            document.getElementById('actionsDisplay').textContent = gameState.actionsLeft;
+
+            // Update market news
+            updateMarketNews();
+
+            // UPGRADE VISUALS: Update visual representation of purchased upgrades
+            updateUpgradeVisuals();
+
+            // DISABLED BUTTON LOGIC: Update main action button states based on game conditions
+            updateMainButtonStates();
+
+            // MULTI-PRODUCT: Check for bankruptcy (no money and no inventory of any product)
+            const totalInventory = gameState.inventory.lemonade + gameState.inventory.peach + gameState.inventory
+                .strawberry;
+            if (gameState.money <= 0 && totalInventory === 0 && !gameState.hasLoan) {
+                setTimeout(() => showModal('bankruptcyModal'), 500);
+            }
+        }
+
+        // UPGRADE VISUALS: Function to update visual representation of purchased upgrades
+        function updateUpgradeVisuals() {
+            const gameVisual = document.getElementById('gameVisual');
+            const tableUpgrade = document.getElementById('tableUpgrade');
+            const signUpgrade = document.getElementById('signUpgrade');
+            const locationUpgrade = document.getElementById('locationUpgrade');
+
+            // Show/hide table upgrade visual
+            if (gameState.upgrades.includes('table')) {
+                tableUpgrade.classList.add('visible');
+            } else {
+                tableUpgrade.classList.remove('visible');
+            }
+
+            // Show/hide sign upgrade visual
+            if (gameState.upgrades.includes('sign')) {
+                signUpgrade.classList.add('visible');
+            } else {
+                signUpgrade.classList.remove('visible');
+            }
+
+            // Show/hide location upgrade visual and change background
+            if (gameState.upgrades.includes('location')) {
+                locationUpgrade.classList.add('visible');
+                gameVisual.classList.add('premium-location');
+            } else {
+                locationUpgrade.classList.remove('visible');
+                gameVisual.classList.remove('premium-location');
+            }
+        }
+
+        // UPGRADE VISUALS: Function to show upgrade purchase animation
+        function showUpgradePurchaseAnimation(upgradeType) {
+            let upgradeElement;
+
+            switch (upgradeType) {
+                case 'table':
+                    upgradeElement = document.getElementById('tableUpgrade');
+                    break;
+                case 'sign':
+                    upgradeElement = document.getElementById('signUpgrade');
+                    break;
+                case 'location':
+                    upgradeElement = document.getElementById('locationUpgrade');
+                    // Also update background immediately for location
+                    document.getElementById('gameVisual').classList.add('premium-location');
+                    break;
+            }
+
+            if (upgradeElement) {
+                // Add purchase animation class
+                upgradeElement.classList.add('just-purchased');
+                upgradeElement.classList.add('visible');
+
+                // Create sparkle effect
+                createSparkleEffect(upgradeElement);
+
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    upgradeElement.classList.remove('just-purchased');
+                }, 800);
+            }
+        }
+
+        // UPGRADE VISUALS: Function to create sparkle effect when upgrade is purchased
+        function createSparkleEffect(targetElement) {
+            const sparklesContainer = document.getElementById('upgradeSparkles');
+            const sparkleEmojis = ['✨', '⭐', '💫', '🌟'];
+
+            // Get target element position
+            const rect = targetElement.getBoundingClientRect();
+            const containerRect = document.getElementById('gameVisual').getBoundingClientRect();
+
+            // Create multiple sparkles
+            for (let i = 0; i < 6; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
+
+                // Position sparkles around the upgrade element
+                const angle = (i / 6) * 2 * Math.PI;
+                const radius = 30;
+                const x = (rect.left - containerRect.left) + (rect.width / 2) + Math.cos(angle) * radius;
+                const y = (rect.top - containerRect.top) + (rect.height / 2) + Math.sin(angle) * radius;
+
+                sparkle.style.left = x + 'px';
+                sparkle.style.top = y + 'px';
+
+                sparklesContainer.appendChild(sparkle);
+
+                // Remove sparkle after animation
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.parentNode.removeChild(sparkle);
+                    }
+                }, 1500);
+            }
+        }
+
+        // DISABLED BUTTON LOGIC: Function to update main action button states
+        function updateMainButtonStates() {
+            const buyButton = document.getElementById('buyButton');
+            const sellButton = document.getElementById('sellButton');
+            const advertiseButton = document.getElementById('advertiseButton');
+            const upgradeButton = document.getElementById('upgradeButton');
+
+            // Check conditions for each button
+            const hasActionsLeft = gameState.actionsLeft > 0;
+            const cheapestProduct = Math.min(...Object.values(products).map(p => p.buyPrice));
+            const canAffordCheapestSupplies = gameState.money >= (cheapestProduct * 5);
+            const totalInventory = gameState.inventory.lemonade + gameState.inventory.peach + gameState.inventory
+                .strawberry;
+            const hasInventoryToSell = totalInventory > 0;
+            const canAffordAdvertising = gameState.money >= 5;
+
+            // Update button states
+            buyButton.disabled = !hasActionsLeft || !canAffordCheapestSupplies;
+            sellButton.disabled = !hasActionsLeft || !hasInventoryToSell;
+            advertiseButton.disabled = !hasActionsLeft || !canAffordAdvertising;
+
+            // UPGRADE MODAL ALWAYS CLICKABLE: Never disable the upgrade button - players can always view upgrades
+            upgradeButton.disabled = !hasActionsLeft; // Only disable if no actions left, not based on affordability
+
+            // CLICK EVENT FIX: Re-bind upgrade button event listener after state changes
+            // This ensures the click event works even after the button is enabled/disabled
+            bindUpgradeButtonEvent();
+        }
+
+        function getBusinessLevel() {
+            // REBALANCED: Much higher thresholds and multiple requirements for business levels
+            const totalCustomers = gameState.totalCustomersServed;
+            const productTypesSold = getProductTypesSold();
+
+            if (gameState.money >= 1000 && totalCustomers >= 200 && productTypesSold >= 3) return "Tycoon";
+            if (gameState.money >= 500 && totalCustomers >= 100 && productTypesSold >= 2) return "Big Store";
+            if (gameState.money >= 200 && totalCustomers >= 50) return "Small Shop";
+            return "Beginner";
+        }
+
+        function getProductTypesSold() {
+            // Count how many different product types have been sold throughout the game
+            let typesSold = 0;
+            if (gameState.lifetimeStats.productsSold.lemonade > 0) typesSold++;
+            if (gameState.lifetimeStats.productsSold.peach > 0) typesSold++;
+            if (gameState.lifetimeStats.productsSold.strawberry > 0) typesSold++;
+            return typesSold;
+        }
+
+        function showTodayVocabulary() {
+            const todayWords = getRandomWords(3);
+            const vocabContainer = document.getElementById('todayVocab');
+            vocabContainer.innerHTML = '';
+
+            todayWords.forEach(word => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'vocab-word';
+                wordElement.textContent = word;
+                vocabContainer.appendChild(wordElement);
+                gameState.learnedWords.add(word);
+            });
+        }
+
+        function getRandomWords(count) {
+            const shuffled = [...businessVocabulary].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // DYNAMIC PRICING: Function to update daily prices based on market conditions
+        function updateDailyPrices() {
+            // REBALANCED: Increased price volatility after day 5 for difficulty scaling
+            const isLateGame = gameState.day > 5;
+            const baseFluctuation = isLateGame ? 0.4 : 0.25; // ±40% vs ±25%
+
+            // Apply current market news effect if any
+            if (window.currentMarketEffect && window.currentMarketEffect.priceMultiplier) {
+                Object.keys(products).forEach(productType => {
+                    const multiplier = window.currentMarketEffect.priceMultiplier[productType] || 1.0;
+                    // Apply additional volatility in late game
+                    const volatilityMultiplier = isLateGame ? (0.8 + Math.random() * 0.4) : 1.0;
+                    products[productType].buyPrice = products[productType].baseBuyPrice * multiplier *
+                        volatilityMultiplier;
+                });
+            } else {
+                // Random price fluctuation with increased range after day 5
+                Object.keys(products).forEach(productType => {
+                    const basePrice = products[productType].baseBuyPrice;
+                    const minMultiplier = 1 - baseFluctuation;
+                    const maxMultiplier = 1 + baseFluctuation;
+                    const fluctuation = minMultiplier + (Math.random() * (maxMultiplier - minMultiplier));
+                    products[productType].buyPrice = basePrice * fluctuation;
+                });
+            }
+        }
+
+        // DYNAMIC PRICING: Function to set daily market news and price effects
+        function setDailyMarketNews() {
+            const marketNews = marketNewsTemplates[Math.floor(Math.random() * marketNewsTemplates.length)];
+            window.currentMarketEffect = marketNews.effect;
+            document.getElementById('marketNewsText').textContent = marketNews.text;
+        }
+
+        function updateMarketNews() {
+            // DYNAMIC PRICING: Display current day's prices for all products
+            const priceDisplay =
+                `🍋 Lemonade: $${products.lemonade.buyPrice.toFixed(2)} | 🍑 Peach: $${products.peach.buyPrice.toFixed(2)} | 🍓 Strawberry: $${products.strawberry.buyPrice.toFixed(2)}`;
+
+            // Show market news if it exists, otherwise show prices
+            if (!document.getElementById('marketNewsText').textContent.includes('$')) {
+                // Market news is already set, just add price info
+                const currentNews = document.getElementById('marketNewsText').textContent;
+                document.getElementById('marketNewsText').textContent = currentNews +
+                    ` | Today's Prices: ${priceDisplay}`;
+            } else {
+                document.getElementById('marketNewsText').textContent = `Today's Prices: ${priceDisplay}`;
+            }
+        }
+
+        // MULTI-PRODUCT: Global variables for current selections
+        let currentBuyProduct = 'lemonade';
+        let currentSellProduct = 'lemonade';
+
+        // MULTI-PRODUCT: Product selection functions
+        function selectBuyProduct(productType) {
+            currentBuyProduct = productType;
+
+            // Update tab appearance
+            document.querySelectorAll('#buyProductTabs .product-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update product info display
+            updateBuyProductDisplay();
+        }
+
+        function selectSellProduct(productType) {
+            currentSellProduct = productType;
+
+            // Update tab appearance
+            document.querySelectorAll('#sellProductTabs .product-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update product info display
+            updateSellProductDisplay();
+        }
+
+        function updateBuyProductDisplay() {
+            const product = products[currentBuyProduct];
+            const inventory = gameState.inventory[currentBuyProduct];
+
+            // Update product details
+            document.getElementById('buyProductDetails').innerHTML = `
+                <strong>${product.emoji} ${product.name}</strong><br>
+                <em>${product.description}</em>
+            `;
+
+            // Update product stats
+            document.getElementById('buyProductStats').innerHTML = `
+                <div class="product-stat">
+                    <div class="label">Buy Price</div>
+                    <div class="value">$${product.buyPrice.toFixed(2)}</div>
+                </div>
+                <div class="product-stat">
+                    <div class="label">Current Stock</div>
+                    <div class="value">${inventory}</div>
+                </div>
+                <div class="product-stat">
+                    <div class="label">Shelf Life</div>
+                    <div class="value">${product.shelfLife} days</div>
+                </div>
+            `;
+
+            // Update buy options with disabled state logic
+            const buyOptions = document.getElementById('buyOptions');
+            const price5 = product.buyPrice * 5;
+            const price10 = product.buyPrice * 10;
+            const price20 = product.buyPrice * 20;
+
+            // DISABLED BUTTON LOGIC: Check if player can afford each option and has actions left
+            const canAfford5 = gameState.money >= price5 && gameState.actionsLeft > 0;
+            const canAfford10 = gameState.money >= price10 && gameState.actionsLeft > 0;
+            const canAfford20 = gameState.money >= price20 && gameState.actionsLeft > 0;
+
+            buyOptions.innerHTML = `
+                <button class="option-btn" onclick="buySupplies('${currentBuyProduct}', 5, ${price5})" ${!canAfford5 ? 'disabled' : ''}>${product.emoji} 5 ${product.name}<br>$${price5.toFixed(2)}</button>
+                <button class="option-btn" onclick="buySupplies('${currentBuyProduct}', 10, ${price10})" ${!canAfford10 ? 'disabled' : ''}>${product.emoji} 10 ${product.name}<br>$${price10.toFixed(2)}</button>
+                <button class="option-btn" onclick="buySupplies('${currentBuyProduct}', 20, ${price20})" ${!canAfford20 ? 'disabled' : ''}>${product.emoji} 20 ${product.name}<br>$${price20.toFixed(2)}</button>
+            `;
+        }
+
+        function updateSellProductDisplay() {
+            const product = products[currentSellProduct];
+            const inventory = gameState.inventory[currentSellProduct];
+
+            // Update product details
+            document.getElementById('sellProductDetails').innerHTML = `
+                <strong>${product.emoji} ${product.name}</strong><br>
+                <em>Current stock: ${inventory} units</em>
+            `;
+
+            // Update product stats
+            document.getElementById('sellProductStats').innerHTML = `
+                <div class="product-stat">
+                    <div class="label">Base Price</div>
+                    <div class="value">$${product.sellPriceBase.toFixed(2)}</div>
+                </div>
+                <div class="product-stat">
+                    <div class="label">Available</div>
+                    <div class="value">${inventory}</div>
+                </div>
+                <div class="product-stat">
+                    <div class="label">Profit Margin</div>
+                    <div class="value">$${(product.sellPriceBase - product.buyPrice).toFixed(2)}</div>
+                </div>
+            `;
+
+            // Update sell options with different pricing strategies and disabled state logic
+            const sellOptions = document.getElementById('sellOptions');
+            const lowPrice = Math.max(0.5, product.sellPriceBase * 0.7);
+            const normalPrice = product.sellPriceBase;
+            const highPrice = product.sellPriceBase * 1.3;
+
+            // DISABLED BUTTON LOGIC: Check if player has inventory to sell and actions left
+            const canSell = inventory > 0 && gameState.actionsLeft > 0;
+
+            sellOptions.innerHTML = `
+                <button class="option-btn" onclick="sellProducts('${currentSellProduct}', ${lowPrice})" ${!canSell ? 'disabled' : ''}>${product.emoji} $${lowPrice.toFixed(2)} each<br>(Low Price - More Customers)</button>
+                <button class="option-btn" onclick="sellProducts('${currentSellProduct}', ${normalPrice})" ${!canSell ? 'disabled' : ''}>${product.emoji} $${normalPrice.toFixed(2)} each<br>(Normal Price)</button>
+                <button class="option-btn" onclick="sellProducts('${currentSellProduct}', ${highPrice})" ${!canSell ? 'disabled' : ''}>${product.emoji} $${highPrice.toFixed(2)} each<br>(High Price - Fewer Customers)</button>
+            `;
+        }
+
+        // MULTI-PRODUCT: Updated spoilage system for all products
+        function checkSpoilage() {
+            const spoilageResults = {};
+            let totalSpoiled = 0;
+
+            // REBALANCED: Increased spoilage rate after day 5 for difficulty scaling
+            const isLateGame = gameState.day > 5;
+            const spoilageMultiplier = isLateGame ? 1.3 : 1.0; // 30% more spoilage in late game
+
+            // Check spoilage for each product type
+            Object.keys(products).forEach(productType => {
+                const product = products[productType];
+                let spoiled = 0;
+
+                // Filter out spoiled batches for this product
+                gameState.productBatches[productType] = gameState.productBatches[productType].filter(batch => {
+                    const age = gameState.day - batch.day;
+                    const effectiveShelfLife = Math.floor(product.shelfLife / spoilageMultiplier);
+
+                    if (age >= effectiveShelfLife) {
+                        spoiled += batch.amount;
+                        return false; // Remove spoiled batch
+                    }
+                    return true; // Keep fresh batch
+                });
+
+                // Update inventory by subtracting spoiled items
+                gameState.inventory[productType] = Math.max(0, gameState.inventory[productType] - spoiled);
+                spoilageResults[productType] = spoiled;
+                totalSpoiled += spoiled;
+            });
+
+            return {
+                individual: spoilageResults,
+                total: totalSpoiled
+            };
+        }
+
+        function useAction() {
+            gameState.actionsLeft--;
+            updateDisplay();
+
+            if (gameState.actionsLeft <= 0) {
+                setTimeout(() => {
+                    alert("⏰ No more actions left today! Day ending automatically.");
+                    endDay();
+                }, 500);
+            }
+        }
+
+        // MULTI-PRODUCT TRANSACTION TRACKING FUNCTIONS
+        function recordSale(productType, quantity, price) {
+            const revenue = quantity * price;
+            gameState.dailyTransactions.sales[productType].push({
+                quantity: quantity,
+                price: price,
+                revenue: revenue
+            });
+        }
+
+        function recordPurchase(productType, quantity, cost) {
+            gameState.dailyTransactions.purchases[productType].push({
+                quantity: quantity,
+                cost: cost
+            });
+        }
+
+        function recordExpense(type, amount) {
+            gameState.dailyTransactions.expenses.push({
+                type: type,
+                amount: amount
+            });
+        }
+
+        function recordSpoilage(productType, quantity) {
+            gameState.dailyTransactions.spoilage[productType] += quantity;
+        }
+
+        // MULTI-PRODUCT: Updated day summary calculation
+        function calculateDaySummary() {
+            let totalRevenue = 0;
+            let totalPurchaseCosts = 0;
+            let totalCustomers = 0;
+            const productBreakdown = {};
+
+            // Calculate totals for each product type
+            Object.keys(products).forEach(productType => {
+                const product = products[productType];
+
+                // Calculate revenue for this product
+                const productRevenue = gameState.dailyTransactions.sales[productType].reduce((sum, sale) =>
+                    sum + sale.revenue, 0);
+
+                // Calculate purchase costs for this product
+                const productPurchaseCosts = gameState.dailyTransactions.purchases[productType].reduce((sum,
+                    purchase) => sum + purchase.cost, 0);
+
+                // Calculate customers served for this product
+                const productCustomers = gameState.dailyTransactions.sales[productType].reduce((sum, sale) =>
+                    sum + sale.quantity, 0);
+
+                // Store breakdown for display
+                productBreakdown[productType] = {
+                    name: product.name,
+                    emoji: product.emoji,
+                    revenue: productRevenue,
+                    costs: productPurchaseCosts,
+                    customers: productCustomers,
+                    spoilage: gameState.dailyTransactions.spoilage[productType]
+                };
+
+                // Add to totals
+                totalRevenue += productRevenue;
+                totalPurchaseCosts += productPurchaseCosts;
+                totalCustomers += productCustomers;
+            });
+
+            // Add other expenses (advertising, upgrades, etc.)
+            const totalExpenses = gameState.dailyTransactions.expenses.reduce((sum, expense) => sum + expense.amount,
+            0);
+            const totalCosts = totalPurchaseCosts + totalExpenses;
+            const totalProfit = totalRevenue - totalCosts;
+
+            return {
+                revenue: totalRevenue,
+                costs: totalCosts,
+                profit: totalProfit,
+                customers: totalCustomers,
+                productBreakdown: productBreakdown,
+                otherExpenses: totalExpenses
+            };
+        }
+
+        function resetDailyTransactions() {
+            gameState.dailyTransactions = {
+                sales: {
+                    lemonade: [],
+                    peach: [],
+                    strawberry: []
+                },
+                purchases: {
+                    lemonade: [],
+                    peach: [],
+                    strawberry: []
+                },
+                expenses: [],
+                spoilage: {
+                    lemonade: 0,
+                    peach: 0,
+                    strawberry: 0
+                }
+            };
+        }
+
+        function takeLoan() {
+            gameState.money += 30;
+            gameState.hasLoan = true;
+            gameState.loanAmount = 30;
+            closeModal('bankruptcyModal');
+            updateDisplay();
+            // FORMAT: Display loan amounts with proper decimal formatting
+            alert("🏦 Loan approved! You received $30.00. Remember: $5.00 interest per day!");
+        }
+
+        function declareBankruptcy() {
+            closeModal('bankruptcyModal');
+            alert("💔 Game Over! You declared bankruptcy. Better luck next time!");
+            showFinalResults();
+        }
+
+        // Modal Management
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showBuyModal() {
+            if (gameState.actionsLeft <= 0) {
+                alert("⏰ No actions left today!");
+                return;
+            }
+
+            // MULTI-PRODUCT: Check if player has enough money for cheapest option
+            const cheapestProduct = Math.min(...Object.values(products).map(p => p.buyPrice));
+            const minCost = cheapestProduct * 5;
+            if (gameState.money < minCost) {
+                alert(`💸 Not enough money to buy supplies! You need at least $${minCost.toFixed(2)}.`);
+                return;
+            }
+
+            // Reset to lemonade tab and update display
+            currentBuyProduct = 'lemonade';
+            document.querySelectorAll('#buyProductTabs .product-tab').forEach((tab, index) => {
+                tab.classList.toggle('active', index === 0);
+            });
+
+            updateBuyProductDisplay();
+            showModal('buyModal');
+        }
+
+        function showSellModal() {
+            if (gameState.actionsLeft <= 0) {
+                alert("⏰ No actions left today!");
+                return;
+            }
+
+            // MULTI-PRODUCT: Check if player has any inventory
+            const totalInventory = gameState.inventory.lemonade + gameState.inventory.peach + gameState.inventory
+                .strawberry;
+            if (totalInventory === 0) {
+                alert("📦 No inventory to sell! Buy supplies first.");
+                return;
+            }
+
+            // Reset to lemonade tab and update display
+            currentSellProduct = 'lemonade';
+            document.querySelectorAll('#sellProductTabs .product-tab').forEach((tab, index) => {
+                tab.classList.toggle('active', index === 0);
+            });
+
+            updateSellProductDisplay();
+            showModal('sellModal');
+        }
+
+        function showAdvertiseModal() {
+            if (gameState.actionsLeft <= 0) {
+                alert("⏰ No actions left today!");
+                return;
+            }
+
+            // ADVERTISING SALE EVENT: Check if free advertising is available today
+            const isFreeToday = window.currentEventEffect && window.currentEventEffect.freeAd;
+
+            if (!isFreeToday && gameState.money < 5) {
+                alert("💸 Not enough money to advertise!");
+                return;
+            }
+
+            // ADVERTISING SALE EVENT: Update modal content with current pricing
+            updateAdvertisingModal();
+            showModal('advertiseModal');
+        }
+
+        function showUpgradeModal() {
+            if (gameState.actionsLeft <= 0) {
+                alert("⏰ No actions left today!");
+                return;
+            }
+
+            // UPGRADE MODAL ALWAYS CLICKABLE: Always show the modal so players can view upgrade requirements and progress
+            // No longer check if player can afford upgrades - let them see what they need to work toward
+
+            updateUpgradeModal();
+            showModal('upgradeModal');
+        }
+
+        function canAffordAnyUpgrade() {
+            // Check if player meets minimum requirements for any upgrade
+            return gameState.money >= 200 &&
+                gameState.totalCustomersServed >= 50 &&
+                getProductTypesSold() >= 2;
+        }
+
+        // UPGRADE REQUIREMENTS: Define upgrade requirements and tangible effects
+        function getUpgradeRequirements() {
+            return {
+                table: {
+                    name: "Better Table",
+                    icon: "🪑",
+                    money: 200,
+                    customers: 50,
+                    productTypes: 2,
+                    inventory: {
+                        lemonade: 10,
+                        peach: 5,
+                        strawberry: 0
+                    },
+                    effect: "+10 max customers per day",
+                    description: "A sturdy table that can serve more customers at once!"
+                },
+                sign: {
+                    name: "Fancy Sign",
+                    icon: "🪧",
+                    money: 350,
+                    customers: 100,
+                    productTypes: 2,
+                    inventory: {
+                        lemonade: 15,
+                        peach: 10,
+                        strawberry: 5
+                    },
+                    effect: "+20% customer arrivals per turn",
+                    description: "A bright, colorful sign that attracts more customers!"
+                },
+                location: {
+                    name: "Better Location",
+                    icon: "🏪",
+                    money: 600,
+                    customers: 150,
+                    productTypes: 3,
+                    inventory: {
+                        lemonade: 20,
+                        peach: 15,
+                        strawberry: 10
+                    },
+                    effect: "+10% profit per product sold",
+                    description: "Move to a premium spot with more foot traffic!"
+                }
+            };
+        }
+
+        // UPGRADE CARDS: New function to create card-style upgrade display
+        function updateUpgradeModal() {
+            const container = document.getElementById('upgradeCardsContainer');
+            const requirements = getUpgradeRequirements();
+
+            container.innerHTML = '';
+
+            Object.keys(requirements).forEach(upgradeType => {
+                const req = requirements[upgradeType];
+                const alreadyHas = gameState.upgrades.includes(upgradeType);
+
+                // Check individual requirements for progress indicators
+                const moneyMet = gameState.money >= req.money;
+                const customersMet = gameState.totalCustomersServed >= req.customers;
+                const productTypesMet = getProductTypesSold() >= req.productTypes;
+                const lemonadeMet = gameState.inventory.lemonade >= req.inventory.lemonade;
+                const peachMet = gameState.inventory.peach >= req.inventory.peach;
+                const strawberryMet = gameState.inventory.strawberry >= req.inventory.strawberry;
+
+                const allRequirementsMet = moneyMet && customersMet && productTypesMet &&
+                    lemonadeMet && peachMet && strawberryMet;
+
+                // Calculate progress percentages for progress bars
+                const customerProgress = Math.min(100, (gameState.totalCustomersServed / req.customers) * 100);
+                const productProgress = Math.min(100, (getProductTypesSold() / req.productTypes) * 100);
+
+                // Generate tooltip for disabled button
+                const missingRequirements = [];
+                if (!moneyMet) missingRequirements.push(
+                    `Need $${(req.money - gameState.money).toFixed(2)} more`);
+                if (!customersMet) missingRequirements.push(
+                    `Need ${req.customers - gameState.totalCustomersServed} more customers`);
+                if (!productTypesMet) missingRequirements.push(
+                    `Need ${req.productTypes - getProductTypesSold()} more product types`);
+                if (!lemonadeMet) missingRequirements.push(
+                    `Need ${req.inventory.lemonade - gameState.inventory.lemonade} more lemons`);
+                if (!peachMet) missingRequirements.push(
+                    `Need ${req.inventory.peach - gameState.inventory.peach} more peaches`);
+                if (!strawberryMet) missingRequirements.push(
+                    `Need ${req.inventory.strawberry - gameState.inventory.strawberry} more strawberries`);
+
+                const tooltipText = missingRequirements.join(', ');
+
+                const card = document.createElement('div');
+                card.className = `upgrade-card ${alreadyHas ? 'owned' : ''}`;
+
+                // REDESIGNED UPGRADE CARD: Cleaner, more intuitive layout with compact spacing
+                // TOP ROW: Icon + title on left, buy button on right for better visual balance
+                card.innerHTML = `
+                    <!-- TOP ROW: Icon + title on left, buy button on right -->
+                    <div class="upgrade-top-row">
+                        <div class="upgrade-header">
+                            <div class="upgrade-icon">${req.icon}</div>
+                            <div class="upgrade-title">${req.name}</div>
+                        </div>
+                        <button class="upgrade-button" 
+                                onclick="purchaseUpgrade('${upgradeType}')" 
+                                ${(!allRequirementsMet || alreadyHas) ? 'disabled' : ''}
+                                ${(!allRequirementsMet && !alreadyHas) ? `data-tooltip="${tooltipText}"` : ''}>
+                            ${alreadyHas ? '✅ Owned' : '🛒 Buy'}
+                        </button>
+                    </div>
+                    
+                    <!-- SECOND ROW: Cost and effect side by side -->
+                    <div class="upgrade-info-row">
+                        <div class="upgrade-cost">
+                            💰 $${req.money} + ${req.inventory.lemonade}🍋 ${req.inventory.peach}🍑 ${req.inventory.strawberry}🍓
+                        </div>
+                        <div class="upgrade-effect">
+                            ⚡ ${req.effect}
+                        </div>
+                    </div>
+                    
+                    <!-- REQUIREMENTS SECTION: Compact layout with horizontal grouping -->
+                    <div class="upgrade-requirements">
+                        <!-- MAIN REQUIREMENTS ROW: Money, customers, and product types in horizontal layout -->
+                        <div class="requirements-main-row">
+                            <div class="requirement-main ${moneyMet ? 'requirement-met' : 'requirement-not-met'}">
+                                <div class="requirement-label">💰 Money</div>
+                                <div class="requirement-value">$${gameState.money.toFixed(0)}/$${req.money}</div>
+                            </div>
+                            <div class="requirement-main ${customersMet ? 'requirement-met' : 'requirement-not-met'}">
+                                <div class="requirement-label">👥 Customers</div>
+                                <div class="requirement-value">${gameState.totalCustomersServed}/${req.customers}</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${customerProgress}%"></div>
+                                </div>
+                            </div>
+                            <div class="requirement-main ${productTypesMet ? 'requirement-met' : 'requirement-not-met'}">
+                                <div class="requirement-label">🍎 Types</div>
+                                <div class="requirement-value">${getProductTypesSold()}/${req.productTypes}</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${productProgress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- INVENTORY ROW: Clean horizontal layout with colored counters -->
+                        <div class="requirement-inventory">
+                            <div class="inventory-item ${lemonadeMet ? 'requirement-met' : 'requirement-not-met'}">
+                                🍋${gameState.inventory.lemonade}/${req.inventory.lemonade}
+                            </div>
+                            <div class="inventory-item ${peachMet ? 'requirement-met' : 'requirement-not-met'}">
+                                🍑${gameState.inventory.peach}/${req.inventory.peach}
+                            </div>
+                            <div class="inventory-item ${strawberryMet ? 'requirement-met' : 'requirement-not-met'}">
+                                🍓${gameState.inventory.strawberry}/${req.inventory.strawberry}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // MULTI-PRODUCT FIX: Updated buying system for all products - ensures all products can be purchased multiple times
+        function buySupplies(productType, amount, cost) {
+            // Validate that the product type exists in our products list
+            if (!products[productType]) {
+                alert("❌ Invalid product type!");
+                return;
+            }
+
+            // Check if player has enough money
+            if (gameState.money < cost) {
+                alert("💸 Not enough money!");
+                return;
+            }
+
+            // Check if player has actions left
+            if (gameState.actionsLeft <= 0) {
+                alert("⏰ No actions left today!");
+                return;
+            }
+
+            // Process the purchase - this logic works for ALL products dynamically
+            gameState.money -= cost;
+            gameState.inventory[productType] += amount;
+
+            // Record transaction for accurate day summary
+            recordPurchase(productType, amount, cost);
+
+            // Add to product batches with purchase date for spoilage tracking
+            gameState.productBatches[productType].push({
+                amount: amount,
+                day: gameState.day
+            });
+
+            useAction();
+            updateDisplay(); // Ensure display updates immediately after purchase
+
+            // Update the buy modal display to reflect new inventory and money
+            updateBuyProductDisplay();
+
+            const product = products[productType];
+            alert(`✅ Bought ${amount} ${product.name} for $${cost.toFixed(2)}!`);
+        }
+
+        // MULTI-PRODUCT FIX: Updated selling system for all products - ensures all products can be sold properly
+        function sellProducts(productType, price) {
+            // Validate that the product type exists in our products list
+            if (!products[productType]) {
+                alert("❌ Invalid product type!");
+                return;
+            }
+
+            // Check if player has inventory to sell
+            if (gameState.inventory[productType] === 0) {
+                alert(`📦 No ${products[productType].name} to sell!`);
+                return;
+            }
+
+            // Check if player has actions left
+            if (gameState.actionsLeft <= 0) {
+                alert("⏰ No actions left today!");
+                return;
+            }
+
+            // Calculate customers based on price and advertising - works for ALL products dynamically
+            // REBALANCED: Customers demand more units in later days for difficulty scaling
+            const isLateGame = gameState.day > 5;
+            const baseCustomerRange = isLateGame ? 15 : 10; // More customers but higher expectations
+            const baseCustomerMin = isLateGame ? 8 : 5;
+            let baseCustomers = Math.floor(Math.random() * baseCustomerRange) + baseCustomerMin;
+            let customerMultiplier = 1;
+
+            // TANGIBLE UPGRADE EFFECTS: Apply upgrade bonuses
+            // Better Table: +10 max customers per day
+            const maxCustomers = baseCustomers + gameState.upgradeEffects.maxCustomersBonus;
+            baseCustomers = Math.min(baseCustomers, maxCustomers);
+
+            // Fancy Sign: +20% customer arrivals per turn
+            customerMultiplier += gameState.upgradeEffects.customerArrivalBonus;
+
+            // Price affects customers (relative to base price)
+            const basePrice = products[productType].sellPriceBase;
+            if (price < basePrice * 0.8) customerMultiplier = 1.5; // Cheap attracts more
+            if (price > basePrice * 1.2) customerMultiplier = 0.7; // Expensive attracts fewer
+
+            // Advertising bonus
+            customerMultiplier += gameState.advertising * 0.2;
+
+            // Apply event effects
+            if (window.currentEventEffect && window.currentEventEffect.customers) {
+                customerMultiplier *= window.currentEventEffect.customers;
+            }
+
+            const customers = Math.floor(baseCustomers * customerMultiplier);
+            const sold = Math.min(customers, gameState.inventory[productType]);
+
+            // TANGIBLE UPGRADE EFFECTS: Apply profit multiplier from Better Location
+            const adjustedPrice = price * gameState.upgradeEffects.profitMultiplier;
+            const revenue = sold * adjustedPrice;
+
+            // Update inventory and money - this works for ALL products
+            gameState.inventory[productType] -= sold;
+            gameState.money += revenue;
+
+            // Update product batches to reflect sold inventory (FIFO - First In, First Out)
+            let remainingToSell = sold;
+            gameState.productBatches[productType] = gameState.productBatches[productType].filter(batch => {
+                if (remainingToSell <= 0) return true;
+
+                if (batch.amount <= remainingToSell) {
+                    remainingToSell -= batch.amount;
+                    return false; // Remove this batch completely
+                } else {
+                    batch.amount -= remainingToSell;
+                    remainingToSell = 0;
+                    return true; // Keep this batch with reduced amount
+                }
+            });
+
+            // Record transaction for accurate day summary
+            recordSale(productType, sold, price);
+
+            // Update total customers served
+            gameState.totalCustomersServed += sold;
+
+            // REBALANCED: Update lifetime statistics for achievements and upgrade requirements
+            gameState.lifetimeStats.productsSold[productType] += sold;
+            gameState.lifetimeStats.totalRevenue += revenue;
+
+            useAction();
+            updateDisplay();
+
+            // Update the sell modal display to reflect new inventory and money
+            updateSellProductDisplay();
+
+            const product = products[productType];
+            alert(`🎉 Sold ${sold} ${product.name} for $${price.toFixed(2)} each! Made $${revenue.toFixed(2)}!`);
+        }
+
+        // ADVERTISING SALE EVENT: Function to update advertising modal with sale prices
+        function updateAdvertisingModal() {
+            const modal = document.getElementById('advertiseModal');
+            const optionGrid = modal.querySelector('.option-grid');
+
+            // Check if free advertising event is active
+            const isFreeToday = window.currentEventEffect && window.currentEventEffect.freeAd;
+
+            // Define advertising options with original prices
+            const adOptions = [{
+                    type: 'flyers',
+                    originalCost: 5,
+                    emoji: '📄',
+                    name: 'Make Flyers'
+                },
+                {
+                    type: 'signs',
+                    originalCost: 10,
+                    emoji: '🪧',
+                    name: 'Put Up Signs'
+                },
+                {
+                    type: 'social',
+                    originalCost: 15,
+                    emoji: '📱',
+                    name: 'Social Media'
+                }
+            ];
+
+            // Generate buttons with sale styling if applicable
+            optionGrid.innerHTML = adOptions.map(option => {
+                const currentCost = isFreeToday ? 0 : option.originalCost;
+                const buttonClass = isFreeToday ? 'option-btn advertising-sale' : 'option-btn';
+
+                let priceDisplay;
+                if (isFreeToday) {
+                    priceDisplay =
+                        `<span class="original-price">$${option.originalCost}</span> <span class="sale-price">$0</span>`;
+                } else {
+                    priceDisplay = `$${option.originalCost}`;
+                }
+
+                const tooltip = isFreeToday ?
+                    '<div class="sale-tooltip">Free today thanks to your great idea!</div>' : '';
+
+                return `
+                    <button class="${buttonClass}" onclick="advertise('${option.type}', ${currentCost})">
+                        ${option.emoji} ${option.name}<br>${priceDisplay}
+                        ${tooltip}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function advertise(type, cost) {
+            // ADVERTISING SALE EVENT: Cost is already calculated in updateAdvertisingModal
+            // No need to check for free advertising event here as it's handled in modal generation
+
+            if (gameState.money >= cost) {
+                gameState.money -= cost;
+                gameState.advertising += 1;
+
+                // Record expense for accurate day summary
+                if (cost > 0) {
+                    recordExpense('advertising', cost);
+                }
+
+                useAction();
+                updateDisplay();
+                closeModal('advertiseModal');
+
+                const messages = {
+                    'flyers': `📄 Put up flyers around town! More customers will come.`,
+                    'signs': `🪧 Made colorful signs! Your shop looks great!`,
+                    'social': `📱 Posted on social media! Going viral!`
+                };
+
+                // FORMAT: Display advertising cost with 2 decimal places when not free
+                alert(`✅ ${messages[type]} ${cost === 0 ? '(Free today!)' : `Cost: $${cost.toFixed(2)}`}`);
+            } else {
+                alert("💸 Not enough money!");
+            }
+        }
+
+        // PURCHASE BUTTON RESTORATION: New wrapper function for cleaner button integration
+        function purchaseUpgrade(upgradeType) {
+            const requirements = getUpgradeRequirements()[upgradeType];
+            if (!requirements) {
+                alert("❌ Invalid upgrade type!");
+                return;
+            }
+
+            // Call the main upgrade function with proper parameters
+            upgrade(upgradeType, requirements.money, requirements.inventory);
+        }
+
+        function upgrade(type, cost, inventoryReq) {
+            // REBALANCED: Complex upgrade requirements including inventory consumption
+            const requirements = getUpgradeRequirements()[type];
+
+            // Check all requirements
+            const hasEnoughMoney = gameState.money >= requirements.money;
+            const hasEnoughCustomers = gameState.totalCustomersServed >= requirements.customers;
+            const hasEnoughProductTypes = getProductTypesSold() >= requirements.productTypes;
+            const hasEnoughInventory = gameState.inventory.lemonade >= requirements.inventory.lemonade &&
+                gameState.inventory.peach >= requirements.inventory.peach &&
+                gameState.inventory.strawberry >= requirements.inventory.strawberry;
+            const alreadyHas = gameState.upgrades.includes(type);
+
+            if (alreadyHas) {
+                alert("✅ You already have this upgrade!");
+                return;
+            }
+
+            if (!hasEnoughMoney || !hasEnoughCustomers || !hasEnoughProductTypes || !hasEnoughInventory) {
+                alert("❌ You don't meet all the requirements for this upgrade!");
+                return;
+            }
+
+            // Consume resources
+            gameState.money -= requirements.money;
+            gameState.inventory.lemonade -= requirements.inventory.lemonade;
+            gameState.inventory.peach -= requirements.inventory.peach;
+            gameState.inventory.strawberry -= requirements.inventory.strawberry;
+
+            // Remove consumed inventory from batches (FIFO)
+            Object.keys(requirements.inventory).forEach(productType => {
+                const amountToRemove = requirements.inventory[productType];
+                if (amountToRemove > 0) {
+                    let remainingToRemove = amountToRemove;
+                    gameState.productBatches[productType] = gameState.productBatches[productType].filter(
+                        batch => {
+                            if (remainingToRemove <= 0) return true;
+
+                            if (batch.amount <= remainingToRemove) {
+                                remainingToRemove -= batch.amount;
+                                return false;
+                            } else {
+                                batch.amount -= remainingToRemove;
+                                remainingToRemove = 0;
+                                return true;
+                            }
+                        });
+                }
+            });
+
+            gameState.upgrades.push(type);
+
+            // TANGIBLE UPGRADE EFFECTS: Apply upgrade bonuses immediately
+            switch (type) {
+                case 'table':
+                    gameState.upgradeEffects.maxCustomersBonus = 10;
+                    break;
+                case 'sign':
+                    gameState.upgradeEffects.customerArrivalBonus = 0.2; // +20%
+                    break;
+                case 'location':
+                    gameState.upgradeEffects.profitMultiplier = 1.1; // +10%
+                    break;
+            }
+
+            // Record expense for accurate day summary
+            recordExpense('upgrade', requirements.money);
+
+            useAction();
+
+            // UPGRADE VISUALS: Show purchase animation before updating display
+            showUpgradePurchaseAnimation(type);
+
+            updateDisplay();
+            closeModal('upgradeModal');
+
+            const messages = {
+                'table': `🪑 Got a better table! Now you can serve up to 10 more customers per day!`,
+                'sign': `🪧 Fancy new sign installed! 20% more customers will notice your shop!`,
+                'location': `🏪 Moved to a better location! You now earn 10% more profit per sale!`
+            };
+
+            const inventoryUsed =
+                `${requirements.inventory.lemonade}🍋 ${requirements.inventory.peach}🍑 ${requirements.inventory.strawberry}🍓`;
+            alert(`✅ ${messages[type]} Cost: $${requirements.money.toFixed(2)} + ${inventoryUsed}`);
+        }
+
+        function showRandomEvent() {
+            const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+            document.getElementById('eventText').textContent = event.text;
+
+            // Apply event effects
+            window.currentEventEffect = event.effect;
+
+            // Apply money bonus
+            if (event.effect.money) {
+                gameState.money += event.effect.money;
+            }
+
+            // FREE GIFT EVENTS FIX: Apply free products to inventory and batches
+            if (event.effect.freeProducts) {
+                Object.keys(event.effect.freeProducts).forEach(productType => {
+                    const amount = event.effect.freeProducts[productType];
+                    if (products[productType]) {
+                        // Add to inventory
+                        gameState.inventory[productType] += amount;
+
+                        // Add to product batches with current day for spoilage tracking
+                        gameState.productBatches[productType].push({
+                            amount: amount,
+                            day: gameState.day
+                        });
+
+                        console.log(
+                            `FREE GIFT EVENT: Added ${amount} ${products[productType].name} to inventory`);
+                    }
+                });
+            }
+
+            // FREE GIFT EVENTS FIX: Apply product spoilage/loss
+            if (event.effect.spoilProducts) {
+                Object.keys(event.effect.spoilProducts).forEach(productType => {
+                    const amount = event.effect.spoilProducts[productType];
+                    if (products[productType] && gameState.inventory[productType] > 0) {
+                        const actualLoss = Math.min(amount, gameState.inventory[productType]);
+                        gameState.inventory[productType] -= actualLoss;
+
+                        // Remove from batches (FIFO)
+                        let remainingToRemove = actualLoss;
+                        gameState.productBatches[productType] = gameState.productBatches[productType].filter(
+                            batch => {
+                                if (remainingToRemove <= 0) return true;
+
+                                if (batch.amount <= remainingToRemove) {
+                                    remainingToRemove -= batch.amount;
+                                    return false;
+                                } else {
+                                    batch.amount -= remainingToRemove;
+                                    remainingToRemove = 0;
+                                    return true;
+                                }
+                            });
+
+                        console.log(
+                            `SPOILAGE EVENT: Lost ${actualLoss} ${products[productType].name} from inventory`
+                            );
+                    }
+                });
+            }
+
+            updateDisplay(); // FREE GIFT EVENTS FIX: Update UI immediately to show new inventory
+            showModal('eventModal');
+        }
+
+        function endDay() {
+            // Process spoilage before calculating summary
+            const spoilageResults = checkSpoilage();
+
+            // Calculate accurate daily summary from transaction log
+            const summary = calculateDaySummary();
+
+            // Display calculated values with proper formatting
+            document.getElementById('revenueDisplay').textContent = `$${summary.revenue.toFixed(2)}`;
+            document.getElementById('costsDisplay').textContent = `$${summary.costs.toFixed(2)}`;
+            document.getElementById('profitDisplay').textContent = `$${summary.profit.toFixed(2)}`;
+            document.getElementById('customersDisplay').textContent = summary.customers;
+
+            // UI/UX IMPROVEMENT: Display enhanced product breakdown
+            displayProductBreakdown(summary.productBreakdown);
+
+            // Show spoilage alert if any products spoiled
+            if (spoilageResults.total > 0) {
+                document.getElementById('spoilageAlert').style.display = 'block';
+                let spoilageText = 'Products spoiled today: ';
+                const spoilageItems = [];
+                Object.keys(spoilageResults.individual).forEach(productType => {
+                    const amount = spoilageResults.individual[productType];
+                    if (amount > 0) {
+                        spoilageItems.push(`${amount} ${products[productType].name}`);
+                    }
+                });
+                document.getElementById('spoilageText').textContent = spoilageText + spoilageItems.join(', ');
+            } else {
+                document.getElementById('spoilageAlert').style.display = 'none';
+            }
+
+            // Track best profit day for achievements
+            if (summary.profit > gameState.bestProfitDay) {
+                gameState.bestProfitDay = summary.profit;
+            }
+            gameState.dailyProfits.push(summary.profit);
+
+            // REBALANCED: Update lifetime statistics for achievements
+            gameState.lifetimeStats.totalProfit += summary.profit;
+            if (summary.revenue > gameState.lifetimeStats.bestSingleDay.revenue) {
+                gameState.lifetimeStats.bestSingleDay.revenue = summary.revenue;
+            }
+            if (summary.customers > gameState.lifetimeStats.bestSingleDay.customers) {
+                gameState.lifetimeStats.bestSingleDay.customers = summary.customers;
+            }
+            if (summary.profit > gameState.lifetimeStats.bestSingleDay.profit) {
+                gameState.lifetimeStats.bestSingleDay.profit = summary.profit;
+            }
+
+            // Show learned vocabulary
+            const learnedContainer = document.getElementById('learnedVocab');
+            learnedContainer.innerHTML = '';
+            const todayWords = document.querySelectorAll('#todayVocab .vocab-word');
+            todayWords.forEach(wordEl => {
+                const newWordEl = wordEl.cloneNode(true);
+                learnedContainer.appendChild(newWordEl);
+            });
+
+            showScreen('dayEndScreen');
+        }
+
+        // UI/UX IMPROVEMENT: Enhanced product breakdown display function
+        function displayProductBreakdown(productBreakdown) {
+            const container = document.getElementById('productBreakdown');
+            container.innerHTML = '';
+
+            Object.keys(products).forEach(productType => {
+                const product = products[productType];
+                const breakdown = productBreakdown[productType];
+
+                const card = document.createElement('div');
+                card.className = `product-breakdown-card ${productType}`;
+
+                card.innerHTML = `
+                    <div class="product-name">${product.emoji} ${product.name}</div>
+                    <div class="product-stats">
+                        <div class="stat">
+                            <div class="label">Revenue</div>
+                            <div class="value">$${breakdown.revenue.toFixed(2)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">Customers</div>
+                            <div class="value">${breakdown.customers}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">Costs</div>
+                            <div class="value">$${breakdown.costs.toFixed(2)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">Spoiled</div>
+                            <div class="value">${breakdown.spoilage}</div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // MULTI-PRODUCT FIX: Updated inventory validation for all products
+        function validateInventory() {
+            Object.keys(products).forEach(productType => {
+                const batchTotal = gameState.productBatches[productType].reduce((total, batch) => total + batch
+                    .amount, 0);
+                if (gameState.inventory[productType] !== batchTotal) {
+                    console.warn(
+                        `${productType} inventory mismatch: inventory=${gameState.inventory[productType]}, batches=${batchTotal}`
+                        );
+                }
+            });
+        }
+
+        function nextDay() {
+            // MULTI-PRODUCT FIX: Validate inventory consistency before processing new day
+            validateInventory();
+
+            // Apply loan interest
+            if (gameState.hasLoan) {
+                gameState.money -= 5;
+                recordExpense('loan interest', 5);
+            }
+
+            // Reset for new day
+            gameState.day++;
+            gameState.actionsLeft = 8; // DAILY ACTION LIMIT: Reset to 8 actions for new day as requested
+            gameState.advertising = Math.max(0, gameState.advertising - 1); // Advertising effect decreases
+
+            // ADVERTISING SALE EVENT: Reset event effects (including free advertising) for new day
+            window.currentEventEffect = null; // Reset event effects
+            window.currentMarketEffect = null; // DYNAMIC PRICING: Reset market effects
+
+            // DYNAMIC PRICING: Set new market conditions and prices for the new day
+            setDailyMarketNews();
+            updateDailyPrices();
+
+            // Reset daily transactions for new day
+            resetDailyTransactions();
+
+            // MULTI-PRODUCT FIX: Inventory persists correctly from previous day
+            // Spoilage was already processed in endDay(), so inventory is accurate
+
+            if (gameState.day > 10) {
+                showFinalResults();
+            } else {
+                updateDisplay();
+                showTodayVocabulary();
+                showScreen('gameScreen');
+
+                // Random chance for event
+                if (Math.random() < 0.4) {
+                    setTimeout(() => showRandomEvent(), 1000);
+                }
+            }
+        }
+
+        function showFinalResults() {
+            // FORMAT: Display final money with exactly 2 decimal places
+            document.getElementById('finalMoney').textContent = `$${gameState.money.toFixed(2)}`;
+            document.getElementById('businessLevel').textContent = getBusinessLevel();
+            document.getElementById('totalWords').textContent = gameState.learnedWords.size;
+            document.getElementById('totalCustomers').textContent = gameState.totalCustomersServed;
+
+            // Calculate and display achievements
+            displayAchievements();
+
+            // Update shop visual based on final level
+            const level = getBusinessLevel();
+            const shopEmojis = {
+                'Beginner': '🏪',
+                'Small Shop': '🏬',
+                'Big Store': '🏢',
+                'Tycoon': '🏰'
+            };
+            document.getElementById('finalShopLevel').textContent = shopEmojis[level];
+
+            showScreen('resultsScreen');
+        }
+
+        function displayAchievements() {
+            const achievementsGrid = document.getElementById('achievementsGrid');
+            achievementsGrid.innerHTML = '';
+
+            const achievements = [];
+
+            // REBALANCED: New achievement system with higher thresholds and diverse goals
+
+            // Money Master achievements (much higher thresholds)
+            if (gameState.money >= 1000) {
+                achievements.push({
+                    icon: '💰',
+                    title: 'Money Master',
+                    desc: `Ended with $${gameState.money.toFixed(2)}`
+                });
+            } else if (gameState.money >= 500) {
+                achievements.push({
+                    icon: '💵',
+                    title: 'Wealthy Trader',
+                    desc: `Ended with $${gameState.money.toFixed(2)}`
+                });
+            } else if (gameState.money >= 200) {
+                achievements.push({
+                    icon: '🪙',
+                    title: 'Good Saver',
+                    desc: `Ended with $${gameState.money.toFixed(2)}`
+                });
+            }
+
+            // Customer Hero achievements (higher thresholds)
+            if (gameState.totalCustomersServed >= 200) {
+                achievements.push({
+                    icon: '👑',
+                    title: 'Customer Hero',
+                    desc: `Served ${gameState.totalCustomersServed} customers`
+                });
+            } else if (gameState.totalCustomersServed >= 100) {
+                achievements.push({
+                    icon: '👥',
+                    title: 'People Person',
+                    desc: `Served ${gameState.totalCustomersServed} customers`
+                });
+            } else if (gameState.totalCustomersServed >= 50) {
+                achievements.push({
+                    icon: '🤝',
+                    title: 'Customer Friend',
+                    desc: `Served ${gameState.totalCustomersServed} customers`
+                });
+            }
+
+            // Fruit King achievement (sell all 3 product types)
+            const productTypesSold = getProductTypesSold();
+            if (productTypesSold >= 3) {
+                achievements.push({
+                    icon: '🍎',
+                    title: 'Fruit King',
+                    desc: 'Mastered all 3 product types!'
+                });
+            } else if (productTypesSold >= 2) {
+                achievements.push({
+                    icon: '🍊',
+                    title: 'Product Expert',
+                    desc: `Sold ${productTypesSold} different products`
+                });
+            }
+
+            // Revenue achievements
+            if (gameState.lifetimeStats.totalRevenue >= 500) {
+                achievements.push({
+                    icon: '💸',
+                    title: 'Sales Champion',
+                    desc: `$${gameState.lifetimeStats.totalRevenue.toFixed(2)} total revenue`
+                });
+            } else if (gameState.lifetimeStats.totalRevenue >= 200) {
+                achievements.push({
+                    icon: '💲',
+                    title: 'Revenue Builder',
+                    desc: `$${gameState.lifetimeStats.totalRevenue.toFixed(2)} total revenue`
+                });
+            }
+
+            // Profit achievements (higher thresholds)
+            if (gameState.lifetimeStats.bestSingleDay.profit >= 100) {
+                achievements.push({
+                    icon: '📈',
+                    title: 'Profit King',
+                    desc: `Best day: $${gameState.lifetimeStats.bestSingleDay.profit.toFixed(2)} profit`
+                });
+            } else if (gameState.lifetimeStats.bestSingleDay.profit >= 50) {
+                achievements.push({
+                    icon: '📊',
+                    title: 'Smart Trader',
+                    desc: `Best day: $${gameState.lifetimeStats.bestSingleDay.profit.toFixed(2)} profit`
+                });
+            } else if (gameState.lifetimeStats.bestSingleDay.profit >= 20) {
+                achievements.push({
+                    icon: '📉',
+                    title: 'Profit Maker',
+                    desc: `Best day: $${gameState.lifetimeStats.bestSingleDay.profit.toFixed(2)} profit`
+                });
+            }
+
+            // Business level achievements
+            const businessLevel = getBusinessLevel();
+            if (businessLevel === 'Tycoon') {
+                achievements.push({
+                    icon: '🏰',
+                    title: 'Business Tycoon',
+                    desc: 'Reached the highest level!'
+                });
+            } else if (businessLevel === 'Big Store') {
+                achievements.push({
+                    icon: '🏢',
+                    title: 'Store Owner',
+                    desc: 'Built a successful business!'
+                });
+            } else if (businessLevel === 'Small Shop') {
+                achievements.push({
+                    icon: '🏬',
+                    title: 'Shop Keeper',
+                    desc: 'Grew beyond beginner level!'
+                });
+            }
+
+            // Learning achievement
+            if (gameState.learnedWords.size >= 25) {
+                achievements.push({
+                    icon: '🎓',
+                    title: 'Word Wizard',
+                    desc: `Learned ${gameState.learnedWords.size} business words`
+                });
+            } else if (gameState.learnedWords.size >= 15) {
+                achievements.push({
+                    icon: '📚',
+                    title: 'Vocabulary Builder',
+                    desc: `Learned ${gameState.learnedWords.size} business words`
+                });
+            }
+
+            // Upgrade achievements
+            if (gameState.upgrades.length >= 3) {
+                achievements.push({
+                    icon: '⬆️',
+                    title: 'Upgrade Master',
+                    desc: 'Unlocked all upgrades!'
+                });
+            } else if (gameState.upgrades.length >= 2) {
+                achievements.push({
+                    icon: '🔧',
+                    title: 'Improver',
+                    desc: `Got ${gameState.upgrades.length} upgrades`
+                });
+            }
+
+            // Survival achievement
+            achievements.push({
+                icon: '⭐',
+                title: 'Entrepreneur',
+                desc: 'Completed the 10-day challenge!'
+            });
+
+            // Special achievements for exceptional performance
+            if (gameState.lifetimeStats.bestSingleDay.customers >= 30) {
+                achievements.push({
+                    icon: '🎪',
+                    title: 'Crowd Pleaser',
+                    desc: `${gameState.lifetimeStats.bestSingleDay.customers} customers in one day!`
+                });
+            }
+
+            if (gameState.dailyProfits.filter(p => p > 0).length >= 8) {
+                achievements.push({
+                    icon: '💎',
+                    title: 'Consistent Performer',
+                    desc: 'Profitable most days!'
+                });
+            }
+
+            achievements.forEach(achievement => {
+                const badge = document.createElement('div');
+                badge.className = 'achievement-badge';
+                badge.innerHTML = `
+                    <div class="badge-icon">${achievement.icon}</div>
+                    <div class="badge-title">${achievement.title}</div>
+                    <div class="badge-desc">${achievement.desc}</div>
+                `;
+                achievementsGrid.appendChild(badge);
+            });
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Initialize game
+        updateDisplay();
+
+        // CLICK EVENT FIX: Bind upgrade button event listener on page load
+        // This ensures the button works from the very beginning
+        document.addEventListener('DOMContentLoaded', function () {
+            bindUpgradeButtonEvent();
+        });
+
+        // CLICK EVENT FIX: Also bind immediately in case DOM is already loaded
+        bindUpgradeButtonEvent();
+    </script>
+    <script>
+        (function () {
+            function c() {
+                var b = a.contentDocument || a.contentWindow.document;
+                if (b) {
+                    var d = b.createElement('script');
+                    d.innerHTML =
+                        "window.__CF$cv$params={r:'97cf8429e33503b9',t:'MTc1NzUxMzUwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                    b.getElementsByTagName('head')[0].appendChild(d)
+                }
+            }
+            if (document.body) {
+                var a = document.createElement('iframe');
+                a.height = 1;
+                a.width = 1;
+                a.style.position = 'absolute';
+                a.style.top = 0;
+                a.style.left = 0;
+                a.style.border = 'none';
+                a.style.visibility = 'hidden';
+                document.body.appendChild(a);
+                if ('loading' !== document.readyState) c();
+                else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c);
+                else {
+                    var e = document.onreadystatechange || function () {};
+                    document.onreadystatechange = function (b) {
+                        e(b);
+                        'loading' !== document.readyState && (document.onreadystatechange = e, c())
+                    }
+                }
+            }
+        })();
+    </script><iframe height="1" width="1"
+        style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+
+</body>
+<grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>
