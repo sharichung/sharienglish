@@ -1306,7 +1306,7 @@ const groups = [{
       "letter": "au",
       "ipa": "/ɔː/",
       "audio": "audio/au.mp3",
-      "color": "ed",
+      "color": "red",
       "hint": "與 aw 同音，如 author, fault"
     },
     {
