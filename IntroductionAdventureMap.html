@@ -37,8 +37,8 @@
 
         .game-title {
             font-size: 2.8rem;
-            color: #FF6B6B;
-            text-shadow: 3px 3px 0px #FFE66D;
+            color: #FFFFFF;
+            text-shadow: 3px 3px 0px #292929;
             animation: bounce 2s infinite;
         }
 
@@ -62,8 +62,8 @@
         }
 
         .reset-btn {
-            background: #FF6B6B;
-            color: white;
+            background: #FFD700;
+            color: rgb(65, 65, 65);
             border: none;
             padding: 10px 20px;
             border-radius: 20px;
@@ -74,7 +74,7 @@
         }
 
         .reset-btn:hover {
-            background: #FF5252;
+            background: #f4bb0f;
             transform: translateY(-2px);
         }
 
@@ -127,12 +127,12 @@
 
         .adventure-map {
             position: relative;
-            background: linear-gradient(45deg, #98FB98 0%, #87CEEB 30%, #DDA0DD 70%, #F0E68C 100%);
             border-radius: 25px;
             padding: 40px;
             min-height: 700px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
             overflow: hidden;
+            background-image: url('images/map_background.png');
         }
 
         /* SVG decorative elements */
@@ -165,9 +165,9 @@
             position: relative;
             z-index: 2;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            gap: 30px;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 1rem;
             height: 100%;
             align-items: center;
             justify-items: center;
@@ -528,8 +528,8 @@
             }
 
             .locations-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(7, 1fr);
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(5, 1fr);
                 gap: 20px;
             }
 
@@ -557,10 +557,7 @@
 
 <body data-new-gr-c-s-check-loaded="14.1249.0" data-gr-ext-installed="">
     <div class="game-container">
-        <div class="game-header">
-            <h1 class="game-title">🗺️ Introduction Adventure Map 🗺️</h1>
-            <button class="reset-btn" onclick="showConfirmReset()">🔄 Reset Game</button>
-        </div>
+        
 
         <div class="progress-container">
             <div class="progress-text">Adventure Progress: <span id="progressCount">0</span>/13 Completed</div>
@@ -582,23 +579,10 @@
         </div>
 
         <div class="adventure-map">
-            <!-- SVG decorative elements -->
-            <svg class="map-decorations" viewBox="0 0 1000 600" id="mapDecorations">
-                <!-- Land blobs behind location clusters -->
-                <ellipse class="land-blob" cx="200" cy="150" rx="180" ry="120"></ellipse>
-                <ellipse class="land-blob" cx="800" cy="150" rx="180" ry="120"></ellipse>
-                <ellipse class="land-blob" cx="200" cy="350" rx="180" ry="120"></ellipse>
-                <ellipse class="land-blob" cx="800" cy="350" rx="180" ry="120"></ellipse>
-                <ellipse class="land-blob" cx="500" cy="450" rx="200" ry="100"></ellipse>
-
-                <!-- Dotted paths connecting the areas -->
-                <path class="dotted-path" d="M 380 150 L 500 120 L 620 150" id="path1"></path>
-                <path class="dotted-path" d="M 200 270 L 180 250 L 200 230" id="path2"></path>
-                <path class="dotted-path" d="M 800 270 L 820 250 L 800 230" id="path3"></path>
-                <path class="dotted-path" d="M 380 350 L 500 380 L 620 350" id="path4"></path>
-                <path class="dotted-path" d="M 300 400 L 350 430 L 400 450" id="path5"></path>
-                <path class="dotted-path" d="M 700 400 L 650 430 L 600 450" id="path6"></path>
-            </svg>
+            <div class="game-header">
+            <h1 class="game-title">🗺️ Introduction Adventure Map 🗺️</h1>
+            <button class="reset-btn" onclick="showConfirmReset()">🔄 Reset Game</button>
+        </div>
 
             <div class="locations-grid">
                 <!-- Row 1 -->

@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superhero Rescue Letters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D8E8 50%, #B0E0E6 100%);
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Start Screen */
+        .start-screen {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4);
+            background-size: 400% 400%;
+            animation: gradientShift 6s ease infinite;
+            text-align: center;
+            width: 90%;
+            text-align: center;
+    padding: 50px 40px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .instructions {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            margin-bottom: 3rem;
+            line-height: 1.4;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .button {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #333;
+            border: none;
+            padding: 1.5rem 3rem;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            margin: 0.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: 4px solid white;
+        }
+
+        .button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        /* Mode Selection */
+        .mode-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .mode-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: #333;
+            margin-bottom: 3rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .mode-options {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 4px solid #FFD700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .mode-card h3 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: #FF6B6B;
+            margin-bottom: 1rem;
+        }
+
+        .mode-card p {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Animated clouds */
+        .clouds {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.8;
+            animation: float 25s infinite linear;
+        }
+
+        .cloud:before {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+        }
+
+        .cloud1 {
+            width: 120px;
+            height: 50px;
+            top: 15%;
+            left: -120px;
+        }
+
+        .cloud1:before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 15px;
+        }
+
+        .cloud2 {
+            width: 100px;
+            height: 40px;
+            top: 35%;
+            left: -100px;
+            animation-delay: -12s;
+        }
+
+        .cloud2:before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 20px;
+        }
+
+        .cloud3 {
+            width: 140px;
+            height: 60px;
+            top: 55%;
+            left: -140px;
+            animation-delay: -6s;
+        }
+
+        .cloud3:before {
+            width: 70px;
+            height: 70px;
+            top: -35px;
+            left: 25px;
+        }
+
+        @keyframes float {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        /* Mission Board */
+        .mission-board {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: white;
+            padding: 1.5rem 3rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border: 4px solid #FFD700;
+            z-index: 100;
+        }
+
+        .mission-text {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .target-letter {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Level and Score */
+        .game-info {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 100;
+        }
+
+        .level-display {
+            background: linear-gradient(135deg, #4ECDC4, #6EDDD6);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: bold;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .score-display {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .star {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: #FFD700;
+            opacity: 0.3;
+            transition: all 0.5s ease;
+        }
+
+        .star.earned {
+            opacity: 1;
+            animation: starEarn 0.8s ease;
+        }
+
+        @keyframes starEarn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #AB47BC, #BA68C8);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .mode-toggle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+        }
+
+        .superhero {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 140px;
+            transition: all 1s ease;
+            z-index: 50;
+        }
+
+        .superhero.flying {
+            animation: flyToTarget 1s ease-in-out;
+        }
+
+        @keyframes flyToTarget {
+            0% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            30% { transform: translateX(-50%) translateY(-100px) rotate(-5deg); }
+            60% { transform: translateX(-50%) translateY(-250px) rotate(5deg); }
+            100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+        }
+
+        .superhero-body {
+            width: 70px;
+            height: 90px;
+            background: linear-gradient(135deg, #FF4757, #FF6B7A);
+            border-radius: 35px 35px 15px 15px;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .superhero-head {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FECA57, #FED67A);
+            border-radius: 50%;
+            position: absolute;
+            top: -30px;
+            left: 5px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .superhero-eyes {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 8px;
+            height: 8px;
+            background: #333;
+            border-radius: 50%;
+            box-shadow: 15px 0 0 #333;
+        }
+
+        .superhero-cape {
+            width: 50px;
+            height: 70px;
+            background: linear-gradient(135deg, #3742FA, #5A67FF);
+            position: absolute;
+            top: 15px;
+            left: -10px;
+            border-radius: 30px 0 25px 0;
+            animation: capeWave 2s infinite ease-in-out;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        @keyframes capeWave {
+            0%, 100% { transform: rotate(-8deg); }
+            50% { transform: rotate(8deg); }
+        }
+
+        .superhero-arms {
+            width: 25px;
+            height: 45px;
+            background: linear-gradient(135deg, #FECA57, #FED67A);
+            position: absolute;
+            top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .arm-left {
+            left: -12px;
+            transform: rotate(-15deg);
+        }
+
+        .arm-right {
+            right: -12px;
+            transform: rotate(15deg);
+        }
+
+        .superhero-legs {
+            width: 18px;
+            height: 35px;
+            background: linear-gradient(135deg, #FF4757, #FF6B7A);
+            position: absolute;
+            bottom: -35px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .leg-left {
+            left: 18px;
+        }
+
+        .leg-right {
+            right: 18px;
+        }
+
+        /* Balloons */
+        .balloon {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: floatUp 10s infinite linear;
+            z-index: 20;
+        }
+
+        .balloon:hover {
+            transform: scale(1.1);
+        }
+
+        .balloon-body {
+            width: clamp(80px, 10vw, 120px);
+            height: clamp(100px, 12vw, 150px);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .balloon-string {
+            width: 3px;
+            height: clamp(30px, 4vw, 50px);
+            background: #333;
+            position: absolute;
+            bottom: calc(-1 * clamp(30px, 4vw, 50px));
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .balloon-letter {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .balloon1 { background: linear-gradient(135deg, #FF6B6B, #FF8E8E); }
+        .balloon2 { background: linear-gradient(135deg, #4ECDC4, #6EDDD6); }
+        .balloon3 { background: linear-gradient(135deg, #45B7D1, #67C3DB); }
+        .balloon4 { background: linear-gradient(135deg, #96CEB4, #A8D5C4); }
+        .balloon5 { background: linear-gradient(135deg, #FFA726, #FFB74D); }
+        .balloon6 { background: linear-gradient(135deg, #AB47BC, #BA68C8); }
+
+        @keyframes floatUp {
+            from { transform: translateY(0); }
+            to { transform: translateY(-120vh); }
+        }
+
+        /* Effects */
+        .rescued-letter {
+            position: absolute;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            animation: letterRescue 2s ease-out forwards;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        @keyframes letterRescue {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(360deg) translateY(100px);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            border-radius: 50%;
+            animation: sparkle 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 55;
+        }
+
+        @keyframes sparkle {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .shake {
+            animation: shake 0.6s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .flash {
+            animation: flash 0.6s ease-in-out;
+        }
+
+        @keyframes flash {
+            0%, 100% { background: inherit; }
+            50% { background: #FF6B6B; }
+        }
+
+        /* Level Complete */
+        .level-complete {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #4ECDC4, #6EDDD6);
+            color: white;
+            padding: 3rem;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            border: 4px solid #FFD700;
+            z-index: 200;
+            display: none;
+        }
+
+        .level-complete h2 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+
+        .level-complete p {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 2rem;
+        }
+
+        /* Game Over */
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: white;
+            padding: 3rem;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            border: 4px solid #FFD700;
+            z-index: 200;
+            display: none;
+        }
+
+        .game-over h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+
+        .game-over p {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            margin-bottom: 2rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 25px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            border: 4px solid #FFD700;
+        }
+
+        .modal h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: #FF6B6B;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal p {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti 3s ease-out forwards;
+            z-index: 300;
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mode-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .mode-card {
+                min-width: 280px;
+            }
+            
+            .game-info {
+                top: 1rem;
+                left: 1rem;
+            }
+            
+            .mode-toggle {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div class="screen active" id="startScreen">
+    <div class="start-screen">
+        <h1 class="title">🦸‍♂️ Superhero Rescue Letters 🦸‍♀️</h1>
+        <p class="instructions">
+            Shout the mission letter and the teacher will help the superhero rescue it!
+        </p>
+        <div class="buttons">
+            <button class="button start" onclick="showModeSelection()">Start Game! 🚀</button>
+            <button class="button how-to" onclick="showHowToPlay()">How to Play? 📖</button>
+        </div>
+    </div>
+</div>
+
+    <!-- Mode Selection Screen -->
+    <div class="screen" id="modeScreen">
+        <div class="mode-screen">
+            <h2 class="mode-title">Choose Your Adventure! 🎯</h2>
+            <div class="mode-options">
+                <div class="mode-card" onclick="startGame('random')">
+                    <h3>🎲 Random Mode</h3>
+                    <p>Letters appear in surprise order! Perfect for testing what you know!</p>
+                </div>
+                <div class="mode-card" onclick="startGame('alphabetical')">
+                    <h3>🔤 Alphabetical Mode</h3>
+                    <p>Learn letters in order from A to Z! Great for beginners!</p>
+                </div>
+            </div>
+            <button class="button" onclick="showStartScreen()">← Back</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="screen" id="gameScreen">
+        <div class="game-screen">
+            <!-- Animated clouds -->
+            <div class="clouds">
+                <div class="cloud cloud1"></div>
+                <div class="cloud cloud2"></div>
+                <div class="cloud cloud3"></div>
+            </div>
+
+            <!-- Mission Board -->
+            <div class="mission-board">
+                <div class="mission-text">🎯 MISSION</div>
+                <div class="target-letter" id="targetLetter">Rescue letter A!</div>
+            </div>
+
+            <!-- Game Info -->
+            <div class="game-info">
+                <div class="level-display" id="levelDisplay">Level 1</div>
+                <div class="score-display" id="scoreDisplay">
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+
+            <!-- Mode Toggle -->
+            <button class="mode-toggle" id="modeToggle" onclick="toggleMode()">Switch to A-Z</button>
+
+            <!-- Superhero -->
+        <div class="superhero" id="superhero">
+            <div class="superhero-cape"></div>
+            <div class="superhero-body">
+                <div class="superhero-head">
+                    <div class="superhero-eyes"></div>
+                </div>
+                <div class="superhero-arms arm-left"></div>
+                <div class="superhero-arms arm-right"></div>
+                <div class="superhero-legs leg-left"></div>
+                <div class="superhero-legs leg-right"></div>
+            </div>
+        </div>
+
+            <!-- Level Complete Screen -->
+            <div class="level-complete" id="levelComplete">
+                <h2>🎉 Level Complete! 🎉</h2>
+                <p>Amazing work! Ready for the next challenge?</p>
+                <button class="button" onclick="nextLevel()">Next Level! 🚀</button>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div class="game-over" id="gameOver">
+                <h1>🦸‍♂️ SUPERHERO WINNER! 🦸‍♀️</h1>
+                <p>You've rescued all the letters! You're a true alphabet hero! 🎉</p>
+                <button class="button" onclick="playAgain()">Play Again! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- How to Play Modal -->
+    <div class="modal" id="howToPlayModal">
+        <div class="modal-content">
+            <h2>How to Play 🎮</h2>
+            <p><strong>1.</strong> Choose Random Mode (surprise letters) or Alphabetical Mode (A to Z order)</p>
+            <p><strong>2.</strong> Look at the Mission Board to see which letter to rescue</p>
+            <p><strong>3.</strong> Student shouts the target letter out loud</p>
+            <p><strong>4.</strong> Teacher clicks the correct balloon to help the superhero</p>
+            <p><strong>5.</strong> Collect stars and complete levels to become a Letter Hero!</p>
+            <p><strong>🎯 Goal:</strong> Rescue all letters and save the day!</p>
+            <button class="button" onclick="closeHowToPlay()">Got it! Let's Play! 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            currentMode: 'random', // 'random' or 'alphabetical'
+            currentLevel: 1,
+            maxLevel: 7, // A-D, E-H, I-L, M-P, Q-T, U-X, Y-Z
+            levelLetters: [],
+            currentTarget: '',
+            levelScore: 0,
+            balloons: [],
+            gameActive: false,
+            alphabeticalIndex: 0
+        };
+
+        // Level sets - each level has 4 letters except the last
+        const levelSets = [
+            ['A', 'B', 'C', 'D'],      // Level 1
+            ['E', 'F', 'G', 'H'],      // Level 2
+            ['I', 'J', 'K', 'L'],      // Level 3
+            ['M', 'N', 'O', 'P'],      // Level 4
+            ['Q', 'R', 'S', 'T'],      // Level 5
+            ['U', 'V', 'W', 'X'],      // Level 6
+            ['Y', 'Z']                 // Level 7
+        ];
+
+        const allLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+        // Screen management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showStartScreen() {
+            showScreen('startScreen');
+        }
+
+        function showModeSelection() {
+            showScreen('modeScreen');
+        }
+
+        function showHowToPlay() {
+            document.getElementById('howToPlayModal').style.display = 'flex';
+        }
+
+        function closeHowToPlay() {
+            document.getElementById('howToPlayModal').style.display = 'none';
+        }
+
+        // Game initialization
+        function startGame(mode) {
+            gameState.currentMode = mode;
+            gameState.currentLevel = 1;
+            gameState.alphabeticalIndex = 0;
+            
+            // In alphabetical mode, start from the beginning of the alphabet
+            if (mode === 'alphabetical') {
+                gameState.alphabeticalIndex = 0;
+            }
+            
+            updateModeToggle();
+            showScreen('gameScreen');
+            initializeLevel();
+            startBalloonSpawning();
+        }
+
+        function initializeLevel() {
+            if (gameState.currentMode === 'random') {
+                // Random mode: use only current level letters
+                gameState.levelLetters = levelSets[gameState.currentLevel - 1].slice();
+            } else {
+                // Alphabetical mode: we'll use the alphabeticalIndex to track progress through all letters
+                gameState.levelLetters = levelSets[gameState.currentLevel - 1].slice();
+            }
+            
+            gameState.levelScore = 0;
+            gameState.gameActive = true;
+            
+            updateLevelDisplay();
+            updateScoreDisplay();
+            selectNewTarget();
+        }
+
+        function updateLevelDisplay() {
+            document.getElementById('levelDisplay').textContent = `Level ${gameState.currentLevel}`;
+        }
+
+        function updateModeToggle() {
+            const toggle = document.getElementById('modeToggle');
+            toggle.textContent = gameState.currentMode === 'random' ? 'Switch to A-Z' : 'Switch to Random';
+        }
+
+        function toggleMode() {
+            gameState.currentMode = gameState.currentMode === 'random' ? 'alphabetical' : 'random';
+            gameState.alphabeticalIndex = 0;
+            updateModeToggle();
+            clearBalloons();
+            initializeLevel();
+            startBalloonSpawning();
+        }
+
+        function selectNewTarget() {
+            if (gameState.currentMode === 'random') {
+                // Random mode: pick randomly from current level letters
+                if (gameState.levelLetters.length === 0) {
+                    completeLevel();
+                    return;
+                }
+                const randomIndex = Math.floor(Math.random() * gameState.levelLetters.length);
+                gameState.currentTarget = gameState.levelLetters[randomIndex];
+            } else {
+                // Alphabetical mode: go through letters A→B→C→... across all levels
+                if (gameState.alphabeticalIndex >= allLetters.length) {
+                    completeLevel();
+                    return;
+                }
+                gameState.currentTarget = allLetters[gameState.alphabeticalIndex];
+            }
+            
+            document.getElementById('targetLetter').textContent = `Rescue letter ${gameState.currentTarget}!`;
+        }
+
+        function updateScoreDisplay() {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const stars = scoreDisplay.querySelectorAll('.star');
+            
+            // Determine max stars for current level
+            const maxStars = gameState.currentLevel === 7 ? 2 : 4; // Level 7 (Y-Z) only has 2 letters
+            
+            // Clear existing stars
+            scoreDisplay.innerHTML = '';
+            
+            // Add stars for current level
+            for (let i = 0; i < maxStars; i++) {
+                const star = document.createElement('span');
+                star.className = 'star';
+                star.textContent = '⭐';
+                if (i < gameState.levelScore) {
+                    star.classList.add('earned');
+                }
+                scoreDisplay.appendChild(star);
+            }
+        }
+
+        // Balloon management
+        function startBalloonSpawning() {
+            // Generate initial balloon set
+            setTimeout(() => {
+                generateBalloonSet();
+            }, 1000);
+            
+            // Continue spawning balloon sets
+            setInterval(() => {
+                if (gameState.gameActive) {
+                    generateBalloonSet();
+                }
+            }, 8000);
+        }
+
+        function generateBalloonSet() {
+            if (!gameState.gameActive) return;
+            
+            // Create array with target letter and random distractors
+            const balloonLetters = [gameState.currentTarget];
+            
+            // Add 3-5 distractor letters
+            const availableLetters = allLetters.filter(letter => letter !== gameState.currentTarget);
+            const numDistractors = Math.floor(Math.random() * 3) + 3; // 3-5 distractors
+            
+            for (let i = 0; i < numDistractors; i++) {
+                const randomIndex = Math.floor(Math.random() * availableLetters.length);
+                balloonLetters.push(availableLetters.splice(randomIndex, 1)[0]);
+            }
+            
+            // Shuffle the array
+            for (let i = balloonLetters.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [balloonLetters[i], balloonLetters[j]] = [balloonLetters[j], balloonLetters[i]];
+            }
+            
+            // Create balloons with staggered timing
+            balloonLetters.forEach((letter, index) => {
+                setTimeout(() => {
+                    createBalloon(letter, index);
+                }, index * 300);
+            });
+        }
+
+        function createBalloon(letter, index) {
+            const gameScreen = document.querySelector('.game-screen');
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.innerHTML = `
+                <div class="balloon-body balloon${(index % 6) + 1}">
+                    <div class="balloon-letter">${letter}</div>
+                </div>
+                <div class="balloon-string"></div>
+            `;
+            
+            // Random horizontal position
+            const leftPos = Math.random() * (window.innerWidth - 150) + 50;
+            balloon.style.left = leftPos + 'px';
+            balloon.style.bottom = '-200px';
+            
+            // Random animation delay
+            balloon.style.animationDelay = Math.random() * 2 + 's';
+            
+            balloon.addEventListener('click', () => handleBalloonClick(letter, balloon));
+            
+            gameScreen.appendChild(balloon);
+            gameState.balloons.push({element: balloon, letter: letter});
+            
+            // Remove balloon after animation
+            setTimeout(() => {
+                if (balloon.parentNode) {
+                    balloon.remove();
+                    gameState.balloons = gameState.balloons.filter(b => b.element !== balloon);
+                }
+            }, 12000);
+        }
+
+        function handleBalloonClick(letter, balloonElement) {
+            if (!gameState.gameActive) return;
+            
+            const superhero = document.getElementById('superhero');
+            
+            if (letter === gameState.currentTarget) {
+                // Correct letter!
+                playSuccessSound();
+                superhero.classList.add('flying');
+                
+                // Pop balloon with animation
+                balloonElement.style.transform = 'scale(0) rotate(360deg)';
+                balloonElement.style.opacity = '0';
+                
+                // Create rescued letter animation
+                createRescuedLetter(letter, balloonElement);
+                
+                // Create sparkles
+                createSparkles(balloonElement);
+                
+                // Update score
+                gameState.levelScore++;
+                updateScoreDisplay();
+                
+                if (gameState.currentMode === 'random') {
+                    // Remove target letter from level letters
+                    gameState.levelLetters = gameState.levelLetters.filter(l => l !== letter);
+                } else {
+                    // Move to next letter in alphabetical sequence
+                    gameState.alphabeticalIndex++;
+                }
+                
+                // Remove superhero flying animation
+                setTimeout(() => {
+                    superhero.classList.remove('flying');
+                }, 1000);
+                
+                // Check if level is complete
+                const isLevelComplete = gameState.currentMode === 'random' 
+                    ? gameState.levelLetters.length === 0
+                    : gameState.levelScore >= levelSets[gameState.currentLevel - 1].length;
+                
+                if (isLevelComplete) {
+                    setTimeout(() => {
+                        completeLevel();
+                    }, 2000);
+                } else {
+                    // Select new target after delay
+                    setTimeout(() => {
+                        selectNewTarget();
+                    }, 1500);
+                }
+                
+            } else {
+                // Wrong letter!
+                playErrorSound();
+                balloonElement.classList.add('shake');
+                balloonElement.classList.add('flash');
+                superhero.classList.add('shake');
+                
+                setTimeout(() => {
+                    balloonElement.classList.remove('shake', 'flash');
+                    superhero.classList.remove('shake');
+                }, 600);
+            }
+        }
+
+        function clearBalloons() {
+            document.querySelectorAll('.balloon').forEach(balloon => balloon.remove());
+            document.querySelectorAll('.rescued-letter').forEach(letter => letter.remove());
+            document.querySelectorAll('.sparkle').forEach(sparkle => sparkle.remove());
+            gameState.balloons = [];
+        }
+
+        // Visual effects
+        function createRescuedLetter(letter, balloonElement) {
+            const gameScreen = document.querySelector('.game-screen');
+            const rescuedLetter = document.createElement('div');
+            rescuedLetter.className = 'rescued-letter';
+            rescuedLetter.textContent = letter;
+            
+            const rect = balloonElement.getBoundingClientRect();
+            rescuedLetter.style.left = rect.left + 'px';
+            rescuedLetter.style.top = rect.top + 'px';
+            
+            gameScreen.appendChild(rescuedLetter);
+            
+            setTimeout(() => {
+                if (rescuedLetter.parentNode) {
+                    rescuedLetter.remove();
+                }
+            }, 2000);
+        }
+
+        function createSparkles(balloonElement) {
+            const gameScreen = document.querySelector('.game-screen');
+            const rect = balloonElement.getBoundingClientRect();
+            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    sparkle.style.left = (rect.left + Math.random() * 100) + 'px';
+                    sparkle.style.top = (rect.top + Math.random() * 100) + 'px';
+                    
+                    gameScreen.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        if (sparkle.parentNode) {
+                            sparkle.remove();
+                        }
+                    }, 1000);
+                }, i * 50);
+            }
+        }
+
+        function createConfetti() {
+            const gameScreen = document.querySelector('.game-screen');
+            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFD700', '#FF4757'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 1 + 's';
+                    
+                    gameScreen.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.remove();
+                        }
+                    }, 3000);
+                }, i * 20);
+            }
+        }
+
+        // Level progression
+        function completeLevel() {
+            gameState.gameActive = false;
+            playLevelCompleteSound();
+            
+            if (gameState.currentLevel >= gameState.maxLevel) {
+                // Game complete!
+                setTimeout(() => {
+                    endGame();
+                }, 1000);
+            } else {
+                // Show level complete screen
+                document.getElementById('levelComplete').style.display = 'block';
+            }
+        }
+
+        function nextLevel() {
+            document.getElementById('levelComplete').style.display = 'none';
+            gameState.currentLevel++;
+            clearBalloons();
+            initializeLevel();
+            startBalloonSpawning();
+        }
+
+        function endGame() {
+            gameState.gameActive = false;
+            playVictorySound();
+            createConfetti();
+            document.getElementById('gameOver').style.display = 'block';
+        }
+
+        function playAgain() {
+            document.getElementById('gameOver').style.display = 'none';
+            clearBalloons();
+            showModeSelection();
+        }
+
+        // Audio functions (with fallbacks)
+        function playSuccessSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playErrorSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playLevelCompleteSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a cheerful melody
+                const melody = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                
+                melody.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                    }, index * 100);
+                });
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playVictorySound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a triumphant fanfare
+                const fanfare = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
+                
+                fanfare.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    }, index * 80);
+                });
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Modal click-outside-to-close
+        document.getElementById('howToPlayModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeHowToPlay();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982e3f5db75c1674',t:'MTc1ODUwNjgzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
