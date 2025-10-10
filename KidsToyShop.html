@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids' Toy Shop - English Learning Game</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #FFE5F1 0%, #E5F3FF 100%);
+            min-height: 100vh;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+
+        .start-screen h1 {
+            font-size: 3.5rem;
+            color: #FF6B9D;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .start-screen .shop-emoji {
+            font-size: 4rem;
+            margin: 20px 0;
+        }
+
+        .game-goal {
+            background: linear-gradient(135deg, #FFE5F1, #E5F3FF);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 3px solid #FF6B9D;
+        }
+
+        .game-goal h2 {
+            color: #FF6B9D;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .goal-list {
+            text-align: left;
+            font-size: 1.2rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .goal-list li {
+            margin: 8px 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #FF6B9D, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .score-display {
+            display: flex;
+            gap: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .day-counter {
+            color: #9B59B6;
+        }
+
+        .money {
+            color: #4ECDC4;
+        }
+
+        .rating {
+            color: #FFD93D;
+        }
+
+        .shop-btn {
+            background: #FFD93D;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+
+        .customer-area {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .customer-card {
+            background: linear-gradient(135deg, #FFE5F1, #E5F3FF);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid #FF6B9D;
+        }
+
+        .customer-avatar {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .customer-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .customer-request {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 1.2rem;
+            color: #555;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .customer-request::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+        }
+
+        .sentence-frames {
+            background: #FFF9E6;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #FFD93D;
+        }
+
+        .sentence-frames h3 {
+            color: #FF6B9D;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .frame {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 8px 0;
+            border: 2px dashed #4ECDC4;
+            font-style: italic;
+        }
+
+        .system-feedback {
+            background: #E8F5E8;
+            border-radius: 15px;
+            padding: 15px;
+            border-left: 5px solid #28A745;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .system-feedback h4 {
+            color: #28A745;
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+        }
+
+        .system-feedback p {
+            margin: 5px 0;
+            color: #155724;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .success-btn {
+            background: #4ECDC4;
+        }
+
+        .service-btn {
+            background: #FFD93D;
+            color: #333;
+        }
+
+        .buy-supplies-btn {
+            background: #FF6B9D;
+        }
+
+        .upsell-btn {
+            background: #9B59B6;
+        }
+
+        .skip-btn {
+            background: #E74C3C;
+        }
+
+        .inventory-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .inventory-title {
+            color: #FF6B9D;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 8px 0;
+            background: #F8F9FA;
+            border-radius: 10px;
+            border-left: 4px solid #4ECDC4;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-stock {
+            background: #4ECDC4;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .out-of-stock {
+            background: #FF6B9D;
+        }
+
+        .invented-item {
+            border-left-color: #FFD93D;
+            background: linear-gradient(135deg, #FFF9E6, #FFE5F1);
+        }
+
+        .warning {
+            background: #FFE5E5;
+            color: #D63384;
+            padding: 15px;
+            border-radius: 15px;
+            border-left: 5px solid #D63384;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .service-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .service-option {
+            background: #FFD93D;
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .upsell-options {
+            background: #F8F9FA;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px dashed #9B59B6;
+        }
+
+        .upsell-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .upsell-item button {
+            background: #9B59B6;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Shop Modal */
+        .shop-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shop-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: #FF6B9D;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #F8F9FA;
+            border-radius: 15px;
+            border: 2px solid #E9ECEF;
+        }
+
+        .shop-item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shop-item-emoji {
+            font-size: 2rem;
+        }
+
+        .buy-btn {
+            background: #4ECDC4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .buy-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .invent-section {
+            background: linear-gradient(135deg, #FFE5F1, #FFF9E6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px dashed #FFD93D;
+        }
+
+        /* Daily Summary Screen */
+        .daily-summary {
+            display: none;
+            text-align: center;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+
+        .daily-summary h2 {
+            color: #FF6B9D;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .daily-stats {
+            background: #F8F9FA;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .daily-stats h3 {
+            color: #4ECDC4;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #E9ECEF;
+            font-size: 1.1rem;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .rating-display {
+            background: linear-gradient(135deg, #FFE5F1, #E5F3FF);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 3px solid #FFD93D;
+        }
+
+        .rating-display h3 {
+            color: #FFD93D;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .rating-stars {
+            font-size: 2.5rem;
+            color: #FFD93D;
+        }
+
+        /* End Screen */
+        .end-screen {
+            display: none;
+            text-align: center;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+
+        .end-screen h2 {
+            color: #FF6B9D;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .final-score {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            font-size: 2rem;
+            margin: 30px 0;
+        }
+
+        .summary-stats {
+            background: #F8F9FA;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .summary-stats h3 {
+            color: #4ECDC4;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .score-display {
+                gap: 15px;
+                font-size: 1.1rem;
+            }
+            
+            .start-screen h1 {
+                font-size: 2.5rem;
+            }
+            
+            .action-buttons {
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <h1>🏪 Welcome to Kids' Toy Shop! 🧸</h1>
+            <div class="shop-emoji">🎈🎲🧸🚂</div>
+            
+            <div class="game-goal">
+                <h2>🎯 Your Mission:</h2>
+                <ul class="goal-list">
+                    <li>🗓️ Run your toy shop for <strong>10 days</strong></li>
+                    <li>👥 Serve <strong>4 customers each day</strong></li>
+                    <li>⭐ Increase your <strong>store rating</strong> with great service</li>
+                    <li>💰 Maximize your <strong>money earned</strong></li>
+                    <li>🎭 Offer services, upsells, and invent new toys!</li>
+                </ul>
+            </div>
+            
+            <p style="font-size: 1.3rem; color: #666; margin: 20px 0;">Help students practice English by serving customers!</p>
+            <button class="btn" onclick="startGame()">Start Game</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="top-bar">
+                <div class="score-display">
+                    <div class="day-counter">📅 Day <span id="currentDay">1</span>/10</div>
+                    <div class="money">💰 $<span id="money">10</span></div>
+                    <div class="rating">⭐ <span id="storeRating">3.0</span></div>
+                </div>
+                <button class="shop-btn" onclick="openShop()">🛒 Shop</button>
+            </div>
+
+            <div class="main-content">
+                <div class="customer-area">
+                    <div class="customer-card" id="customerCard">
+                        <div style="text-align: right; font-size: 0.9rem; color: #666; margin-bottom: 10px;">
+                            Customer <span id="customerCount">1</span>/4
+                        </div>
+                        <div class="customer-avatar" id="customerAvatar">👧</div>
+                        <div class="customer-name" id="customerName">Emma</div>
+                        <div class="customer-request" id="customerRequest">
+                            "Hi! I would like to buy a teddy bear, please!"
+                        </div>
+                    </div>
+
+                    <div class="sentence-frames" id="sentenceFrames">
+                        <h3>📝 Student Says:</h3>
+                        <div class="frame" id="frame1">"Here you are!"</div>
+                        <div class="frame" id="frame2">"It is ___ dollars."</div>
+                    </div>
+
+                    <div class="system-feedback" id="systemFeedback">
+                        <h4>💡 System Feedback:</h4>
+                        <p id="feedbackText"></p>
+                    </div>
+
+                    <div class="warning" id="warningMessage" style="display: none;">
+                        ⚠️ Out of stock! Please buy supplies, upsell, offer a service, or skip.
+                    </div>
+
+                    <div class="upsell-options" id="upsellOptions" style="display: none;">
+                        <h4 style="color: #9B59B6; margin-bottom: 10px;">🔄 Suggest Another Item:</h4>
+                        <div id="upsellList"></div>
+                    </div>
+
+                    <div class="action-buttons" id="actionButtons">
+                        <button class="btn success-btn" onclick="completeSale()">✅ Success</button>
+                        <button class="btn buy-supplies-btn" onclick="openShop()">🛒 Buy Supplies</button>
+                        <button class="btn upsell-btn" onclick="showUpsellOptions()">🔄 Upsell</button>
+                        <button class="btn service-btn" onclick="offerService()">🎭 Offer Service</button>
+                        <button class="btn skip-btn" onclick="skipCustomer()">⏭️ Skip</button>
+                    </div>
+
+                    <div class="service-options" id="serviceOptions" style="display: none;">
+                        <button class="service-option" onclick="performService('sing')">🎵 Sing</button>
+                        <button class="service-option" onclick="performService('joke')">😂 Joke</button>
+                        <button class="service-option" onclick="performService('draw')">✏️ Draw</button>
+                    </div>
+                </div>
+
+                <div class="inventory-panel">
+                    <div class="inventory-title">📦 Inventory</div>
+                    <div id="inventoryList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Summary Screen -->
+        <div class="daily-summary" id="dailySummary">
+            <h2>📊 Day <span id="summaryDay">1</span> Complete!</h2>
+            
+            <div class="rating-display">
+                <h3>Store Rating</h3>
+                <div class="rating-stars" id="summaryRatingStars">⭐⭐⭐</div>
+                <div style="font-size: 1.5rem; margin-top: 10px;">
+                    <span id="summaryRating">3.0</span>/5.0
+                </div>
+            </div>
+
+            <div class="daily-stats">
+                <h3>📈 Today's Performance</h3>
+                <div class="stat-row">
+                    <span>👥 Customers Served:</span>
+                    <span id="dailyCustomersServed">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>📦 Items Sold:</span>
+                    <span id="dailyItemsSold">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>🔄 Upsells Made:</span>
+                    <span id="dailyUpsells">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>🎭 Services Given:</span>
+                    <span id="dailyServices">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>💰 Tips Earned:</span>
+                    <span id="dailyTips">$0</span>
+                </div>
+                <div class="stat-row">
+                    <span>⏭️ Customers Skipped:</span>
+                    <span id="dailySkips">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>✨ Toys Invented:</span>
+                    <span id="dailyInvented">0</span>
+                </div>
+                <div class="stat-row" style="font-weight: bold; color: #4ECDC4; font-size: 1.2rem;">
+                    <span>💰 Money Earned Today:</span>
+                    <span id="dailyMoneyEarned">$0</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="startNextDay()" id="nextDayBtn">🌅 Start Next Day</button>
+        </div>
+
+        <!-- Shop Modal -->
+        <div class="shop-modal" id="shopModal">
+            <div class="shop-content">
+                <button class="close-btn" onclick="closeShop()">×</button>
+                <h2 style="color: #FF6B9D; text-align: center; margin-bottom: 25px;">🛒 Toy Supplier</h2>
+                
+                <div id="shopItems">
+                    <div class="shop-item">
+                        <div class="shop-item-info">
+                            <span class="shop-item-emoji">🧸</span>
+                            <div>
+                                <div class="item-name">Teddy Bear</div>
+                                <div style="color: #666;">Cost: $4</div>
+                            </div>
+                        </div>
+                        <button class="buy-btn" onclick="buySupply('teddy', 4)">Buy</button>
+                    </div>
+                    
+                    <div class="shop-item">
+                        <div class="shop-item-info">
+                            <span class="shop-item-emoji">⚽</span>
+                            <div>
+                                <div class="item-name">Ball</div>
+                                <div style="color: #666;">Cost: $2</div>
+                            </div>
+                        </div>
+                        <button class="buy-btn" onclick="buySupply('ball', 2)">Buy</button>
+                    </div>
+                    
+                    <div class="shop-item">
+                        <div class="shop-item-info">
+                            <span class="shop-item-emoji">🧩</span>
+                            <div>
+                                <div class="item-name">Puzzle</div>
+                                <div style="color: #666;">Cost: $3</div>
+                            </div>
+                        </div>
+                        <button class="buy-btn" onclick="buySupply('puzzle', 3)">Buy</button>
+                    </div>
+                    
+                    <div class="shop-item">
+                        <div class="shop-item-info">
+                            <span class="shop-item-emoji">🤖</span>
+                            <div>
+                                <div class="item-name">Robot</div>
+                                <div style="color: #666;">Cost: $5</div>
+                            </div>
+                        </div>
+                        <button class="buy-btn" onclick="buySupply('robot', 5)">Buy</button>
+                    </div>
+                </div>
+
+                <div class="invent-section">
+                    <h3 style="color: #FFD93D; text-align: center; margin-bottom: 15px;">✨ Invent a Toy</h3>
+                    <p style="text-align: center; margin-bottom: 15px;">Cost: $3 - Creates a special unique toy!</p>
+                    <div style="text-align: center;">
+                        <button class="btn" onclick="inventToy()" style="background: #FFD93D; color: #333;">🎲 Invent Toy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div class="end-screen" id="endScreen">
+            <h2>🎉 Great Job Running Your Toy Shop Today! 🎉</h2>
+            <div class="final-score">
+                <div class="money">💰 $<span id="finalMoney">0</span></div>
+                <div class="rating">⭐ <span id="finalRating">3.0</span></div>
+            </div>
+            <div class="summary-stats" id="summaryStats"></div>
+            <button class="btn" onclick="restartGame()">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            money: 10,
+            storeRating: 3.0,
+            currentDay: 1,
+            customerCount: 1,
+            inventory: {
+                teddy: 2,
+                ball: 3,
+                puzzle: 1,
+                robot: 1
+            },
+            inventedToys: {},
+            stats: {
+                customersServed: 0,
+                itemsSold: 0,
+                upsellsMade: 0,
+                servicesGiven: 0,
+                tipsEarned: 0,
+                skips: 0,
+                penalties: 0,
+                toysInvented: 0
+            },
+            dailyStats: {
+                customersServed: 0,
+                itemsSold: 0,
+                upsellsMade: 0,
+                servicesGiven: 0,
+                tipsEarned: 0,
+                skips: 0,
+                toysInvented: 0,
+                moneyEarned: 0,
+                startMoney: 10
+            },
+            currentCustomer: null,
+            currentRequest: null
+        };
+
+        // Customer data
+        const customers = [
+            { name: "Emma", avatar: "👧", requests: ["teddy", "ball"] },
+            { name: "Jake", avatar: "👦", requests: ["robot", "puzzle"] },
+            { name: "Sophia", avatar: "👩", requests: ["teddy", "ball", "puzzle"] },
+            { name: "Oliver", avatar: "👨", requests: ["robot", "ball"] },
+            { name: "Mia", avatar: "👶", requests: ["teddy", "puzzle"] },
+            { name: "Lucas", avatar: "🧒", requests: ["ball", "robot"] }
+        ];
+
+        // Item data
+        const items = {
+            teddy: { name: "Teddy Bear", emoji: "🧸", price: 6 },
+            ball: { name: "Ball", emoji: "⚽", price: 4 },
+            puzzle: { name: "Puzzle", emoji: "🧩", price: 5 },
+            robot: { name: "Robot", emoji: "🤖", price: 8 }
+        };
+
+        // Toy invention data
+        const adjectives = ["Flying", "Magic", "Golden", "Rainbow", "Singing", "Dancing", "Glowing", "Tiny", "Giant", "Sparkly"];
+        const nouns = ["Teddy", "Ball", "Puzzle", "Robot", "Dragon", "Unicorn", "Star", "Castle", "Car", "Boat"];
+        const verbs = ["fly around the room", "sing beautiful songs", "glow in the dark", "dance to music", "grant wishes", "tell stories", "change colors", "make friends", "solve problems", "create magic"];
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            resetDailyStats();
+            generateNewCustomer();
+            updateDisplay();
+        }
+
+        function resetDailyStats() {
+            gameState.dailyStats = {
+                customersServed: 0,
+                itemsSold: 0,
+                upsellsMade: 0,
+                servicesGiven: 0,
+                tipsEarned: 0,
+                skips: 0,
+                toysInvented: 0,
+                moneyEarned: 0,
+                startMoney: gameState.money
+            };
+        }
+
+        function generateNewCustomer() {
+            // Check if day is complete (4 customers served)
+            if (gameState.customerCount > 4) {
+                showDailySummary();
+                return;
+            }
+            
+            // Check if game should end
+            if (gameState.currentDay > 10) {
+                endGame();
+                return;
+            }
+            
+            const customer = customers[Math.floor(Math.random() * customers.length)];
+            gameState.currentCustomer = customer;
+            
+            // Decide if request should be for an invented toy (30% chance if any exist)
+            const inventedKeys = Object.keys(gameState.inventedToys);
+            const shouldRequestInvented = inventedKeys.length > 0 && Math.random() < 0.3;
+            
+            if (shouldRequestInvented) {
+                const randomInvented = inventedKeys[Math.floor(Math.random() * inventedKeys.length)];
+                gameState.currentRequest = randomInvented;
+            } else {
+                const possibleRequests = customer.requests;
+                gameState.currentRequest = possibleRequests[Math.floor(Math.random() * possibleRequests.length)];
+            }
+            
+            updateCustomerDisplay();
+            updateActionButtons();
+            hideAllOptions();
+        }
+
+        function showDailySummary() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('dailySummary').style.display = 'block';
+            
+            // Update daily summary display
+            document.getElementById('summaryDay').textContent = gameState.currentDay;
+            document.getElementById('summaryRating').textContent = gameState.storeRating.toFixed(1);
+            
+            // Update rating stars
+            const rating = gameState.storeRating;
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) {
+                    stars += '⭐';
+                } else if (i - 0.5 <= rating) {
+                    stars += '⭐';
+                } else {
+                    stars += '☆';
+                }
+            }
+            document.getElementById('summaryRatingStars').textContent = stars;
+            
+            // Update daily stats
+            gameState.dailyStats.moneyEarned = gameState.money - gameState.dailyStats.startMoney;
+            document.getElementById('dailyCustomersServed').textContent = gameState.dailyStats.customersServed;
+            document.getElementById('dailyItemsSold').textContent = gameState.dailyStats.itemsSold;
+            document.getElementById('dailyUpsells').textContent = gameState.dailyStats.upsellsMade;
+            document.getElementById('dailyServices').textContent = gameState.dailyStats.servicesGiven;
+            document.getElementById('dailyTips').textContent = '$' + gameState.dailyStats.tipsEarned;
+            document.getElementById('dailySkips').textContent = gameState.dailyStats.skips;
+            document.getElementById('dailyInvented').textContent = gameState.dailyStats.toysInvented;
+            document.getElementById('dailyMoneyEarned').textContent = '$' + gameState.dailyStats.moneyEarned;
+            
+            // Update button text
+            const nextDayBtn = document.getElementById('nextDayBtn');
+            if (gameState.currentDay >= 10) {
+                nextDayBtn.textContent = '🏁 View Final Results';
+            } else {
+                nextDayBtn.textContent = '🌅 Start Next Day';
+            }
+        }
+
+        function startNextDay() {
+            if (gameState.currentDay >= 10) {
+                endGame();
+                return;
+            }
+            
+            gameState.currentDay++;
+            gameState.customerCount = 1;
+            resetDailyStats();
+            
+            document.getElementById('dailySummary').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            
+            generateNewCustomer();
+            updateDisplay();
+        }
+
+        function advanceToNextCustomer() {
+            gameState.customerCount++;
+            
+            setTimeout(() => {
+                generateNewCustomer();
+                updateDisplay();
+            }, 2000);
+        }
+
+        function updateCustomerDisplay() {
+            const customer = gameState.currentCustomer;
+            const request = gameState.currentRequest;
+            
+            document.getElementById('customerAvatar').textContent = customer.avatar;
+            document.getElementById('customerName').textContent = customer.name;
+            
+            let itemName, price;
+            if (gameState.inventedToys[request]) {
+                itemName = gameState.inventedToys[request].name;
+                price = gameState.inventedToys[request].price;
+            } else {
+                itemName = items[request].name.toLowerCase();
+                price = items[request].price;
+            }
+            
+            document.getElementById('customerRequest').textContent = 
+                `"Hi! I would like to buy a ${itemName}, please!"`;
+            
+            // Update sentence frames
+            document.getElementById('frame1').textContent = '"Here you are!"';
+            document.getElementById('frame2').textContent = `"It is ${price} dollars."`;
+        }
+
+        function updateActionButtons() {
+            const request = gameState.currentRequest;
+            const inStock = (gameState.inventedToys[request] && gameState.inventedToys[request].stock > 0) || 
+                           (gameState.inventory[request] && gameState.inventory[request] > 0);
+            
+            const warningMsg = document.getElementById('warningMessage');
+            const actionButtons = document.getElementById('actionButtons');
+            
+            // Check if player can afford cheapest item ($2 for ball)
+            const canAffordSupplies = gameState.money >= 2;
+            const suppliesButtonClass = canAffordSupplies ? 'buy-supplies-btn' : 'buy-supplies-btn disabled';
+            const suppliesStyle = canAffordSupplies ? '' : 'style="opacity: 0.5; cursor: not-allowed;"';
+            
+            if (!inStock) {
+                warningMsg.style.display = 'block';
+                actionButtons.innerHTML = `
+                    <button class="btn ${suppliesButtonClass}" onclick="openShop()" ${suppliesStyle}>🛒 Buy Supplies</button>
+                    <button class="btn upsell-btn" onclick="showUpsellOptions()">🔄 Upsell</button>
+                    <button class="btn service-btn" onclick="offerService()">🎭 Offer Service</button>
+                    <button class="btn skip-btn" onclick="skipCustomer()">⏭️ Skip</button>
+                `;
+            } else {
+                warningMsg.style.display = 'none';
+                actionButtons.innerHTML = `
+                    <button class="btn success-btn" onclick="completeSale()">✅ Success</button>
+                    <button class="btn ${suppliesButtonClass}" onclick="openShop()" ${suppliesStyle}>🛒 Buy Supplies</button>
+                    <button class="btn upsell-btn" onclick="showUpsellOptions()">🔄 Upsell</button>
+                    <button class="btn service-btn" onclick="offerService()">🎭 Offer Service</button>
+                    <button class="btn skip-btn" onclick="skipCustomer()">⏭️ Skip</button>
+                `;
+            }
+            
+            // Disable buy supplies button if can't afford
+            if (!canAffordSupplies) {
+                const buyBtn = actionButtons.querySelector('.buy-supplies-btn');
+                if (buyBtn) {
+                    buyBtn.disabled = true;
+                }
+            }
+        }
+
+        function hideAllOptions() {
+            document.getElementById('serviceOptions').style.display = 'none';
+            document.getElementById('upsellOptions').style.display = 'none';
+            document.getElementById('systemFeedback').style.display = 'none';
+        }
+
+        function completeSale() {
+            const request = gameState.currentRequest;
+            let price, itemName;
+            
+            // Check if it's an invented toy or regular item
+            if (gameState.inventedToys[request] && gameState.inventedToys[request].stock > 0) {
+                price = gameState.inventedToys[request].price;
+                itemName = gameState.inventedToys[request].name;
+                gameState.inventedToys[request].stock--;
+                if (gameState.inventedToys[request].stock === 0) {
+                    delete gameState.inventedToys[request];
+                }
+            } else if (gameState.inventory[request] && gameState.inventory[request] > 0) {
+                price = items[request].price;
+                itemName = items[request].name;
+                gameState.inventory[request]--;
+            } else {
+                return; // Can't complete sale
+            }
+            
+            // Update game state
+            gameState.money += price;
+            gameState.stats.customersServed++;
+            gameState.stats.itemsSold++;
+            gameState.dailyStats.customersServed++;
+            gameState.dailyStats.itemsSold++;
+            
+            // Increase store rating slightly
+            gameState.storeRating = Math.min(5.0, gameState.storeRating + 0.1);
+            
+            // Show system feedback
+            showSystemFeedback(`Sale completed! Earned $${price}. Store rating increased!`);
+            
+            updateDisplay();
+            advanceToNextCustomer();
+        }
+
+        function showUpsellOptions() {
+            const upsellDiv = document.getElementById('upsellOptions');
+            const upsellList = document.getElementById('upsellList');
+            
+            // Find available items to upsell
+            const availableItems = [];
+            
+            // Check regular inventory
+            for (const [key, stock] of Object.entries(gameState.inventory)) {
+                if (stock > 0) {
+                    availableItems.push({
+                        key: key,
+                        name: items[key].name,
+                        price: items[key].price,
+                        type: 'regular'
+                    });
+                }
+            }
+            
+            // Check invented toys
+            for (const [key, toy] of Object.entries(gameState.inventedToys)) {
+                if (toy.stock > 0) {
+                    availableItems.push({
+                        key: key,
+                        name: toy.name,
+                        price: toy.price,
+                        type: 'invented'
+                    });
+                }
+            }
+            
+            if (availableItems.length === 0) {
+                upsellList.innerHTML = '<p style="text-align: center; color: #666;">No items available to upsell!</p>';
+            } else {
+                upsellList.innerHTML = availableItems.map(item => `
+                    <div class="upsell-item">
+                        <div>
+                            <strong>${item.name}</strong> - $${item.price}
+                        </div>
+                        <button onclick="makeUpsell('${item.key}', '${item.name}', ${item.price}, '${item.type}')">Suggest</button>
+                    </div>
+                `).join('');
+            }
+            
+            // Update sentence frames for upselling
+            const originalRequest = gameState.inventedToys[gameState.currentRequest] ? 
+                gameState.inventedToys[gameState.currentRequest].name : 
+                items[gameState.currentRequest].name;
+            
+            document.getElementById('frame1').textContent = `"Sorry, no ${originalRequest.toLowerCase()}. How about a ___?"`;
+            document.getElementById('frame2').textContent = '"Would you like this instead?"';
+            
+            upsellDiv.style.display = 'block';
+        }
+
+        function makeUpsell(itemKey, itemName, price, type) {
+            // Update sentence frames with specific item
+            const originalRequest = gameState.inventedToys[gameState.currentRequest] ? 
+                gameState.inventedToys[gameState.currentRequest].name : 
+                items[gameState.currentRequest].name;
+            
+            document.getElementById('frame1').textContent = `"Sorry, no ${originalRequest.toLowerCase()}. How about a ${itemName.toLowerCase()}?"`;
+            document.getElementById('frame2').textContent = `"It is ${price} dollars."`;
+            
+            // Replace action buttons with accept/decline
+            document.getElementById('actionButtons').innerHTML = `
+                <button class="btn success-btn" onclick="acceptUpsell('${itemKey}', '${itemName}', ${price}, '${type}')">✅ Customer Accepts</button>
+                <button class="btn skip-btn" onclick="declineUpsell()">❌ Customer Declines</button>
+            `;
+        }
+
+        function acceptUpsell(itemKey, itemName, price, type) {
+            // Remove item from inventory
+            if (type === 'invented') {
+                gameState.inventedToys[itemKey].stock--;
+                if (gameState.inventedToys[itemKey].stock === 0) {
+                    delete gameState.inventedToys[itemKey];
+                }
+            } else {
+                gameState.inventory[itemKey]--;
+            }
+            
+            // Update game state
+            gameState.money += price;
+            gameState.stats.customersServed++;
+            gameState.stats.upsellsMade++;
+            gameState.dailyStats.customersServed++;
+            gameState.dailyStats.upsellsMade++;
+            
+            // Increase store rating slightly
+            gameState.storeRating = Math.min(5.0, gameState.storeRating + 0.1);
+            
+            showSystemFeedback(`Upsell successful! Earned $${price}. Store rating increased!`);
+            
+            updateDisplay();
+            advanceToNextCustomer();
+        }
+
+        function declineUpsell() {
+            showSystemFeedback("Customer declined the upsell. No sale made.");
+            advanceToNextCustomer();
+        }
+
+        function offerService() {
+            document.getElementById('serviceOptions').style.display = 'flex';
+            document.getElementById('actionButtons').style.display = 'none';
+            
+            // Update customer request and frames
+            document.getElementById('customerRequest').textContent = '"Can you do something fun for me?"';
+            document.getElementById('frame1').textContent = '"I can sing a song for you!" / "I will tell you a joke!" / "I can draw something!"';
+            document.getElementById('frame2').textContent = '"What would you like me to do?"';
+        }
+
+        function performService(serviceType) {
+            const services = {
+                sing: { tip: 2, frame: '"I can sing a beautiful song for you!"' },
+                joke: { tip: 1, frame: '"I will tell you a funny joke!"' },
+                draw: { tip: 2, frame: '"I can draw a picture for you!"' }
+            };
+            
+            const service = services[serviceType];
+            document.getElementById('frame1').textContent = service.frame;
+            document.getElementById('frame2').textContent = '"I hope you enjoy it!"';
+            
+            document.getElementById('serviceOptions').style.display = 'none';
+            document.getElementById('actionButtons').innerHTML = `
+                <button class="btn success-btn" onclick="earnTip(${service.tip})">💰 Service Complete</button>
+            `;
+            document.getElementById('actionButtons').style.display = 'flex';
+        }
+
+        function earnTip(amount) {
+            gameState.money += amount;
+            gameState.stats.servicesGiven++;
+            gameState.stats.tipsEarned += amount;
+            gameState.dailyStats.servicesGiven++;
+            gameState.dailyStats.tipsEarned += amount;
+            
+            // Increase store rating slightly
+            gameState.storeRating = Math.min(5.0, gameState.storeRating + 0.1);
+            
+            showSystemFeedback(`You earned $${amount} tip! Great service! Store rating increased!`);
+            
+            updateDisplay();
+            advanceToNextCustomer();
+        }
+
+        function skipCustomer() {
+            // Apply penalty
+            const penalty = Math.random() < 0.5 ? 'money' : 'rating';
+            if (penalty === 'money' && gameState.money > 0) {
+                gameState.money = Math.max(0, gameState.money - 1);
+                showSystemFeedback("Customer skipped. Lost $1 penalty and store rating decreased.");
+            } else {
+                showSystemFeedback("Customer skipped. Store rating decreased.");
+            }
+            
+            // Decrease store rating
+            gameState.storeRating = Math.max(1.0, gameState.storeRating - 0.2);
+            
+            gameState.stats.skips++;
+            gameState.stats.penalties++;
+            gameState.dailyStats.skips++;
+            
+            updateDisplay();
+            advanceToNextCustomer();
+        }
+
+        function showSystemFeedback(message) {
+            document.getElementById('feedbackText').textContent = message;
+            document.getElementById('systemFeedback').style.display = 'block';
+        }
+
+        function openShop() {
+            document.getElementById('shopModal').style.display = 'flex';
+            updateShopButtons();
+        }
+
+        function closeShop() {
+            document.getElementById('shopModal').style.display = 'none';
+        }
+
+        function updateShopButtons() {
+            const buttons = document.querySelectorAll('.buy-btn');
+            buttons.forEach(button => {
+                const cost = parseInt(button.getAttribute('onclick').match(/\d+/)[0]);
+                button.disabled = gameState.money < cost;
+                if (gameState.money < cost) {
+                    button.style.opacity = '0.5';
+                    button.style.cursor = 'not-allowed';
+                } else {
+                    button.style.opacity = '1';
+                    button.style.cursor = 'pointer';
+                }
+            });
+            
+            // Update invent toy button
+            const inventBtn = document.querySelector('.invent-section .btn');
+            if (inventBtn) {
+                inventBtn.disabled = gameState.money < 3;
+                if (gameState.money < 3) {
+                    inventBtn.style.opacity = '0.5';
+                    inventBtn.style.cursor = 'not-allowed';
+                } else {
+                    inventBtn.style.opacity = '1';
+                    inventBtn.style.cursor = 'pointer';
+                }
+            }
+        }
+
+        function buySupply(itemType, cost) {
+            if (gameState.money >= cost) {
+                gameState.money -= cost;
+                gameState.inventory[itemType]++;
+                updateDisplay();
+                updateShopButtons();
+                updateActionButtons();
+            }
+        }
+
+        function inventToy() {
+            if (gameState.money >= 3) {
+                gameState.money -= 3;
+                
+                const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+                const noun = nouns[Math.floor(Math.random() * nouns.length)];
+                const verb = verbs[Math.floor(Math.random() * verbs.length)];
+                
+                const toyId = `invented_${Date.now()}`;
+                const toyName = `${adj} ${noun}`;
+                
+                gameState.inventedToys[toyId] = {
+                    name: toyName,
+                    price: 6 + Math.floor(Math.random() * 4), // $6-9
+                    stock: 1,
+                    verb: verb
+                };
+                
+                gameState.stats.toysInvented++;
+                gameState.dailyStats.toysInvented++;
+                
+                // Update frames to show description
+                document.getElementById('frame1').textContent = `"This is a ${toyName}."`;
+                document.getElementById('frame2').textContent = `"It can ${verb}."`;
+                
+                showSystemFeedback(`New toy invented: ${toyName}! Added to inventory.`);
+                
+                updateDisplay();
+                updateShopButtons();
+                closeShop();
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('money').textContent = gameState.money;
+            document.getElementById('currentDay').textContent = gameState.currentDay;
+            document.getElementById('customerCount').textContent = gameState.customerCount;
+            document.getElementById('storeRating').textContent = gameState.storeRating.toFixed(1);
+            updateInventoryDisplay();
+        }
+
+        function updateInventoryDisplay() {
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
+            
+            // Regular items
+            for (const [key, stock] of Object.entries(gameState.inventory)) {
+                const item = items[key];
+                const div = document.createElement('div');
+                div.className = 'inventory-item';
+                div.innerHTML = `
+                    <div>
+                        <span style="font-size: 1.2rem; margin-right: 8px;">${item.emoji}</span>
+                        <span class="item-name">${item.name}</span>
+                    </div>
+                    <span class="item-stock ${stock === 0 ? 'out-of-stock' : ''}">${stock}</span>
+                `;
+                inventoryList.appendChild(div);
+            }
+            
+            // Invented toys
+            for (const [key, toy] of Object.entries(gameState.inventedToys)) {
+                const div = document.createElement('div');
+                div.className = 'inventory-item invented-item';
+                div.innerHTML = `
+                    <div>
+                        <span style="font-size: 1.2rem; margin-right: 8px;">✨</span>
+                        <span class="item-name">${toy.name}</span>
+                        <div style="font-size: 0.8rem; color: #666;">$${toy.price}</div>
+                    </div>
+                    <span class="item-stock">${toy.stock}</span>
+                `;
+                inventoryList.appendChild(div);
+            }
+        }
+
+        function endGame() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('dailySummary').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            
+            document.getElementById('finalMoney').textContent = gameState.money;
+            document.getElementById('finalRating').textContent = gameState.storeRating.toFixed(1);
+            
+            // Determine rating message
+            let ratingMessage = "";
+            if (gameState.storeRating >= 4.5) {
+                ratingMessage = "🌟 Outstanding! Your shop is the talk of the town!";
+            } else if (gameState.storeRating >= 4.0) {
+                ratingMessage = "⭐ Excellent! Customers love your shop!";
+            } else if (gameState.storeRating >= 3.5) {
+                ratingMessage = "👍 Great job! Your shop is doing well!";
+            } else if (gameState.storeRating >= 3.0) {
+                ratingMessage = "👌 Good work! Room for improvement!";
+            } else {
+                ratingMessage = "💪 Keep trying! Practice makes perfect!";
+            }
+            
+            const summaryStats = document.getElementById('summaryStats');
+            summaryStats.innerHTML = `
+                <h3>📊 10-Day Shop Summary</h3>
+                <div style="text-align: center; font-size: 1.2rem; color: #FF6B9D; margin: 15px 0; font-weight: bold;">${ratingMessage}</div>
+                <div class="stat-item">📅 Days Completed: 10</div>
+                <div class="stat-item">👥 Customers Served: ${gameState.stats.customersServed}</div>
+                <div class="stat-item">📦 Items Sold: ${gameState.stats.itemsSold}</div>
+                <div class="stat-item">🔄 Upsells Made: ${gameState.stats.upsellsMade}</div>
+                <div class="stat-item">🎭 Services Given: ${gameState.stats.servicesGiven}</div>
+                <div class="stat-item">💰 Tips Earned: $${gameState.stats.tipsEarned}</div>
+                <div class="stat-item">⏭️ Customers Skipped: ${gameState.stats.skips}</div>
+                <div class="stat-item">⚠️ Penalties: ${gameState.stats.penalties}</div>
+                <div class="stat-item">✨ Toys Invented: ${gameState.stats.toysInvented}</div>
+                <div class="stat-item">📦 Items Left: ${Object.values(gameState.inventory).reduce((a,b) => a+b, 0) + Object.values(gameState.inventedToys).reduce((a,b) => a+b.stock, 0)}</div>
+            `;
+        }
+
+        function restartGame() {
+            gameState = {
+                money: 10,
+                storeRating: 3.0,
+                currentDay: 1,
+                customerCount: 1,
+                inventory: {
+                    teddy: 2,
+                    ball: 3,
+                    puzzle: 1,
+                    robot: 1
+                },
+                inventedToys: {},
+                stats: {
+                    customersServed: 0,
+                    itemsSold: 0,
+                    upsellsMade: 0,
+                    servicesGiven: 0,
+                    tipsEarned: 0,
+                    skips: 0,
+                    penalties: 0,
+                    toysInvented: 0
+                },
+                dailyStats: {
+                    customersServed: 0,
+                    itemsSold: 0,
+                    upsellsMade: 0,
+                    servicesGiven: 0,
+                    tipsEarned: 0,
+                    skips: 0,
+                    toysInvented: 0,
+                    moneyEarned: 0,
+                    startMoney: 10
+                },
+                currentCustomer: null,
+                currentRequest: null
+            };
+            
+            document.getElementById('endScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+        }
+
+        // Initialize display
+        updateDisplay();
+
+        // Add end game button for teacher (hidden in corner)
+        const endGameBtn = document.createElement('button');
+        endGameBtn.textContent = 'End Game';
+        endGameBtn.style.position = 'fixed';
+        endGameBtn.style.bottom = '20px';
+        endGameBtn.style.right = '20px';
+        endGameBtn.style.background = '#FF6B9D';
+        endGameBtn.style.color = 'white';
+        endGameBtn.style.border = 'none';
+        endGameBtn.style.padding = '10px 15px';
+        endGameBtn.style.borderRadius = '10px';
+        endGameBtn.style.cursor = 'pointer';
+        endGameBtn.style.fontSize = '0.9rem';
+        endGameBtn.style.zIndex = '999';
+        endGameBtn.onclick = endGame;
+        document.body.appendChild(endGameBtn);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98809f12e30f942a',t:'MTc1OTM3MDU4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

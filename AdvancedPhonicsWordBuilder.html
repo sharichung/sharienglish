@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Word Builder Puzzle</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            max-width: 950px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            color: #4a5568;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+        .stats-bar {
+            background: #edf2f7;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .audio-section {
+            background: linear-gradient(145deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .play-button {
+            background: linear-gradient(145deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 18px 35px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(72, 187, 120, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        .play-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .play-button.playing {
+            background: linear-gradient(145deg, #ed8936, #dd6b20);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .puzzle-area {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 35px 20px;
+            margin-bottom: 25px;
+            border: 3px dashed #cbd5e0;
+        }
+
+        .word-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.3;
+            word-break: break-all;
+        }
+
+        .word-hint {
+            background: #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 500px;
+            font-size: 1.1rem;
+            color: #4a5568;
+        }
+
+        .phonics-breakdown {
+            background: #f0fff4;
+            border: 2px solid #c6f6d5;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 600px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .phonics-header {
+            background: linear-gradient(145deg, #48bb78, #38a169);
+            color: white;
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .phonics-header:hover {
+            background: linear-gradient(145deg, #38a169, #2f855a);
+        }
+
+        .phonics-content {
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            color: #2f855a;
+            display: none;
+        }
+
+        .phonics-content.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .phonics-pool {
+            margin-bottom: 30px;
+        }
+
+        .pool-title {
+            font-size: 1.6rem;
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .tiles-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .phonics-tile {
+            background: linear-gradient(145deg, #4299e1, #3182ce);
+            color: white;
+            padding: 16px 22px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            min-width: 65px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .phonics-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(145deg, #3182ce, #2c5aa0);
+        }
+
+        .phonics-tile.correct {
+            background: linear-gradient(145deg, #48bb78, #38a169);
+            animation: bounce 0.8s ease;
+        }
+
+        .phonics-tile.used {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-12px); }
+            60% { transform: translateY(-6px); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, #ed8936, #dd6b20);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(145deg, #38b2ac, #319795);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(145deg, #4299e1, #3182ce);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .missing-part {
+            color: #e53e3e;
+            background: #fed7d7;
+            padding: 4px 10px;
+            border-radius: 8px;
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            margin: 0 2px;
+        }
+
+        .completed-part {
+            color: #38a169;
+            background: #c6f6d5;
+            padding: 4px 10px;
+            border-radius: 8px;
+            animation: fillIn 0.6s ease;
+            margin: 0 2px;
+        }
+
+        @keyframes fillIn {
+            from { opacity: 0; transform: scale(1.3); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        .chevron.rotated {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 2.2rem; }
+            .word-display { font-size: 2.3rem; letter-spacing: 3px; }
+            .phonics-tile { padding: 14px 18px; font-size: 1.2rem; }
+            .btn { padding: 12px 22px; font-size: 1rem; }
+            .game-container { padding: 20px; }
+            .play-button { padding: 15px 28px; font-size: 1.2rem; }
+            .stats-bar { flex-direction: column; text-align: center; }
+            .controls { gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="title">🎯 Advanced Word Builder</h1>
+        <p class="subtitle">Listen, identify the missing phonics chunk, and build the word!</p>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span>📚</span>
+                <span><strong>Word Pool:</strong> <span id="totalWords">100+</span> words</span>
+            </div>
+            <div class="stat-item">
+                <span>🎯</span>
+                <span><strong>Current Word:</strong> <span id="currentWordNumber">Ready to start</span></span>
+            </div>
+            <div class="stat-item">
+                <span>📏</span>
+                <span><strong>Length:</strong> <span id="wordLength">0</span> letters</span>
+            </div>
+        </div>
+
+        <div class="audio-section">
+            <button class="play-button" id="playButton" onclick="playWord()">
+                <span id="playIcon">🔊</span>
+                <span id="playText">Play Word</span>
+            </button>
+        </div>
+
+        <div class="puzzle-area">
+            <div class="word-display" id="wordDisplay">Click "Next Word" to start</div>
+            <div class="word-hint" id="wordHint">Ready to begin your phonics challenge!</div>
+            
+            <div class="phonics-breakdown" id="phonicsBreakdown" style="display: none;">
+                <div class="phonics-header" onclick="togglePhonics()">
+                    <span>📝 Phonics Breakdown</span>
+                    <span class="chevron" id="chevron">▼</span>
+                </div>
+                <div class="phonics-content" id="phonicsContent">
+                    <strong>Segments:</strong> <span id="segmentsList"></span><br>
+                    <strong style="color: #e53e3e;">Missing Chunk (Teacher Only):</strong> <span id="teacherAnswer" style="background: #fed7d7; padding: 4px 8px; border-radius: 6px; font-family: 'Courier New', monospace;"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="phonics-pool">
+            <div class="pool-title">Choose the missing sound:</div>
+            <div class="tiles-container" id="tilesContainer">
+                <!-- Tiles will be generated here -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-info" onclick="togglePhonics()">Show Phonics</button>
+            <button class="btn btn-primary" onclick="showAnswer()">Show Answer</button>
+            <button class="btn btn-secondary" onclick="nextWord()">Next Word</button>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive word pool with 100+ advanced words
+        const advancedWords = [
+            // Application/Academic words
+            { word: 'application', segments: ['a', 'pp', 'li', 'c', 'a', 'tion'], possibleMissing: ['tion', 'li', 'pp', 'a'], hint: 'A form you fill out for a job or school', icon: '📝' },
+            { word: 'explanation', segments: ['ex', 'pl', 'a', 'n', 'a', 'tion'], possibleMissing: ['tion', 'ex', 'pl', 'a'], hint: 'Making something clear or easy to understand', icon: '💡' },
+            { word: 'information', segments: ['in', 'f', 'or', 'm', 'a', 'tion'], possibleMissing: ['tion', 'or', 'in', 'a'], hint: 'Facts or details about something', icon: 'ℹ️' },
+            { word: 'education', segments: ['e', 'd', 'u', 'c', 'a', 'tion'], possibleMissing: ['tion', 'u', 'e', 'a'], hint: 'Learning and teaching in schools', icon: '🎓' },
+            { word: 'celebration', segments: ['c', 'e', 'le', 'br', 'a', 'tion'], possibleMissing: ['tion', 'le', 'br', 'a'], hint: 'A party or special event', icon: '🎉' },
+            
+            // Re- prefix words
+            { word: 'reconsider', segments: ['re', 'c', 'on', 's', 'i', 'd', 'er'], possibleMissing: ['re', 'er', 'on', 'i'], hint: 'To think about something again', icon: '🤔' },
+            { word: 'remember', segments: ['re', 'm', 'e', 'm', 'b', 'er'], possibleMissing: ['re', 'er', 'e', 'm'], hint: 'To recall something from the past', icon: '🧠' },
+            { word: 'reaction', segments: ['re', 'a', 'c', 'tion'], possibleMissing: ['re', 'tion', 'a', 'c'], hint: 'How you respond to something', icon: '⚡' },
+            { word: 'reappearance', segments: ['re', 'a', 'pp', 'ear', 'a', 'n', 'ce'], possibleMissing: ['re', 'ear', 'pp', 'a'], hint: 'Coming back into view again', icon: '👻' },
+            { word: 'replacement', segments: ['re', 'pl', 'a', 'ce', 'm', 'e', 'nt'], possibleMissing: ['re', 'pl', 'a', 'ce'], hint: 'Something that takes the place of another', icon: '🔄' },
+            
+            // Un- prefix words
+            { word: 'understand', segments: ['un', 'd', 'er', 'st', 'a', 'nd'], possibleMissing: ['un', 'er', 'st', 'a'], hint: 'To know what something means', icon: '💡' },
+            { word: 'unreal', segments: ['un', 'r', 'ea', 'l'], possibleMissing: ['un', 'ea', 'r', 'l'], hint: 'Not real or imaginary', icon: '🌟' },
+            { word: 'uncomfortable', segments: ['un', 'c', 'o', 'm', 'f', 'or', 't', 'a', 'ble'], possibleMissing: ['un', 'or', 'o', 'a'], hint: 'Not feeling at ease', icon: '😣' },
+            { word: 'unexpected', segments: ['un', 'ex', 'p', 'e', 'c', 't', 'ed'], possibleMissing: ['un', 'ex', 'e', 'ed'], hint: 'Something that surprises you', icon: '😲' },
+            { word: 'unlimited', segments: ['un', 'l', 'i', 'm', 'i', 't', 'ed'], possibleMissing: ['un', 'i', 'ed', 'm'], hint: 'Without any limits or boundaries', icon: '∞' },
+            
+            // Pre- prefix words
+            { word: 'prevention', segments: ['pre', 'v', 'en', 'tion'], possibleMissing: ['pre', 'tion', 'en', 'v'], hint: 'Stopping something before it happens', icon: '🛡️' },
+            { word: 'preparation', segments: ['pre', 'p', 'ar', 'a', 'tion'], possibleMissing: ['pre', 'tion', 'ar', 'a'], hint: 'Getting ready for something', icon: '📋' },
+            { word: 'presentation', segments: ['pre', 's', 'en', 't', 'a', 'tion'], possibleMissing: ['pre', 'tion', 'en', 'a'], hint: 'Showing something to an audience', icon: '📊' },
+            { word: 'prediction', segments: ['pre', 'd', 'i', 'c', 'tion'], possibleMissing: ['pre', 'tion', 'i', 'c'], hint: 'Saying what will happen in the future', icon: '🔮' },
+            { word: 'prehistoric', segments: ['pre', 'h', 'i', 's', 't', 'or', 'i', 'c'], possibleMissing: ['pre', 'or', 'i', 's'], hint: 'From before recorded history', icon: '🦕' },
+            
+            // Dis- prefix words
+            { word: 'distribute', segments: ['dis', 'tr', 'i', 'b', 'u', 'te'], possibleMissing: ['dis', 'tr', 'i', 'u'], hint: 'To give out or spread around', icon: '📦' },
+            { word: 'disappear', segments: ['dis', 'a', 'pp', 'ear'], possibleMissing: ['dis', 'ear', 'pp', 'a'], hint: 'To go out of sight', icon: '👻' },
+            { word: 'discover', segments: ['dis', 'c', 'o', 'v', 'er'], possibleMissing: ['dis', 'er', 'o', 'v'], hint: 'To find something new', icon: '🔍' },
+            { word: 'discussion', segments: ['dis', 'c', 'u', 'ss', 'ion'], possibleMissing: ['dis', 'ion', 'u', 'ss'], hint: 'Talking about a topic together', icon: '💬' },
+            { word: 'disconnect', segments: ['dis', 'c', 'on', 'n', 'e', 'ct'], possibleMissing: ['dis', 'on', 'e', 'ct'], hint: 'To separate or unplug', icon: '🔌' },
+            
+            // Complex phonics patterns
+            { word: 'telephone', segments: ['t', 'e', 'le', 'ph', 'o', 'ne'], possibleMissing: ['ph', 'le', 'o', 'e'], hint: 'Device used to call people', icon: '📞' },
+            { word: 'photograph', segments: ['ph', 'o', 't', 'o', 'gr', 'a', 'ph'], possibleMissing: ['ph', 'o', 'gr', 'a'], hint: 'A picture taken with a camera', icon: '📷' },
+            { word: 'knowledge', segments: ['kn', 'ow', 'le', 'dge'], possibleMissing: ['kn', 'ow', 'dge', 'le'], hint: 'Information and understanding you have', icon: '📚' },
+            { word: 'writing', segments: ['wr', 'i', 't', 'ing'], possibleMissing: ['wr', 'i', 'ing', 't'], hint: 'Putting words on paper', icon: '✍️' },
+            { word: 'question', segments: ['qu', 'e', 's', 'tion'], possibleMissing: ['qu', 'tion', 'e', 's'], hint: 'Something you ask to get information', icon: '❓' },
+            
+            // -sion words
+            { word: 'decision', segments: ['d', 'e', 'c', 'i', 'sion'], possibleMissing: ['sion', 'e', 'i', 'c'], hint: 'A choice you make about something', icon: '🎯' },
+            { word: 'television', segments: ['t', 'e', 'le', 'v', 'i', 'sion'], possibleMissing: ['sion', 'le', 'i', 'v'], hint: 'Device for watching shows and movies', icon: '📺' },
+            { word: 'confusion', segments: ['c', 'on', 'f', 'u', 'sion'], possibleMissing: ['sion', 'on', 'u', 'f'], hint: 'Feeling puzzled or mixed up', icon: '😵' },
+            { word: 'permission', segments: ['p', 'er', 'm', 'i', 'ss', 'ion'], possibleMissing: ['ion', 'er', 'i', 'ss'], hint: 'Being allowed to do something', icon: '✅' },
+            { word: 'expression', segments: ['ex', 'pr', 'e', 'ss', 'ion'], possibleMissing: ['ion', 'ex', 'pr', 'e'], hint: 'A look on your face or way of speaking', icon: '😊' },
+            
+            // Long vowel patterns
+            {
+  word: 'complete',
+  segments: ['com', 'pl', 'e', 'te'],         // segments correspond to substrings
+  possibleMissing: ['com', 'pl', 'e', 'te'],  // all valid missing choices
+  hint: 'Totally finished with nothing missing',
+  icon: '✅'
+},
+            { word: 'surprise', segments: ['s', 'ur', 'pr', 'i_e'], possibleMissing: ['ur', 'pr', 'i_e', 's'], hint: 'Something unexpected that happens', icon: '🎉' },
+            { word: 'machine', segments: ['m', 'a', 'ch', 'i_e'], possibleMissing: ['ch', 'a', 'i_e', 'm'], hint: 'A device that does work automatically', icon: '⚙️' },
+            {
+  word: 'athlete',
+  segments: ['a', 'th', 'l_e', 'e'], // segments correspond to actual substrings
+  possibleMissing: ['a', 'th', 'l_e', 'e'],
+  hint: 'Someone who is good at sports',
+  icon: '🏃'
+},
+            { word: 'compete', segments: ['c', 'o', 'm', 'p', 'e_e'], possibleMissing: ['e_e', 'o', 'm', 'p'], hint: 'To try to win against others', icon: '🏆' },
+            
+            // Complex vowel combinations
+            { word: 'beautiful', segments: ['b', 'eau', 't', 'i', 'f', 'ul'], possibleMissing: ['eau', 'ul', 'i', 't'], hint: 'Very pretty or lovely to look at', icon: '🌸' },
+            { word: 'mountain', segments: ['m', 'ou', 'nt', 'ai', 'n'], possibleMissing: ['ou', 'ai', 'nt', 'n'], hint: 'A very high hill', icon: '⛰️' },
+            { word: 'because', segments: ['b', 'e', 'c', 'au', 'se'], possibleMissing: ['au', 'e', 'c', 'se'], hint: 'The reason why something happens', icon: '🤷' },
+            { word: 'receive', segments: ['r', 'e', 'c', 'ei', 've'], possibleMissing: ['ei', 'e', 'c', 've'], hint: 'To get something that is given to you', icon: '📨' },
+            { word: 'believe', segments: ['b', 'e', 'l', 'ie', 've'], possibleMissing: ['ie', 'e', 'l', 've'], hint: 'To think something is true', icon: '🙏' },
+            
+            // R-controlled vowels
+            { word: 'important', segments: ['i', 'm', 'p', 'or', 't', 'a', 'nt'], possibleMissing: ['or', 'i', 'nt', 'a'], hint: 'Something that really matters', icon: '⭐' },
+            { word: 'birthday', segments: ['b', 'ir', 'th', 'd', 'ay'], possibleMissing: ['ir', 'th', 'ay', 'd'], hint: 'The day you were born', icon: '🎂' },
+            { word: 'teacher', segments: ['t', 'ea', 'ch', 'er'], possibleMissing: ['er', 'ea', 'ch', 't'], hint: 'Person who helps you learn', icon: '👩‍🏫' },
+            { word: 'picture', segments: ['p', 'i', 'c', 't', 'ure'], possibleMissing: ['ure', 'i', 'c', 't'], hint: 'An image or photo', icon: '🖼️' },
+            { word: 'adventure', segments: ['a', 'd', 'v', 'en', 't', 'ure'], possibleMissing: ['ure', 'en', 'a', 'v'], hint: 'An exciting journey or experience', icon: '🗺️' },
+            
+            // Additional complex words
+            { word: 'comfortable', segments: ['c', 'o', 'm', 'f', 'or', 't', 'a', 'ble'], possibleMissing: ['or', 'o', 'a', 'ble'], hint: 'Feeling relaxed and at ease', icon: '😌' },
+            { word: 'vegetable', segments: ['v', 'e', 'g', 'e', 't', 'a', 'ble'], possibleMissing: ['e', 'a', 'ble', 'g'], hint: 'Healthy food that grows in gardens', icon: '🥕' },
+            { word: 'chocolate', segments: ['ch', 'o', 'c', 'o', 'l', 'a', 'te'], possibleMissing: ['ch', 'o', 'a', 'te'], hint: 'Sweet brown candy or dessert', icon: '🍫' },
+            { word: 'elephant', segments: ['e', 'le', 'ph', 'a', 'nt'], possibleMissing: ['ph', 'le', 'e', 'nt'], hint: 'Large gray animal with a trunk', icon: '🐘' },
+            { word: 'sandwich', segments: ['s', 'a', 'nd', 'w', 'i', 'ch'], possibleMissing: ['ch', 'nd', 'a', 'i'], hint: 'Food made with bread and filling', icon: '🥪' },
+            
+            // Science and nature words
+            { word: 'butterfly', segments: ['b', 'u', 'tt', 'er', 'fl', 'y'], possibleMissing: ['er', 'fl', 'u', 'y'], hint: 'Colorful insect with wings', icon: '🦋' },
+            { word: 'dinosaur', segments: ['d', 'i', 'n', 'o', 's', 'au', 'r'], possibleMissing: ['au', 'i', 'o', 'r'], hint: 'Ancient giant reptile', icon: '🦕' },
+            { word: 'rainbow', segments: ['r', 'ai', 'n', 'b', 'ow'], possibleMissing: ['ai', 'ow', 'n', 'b'], hint: 'Colorful arc in the sky after rain', icon: '🌈' },
+            { word: 'sunshine', segments: ['s', 'u', 'n', 'sh', 'i', 'ne'], possibleMissing: ['sh', 'u', 'i', 'ne'], hint: 'Bright light from the sun', icon: '☀️' },
+            { word: 'earthquake', segments: ['ear', 'th', 'qu', 'a', 'ke'], possibleMissing: ['ear', 'qu', 'th', 'a'], hint: 'When the ground shakes', icon: '🌍' },
+            
+            // Technology words
+            { word: 'computer', segments: ['c', 'o', 'm', 'p', 'u', 't', 'er'], possibleMissing: ['er', 'o', 'u', 'p'], hint: 'Electronic device for work and games', icon: '💻' },
+            { word: 'internet', segments: ['in', 't', 'er', 'n', 'e', 't'], possibleMissing: ['in', 'er', 'e', 't'], hint: 'Global network of connected computers', icon: '🌐' },
+            { word: 'keyboard', segments: ['k', 'ey', 'b', 'oar', 'd'], possibleMissing: ['ey', 'oar', 'k', 'd'], hint: 'Device with letters for typing', icon: '⌨️' },
+            { word: 'microphone', segments: ['m', 'i', 'cr', 'o', 'ph', 'o', 'ne'], possibleMissing: ['ph', 'cr', 'i', 'o'], hint: 'Device that picks up sound', icon: '🎤' },
+            { word: 'calculator', segments: ['c', 'a', 'l', 'c', 'u', 'l', 'a', 't', 'or'], possibleMissing: ['or', 'a', 'u', 'c'], hint: 'Device for doing math problems', icon: '🧮' },
+            
+            // Action and movement words
+            { word: 'exercise', segments: ['ex', 'er', 'c', 'i', 'se'], possibleMissing: ['ex', 'er', 'i', 'se'], hint: 'Physical activity to stay healthy', icon: '🏃‍♀️' },
+            { word: 'adventure', segments: ['a', 'd', 'v', 'en', 't', 'ure'], possibleMissing: ['ure', 'en', 'a', 'v'], hint: 'An exciting journey or experience', icon: '🗺️' },
+            { word: 'basketball', segments: ['b', 'a', 's', 'k', 'e', 't', 'b', 'a', 'll'], possibleMissing: ['a', 'e', 'k', 'll'], hint: 'Sport played with a ball and hoop', icon: '🏀' },
+            { word: 'swimming', segments: ['s', 'w', 'i', 'mm', 'ing'], possibleMissing: ['mm', 'i', 'ing', 'w'], hint: 'Moving through water', icon: '🏊' },
+            { word: 'dancing', segments: ['d', 'a', 'n', 'c', 'ing'], possibleMissing: ['ing', 'a', 'n', 'c'], hint: 'Moving to music with rhythm', icon: '💃' },
+            
+            // Emotion and feeling words
+            { word: 'happiness', segments: ['h', 'a', 'pp', 'i', 'n', 'e', 'ss'], possibleMissing: ['pp', 'i', 'e', 'ss'], hint: 'Feeling very joyful and content', icon: '😊' },
+            { word: 'excitement', segments: ['ex', 'c', 'i', 't', 'e', 'm', 'e', 'nt'], possibleMissing: ['ex', 'i', 'e', 'nt'], hint: 'Feeling very eager and thrilled', icon: '🤩' },
+            { word: 'friendship', segments: ['fr', 'ie', 'nd', 'sh', 'ip'], possibleMissing: ['fr', 'ie', 'sh', 'ip'], hint: 'A close relationship between people', icon: '👫' },
+            { word: 'kindness', segments: ['k', 'i', 'nd', 'n', 'e', 'ss'], possibleMissing: ['nd', 'i', 'e', 'ss'], hint: 'Being nice and caring to others', icon: '💝' },
+            { word: 'courage', segments: ['c', 'ou', 'r', 'a', 'ge'], possibleMissing: ['ou', 'a', 'ge', 'r'], hint: 'Being brave when scared', icon: '🦁' },
+            
+            // Time and calendar words
+            { word: 'yesterday', segments: ['y', 'e', 's', 't', 'er', 'd', 'ay'], possibleMissing: ['er', 'ay', 'e', 't'], hint: 'The day before today', icon: '📅' },
+            { word: 'tomorrow', segments: ['t', 'o', 'm', 'or', 'r', 'ow'], possibleMissing: ['or', 'ow', 'o', 'm'], hint: 'The day after today', icon: '📆' },
+            { word: 'calendar', segments: ['c', 'a', 'l', 'en', 'd', 'ar'], possibleMissing: ['ar', 'en', 'a', 'l'], hint: 'Shows days, weeks, and months', icon: '🗓️' },
+            { word: 'afternoon', segments: ['a', 'f', 't', 'er', 'n', 'oo', 'n'], possibleMissing: ['er', 'oo', 'a', 'f'], hint: 'Time between noon and evening', icon: '🌅' },
+            { word: 'weekend', segments: ['w', 'ee', 'k', 'e', 'nd'], possibleMissing: ['ee', 'nd', 'e', 'k'], hint: 'Saturday and Sunday', icon: '🎉' },
+            
+            // Food and cooking words
+            { word: 'restaurant', segments: ['r', 'e', 's', 't', 'au', 'r', 'a', 'nt'], possibleMissing: ['au', 'e', 'a', 'nt'], hint: 'Place where you buy and eat meals', icon: '🍽️' },
+            { word: 'breakfast', segments: ['br', 'ea', 'k', 'f', 'a', 's', 't'], possibleMissing: ['br', 'ea', 'a', 'f'], hint: 'First meal of the day', icon: '🥞' },
+            { word: 'spaghetti', segments: ['s', 'p', 'a', 'gh', 'e', 'tt', 'i'], possibleMissing: ['gh', 'tt', 'a', 'i'], hint: 'Long thin pasta noodles', icon: '🍝' },
+            { word: 'hamburger', segments: ['h', 'a', 'm', 'b', 'ur', 'g', 'er'], possibleMissing: ['ur', 'er', 'a', 'm'], hint: 'Meat patty in a bun', icon: '🍔' },
+            { word: 'strawberry', segments: ['str', 'aw', 'b', 'er', 'r', 'y'], possibleMissing: ['str', 'aw', 'er', 'y'], hint: 'Red berry with seeds on outside', icon: '🍓' }
+        ];
+
+        let currentPuzzle = null;
+        let isAnswerShown = false;
+        let isPhonicsVisible = false;
+        let speechSynthesis = window.speechSynthesis;
+
+        function generatePuzzle() {
+            const wordData = advancedWords[Math.floor(Math.random() * advancedWords.length)];
+            const missingChunk = wordData.possibleMissing[Math.floor(Math.random() * wordData.possibleMissing.length)];
+            
+            // Create intelligent distractors
+            const allPhonics = [
+                'tion', 'sion', 're', 'un', 'pre', 'dis', 'ph', 'kn', 'wr', 'qu', 'ch', 'sh', 'th',
+                'ou', 'oi', 'ue', 'er', 'ar', 'ur', 'ie', 'ee', 'or', 'ai', 'oa', 'aw', 'au', 'ey', 'ew',
+                'air', 'ear', 'ure', 'igh', 'dge', 'tch', 'e_e', 'i_e', 'o_e', 'u_e', 'a_e', 'ough', 'augh',
+                'ing', 'ed', 'ly', 'le', 'nd', 'nt', 'st', 'mp', 'nk', 'ng', 'ck'
+            ];
+            
+            const similarLength = allPhonics.filter(sound => 
+                sound !== missingChunk && 
+                Math.abs(sound.length - missingChunk.length) <= 1
+            );
+            
+            const distractors = similarLength
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 4);
+            
+            currentPuzzle = {
+                word: wordData.word,
+                segments: wordData.segments,
+                missing: missingChunk,
+                hint: wordData.hint,
+                icon: wordData.icon,
+                availableSounds: [missingChunk, ...distractors].sort(() => Math.random() - 0.5)
+            };
+            
+            isAnswerShown = false;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const wordDisplay = document.getElementById('wordDisplay');
+            const wordHint = document.getElementById('wordHint');
+            const tilesContainer = document.getElementById('tilesContainer');
+            const currentFocus = document.getElementById('currentFocus');
+            const wordLength = document.getElementById('wordLength');
+            const totalWords = document.getElementById('totalWords');
+            const phonicsBreakdown = document.getElementById('phonicsBreakdown');
+            const segmentsList = document.getElementById('segmentsList');
+            
+            if (!currentPuzzle) return;
+            
+            // Update stats (don't show missing phonics to students)
+            const currentWordNumber = document.getElementById('currentWordNumber');
+            currentWordNumber.textContent = `Word ${Math.floor(Math.random() * 100) + 1}`;
+            wordLength.textContent = currentPuzzle.word.length;
+            totalWords.textContent = advancedWords.length;
+            wordHint.innerHTML = `${currentPuzzle.icon} ${currentPuzzle.hint}`;
+            
+            // Show phonics breakdown
+            phonicsBreakdown.style.display = 'block';
+            segmentsList.textContent = currentPuzzle.segments.join(' • ');
+            
+            // Show answer to teacher only (in collapsed section)
+            const teacherAnswer = document.getElementById('teacherAnswer');
+            teacherAnswer.textContent = currentPuzzle.missing;
+            
+            // Create word display with missing chunk
+            const word = currentPuzzle.word;
+            const missing = currentPuzzle.missing;
+            
+            if (isAnswerShown) {
+                // Show complete word with highlighted answer
+                const missingIndex = word.indexOf(missing);
+                if (missingIndex !== -1) {
+                    const beforeMissing = word.substring(0, missingIndex);
+                    const afterMissing = word.substring(missingIndex + missing.length);
+                    
+                    wordDisplay.innerHTML = beforeMissing + 
+                        `<span class="completed-part">${missing}</span>` + 
+                        afterMissing;
+                } else {
+                    wordDisplay.textContent = word;
+                }
+            } else {
+                // Show word with missing chunk as blanks
+                const missingIndex = word.indexOf(missing);
+                if (missingIndex !== -1) {
+                    const beforeMissing = word.substring(0, missingIndex);
+                    const afterMissing = word.substring(missingIndex + missing.length);
+                    const blanks = '_'.repeat(missing.length);
+                    
+                    wordDisplay.innerHTML = beforeMissing + 
+                        `<span class="missing-part">${blanks}</span>` + 
+                        afterMissing;
+                } else {
+                    // Fallback for complex patterns
+                    wordDisplay.innerHTML = word.replace(new RegExp(missing, 'i'), 
+                        `<span class="missing-part">${'_'.repeat(missing.length)}</span>`);
+                }
+            }
+            
+            // Update tiles
+            tilesContainer.innerHTML = '';
+            currentPuzzle.availableSounds.forEach(sound => {
+                const tile = document.createElement('button');
+                tile.className = 'phonics-tile';
+                tile.textContent = sound;
+                tile.onclick = () => selectTile(sound, tile);
+                tilesContainer.appendChild(tile);
+            });
+        }
+
+        function selectTile(sound, tileElement) {
+            if (tileElement.classList.contains('used') || isAnswerShown) return;
+            
+            if (sound === currentPuzzle.missing) {
+                tileElement.classList.add('correct');
+                // Don't auto-reveal answer - teacher controls when to show it
+            } else {
+                // Wrong answer - visual feedback
+                tileElement.style.background = 'linear-gradient(145deg, #e53e3e, #c53030)';
+                setTimeout(() => {
+                    tileElement.style.background = 'linear-gradient(145deg, #4299e1, #3182ce)';
+                }, 400);
+            }
+        }
+
+        function showAnswer() {
+            if (!currentPuzzle || isAnswerShown) return;
+            
+            isAnswerShown = true;
+            updateDisplay();
+            
+            // Highlight correct tile
+            document.querySelectorAll('.phonics-tile').forEach(tile => {
+                if (tile.textContent === currentPuzzle.missing) {
+                    tile.classList.add('correct');
+                }
+                tile.classList.add('used');
+            });
+        }
+
+        function nextWord() {
+            // Reset all states for new puzzle
+            isAnswerShown = false;
+            isPhonicsVisible = false;
+            
+            // Hide phonics breakdown for new word
+            const phonicsContent = document.getElementById('phonicsContent');
+            const chevron = document.getElementById('chevron');
+            phonicsContent.classList.remove('show');
+            chevron.classList.remove('rotated');
+            
+            generatePuzzle();
+        }
+
+        function togglePhonics() {
+            const phonicsContent = document.getElementById('phonicsContent');
+            const chevron = document.getElementById('chevron');
+            
+            isPhonicsVisible = !isPhonicsVisible;
+            
+            if (isPhonicsVisible) {
+                phonicsContent.classList.add('show');
+                chevron.classList.add('rotated');
+            } else {
+                phonicsContent.classList.remove('show');
+                chevron.classList.remove('rotated');
+            }
+        }
+
+        function playWord() {
+            if (!currentPuzzle) return;
+            
+            const playButton = document.getElementById('playButton');
+            const playIcon = document.getElementById('playIcon');
+            const playText = document.getElementById('playText');
+            
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            playButton.classList.add('playing');
+            playIcon.textContent = '🔊';
+            playText.textContent = 'Playing...';
+            
+            const utterance = new SpeechSynthesisUtterance(currentPuzzle.word);
+            utterance.rate = 0.7;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            utterance.onend = () => {
+                playButton.classList.remove('playing');
+                playIcon.textContent = '🔊';
+                playText.textContent = 'Play Word';
+            };
+            
+            utterance.onerror = () => {
+                playButton.classList.remove('playing');
+                playIcon.textContent = '🔊';
+                playText.textContent = 'Play Word';
+                alert('Audio not available. Please say the word aloud: ' + currentPuzzle.word);
+            };
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update total words count
+            document.getElementById('totalWords').textContent = advancedWords.length;
+            
+            // Check if speech synthesis is available
+            if (!speechSynthesis) {
+                document.getElementById('playText').textContent = 'Audio Not Available';
+                document.getElementById('playButton').disabled = true;
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98808f0c258277a1',t:'MTc1OTM2OTkyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

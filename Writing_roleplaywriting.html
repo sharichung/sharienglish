@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role-Play Writing Adventure</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: sparkle 4s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+        }
+
+        .instruction {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a5568;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: none;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+            min-height: 60px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .choice-btn .emoji {
+            font-size: 2rem;
+            min-width: 40px;
+        }
+
+        .writing-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .example-sentence {
+            background: rgba(255,255,255,0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #666;
+            border-left: 4px solid #667eea;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.2rem;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: white;
+            color: #4a5568;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 20px rgba(118, 75, 162, 0.3);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            margin: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .story-preview {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            min-height: 100px;
+        }
+
+        .story-preview h3 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .story-sentence {
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #4a5568;
+            animation: fadeInUp 0.8s ease-out;
+            border-left: 4px solid #667eea;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .guidance-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .guidance-btn {
+            background: rgba(255,255,255,0.8);
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .guidance-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .bottom-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 20px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .final-story {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #4a5568;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: left;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .choices-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-controls {
+                flex-direction: column;
+            }
+            
+            .guidance-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="content">
+            <!-- Title Screen -->
+            <div id="title-screen" class="screen">
+                <h1>🎭 Role-Play Writing Adventure</h1>
+                <p class="subtitle">Choose your character and start your story!</p>
+                <div class="choices-grid">
+                    <button class="choice-btn" onclick="selectCharacter('🐶 A small puppy left alone in the park')">
+                        <span class="emoji">🐶</span>
+                        <span>A small puppy left alone in the park</span>
+                    </button>
+                    <button class="choice-btn" onclick="selectCharacter('👧 A lost child in the mall')">
+                        <span class="emoji">👧</span>
+                        <span>A lost child in the mall</span>
+                    </button>
+                    <button class="choice-btn" onclick="selectCharacter('🤖 A robot who woke up in a school')">
+                        <span class="emoji">🤖</span>
+                        <span>A robot who woke up in a school</span>
+                    </button>
+                    <button class="choice-btn" onclick="selectCharacter('🐸 A frog who turned into a human')">
+                        <span class="emoji">🐸</span>
+                        <span>A frog who turned into a human</span>
+                    </button>
+                    <button class="choice-btn" onclick="selectCharacter('🧸 A toy that comes alive at night')">
+                        <span class="emoji">🧸</span>
+                        <span>A toy that comes alive at night</span>
+                    </button>
+                    <button class="choice-btn" onclick="surpriseCharacter()">
+                        <span class="emoji">🎲</span>
+                        <span>Surprise me!</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scene Setting -->
+            <div id="scene-screen" class="screen hidden">
+                <h1>🌍 Scene Setting</h1>
+                <div class="instruction">
+                    Write 1 sentence about where your character is.
+                </div>
+                
+                <div class="story-preview">
+                    <h3>📖 Your Story So Far</h3>
+                    <div id="story-sentences"></div>
+                </div>
+
+                <div class="writing-section">
+                    <div class="example-sentence">
+                        Example: "I am a robot in the library."
+                    </div>
+                    
+                    <div class="guidance-options">
+                        <button class="guidance-btn" onclick="addGuidance('under a tree')">🌳 under a tree</button>
+                        <button class="guidance-btn" onclick="addGuidance('near the entrance')">🚪 near the entrance</button>
+                        <button class="guidance-btn" onclick="addGuidance('in the library')">📚 in the library</button>
+                        <button class="guidance-btn" onclick="addGuidance('in the corner')">🪑 in the corner</button>
+                        <button class="guidance-btn" onclick="addGuidance('on the playground')">🛝 on the playground</button>
+                    </div>
+
+                    <textarea class="text-input" id="scene-input" placeholder="Write your sentence here..."></textarea>
+                    <button class="submit-btn" onclick="submitSentence('scene')">Add to Story ✨</button>
+                </div>
+
+                <div class="bottom-controls">
+                    <button class="control-btn" onclick="goBack()">← Back</button>
+                    <button class="control-btn" onclick="surpriseScene()">🎲 Surprise me!</button>
+                </div>
+            </div>
+
+            <!-- Event Screen -->
+            <div id="event-screen" class="screen hidden">
+                <h1>😱 Something Happens</h1>
+                <div class="instruction">
+                    Write 1 sentence about what happened next.
+                </div>
+                
+                <div class="story-preview">
+                    <h3>📖 Your Story So Far</h3>
+                    <div id="story-sentences-event"></div>
+                </div>
+
+                <div class="writing-section">
+                    <div class="guidance-options">
+                        <button class="guidance-btn" onclick="addGuidance('I lost something important')">😮 I lost something important</button>
+                        <button class="guidance-btn" onclick="addGuidance('I found a strange object')">🔍 I found a strange object</button>
+                        <button class="guidance-btn" onclick="addGuidance('A door suddenly opened')">🚪 A door suddenly opened</button>
+                        <button class="guidance-btn" onclick="addGuidance('Someone called my name')">📣 Someone called my name</button>
+                    </div>
+
+                    <textarea class="text-input" id="event-input" placeholder="Write your sentence here..."></textarea>
+                    <button class="submit-btn" onclick="submitSentence('event')">Add to Story ✨</button>
+                </div>
+
+                <div class="bottom-controls">
+                    <button class="control-btn" onclick="goBack()">← Back</button>
+                    <button class="control-btn" onclick="surpriseEvent()">🎲 Surprise me!</button>
+                </div>
+            </div>
+
+            <!-- Action Screen -->
+            <div id="action-screen" class="screen hidden">
+                <h1>🎯 Take Action</h1>
+                <div class="instruction">
+                    Write 1 sentence about what your character did.
+                </div>
+                
+                <div class="story-preview">
+                    <h3>📖 Your Story So Far</h3>
+                    <div id="story-sentences-action"></div>
+                </div>
+
+                <div class="writing-section">
+                    <div class="guidance-options">
+                        <button class="guidance-btn" onclick="addGuidance('I ran')">🏃 I ran</button>
+                        <button class="guidance-btn" onclick="addGuidance('I asked for help')">🙋 I asked for help</button>
+                        <button class="guidance-btn" onclick="addGuidance('I looked around')">👀 I looked around</button>
+                        <button class="guidance-btn" onclick="addGuidance('I tried to hide')">🤫 I tried to hide</button>
+                        <button class="guidance-btn" onclick="addGuidance('I called out')">📞 I called out</button>
+                    </div>
+
+                    <textarea class="text-input" id="action-input" placeholder="Write your sentence here..."></textarea>
+                    <button class="submit-btn" onclick="submitSentence('action')">Add to Story ✨</button>
+                </div>
+
+                <div class="bottom-controls">
+                    <button class="control-btn" onclick="goBack()">← Back</button>
+                    <button class="control-btn" onclick="surpriseAction()">🎲 Surprise me!</button>
+                </div>
+            </div>
+
+            <!-- Emotion Screen -->
+            <div id="emotion-screen" class="screen hidden">
+                <h1>💭 Express Feelings</h1>
+                <div class="instruction">
+                    Write 1 sentence about how your character felt.
+                </div>
+                
+                <div class="story-preview">
+                    <h3>📖 Your Story So Far</h3>
+                    <div id="story-sentences-emotion"></div>
+                </div>
+
+                <div class="writing-section">
+                    <div class="guidance-options">
+                        <button class="guidance-btn" onclick="addGuidance('I felt scared')">😨 I felt scared</button>
+                        <button class="guidance-btn" onclick="addGuidance('I felt sad')">😢 I felt sad</button>
+                        <button class="guidance-btn" onclick="addGuidance('I felt happy')">😄 I felt happy</button>
+                        <button class="guidance-btn" onclick="addGuidance('I felt angry')">😠 I felt angry</button>
+                    </div>
+
+                    <textarea class="text-input" id="emotion-input" placeholder="Write your sentence here..."></textarea>
+                    <button class="submit-btn" onclick="submitSentence('emotion')">Add to Story ✨</button>
+                </div>
+
+                <div class="bottom-controls">
+                    <button class="control-btn" onclick="goBack()">← Back</button>
+                    <button class="control-btn" onclick="surpriseEmotion()">🎲 Surprise me!</button>
+                </div>
+            </div>
+
+            <!-- Reason Screen -->
+            <div id="reason-screen" class="screen hidden">
+                <h1>🤔 Explain Why</h1>
+                <div class="instruction">
+                    Write 1 sentence explaining why your character felt this way.
+                </div>
+                
+                <div class="story-preview">
+                    <h3>📖 Your Story So Far</h3>
+                    <div id="story-sentences-reason"></div>
+                </div>
+
+                <div class="writing-section">
+                    <div class="guidance-options">
+                        <button class="guidance-btn" onclick="addGuidance('because I was alone')">🕳 because I was alone</button>
+                        <button class="guidance-btn" onclick="addGuidance('because it was my first time')">🆕 because it was my first time</button>
+                        <button class="guidance-btn" onclick="addGuidance('because I didn\'t know what to do')">❓ because I didn't know what to do</button>
+                        <button class="guidance-btn" onclick="addGuidance('because I needed help')">🙋 because I needed help</button>
+                    </div>
+
+                    <textarea class="text-input" id="reason-input" placeholder="Write your sentence here..."></textarea>
+                    <button class="submit-btn" onclick="submitSentence('reason')">Add to Story ✨</button>
+                </div>
+
+                <div class="bottom-controls">
+                    <button class="control-btn" onclick="goBack()">← Back</button>
+                    <button class="control-btn" onclick="surpriseReason()">🎲 Surprise me!</button>
+                </div>
+            </div>
+
+            <!-- Lesson Screen -->
+            <div id="lesson-screen" class="screen hidden">
+                <h1>📖 Learn Something</h1>
+                <div class="instruction">
+                    Write 1 sentence about what your character learned.
+                </div>
+                
+                <div class="story-preview">
+                    <h3>📖 Your Story So Far</h3>
+                    <div id="story-sentences-lesson"></div>
+                </div>
+
+                <div class="writing-section">
+                    <div class="guidance-options">
+                        <button class="guidance-btn" onclick="addGuidance('I learned to be brave')">💪 I learned to be brave</button>
+                        <button class="guidance-btn" onclick="addGuidance('I learned to ask for help')">🙋 I learned to ask for help</button>
+                        <button class="guidance-btn" onclick="addGuidance('I learned not to give up')">🛠 I learned not to give up</button>
+                        <button class="guidance-btn" onclick="addGuidance('I learned to be careful')">👀 I learned to be careful</button>
+                    </div>
+
+                    <textarea class="text-input" id="lesson-input" placeholder="Write your sentence here..."></textarea>
+                    <button class="submit-btn" onclick="submitSentence('lesson')">Add to Story ✨</button>
+                </div>
+
+                <div class="bottom-controls">
+                    <button class="control-btn" onclick="goBack()">← Back</button>
+                    <button class="control-btn" onclick="surpriseLesson()">🎲 Surprise me!</button>
+                </div>
+            </div>
+
+            <!-- Final Story -->
+            <div id="final-screen" class="screen hidden">
+                <h1>🎉 Your Complete Story!</h1>
+                <div class="final-story" id="complete-story"></div>
+                <div class="bottom-controls">
+                    <button class="control-btn" onclick="goBack()">← Back</button>
+                    <button class="control-btn" onclick="playAgain()">Play Again 🎲</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            character: '',
+            sentences: [],
+            currentScreen: 'title-screen',
+            history: [],
+            currentInput: ''
+        };
+
+        const characters = ['🐶 A small puppy left alone in the park', '👧 A lost child in the mall', '🤖 A robot who woke up in a school', '🐸 A frog who turned into a human', '🧸 A toy that comes alive at night'];
+        const scenes = ['under a tree', 'near the entrance', 'in the library', 'in the corner', 'on the playground'];
+        const events = ['I lost something important', 'I found a strange object', 'A door suddenly opened', 'Someone called my name'];
+        const actions = ['I ran', 'I asked for help', 'I looked around', 'I tried to hide', 'I called out'];
+        const emotions = ['I felt scared', 'I felt sad', 'I felt happy', 'I felt angry'];
+        const reasons = ['because I was alone', 'because it was my first time', 'because I didn\'t know what to do', 'because I needed help'];
+        const lessons = ['I learned to be brave', 'I learned to ask for help', 'I learned not to give up', 'I learned to be careful'];
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            gameState.history.push(gameState.currentScreen);
+            gameState.currentScreen = screenId;
+            updateStoryPreview();
+        }
+
+        function updateStoryPreview() {
+            const containers = ['story-sentences', 'story-sentences-event', 'story-sentences-action', 'story-sentences-emotion', 'story-sentences-reason', 'story-sentences-lesson'];
+            
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = '';
+                    gameState.sentences.forEach((sentence, index) => {
+                        const sentenceDiv = document.createElement('div');
+                        sentenceDiv.className = 'story-sentence';
+                        sentenceDiv.textContent = sentence;
+                        container.appendChild(sentenceDiv);
+                    });
+                }
+            });
+        }
+
+        function selectCharacter(character) {
+            gameState.character = character;
+            const characterSentence = `I was ${character.substring(2)}.`;
+            gameState.sentences = [characterSentence];
+            showScreen('scene-screen');
+        }
+
+        function addGuidance(text) {
+            const currentInput = document.querySelector(`#${gameState.currentScreen.replace('-screen', '')}-input`);
+            if (currentInput) {
+                currentInput.value = text;
+                currentInput.focus();
+            }
+        }
+
+        function submitSentence(type) {
+            const input = document.getElementById(`${type}-input`);
+            const sentence = input.value.trim();
+            
+            if (sentence) {
+                // Ensure sentence ends with proper punctuation
+                let formattedSentence = sentence;
+                if (!formattedSentence.match(/[.!?]$/)) {
+                    formattedSentence += '.';
+                }
+                
+                // Capitalize first letter
+                formattedSentence = formattedSentence.charAt(0).toUpperCase() + formattedSentence.slice(1);
+                
+                gameState.sentences.push(formattedSentence);
+                input.value = '';
+                
+                // Move to next screen
+                const nextScreens = {
+                    'scene': 'event-screen',
+                    'event': 'action-screen',
+                    'action': 'emotion-screen',
+                    'emotion': 'reason-screen',
+                    'reason': 'lesson-screen',
+                    'lesson': 'final-screen'
+                };
+                
+                if (nextScreens[type] === 'final-screen') {
+                    showFinalStory();
+                } else {
+                    showScreen(nextScreens[type]);
+                }
+            }
+        }
+
+        function showFinalStory() {
+            const completeStory = gameState.sentences.join(' ');
+            document.getElementById('complete-story').textContent = completeStory;
+            showScreen('final-screen');
+        }
+
+        function goBack() {
+            if (gameState.history.length > 0) {
+                const previousScreen = gameState.history.pop();
+                
+                // Remove last sentence if going back from a writing screen
+                if (gameState.currentScreen !== 'title-screen' && gameState.sentences.length > 1) {
+                    gameState.sentences.pop();
+                }
+                
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.add('hidden');
+                });
+                document.getElementById(previousScreen).classList.remove('hidden');
+                gameState.currentScreen = previousScreen;
+                updateStoryPreview();
+            }
+        }
+
+        function playAgain() {
+            gameState = {
+                character: '',
+                sentences: [],
+                currentScreen: 'title-screen',
+                history: [],
+                currentInput: ''
+            };
+            showScreen('title-screen');
+        }
+
+        function getRandomChoice(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function surpriseCharacter() {
+            selectCharacter(getRandomChoice(characters));
+        }
+
+        function surpriseScene() {
+            const randomScene = getRandomChoice(scenes);
+            document.getElementById('scene-input').value = `I was ${randomScene}.`;
+        }
+
+        function surpriseEvent() {
+            const randomEvent = getRandomChoice(events);
+            document.getElementById('event-input').value = `Suddenly, ${randomEvent.toLowerCase()}.`;
+        }
+
+        function surpriseAction() {
+            const randomAction = getRandomChoice(actions);
+            document.getElementById('action-input').value = randomAction + '.';
+        }
+
+        function surpriseEmotion() {
+            const randomEmotion = getRandomChoice(emotions);
+            document.getElementById('emotion-input').value = randomEmotion + '.';
+        }
+
+        function surpriseReason() {
+            const randomReason = getRandomChoice(reasons);
+            document.getElementById('reason-input').value = `This was ${randomReason}.`;
+        }
+
+        function surpriseLesson() {
+            const randomLesson = getRandomChoice(lessons);
+            document.getElementById('lesson-input').value = randomLesson + '.';
+        }
+
+        // Add enter key support for text inputs
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('text-input')) {
+                e.preventDefault();
+                const screenType = gameState.currentScreen.replace('-screen', '');
+                submitSentence(screenType);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98830dced2eb26f7',t:'MTc1OTM5NjA5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

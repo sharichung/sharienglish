@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Detective's Notebook</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #f5f3e9 0%, #e8e4d6 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .magnifying-glass {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            50% { transform: translateY(-60%) rotate(10deg); }
+        }
+
+        /* Case Selection Screen */
+        .case-selection {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .case-selection h2 {
+            font-size: 2.2em;
+            color: #8B4513;
+            margin-bottom: 30px;
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .case-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 3px solid #ddd;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .case-card.unlocked {
+            border-color: #4CAF50;
+        }
+
+        .case-card.completed {
+            border-color: #FFD700;
+            background: #fffbf0;
+        }
+
+        .case-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .case-card:hover:not(.locked) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .case-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .case-title {
+            font-size: 1.5em;
+            color: #8B4513;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .case-description {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .case-status {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .status-unlocked { color: #4CAF50; }
+        .status-completed { color: #FFD700; }
+        .status-locked { color: #999; }
+
+        /* Scene Layout */
+        .scene-container {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .scene-content {
+            flex: 2;
+            padding: 30px;
+            background: #f8f6f0;
+        }
+
+        .notebook-area {
+            flex: 1;
+            background: #e6f3ff;
+            padding: 30px;
+            border-left: 3px solid #8B4513;
+        }
+
+        .case-progress {
+            background: #8B4513;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .scene-title {
+            font-size: 2em;
+            color: #8B4513;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .story-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #4CAF50;
+            font-size: 1.2em;
+            line-height: 1.6;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .clue-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 3px solid #FFD700;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .clue-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .clue-icon {
+            font-size: 5em;
+            margin-bottom: 15px;
+            display: block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .clue-description {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .question-box {
+            background: #fff9c4;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FF9800;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            color: #8B4513;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .template-text {
+            font-size: 1.1em;
+            color: #2196F3;
+            font-weight: bold;
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #2196F3;
+        }
+
+        .notebook-title {
+            font-size: 1.6em;
+            color: #8B4513;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .notebook-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #8B4513;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+
+        .notebook-entries {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            border: 2px solid #8B4513;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notebook-entry {
+            background: #fff9c4;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #ffd700;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-family: inherit;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        }
+
+        .controls {
+            text-align: center;
+            padding: 25px;
+            background: #f0f0f0;
+        }
+
+        /* Final Report */
+        .final-report-container {
+            padding: 40px;
+        }
+
+        .collected-sentences {
+            background: #e8f5e8;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .collected-sentences h3 {
+            color: #8B4513;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .sentence-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sentence-list li {
+            background: #fff9c4;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .instruction-box {
+            background: #fff9c4;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid #FF9800;
+        }
+
+        .instruction-title {
+            font-size: 1.4em;
+            color: #8B4513;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .example-paragraph {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .final-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 20px;
+            border: 2px solid #8B4513;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 1.2em;
+            margin: 20px 0;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        /* Victory and Celebration Screens */
+        .victory-screen, .celebration-screen {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .celebration-screen {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA000 100%);
+            color: #8B4513;
+        }
+
+        .victory-title, .celebration-title {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .thief-caught {
+            font-size: 8em;
+            margin: 20px 0;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .celebration-icons {
+            font-size: 6em;
+            margin: 30px 0;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-indicator {
+            background: #f0f0f0;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #8B4513;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🕵️ The Detective's Notebook 🕵️</h1>
+            <div class="magnifying-glass">🔍</div>
+        </div>
+
+        <!-- Case Selection Screen -->
+        <div id="case-selection" class="case-selection">
+            <h2>Choose Your Detective Case</h2>
+            <div class="cases-grid">
+                <div class="case-card unlocked" onclick="startCase(1)">
+                    <div class="case-icon">🍰</div>
+                    <div class="case-title">Case 1: The Missing Cake</div>
+                    <div class="case-description">Learn to write simple sentences and connect them into a paragraph.</div>
+                    <div class="case-status status-unlocked" id="case1-status">Ready to Start!</div>
+                </div>
+                
+                <div class="case-card locked" id="case2-card" onclick="startCase(2)">
+                    <div class="case-icon">🐕</div>
+                    <div class="case-title">Case 2: The Lost Dog</div>
+                    <div class="case-description">Practice adding details to your sentences (who, what, when, where).</div>
+                    <div class="case-status status-locked" id="case2-status">🔒 Complete Case 1 first</div>
+                </div>
+                
+                <div class="case-card locked" id="case3-card" onclick="startCase(3)">
+                    <div class="case-icon">💎</div>
+                    <div class="case-title">Case 3: The Museum Heist</div>
+                    <div class="case-description">Master complex sentences with multiple details.</div>
+                    <div class="case-status status-locked" id="case3-status">🔒 Complete Case 2 first</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div id="progress-indicator" class="progress-indicator hidden">
+            <span id="progress-text">Case 1 - Scene 1 of 3</span>
+        </div>
+
+        <!-- Case 1 Scenes -->
+        <div id="case1-scene1" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 1 - Scene 1 of 3</div>
+                    <h2 class="scene-title">🍰 The Kitchen Crime Scene</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> Oh no! Someone has stolen Mrs. Baker's delicious chocolate cake from the kitchen! The cake was cooling on the counter, but now it's completely gone. Let's look for clues to find out who took it.
+                    </div>
+
+                    <div class="clue-section" id="case1-scene1-clue">
+                        <div class="clue-icon">👟</div>
+                        <div class="clue-description">A big shoe on the floor</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The thief ______ in the ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case1-input1" placeholder="Type your student's sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(1, 1)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case1-notebook"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case1-scene1-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="nextScene(1, 2)">Next Scene →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <!-- Case 1 Scene 2 -->
+        <div id="case1-scene2" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 1 - Scene 2 of 3</div>
+                    <h2 class="scene-title">🪟 The Living Room Mystery</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> The investigation continues in the living room! There's a broken window and glass scattered on the floor. It looks like someone tried to escape quickly. What other clues can we find here?
+                    </div>
+
+                    <div class="clue-section" id="case1-scene2-clue">
+                        <div class="clue-icon">🍫</div>
+                        <div class="clue-description">Chocolate on the broken window</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The thief ______ and left ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case1-input2" placeholder="Type your student's sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(1, 2)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case1-notebook2"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case1-scene2-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="nextScene(1, 3)">Next Scene →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <!-- Case 1 Scene 3 -->
+        <div id="case1-scene3" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 1 - Scene 3 of 3</div>
+                    <h2 class="scene-title">🌱 The Garden Trail</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> The final clue location is the garden! There are muddy footprints leading from the house to the garden shed. The thief's trail is getting clearer. Let's gather the last pieces of evidence!
+                    </div>
+
+                    <div class="clue-section" id="case1-scene3-clue">
+                        <div class="clue-icon">👣</div>
+                        <div class="clue-description">Very big footprints</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The footprints are ______, so I think ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case1-input3" placeholder="Type your student's sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(1, 3)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case1-notebook3"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case1-scene3-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="showFinalReport(1)">Write Final Report →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <!-- Case 1 Final Report -->
+        <div id="case1-final" class="scene hidden">
+            <div class="final-report-container">
+                <h2 class="scene-title">📝 Case 1 Final Report</h2>
+                
+                <div class="collected-sentences">
+                    <h3>📋 Your Collected Clues:</h3>
+                    <ul class="sentence-list" id="case1-sentences"></ul>
+                </div>
+
+                <div class="instruction-box">
+                    <div class="instruction-title">📝 Instructions:</div>
+                    <p style="font-size: 1.2em;">Write a short report by connecting your sentences. Try using <strong>because</strong>, <strong>so</strong>, or <strong>but</strong> to connect your ideas!</p>
+                </div>
+
+                <div class="example-paragraph">
+                    <strong>📝 Report Template:</strong><br>
+                    "The thief ______. He ______. The footprints ______, so I think ______."
+                </div>
+
+                <textarea class="final-textarea" id="case1-final-text" placeholder="Help your student write their final detective report here..."></textarea>
+                
+                <div class="controls">
+                    <button class="btn btn-danger" onclick="solveCase(1)">🔍 Solve Case 1!</button>
+                    <button class="btn" onclick="backToCases()">← Back to Cases</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 1 Victory -->
+        <div id="case1-victory" class="scene hidden">
+            <div class="victory-screen">
+                <h1 class="victory-title">🎉 CASE 1 SOLVED! 🎉</h1>
+                <div class="thief-caught">👹🔒</div>
+                <h2 style="font-size: 2.5em; margin: 30px 0;">Congratulations, Detective!</h2>
+                <h2 style="font-size: 2em; margin: 30px 0;">You caught the Giant Thief!</h2>
+                <p style="font-size: 1.4em; margin: 20px 0;">
+                    The Giant left his big shoe, broke the window with chocolate on his hands, and made huge footprints in the garden!
+                </p>
+                <p style="font-size: 1.2em; color: #FFD700;">
+                    Excellent work connecting simple sentences! 🕵️‍♀️✨
+                </p>
+                <div class="controls">
+                    <button class="btn btn-warning" onclick="unlockNextCase(2)">🔓 Unlock Case 2</button>
+                    <button class="btn" onclick="backToCases()">← Back to Cases</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 2 Scenes (Similar structure) -->
+        <div id="case2-scene1" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 2 - Scene 1 of 3</div>
+                    <h2 class="scene-title">🏡 The Backyard Mystery</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> Mrs. Johnson's beloved dog Buddy has disappeared! She last saw him playing in the backyard this morning. Now she's very worried. Let's help find clues about what happened to Buddy.
+                    </div>
+
+                    <div class="clue-section" id="case2-scene1-clue">
+                        <div class="clue-icon">🦮</div>
+                        <div class="clue-description">A dog's collar under the tree</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The ______ is ______ because ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case2-input1" placeholder="Type your student's sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(2, 1)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case2-notebook"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case2-scene1-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="nextScene(2, 2)">Next Scene →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <div id="case2-scene2" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 2 - Scene 2 of 3</div>
+                    <h2 class="scene-title">🛣️ The Street Investigation</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> Following the trail, we've moved to the street outside Mrs. Johnson's house. There are some interesting items scattered on the ground. What could they tell us about Buddy's disappearance?
+                    </div>
+
+                    <div class="clue-section" id="case2-scene2-clue">
+                        <div class="clue-icon">🥫</div>
+                        <div class="clue-description">A bag of dog food dropped</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The thief ______ when ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case2-input2" placeholder="Type your student's sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(2, 2)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case2-notebook2"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case2-scene2-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="nextScene(2, 3)">Next Scene →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <div id="case2-scene3" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 2 - Scene 3 of 3</div>
+                    <h2 class="scene-title">🏠 The Small House</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> The trail has led us to a small house at the end of the street. The door is slightly open, and we can see something inside. This might be where Buddy is being kept!
+                    </div>
+
+                    <div class="clue-section" id="case2-scene3-clue">
+                        <div class="clue-icon">🦴</div>
+                        <div class="clue-description">A toy bone on the floor</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The thief ______ in the ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case2-input3" placeholder="Type your student's sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(2, 3)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case2-notebook3"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case2-scene3-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="showFinalReport(2)">Write Final Report →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <!-- Case 2 Final Report -->
+        <div id="case2-final" class="scene hidden">
+            <div class="final-report-container">
+                <h2 class="scene-title">📝 Case 2 Final Report</h2>
+                
+                <div class="collected-sentences">
+                    <h3>📋 Your Collected Clues:</h3>
+                    <ul class="sentence-list" id="case2-sentences"></ul>
+                </div>
+
+                <div class="instruction-box">
+                    <div class="instruction-title">📝 Instructions:</div>
+                    <p style="font-size: 1.2em;">Connect your detailed sentences into a paragraph. Use <strong>because</strong>, <strong>so</strong>, <strong>but</strong>, and <strong>and</strong> to make your report flow smoothly!</p>
+                </div>
+
+                <div class="example-paragraph">
+                    <strong>📝 Report Template:</strong><br>
+                    "The thief ______ because ______. He ______ when ______. He also ______ in the ______."
+                </div>
+
+                <textarea class="final-textarea" id="case2-final-text" placeholder="Help your student write their final detective report here..."></textarea>
+                
+                <div class="controls">
+                    <button class="btn btn-danger" onclick="solveCase(2)">🔍 Solve Case 2!</button>
+                    <button class="btn" onclick="backToCases()">← Back to Cases</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 2 Victory -->
+        <div id="case2-victory" class="scene hidden">
+            <div class="victory-screen">
+                <h1 class="victory-title">🎉 CASE 2 SOLVED! 🎉</h1>
+                <div class="thief-caught">🐕‍🦺🏠</div>
+                <h2 style="font-size: 2.5em; margin: 30px 0;">Amazing Detective Work!</h2>
+                <h2 style="font-size: 2em; margin: 30px 0;">You found Buddy!</h2>
+                <p style="font-size: 1.4em; margin: 20px 0;">
+                    The dog thief took Buddy to the small house! Buddy is safe and happy to be found. Mrs. Johnson is so grateful!
+                </p>
+                <p style="font-size: 1.2em; color: #FFD700;">
+                    Great job adding details to your sentences! 🕵️‍♀️✨
+                </p>
+                <div class="controls">
+                    <button class="btn btn-warning" onclick="unlockNextCase(3)">🔓 Unlock Case 3</button>
+                    <button class="btn" onclick="backToCases()">← Back to Cases</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 3 Scenes -->
+        <div id="case3-scene1" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 3 - Scene 1 of 3</div>
+                    <h2 class="scene-title">🏛️ The Museum Crime</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> The City Museum has been robbed! The famous Golden Crown has been stolen from the main exhibition hall. The security guard discovered the theft this morning. This is our biggest case yet!
+                    </div>
+
+                    <div class="clue-section" id="case3-scene1-clue">
+                        <div class="clue-icon">💥</div>
+                        <div class="clue-description">The glass case is broken</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The ______ in the ______ was ______ when ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case3-input1" placeholder="Type your student's detailed sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(3, 1)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case3-notebook"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case3-scene1-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="nextScene(3, 2)">Next Scene →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <div id="case3-scene2" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 3 - Scene 2 of 3</div>
+                    <h2 class="scene-title">🏃 The Alley Chase</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> Following the security camera footage, we've tracked the thief's escape route to a narrow alley behind the museum. There are signs that someone ran through here in a hurry. What evidence did they leave behind?
+                    </div>
+
+                    <div class="clue-section" id="case3-scene2-clue">
+                        <div class="clue-icon">🧣</div>
+                        <div class="clue-description">A red scarf on the ground</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The thief ______ in the ______ while ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case3-input2" placeholder="Type your student's detailed sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(3, 2)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case3-notebook2"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case3-scene2-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="nextScene(3, 3)">Next Scene →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <div id="case3-scene3" class="scene hidden">
+            <div class="scene-container">
+                <div class="scene-content">
+                    <div class="case-progress">Case 3 - Scene 3 of 3</div>
+                    <h2 class="scene-title">🚂 The Train Station</h2>
+                    
+                    <div class="story-box">
+                        <strong>The Story:</strong> The trail has led us to the busy train station. This is where the thief planned to escape the city! But it looks like they left something important behind. This could be the final clue we need!
+                    </div>
+
+                    <div class="clue-section" id="case3-scene3-clue">
+                        <div class="clue-icon">🎒</div>
+                        <div class="clue-description">A heavy bag on the bench</div>
+                    </div>
+
+                    <div class="question-box">
+                        <div class="question-text">❓ What can you write about this clue?</div>
+                        <div class="template-text">📝 Template: "The thief ______ at the ______ this ______."</div>
+                    </div>
+                </div>
+
+                <div class="notebook-area">
+                    <h3 class="notebook-title">📔 Detective's Notebook</h3>
+                    <textarea class="notebook-input" id="case3-input3" placeholder="Type your student's detailed sentence here..."></textarea>
+                    <button class="btn" onclick="addToNotebook(3, 3)">Add to Notebook</button>
+                    <div class="notebook-entries" id="case3-notebook3"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="revealClue('case3-scene3-clue')">🔍 Reveal Clue</button>
+                <button class="btn btn-warning" onclick="showFinalReport(3)">Write Final Report →</button>
+                <button class="btn" onclick="backToCases()">← Back to Cases</button>
+            </div>
+        </div>
+
+        <!-- Case 3 Final Report -->
+        <div id="case3-final" class="scene hidden">
+            <div class="final-report-container">
+                <h2 class="scene-title">📝 Case 3 Final Report</h2>
+                
+                <div class="collected-sentences">
+                    <h3>📋 Your Collected Clues:</h3>
+                    <ul class="sentence-list" id="case3-sentences"></ul>
+                </div>
+
+                <div class="instruction-box">
+                    <div class="instruction-title">📝 Instructions:</div>
+                    <p style="font-size: 1.2em;">Write a professional detective report using your detailed sentences. Connect them with <strong>because</strong>, <strong>so</strong>, <strong>but</strong>, <strong>and</strong>, and <strong>however</strong> to create a flowing paragraph!</p>
+                </div>
+
+                <div class="example-paragraph">
+                    <strong>📝 Report Template:</strong><br>
+                    "The ______ in the ______ was ______ when ______. The thief ______ in the ______ while ______. He ______ at the ______ this ______."
+                </div>
+
+                <textarea class="final-textarea" id="case3-final-text" placeholder="Help your student write their final detective report here..."></textarea>
+                
+                <div class="controls">
+                    <button class="btn btn-danger" onclick="solveCase(3)">🔍 Solve Case 3!</button>
+                    <button class="btn" onclick="backToCases()">← Back to Cases</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 3 Victory -->
+        <div id="case3-victory" class="scene hidden">
+            <div class="victory-screen">
+                <h1 class="victory-title">🎉 CASE 3 SOLVED! 🎉</h1>
+                <div class="thief-caught">👑🔒</div>
+                <h2 style="font-size: 2.5em; margin: 30px 0;">Outstanding Detective!</h2>
+                <h2 style="font-size: 2em; margin: 30px 0;">You recovered the Golden Crown!</h2>
+                <p style="font-size: 1.4em; margin: 20px 0;">
+                    The museum thief left the Golden Crown in the heavy bag at the train station! The crown is safely returned to the museum, and the thief has been caught!
+                </p>
+                <p style="font-size: 1.2em; color: #FFD700;">
+                    Incredible work with complex, detailed sentences! 🕵️‍♀️✨
+                </p>
+                <div class="controls">
+                    <button class="btn btn-warning" onclick="showCelebration()">🎊 Celebrate Victory!</button>
+                    <button class="btn" onclick="backToCases()">← Back to Cases</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Celebration -->
+        <div id="celebration" class="scene hidden">
+            <div class="celebration-screen">
+                <h1 class="celebration-title">🏆 MASTER DETECTIVE! 🏆</h1>
+                <div class="celebration-icons">🎉🕵️‍♀️🎊🏅✨</div>
+                <h2 style="font-size: 3em; margin: 30px 0;">Congratulations!</h2>
+                <h2 style="font-size: 2.5em; margin: 30px 0;">You solved ALL the mysteries!</h2>
+                <p style="font-size: 1.6em; margin: 30px 0; line-height: 1.4;">
+                    🍰 You caught the Giant Cake Thief!<br>
+                    🐕 You rescued Buddy the Dog!<br>
+                    👑 You recovered the Golden Crown!
+                </p>
+                <p style="font-size: 1.4em; margin: 30px 0; font-weight: bold;">
+                    Your English writing skills have grown from simple sentences to detailed, connected paragraphs!
+                </p>
+                <p style="font-size: 1.3em; color: #8B4513;">
+                    You are now a Master Detective and an excellent English writer! 🌟
+                </p>
+                <div class="controls">
+                    <button class="btn" onclick="restartAllCases()" style="font-size: 1.3em; padding: 20px 40px;">🔄 Start New Adventure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            case1: { completed: false, sentences: [] },
+            case2: { completed: false, sentences: [], unlocked: false },
+            case3: { completed: false, sentences: [], unlocked: false }
+        };
+
+        function revealClue(clueId) {
+            const clue = document.getElementById(clueId);
+            clue.classList.add('revealed');
+        }
+
+        function addToNotebook(caseNum, sceneNum) {
+            const input = document.getElementById(`case${caseNum}-input${sceneNum}`);
+            const notebook = document.getElementById(`case${caseNum}-notebook${sceneNum === 1 ? '' : sceneNum}`);
+            
+            if (input.value.trim()) {
+                const entry = document.createElement('div');
+                entry.className = 'notebook-entry';
+                entry.textContent = input.value.trim();
+                notebook.appendChild(entry);
+                
+                gameState[`case${caseNum}`].sentences.push(input.value.trim());
+                input.value = '';
+                
+                // Copy to all notebook areas for this case
+                updateAllNotebooks(caseNum);
+            }
+        }
+
+        function updateAllNotebooks(caseNum) {
+            const sentences = gameState[`case${caseNum}`].sentences;
+            
+            // Update all notebook areas for this case
+            for (let i = 1; i <= 3; i++) {
+                const notebook = document.getElementById(`case${caseNum}-notebook${i === 1 ? '' : i}`);
+                if (notebook) {
+                    notebook.innerHTML = '';
+                    sentences.forEach(sentence => {
+                        const entry = document.createElement('div');
+                        entry.className = 'notebook-entry';
+                        entry.textContent = sentence;
+                        notebook.appendChild(entry);
+                    });
+                }
+            }
+        }
+
+        function nextScene(caseNum, sceneNum) {
+            hideAllScenes();
+            document.getElementById(`case${caseNum}-scene${sceneNum}`).classList.remove('hidden');
+            document.getElementById('progress-indicator').classList.remove('hidden');
+            document.getElementById('progress-text').textContent = `Case ${caseNum} - Scene ${sceneNum} of 3`;
+        }
+
+        function showFinalReport(caseNum) {
+            hideAllScenes();
+            document.getElementById(`case${caseNum}-final`).classList.remove('hidden');
+            document.getElementById('progress-indicator').classList.add('hidden');
+            
+            // Populate collected sentences
+            const sentencesList = document.getElementById(`case${caseNum}-sentences`);
+            sentencesList.innerHTML = '';
+            gameState[`case${caseNum}`].sentences.forEach(sentence => {
+                const li = document.createElement('li');
+                li.textContent = sentence;
+                sentencesList.appendChild(li);
+            });
+        }
+
+        function solveCase(caseNum) {
+            gameState[`case${caseNum}`].completed = true;
+            hideAllScenes();
+            document.getElementById(`case${caseNum}-victory`).classList.remove('hidden');
+        }
+
+        function unlockNextCase(caseNum) {
+            gameState[`case${caseNum}`].unlocked = true;
+            
+            // Update case card
+            const caseCard = document.getElementById(`case${caseNum}-card`);
+            const caseStatus = document.getElementById(`case${caseNum}-status`);
+            
+            caseCard.classList.remove('locked');
+            caseCard.classList.add('unlocked');
+            
+            caseStatus.textContent = 'Ready to Start!';
+            caseStatus.className = 'case-status status-unlocked';
+            
+            // Mark previous case as completed
+            const prevCaseCard = document.getElementById(`case${caseNum-1}-card`);
+            const prevCaseStatus = document.getElementById(`case${caseNum-1}-status`);
+            
+            prevCaseCard.classList.remove('unlocked');
+            prevCaseCard.classList.add('completed');
+            
+            prevCaseStatus.textContent = '✅ Completed!';
+            prevCaseStatus.className = 'case-status status-completed';
+            
+            backToCases();
+        }
+
+        function startCase(caseNum) {
+            // Check if case is available
+            if (caseNum === 1 || gameState[`case${caseNum}`].unlocked) {
+                hideAllScenes();
+                document.getElementById(`case${caseNum}-scene1`).classList.remove('hidden');
+                document.getElementById('progress-indicator').classList.remove('hidden');
+                document.getElementById('progress-text').textContent = `Case ${caseNum} - Scene 1 of 3`;
+            } else {
+                // Show message for locked cases
+                alert(`🔒 Please complete Case ${caseNum - 1} first!`);
+            }
+        }
+
+        function showCelebration() {
+            hideAllScenes();
+            document.getElementById('celebration').classList.remove('hidden');
+        }
+
+        function backToCases() {
+            hideAllScenes();
+            document.getElementById('case-selection').classList.remove('hidden');
+            document.getElementById('progress-indicator').classList.add('hidden');
+        }
+
+        function hideAllScenes() {
+            document.querySelectorAll('.scene, .case-selection').forEach(element => {
+                element.classList.add('hidden');
+            });
+        }
+
+        function restartAllCases() {
+            // Reset game state
+            gameState = {
+                case1: { completed: false, sentences: [] },
+                case2: { completed: false, sentences: [], unlocked: false },
+                case3: { completed: false, sentences: [], unlocked: false }
+            };
+            
+            // Reset UI
+            document.getElementById('case2-card').classList.remove('unlocked', 'completed');
+            document.getElementById('case2-card').classList.add('locked');
+            document.getElementById('case2-status').textContent = '🔒 Complete Case 1 first';
+            document.getElementById('case2-status').className = 'case-status status-locked';
+            
+            document.getElementById('case3-card').classList.remove('unlocked', 'completed');
+            document.getElementById('case3-card').classList.add('locked');
+            document.getElementById('case3-status').textContent = '🔒 Complete Case 2 first';
+            document.getElementById('case3-status').className = 'case-status status-locked';
+            
+            document.getElementById('case1-card').classList.remove('completed');
+            document.getElementById('case1-card').classList.add('unlocked');
+            document.getElementById('case1-status').textContent = 'Ready to Start!';
+            document.getElementById('case1-status').className = 'case-status status-unlocked';
+            
+            // Clear all inputs and notebooks
+            document.querySelectorAll('.notebook-input, .final-textarea').forEach(input => {
+                input.value = '';
+            });
+            
+            document.querySelectorAll('.notebook-entries, .sentence-list').forEach(notebook => {
+                notebook.innerHTML = '';
+            });
+            
+            // Hide all clues
+            document.querySelectorAll('.clue-section').forEach(clue => {
+                clue.classList.remove('revealed');
+            });
+            
+            backToCases();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98b44cf22641651f',t:'MTc1OTkxMjQ4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Time Travel English Journal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        /* Accessibility: Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .portal-gold, .portal-blue, .portal-green, .portal-purple {
+                border: 3px solid #000;
+                background: #fff !important;
+                color: #000 !important;
+            }
+            
+            .sentence-chip, .word-chip {
+                border: 2px solid #000;
+                background: #fff !important;
+                color: #000 !important;
+            }
+            
+            .btn-primary, .btn-secondary {
+                background: #000 !important;
+                color: #fff !important;
+                border: 2px solid #fff;
+            }
+            
+            .galaxy-bg {
+                background: #000 !important;
+                color: #fff !important;
+            }
+        }
+        
+        /* Text scaling support up to 200% */
+        @media (min-resolution: 2dppx) {
+            body {
+                font-size: 1.1em;
+            }
+        }
+        
+        /* Ensure minimum contrast ratios */
+        .text-gray-600 {
+            color: #4a5568 !important; /* Ensures 4.5:1 contrast on white */
+        }
+        
+        .text-gray-700 {
+            color: #2d3748 !important; /* Ensures 7:1 contrast on white */
+        }
+        
+        .text-purple-200 {
+            color: #c4b5fd !important; /* Better contrast on dark backgrounds */
+        }
+        
+        /* Enhanced focus styles for keyboard navigation */
+        .focus-visible:focus, button:focus, input:focus, textarea:focus, [tabindex]:focus {
+            outline: 3px solid #4f46e5;
+            outline-offset: 3px;
+            border-radius: 8px;
+            box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2);
+        }
+        
+        /* High contrast focus for better visibility */
+        @media (prefers-contrast: high) {
+            .focus-visible:focus, button:focus, input:focus, textarea:focus, [tabindex]:focus {
+                outline: 4px solid #000;
+                outline-offset: 2px;
+                box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.8);
+            }
+        }
+        
+        /* Focus trap for modals */
+        .modal-focus-trap {
+            position: relative;
+        }
+        
+        .modal-focus-trap::before,
+        .modal-focus-trap::after {
+            content: '';
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Skip link for screen readers */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+        
+        @keyframes galaxyPulse {
+            0%, 100% { 
+                background-size: 100% 100%;
+                opacity: 0.9;
+            }
+            50% { 
+                background-size: 105% 105%;
+                opacity: 1;
+            }
+        }
+        
+        @keyframes portalGlow {
+            0%, 100% { 
+                box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
+                transform: scale(1.02);
+            }
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.2) rotate(90deg); opacity: 0.8; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes clockRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes gemFloat {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+        
+        @keyframes cardFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(-90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        
+        @keyframes cardZoom {
+            0% { transform: scale(0.95) rotateY(-5deg); opacity: 0; }
+            100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+        }
+        
+        @keyframes portalTransition {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.1) rotate(90deg); opacity: 0.7; }
+            100% { transform: scale(1) rotate(180deg); opacity: 1; }
+        }
+        
+        @keyframes levelUp {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes slideInUp {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .galaxy-bg {
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 191, 255, 0.15) 0%, transparent 50%);
+            animation: galaxyPulse 6s ease-in-out infinite;
+        }
+        
+        .portal-gold { 
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffa500);
+            animation: portalGlow 4s ease-in-out infinite;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .portal-blue { 
+            background: linear-gradient(135deg, #87ceeb, #4682b4, #1e90ff);
+            animation: portalGlow 4s ease-in-out infinite;
+            border: 2px solid rgba(70, 130, 180, 0.3);
+        }
+        
+        .portal-green { 
+            background: linear-gradient(135deg, #90ee90, #32cd32, #228b22);
+            animation: portalGlow 4s ease-in-out infinite;
+            border: 2px solid rgba(50, 205, 50, 0.3);
+        }
+        
+        .portal-purple { 
+            background: linear-gradient(135deg, #dda0dd, #8a2be2, #4b0082);
+            animation: portalGlow 4s ease-in-out infinite;
+            border: 2px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .sparkle { animation: sparkle 1.5s ease-in-out; }
+        .float { animation: float 4s ease-in-out infinite; }
+        .clock-rotate { animation: clockRotate 12s linear infinite; }
+        .gem-float { animation: gemFloat 3s ease-in-out infinite; }
+        .card-flip { animation: cardFlip 0.8s ease-in-out; }
+        .card-zoom { animation: cardZoom 0.6s ease-out; }
+        .portal-transition { animation: portalTransition 1.5s ease-in-out; }
+        .level-up { animation: levelUp 1s ease-in-out; }
+        .slide-in-up { animation: slideInUp 0.6s ease-out; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        
+        .sentence-chip {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .sentence-chip:hover, .sentence-chip:focus {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sentence-chip:active {
+            transform: scale(0.98) translateY(0px);
+        }
+        
+        .word-chip {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .word-chip:hover, .word-chip:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .word-chip:active {
+            transform: translateY(0px);
+        }
+        
+        .journal-page {
+            background: linear-gradient(135deg, #fff9e6, #f0f8ff);
+            border-left: 6px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        .journal-page:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .time-zone-bg-gold {
+            background: linear-gradient(135deg, #fff8dc, #ffeaa7, #fdcb6e);
+        }
+        
+        .time-zone-bg-blue {
+            background: linear-gradient(135deg, #e6f3ff, #b3d9ff, #74b9ff);
+        }
+        
+        .time-zone-bg-green {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9, #81c784);
+        }
+        
+        .time-zone-bg-purple {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7, #ba68c8);
+        }
+        
+        .carousel-container {
+            perspective: 1200px;
+        }
+        
+        .question-card {
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .question-card.flipping {
+            animation: cardFlip 0.8s ease-in-out;
+        }
+        
+        .gem-tray {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 40;
+        }
+        
+        .music-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 40;
+        }
+        
+        /* Improved button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-secondary:hover, .btn-secondary:focus {
+            background: linear-gradient(135deg, #ec7eed 0%, #f24e5c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Loading states */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Improved form styles */
+        .form-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .form-input:invalid {
+            border-color: #f56565;
+        }
+        
+        /* Toast notifications */
+        .toast {
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        /* Progress indicators */
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .gem-tray {
+                top: 10px;
+                right: 10px;
+                transform: scale(0.9);
+            }
+            
+            .music-toggle {
+                bottom: 10px;
+                left: 10px;
+                transform: scale(0.9);
+            }
+            
+            .portal-gold, .portal-blue, .portal-green, .portal-purple {
+                padding: 2rem;
+            }
+            
+            .question-card {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gem-tray {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 0 auto 1rem;
+                width: fit-content;
+            }
+            
+            .music-toggle {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                margin: 1rem auto 0;
+                width: fit-content;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-full font-sans">
+    <!-- Skip link for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Floating Gem Tray -->
+    <div class="gem-tray" role="complementary" aria-label="Gem collection status">
+        <div class="bg-white bg-opacity-90 rounded-2xl p-4 shadow-2xl backdrop-blur-sm">
+            <div class="flex space-x-3">
+                <div class="text-center" role="status" aria-label="Origin Crystals collected">
+                    <div class="gem-float text-2xl" aria-hidden="true">🌟</div>
+                    <div class="text-xs font-bold">Origin</div>
+                    <div id="originCount" class="text-sm font-bold text-yellow-600" aria-live="polite">0</div>
+                </div>
+                <div class="text-center" role="status" aria-label="Memory Gems collected">
+                    <div class="gem-float text-2xl" style="animation-delay: 0.5s" aria-hidden="true">💎</div>
+                    <div class="text-xs font-bold">Memory</div>
+                    <div id="memoryCount" class="text-sm font-bold text-blue-600" aria-live="polite">0</div>
+                </div>
+                <div class="text-center" role="status" aria-label="Now Tokens collected">
+                    <div class="gem-float text-2xl" style="animation-delay: 1s" aria-hidden="true">🌍</div>
+                    <div class="text-xs font-bold">Now</div>
+                    <div id="nowCount" class="text-sm font-bold text-green-600" aria-live="polite">0</div>
+                </div>
+                <div class="text-center" role="status" aria-label="Dream Coins collected">
+                    <div class="gem-float text-2xl" style="animation-delay: 1.5s" aria-hidden="true">🔮</div>
+                    <div class="text-xs font-bold">Dream</div>
+                    <div id="dreamCount" class="text-sm font-bold text-purple-600" aria-live="polite">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Toggle -->
+    <div class="music-toggle">
+        <button onclick="toggleMusic()" 
+                class="bg-white bg-opacity-90 rounded-full p-3 shadow-lg hover:bg-opacity-100 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-blue-500"
+                aria-label="Toggle background music"
+                aria-pressed="false"
+                id="musicToggleBtn">
+            <span id="musicIcon" class="text-2xl" aria-hidden="true">🎵</span>
+            <span class="sr-only" id="musicStatus">Music off</span>
+        </button>
+    </div>
+
+    <div id="app" class="min-h-full">
+        <!-- Welcome Screen -->
+        <main id="main-content">
+            <div id="welcomeScreen" class="galaxy-bg min-h-full flex items-center justify-center p-4 slide-in-up">
+                <div class="text-center max-w-2xl">
+                    <div class="float mb-8">
+                        <div class="clock-rotate text-9xl mb-6" aria-hidden="true">🕰️</div>
+                        <h1 class="text-7xl font-bold text-white mb-6 drop-shadow-2xl">My Time Travel English Journal</h1>
+                        <p class="text-2xl text-yellow-200 mb-8">Journey through time to practice English and tell your story!</p>
+                    </div>
+                    
+                    <form class="bg-white bg-opacity-95 rounded-3xl p-10 shadow-2xl backdrop-blur-sm fade-in" 
+                          onsubmit="startTimeTravel(); return false;" 
+                          aria-label="Student information form">
+                        <div class="space-y-8">
+                            <div>
+                                <label for="studentName" class="block text-xl font-bold text-gray-700 mb-3">
+                                    <span aria-hidden="true">✨</span> What's your name, time traveller?
+                                </label>
+                                <input type="text" 
+                                       id="studentName" 
+                                       name="studentName"
+                                       class="form-input w-full p-4 border-3 border-purple-300 rounded-2xl text-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-200" 
+                                       placeholder="Enter your name"
+                                       required
+                                       aria-describedby="name-help">
+                                <div id="name-help" class="text-sm text-gray-600 mt-2">This will be used throughout your time travel adventure</div>
+                            </div>
+                            
+                            <div>
+                                <label for="birthDate" class="block text-xl font-bold text-gray-700 mb-3">
+                                    <span aria-hidden="true">🎂</span> When were you born?
+                                </label>
+                                <input type="date" 
+                                       id="birthDate" 
+                                       name="birthDate"
+                                       class="form-input w-full p-4 border-3 border-purple-300 rounded-2xl text-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-200"
+                                       required
+                                       aria-describedby="date-help">
+                                <div id="date-help" class="text-sm text-gray-600 mt-2">This helps us create personalized time travel experiences</div>
+                            </div>
+                            
+                            <button type="submit" 
+                                    class="btn-primary w-full text-2xl font-bold py-5 px-10 rounded-2xl shadow-xl"
+                                    aria-describedby="start-help">
+                                <span aria-hidden="true">🚀</span> Start Time Travel Adventure!
+                            </button>
+                            <div id="start-help" class="text-sm text-gray-600">Begin your English learning journey through time</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <!-- Time Portal Menu -->
+        <div id="portalMenu" class="hidden min-h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-8">
+            <div class="max-w-6xl mx-auto">
+                <!-- Header -->
+                <header class="text-center mb-10 fade-in">
+                    <h2 class="text-5xl font-bold text-white mb-4">
+                        Welcome, <span id="playerName"></span>! <span aria-hidden="true">🌟</span>
+                    </h2>
+                    <p class="text-2xl text-purple-200">Choose your time portal to begin your English adventure</p>
+                    
+                    <!-- Level Display -->
+                    <div class="mt-6">
+                        <div class="level-up bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg inline-block"
+                             role="status" 
+                             aria-live="polite"
+                             aria-label="Current player level">
+                            Level <span id="playerLevel">1</span> Time Traveller
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Portal Grid -->
+                <section class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto mb-10" 
+                         role="group" 
+                         aria-labelledby="portal-heading">
+                    <h3 id="portal-heading" class="sr-only">Time Travel Portals</h3>
+                    
+                    <!-- Before Birth Portal -->
+                    <button onclick="enterPortal('beforeBirth')" 
+                            class="portal-gold rounded-3xl p-10 text-center transform hover:scale-105 transition-all duration-300 shadow-2xl"
+                            aria-describedby="before-birth-desc"
+                            aria-label="Enter Before Birth Portal to explore the world before you existed">
+                        <div class="text-7xl mb-6" aria-hidden="true">🌠</div>
+                        <h4 class="text-3xl font-bold text-gray-800 mb-4">Before Birth</h4>
+                        <p class="text-xl text-gray-700 mb-4" id="before-birth-desc">Explore the world before you existed</p>
+                        <div class="text-lg text-gray-600">Earn: <span aria-hidden="true">🌟</span> Origin Crystal</div>
+                    </button>
+
+                    <!-- Younger Self Portal -->
+                    <button onclick="enterPortal('youngerSelf')" 
+                            class="portal-blue rounded-3xl p-10 text-center transform hover:scale-105 transition-all duration-300 shadow-2xl"
+                            aria-describedby="younger-self-desc"
+                            aria-label="Enter Younger Self Portal to reflect on childhood memories">
+                        <div class="text-7xl mb-6" aria-hidden="true">💎</div>
+                        <h4 class="text-3xl font-bold text-gray-800 mb-4">Meet Younger Self</h4>
+                        <p class="text-xl text-gray-700 mb-4" id="younger-self-desc">Reflect on your childhood memories</p>
+                        <div class="text-lg text-gray-600">Earn: <span aria-hidden="true">💎</span> Memory Gem</div>
+                    </button>
+
+                    <!-- Present Portal -->
+                    <button onclick="enterPortal('present')" 
+                            class="portal-green rounded-3xl p-10 text-center transform hover:scale-105 transition-all duration-300 shadow-2xl"
+                            aria-describedby="present-desc"
+                            aria-label="Enter Present Portal to focus on today and this year's goals">
+                        <div class="text-7xl mb-6" aria-hidden="true">🌍</div>
+                        <h4 class="text-3xl font-bold text-gray-800 mb-4">Now / Present</h4>
+                        <p class="text-xl text-gray-700 mb-4" id="present-desc">Focus on today and this year's goals</p>
+                        <div class="text-lg text-gray-600">Earn: <span aria-hidden="true">🌍</span> Now Token</div>
+                    </button>
+
+                    <!-- Future Portal -->
+                    <button onclick="enterPortal('future')" 
+                            class="portal-purple rounded-3xl p-10 text-center transform hover:scale-105 transition-all duration-300 shadow-2xl"
+                            aria-describedby="future-desc"
+                            aria-label="Enter Future Portal to imagine your amazing future">
+                        <div class="text-7xl mb-6" aria-hidden="true">🔮</div>
+                        <h4 class="text-3xl font-bold text-gray-800 mb-4">Future World</h4>
+                        <p class="text-xl text-gray-700 mb-4" id="future-desc">Imagine your amazing future</p>
+                        <div class="text-lg text-gray-600">Earn: <span aria-hidden="true">🔮</span> Dream Coin</div>
+                    </button>
+                </section>
+
+                <!-- Journal Button -->
+                <div class="text-center">
+                    <button onclick="openJournal()" 
+                            class="btn-secondary py-5 px-10 rounded-2xl shadow-xl text-xl focus-visible"
+                            aria-describedby="journal-desc">
+                        <span aria-hidden="true">📖</span> Read My Journal
+                    </button>
+                    <div id="journal-desc" class="text-sm text-purple-200 mt-2">View all your completed time travel adventures</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future Choice Screen -->
+        <div id="futureChoice" class="hidden min-h-full time-zone-bg-purple flex items-center justify-center p-8">
+            <div class="max-w-5xl mx-auto text-center">
+                <h2 class="text-5xl font-bold text-purple-800 mb-10">🔮 Choose Your Future Adventure</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <button onclick="enterFutureType('realistic')" class="bg-white rounded-3xl p-10 shadow-2xl transform hover:scale-105 transition-all duration-300">
+                        <div class="text-8xl mb-6">🎯</div>
+                        <h3 class="text-3xl font-bold text-purple-800 mb-6">My Real Future</h3>
+                        <p class="text-xl text-gray-700 mb-6">Plan your next 1-20 years realistically</p>
+                        <div class="text-lg text-purple-600">Practice: Future simple, "going to"</div>
+                    </button>
+                    
+                    <button onclick="enterFutureType('scifi')" class="bg-white rounded-3xl p-10 shadow-2xl transform hover:scale-105 transition-all duration-300">
+                        <div class="text-8xl mb-6">🌌</div>
+                        <h3 class="text-3xl font-bold text-purple-800 mb-6">Far Future</h3>
+                        <p class="text-xl text-gray-700 mb-6">Imagine life 100+ years from now</p>
+                        <div class="text-lg text-purple-600">Practice: Conditionals, creative thinking</div>
+                    </button>
+                </div>
+                
+                <button onclick="backToPortals()" class="mt-10 bg-gray-500 text-white font-bold py-4 px-8 rounded-xl hover:bg-gray-600 transition-all duration-200 text-xl">
+                    ← Back to Portals
+                </button>
+            </div>
+        </div>
+
+        <!-- Question Carousel -->
+        <div id="questionCarousel" class="hidden min-h-full p-8">
+            <div class="max-w-5xl mx-auto">
+                <!-- Header -->
+                <div class="bg-white rounded-3xl p-8 mb-8 shadow-xl">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-4xl font-bold" id="carouselTitle"></h2>
+                            <p class="text-xl text-gray-600" id="carouselDescription"></p>
+                        </div>
+                        <div class="text-8xl" id="carouselIcon"></div>
+                    </div>
+                </div>
+
+                <!-- Teacher Controls -->
+                <div class="bg-gray-100 rounded-2xl p-6 mb-8">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xl font-bold text-gray-700">👩‍🏫 Teacher Controls</h4>
+                        <div class="flex space-x-3">
+                            <button onclick="nextQuestion()" class="bg-blue-500 text-white px-5 py-3 rounded-xl text-lg hover:bg-blue-600 transition-all duration-200">Next Question</button>
+                            <button onclick="showGrammarTip()" class="bg-green-500 text-white px-5 py-3 rounded-xl text-lg hover:bg-green-600 transition-all duration-200">Grammar Tip</button>
+                            <button onclick="repeatQuestion()" class="bg-purple-500 text-white px-5 py-3 rounded-xl text-lg hover:bg-purple-600 transition-all duration-200">Repeat Question</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carousel Container -->
+                <div class="carousel-container">
+                    <div class="bg-white rounded-3xl p-10 shadow-2xl">
+                        <!-- Navigation -->
+                        <div class="flex justify-between items-center mb-8" role="navigation" aria-label="Question navigation">
+                            <button onclick="prevCard()" 
+                                    id="prevCardBtn"
+                                    class="bg-purple-500 text-white p-4 rounded-full hover:bg-purple-600 transition-all duration-200 text-2xl"
+                                    aria-label="Previous question"
+                                    disabled>
+                                <span aria-hidden="true">←</span>
+                                <span class="sr-only">Previous</span>
+                            </button>
+                            <div class="text-2xl font-bold text-purple-800" 
+                                 role="status" 
+                                 aria-live="polite"
+                                 aria-label="Question progress">
+                                Question <span id="currentCardNumber">1</span> of 3
+                            </div>
+                            <button onclick="nextCard()" 
+                                    id="nextCardBtn"
+                                    class="bg-purple-500 text-white p-4 rounded-full hover:bg-purple-600 transition-all duration-200 text-2xl"
+                                    aria-label="Next question">
+                                <span aria-hidden="true">→</span>
+                                <span class="sr-only">Next</span>
+                            </button>
+                        </div>
+
+                        <!-- Question Card -->
+                        <div id="questionCard" class="question-card card-zoom">
+                            <!-- Card content will be generated here -->
+                        </div>
+
+                        <!-- Save Button (appears on last card) -->
+                        <div id="saveSection" class="hidden text-center mt-10">
+                            <button onclick="saveAnswers()" class="bg-gradient-to-r from-green-600 to-blue-600 text-white text-2xl font-bold py-5 px-12 rounded-2xl hover:from-green-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-xl">
+                                💾 Save My Answers
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Back Button -->
+                <div class="text-center mt-8">
+                    <button onclick="backToPortals()" class="bg-gray-500 text-white font-bold py-4 px-8 rounded-xl hover:bg-gray-600 transition-all duration-200 text-xl">
+                        ⬅ Back to Time Portals
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Journal View -->
+        <div id="journalView" class="hidden min-h-full bg-gradient-to-br from-amber-50 to-orange-50 p-8">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-5xl font-bold text-amber-800 mb-6">📖 My Time Travel Journal</h2>
+                    <div class="flex justify-center space-x-6">
+                        <button onclick="readAloud()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-4 px-8 rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-200 text-xl">
+                            🔊 Read Aloud
+                        </button>
+                        <button onclick="backToPortals()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-8 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 text-xl">
+                            🕰️ Back to Portals
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="journalPages" class="space-y-8">
+                    <!-- Journal entries will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div id="messagePopup" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md">
+            <div class="rounded-2xl p-6 shadow-2xl" id="messageContent">
+                <p id="messageText" class="font-bold text-xl text-center"></p>
+            </div>
+        </div>
+
+        <!-- Gem Reward Popup -->
+        <div id="gemRewardPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-3xl p-12 text-center max-w-lg mx-4 transform scale-110">
+                <div class="sparkle text-9xl mb-6" id="rewardGemIcon"></div>
+                <h3 class="text-4xl font-bold mb-6" id="rewardTitle"></h3>
+                <p class="text-xl text-gray-600 mb-8" id="rewardMessage"></p>
+                <button onclick="closeGemReward()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-10 rounded-xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 text-xl">
+                    ✨ Amazing!
+                </button>
+            </div>
+        </div>
+
+        <!-- Grammar Tip Popup -->
+        <div id="grammarTipPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-3xl p-10 text-center max-w-2xl mx-4">
+                <h3 class="text-3xl font-bold mb-6 text-green-700">📚 Grammar Tip</h3>
+                <p class="text-xl text-gray-700 mb-8" id="grammarTipText"></p>
+                <div class="bg-green-50 rounded-2xl p-6 mb-8">
+                    <p class="text-lg text-green-800" id="grammarExample"></p>
+                </div>
+                <button onclick="closeGrammarTip()" class="bg-green-500 text-white font-bold py-4 px-8 rounded-xl hover:bg-green-600 transition-all duration-200 text-xl">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio element for background music -->
+    <audio id="backgroundMusic" loop>
+        <!-- Note: In a real implementation, you would add audio source files here -->
+    </audio>
+
+    <!-- Live region for screen reader announcements -->
+    <div id="liveRegion" 
+         class="sr-only" 
+         aria-live="assertive" 
+         aria-atomic="true"
+         role="status"></div>
+    
+    <!-- Polite announcements for less urgent updates -->
+    <div id="politeRegion" 
+         class="sr-only" 
+         aria-live="polite" 
+         aria-atomic="true"
+         role="status"></div>
+
+    <script>
+        let gameData = {
+            studentName: '',
+            birthDate: '',
+            currentYear: new Date().getFullYear(),
+            gems: { origin: 0, memory: 0, now: 0, dream: 0 },
+            journalEntries: [],
+            currentPortal: null,
+            currentCardIndex: 0,
+            currentAnswers: {},
+            musicEnabled: false
+        };
+
+        // Screen reader announcement functions
+        function announceToScreenReader(message, urgent = false) {
+            const region = urgent ? document.getElementById('liveRegion') : document.getElementById('politeRegion');
+            region.textContent = message;
+            
+            // Clear after announcement to allow repeated messages
+            setTimeout(() => {
+                region.textContent = '';
+            }, 1000);
+        }
+
+        function announceCardChange(cardNumber, question) {
+            announceToScreenReader(`Question ${cardNumber} of 3. ${question}`, false);
+        }
+
+        function announceGemEarned(gemName, count) {
+            announceToScreenReader(`Congratulations! You earned a ${gemName}. You now have ${count} ${gemName}s.`, true);
+        }
+
+        function announceLevelUp(level) {
+            announceToScreenReader(`Amazing! You are now Level ${level} Time Traveller!`, true);
+        }
+
+        const portalData = {
+            beforeBirth: {
+                title: "🌠 Before Birth Portal",
+                description: "Explore the world before you existed",
+                bgClass: "time-zone-bg-gold",
+                icon: "🌠",
+                questions: [
+                    "What can you see in the world before you were born?",
+                    "Who is alive then and what are they doing?",
+                    "What interesting things are happening in that time?"
+                ],
+                starters: ["I can see…", "People are…", "There is…", "In that time…", "The world has…"],
+                wordBank: ["family", "buildings", "nature", "animals", "music", "technology", "people", "cities"],
+                grammarTip: "Use present tense to describe what you can see: 'I can see...', 'There is...', 'People are...'",
+                grammarExample: "Example: 'I can see beautiful forests everywhere. People are building the first cars.'",
+                gemType: "origin",
+                successMessage: "You unlocked the time before you were born!"
+            },
+            youngerSelf: {
+                title: "💎 Meet Younger Self",
+                description: "Reflect on your childhood memories",
+                bgClass: "time-zone-bg-blue",
+                icon: "💎",
+                questions: [
+                    "What did you enjoy doing when you were younger?",
+                    "Who was your best friend and what did you do together?",
+                    "What games did you play and what made you happy?"
+                ],
+                starters: ["I used to…", "When I was…", "My favorite…", "I remember…", "Back then I…"],
+                wordBank: ["toys", "games", "friends", "school", "playground", "family", "pets", "cartoons"],
+                grammarTip: "Use past simple tense: 'I used to play...', 'When I was young, I liked...', 'I had...'",
+                grammarExample: "Example: 'I used to play with my teddy bear. When I was 5, I loved drawing pictures.'",
+                gemType: "memory",
+                successMessage: "You met your younger self!"
+            },
+            present: {
+                title: "🌍 Now / Present",
+                description: "Focus on today and this year's goals",
+                bgClass: "time-zone-bg-green",
+                icon: "🌍",
+                questions: [
+                    "What are you proud of right now?",
+                    "What are you doing and learning these days?",
+                    "What's your goal for this year?"
+                ],
+                starters: ["I am…", "I'm learning to…", "Right now I…", "This year I want to…", "I feel proud of…"],
+                wordBank: ["studying", "learning", "growing", "helping", "creating", "practicing", "improving", "achieving"],
+                grammarTip: "Use present tense: 'I am learning...', 'I want to...', 'I'm proud of...'",
+                grammarExample: "Example: 'I am learning to play guitar. This year I want to read 20 books.'",
+                gemType: "now",
+                successMessage: "You focused on the present!"
+            },
+            futureRealistic: {
+                title: "🎯 My Real Future",
+                description: "Plan your next 1-20 years realistically",
+                bgClass: "time-zone-bg-purple",
+                icon: "🎯",
+                questions: [
+                    "What job will you have when you're older?",
+                    "Where will you live and what will you study?",
+                    "What skills will you learn and goals will you achieve?"
+                ],
+                starters: ["I will…", "I'm going to…", "When I'm older…", "In 10 years I…", "My plan is to…"],
+                wordBank: ["study", "work", "travel", "learn", "build", "help", "create", "achieve"],
+                grammarTip: "Use future tense: 'I will study...', 'I'm going to work...', 'I plan to...'",
+                grammarExample: "Example: 'I will study medicine. I'm going to help sick people get better.'",
+                gemType: "dream",
+                successMessage: "You imagined your future!"
+            },
+            futureSciFi: {
+                title: "🌌 Far Future",
+                description: "Imagine life 100+ years from now",
+                bgClass: "time-zone-bg-purple",
+                icon: "🌌",
+                questions: [
+                    "How will humans live in the year 3000?",
+                    "If you lived on Mars, what would you eat and do?",
+                    "What amazing technology or creatures might exist?"
+                ],
+                starters: ["In the future…", "Maybe I'll…", "If humans lived on…", "People might…", "There could be…"],
+                wordBank: ["robots", "space", "flying", "aliens", "teleport", "hologram", "energy", "explore"],
+                grammarTip: "Use conditionals and future possibilities: 'If I lived on Mars, I would...', 'People might...', 'There could be...'",
+                grammarExample: "Example: 'If humans lived on Mars, they would grow food in space gardens. People might have robot friends.'",
+                gemType: "dream",
+                successMessage: "You imagined your future!"
+            }
+        };
+
+        function showMessage(text, type = 'success') {
+            const popup = document.getElementById('messagePopup');
+            const content = document.getElementById('messageContent');
+            const textEl = document.getElementById('messageText');
+            
+            textEl.textContent = text;
+            
+            if (type === 'success') {
+                content.className = 'rounded-2xl p-6 shadow-2xl bg-green-100 border-4 border-green-400';
+                textEl.className = 'font-bold text-xl text-center text-green-800';
+                popup.setAttribute('role', 'status');
+                popup.setAttribute('aria-live', 'polite');
+            } else {
+                content.className = 'rounded-2xl p-6 shadow-2xl bg-red-100 border-4 border-red-400';
+                textEl.className = 'font-bold text-xl text-center text-red-800';
+                popup.setAttribute('role', 'alert');
+                popup.setAttribute('aria-live', 'assertive');
+            }
+            
+            popup.classList.remove('hidden');
+            popup.classList.add('toast', 'show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+                setTimeout(() => popup.classList.add('hidden'), 300);
+            }, 4000);
+        }
+
+        function playPageTurnSound() {
+            // In a real implementation, you would play an actual sound file
+            console.log('🔊 Page turn sound');
+        }
+
+        function startTimeTravel() {
+            const name = document.getElementById('studentName').value.trim();
+            const birthDate = document.getElementById('birthDate').value;
+            const startBtn = document.querySelector('button[type="submit"]');
+            
+            if (!name || !birthDate) {
+                showMessage('Please enter your name and birthday to start.', 'error');
+                return;
+            }
+            
+            // Add loading state
+            startBtn.classList.add('loading');
+            startBtn.disabled = true;
+            startBtn.setAttribute('aria-busy', 'true');
+            
+            // Simulate loading time for better UX
+            setTimeout(() => {
+                gameData.studentName = name;
+                gameData.birthDate = birthDate;
+                
+                document.getElementById('welcomeScreen').classList.add('hidden');
+                document.getElementById('portalMenu').classList.remove('hidden');
+                
+                document.getElementById('playerName').textContent = name;
+                updateGemDisplay();
+                updatePlayerLevel();
+                
+                // Announce to screen readers
+                showMessage(`Welcome ${name}! Choose a time portal to begin your adventure.`, 'success');
+                
+                // Focus on first portal for keyboard users
+                setTimeout(() => {
+                    document.querySelector('.portal-gold').focus();
+                }, 500);
+                
+                startBtn.classList.remove('loading');
+                startBtn.disabled = false;
+                startBtn.setAttribute('aria-busy', 'false');
+            }, 1000);
+        }
+
+        function enterPortal(portalType) {
+            if (portalType === 'future') {
+                document.getElementById('portalMenu').classList.add('hidden');
+                document.getElementById('futureChoice').classList.remove('hidden');
+                return;
+            }
+            
+            gameData.currentPortal = portalType;
+            gameData.currentCardIndex = 0;
+            gameData.currentAnswers = {};
+            showQuestionCarousel(portalType);
+        }
+
+        function enterFutureType(futureType) {
+            const portalType = futureType === 'realistic' ? 'futureRealistic' : 'futureSciFi';
+            gameData.currentPortal = portalType;
+            gameData.currentCardIndex = 0;
+            gameData.currentAnswers = {};
+            
+            document.getElementById('futureChoice').classList.add('hidden');
+            showQuestionCarousel(portalType);
+        }
+
+        function showQuestionCarousel(portalType) {
+            const portal = portalData[portalType];
+            
+            document.getElementById('portalMenu').classList.add('hidden');
+            document.getElementById('futureChoice').classList.add('hidden');
+            document.getElementById('questionCarousel').classList.remove('hidden');
+            
+            // Update scene styling
+            document.getElementById('questionCarousel').className = `hidden min-h-full p-8 ${portal.bgClass}`;
+            document.getElementById('questionCarousel').classList.remove('hidden');
+            
+            document.getElementById('carouselTitle').textContent = portal.title;
+            document.getElementById('carouselDescription').textContent = portal.description;
+            document.getElementById('carouselIcon').textContent = portal.icon;
+            
+            updateQuestionCard();
+        }
+
+        function updateQuestionCard() {
+            const portal = portalData[gameData.currentPortal];
+            const questionIndex = gameData.currentCardIndex;
+            const question = portal.questions[questionIndex];
+            
+            document.getElementById('currentCardNumber').textContent = questionIndex + 1;
+            
+            // Update navigation button states
+            const prevBtn = document.getElementById('prevCardBtn');
+            const nextBtn = document.getElementById('nextCardBtn');
+            
+            if (prevBtn && nextBtn) {
+                prevBtn.disabled = questionIndex === 0;
+                nextBtn.disabled = questionIndex === 2;
+                
+                if (questionIndex === 0) {
+                    prevBtn.setAttribute('aria-disabled', 'true');
+                    prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    prevBtn.setAttribute('aria-disabled', 'false');
+                    prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                
+                if (questionIndex === 2) {
+                    nextBtn.setAttribute('aria-disabled', 'true');
+                    nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    nextBtn.setAttribute('aria-disabled', 'false');
+                    nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+            
+            // Announce card change to screen readers
+            announceCardChange(questionIndex + 1, question);
+            
+            const startersHtml = portal.starters.map((starter, index) => 
+                `<button onclick="insertStarter('${starter}')" 
+                         class="sentence-chip bg-purple-100 text-purple-700 px-4 py-3 rounded-full text-lg font-medium mr-3 mb-3 focus-visible"
+                         aria-label="Insert sentence starter: ${starter}"
+                         tabindex="0">${starter}</button>`
+            ).join('');
+            
+            const wordBankHtml = portal.wordBank.map((word, index) => 
+                `<button onclick="insertWord('${word}')" 
+                         class="word-chip bg-blue-100 text-blue-700 px-3 py-2 rounded-full text-base mr-2 mb-2 focus-visible"
+                         aria-label="Insert word: ${word}"
+                         tabindex="0">${word}</button>`
+            ).join('');
+            
+            const cardContent = `
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4" aria-hidden="true">${portal.icon}</div>
+                    <h3 class="text-3xl font-bold text-gray-800 mb-6" id="current-question">${question}</h3>
+                </div>
+                
+                <div class="mb-8" role="group" aria-labelledby="starters-heading">
+                    <h4 id="starters-heading" class="text-lg font-semibold text-purple-700 mb-4">
+                        <span aria-hidden="true">💡</span> Sentence starters (click to use):
+                    </h4>
+                    <div class="flex flex-wrap justify-center">${startersHtml}</div>
+                </div>
+                
+                <div class="mb-8" role="group" aria-labelledby="wordbank-heading">
+                    <h4 id="wordbank-heading" class="text-lg font-semibold text-blue-700 mb-4">
+                        <span aria-hidden="true">🧩</span> Word bank:
+                    </h4>
+                    <div class="flex flex-wrap justify-center">${wordBankHtml}</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="currentAnswer" class="block text-lg font-semibold text-gray-700 mb-2">Your answer:</label>
+                    <textarea id="currentAnswer" 
+                              name="currentAnswer"
+                              class="form-input w-full p-6 border-3 border-purple-300 rounded-2xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-200 resize-none text-lg" 
+                              rows="5" 
+                              placeholder="Write your answer here..."
+                              aria-describedby="answer-help"
+                              required>${gameData.currentAnswers[questionIndex] || ''}</textarea>
+                    <div id="answer-help" class="text-sm text-gray-600 mt-2">Use the sentence starters and word bank above to help you write your answer</div>
+                </div>
+            `;
+            
+            const questionCard = document.getElementById('questionCard');
+            questionCard.innerHTML = cardContent;
+            
+            // Show save button on last card
+            if (questionIndex === 2) {
+                document.getElementById('saveSection').classList.remove('hidden');
+            } else {
+                document.getElementById('saveSection').classList.add('hidden');
+            }
+            
+            // Focus on the textarea for better UX
+            setTimeout(() => {
+                document.getElementById('currentAnswer').focus();
+            }, 100);
+        }
+
+        function insertStarter(starter) {
+            const textarea = document.getElementById('currentAnswer');
+            if (textarea.value.trim() === '') {
+                textarea.value = starter + ' ';
+            } else if (!textarea.value.includes(starter)) {
+                textarea.value = starter + ' ' + textarea.value;
+            }
+            textarea.focus();
+        }
+
+        function insertWord(word) {
+            const textarea = document.getElementById('currentAnswer');
+            const cursorPos = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPos);
+            const textAfter = textarea.value.substring(cursorPos);
+            
+            textarea.value = textBefore + word + ' ' + textAfter;
+            textarea.focus();
+            textarea.setSelectionRange(cursorPos + word.length + 1, cursorPos + word.length + 1);
+        }
+
+        function nextCard() {
+            saveCurrentAnswer();
+            if (gameData.currentCardIndex < 2) {
+                gameData.currentCardIndex++;
+                flipCard();
+            }
+        }
+
+        function prevCard() {
+            saveCurrentAnswer();
+            if (gameData.currentCardIndex > 0) {
+                gameData.currentCardIndex--;
+                flipCard();
+            }
+        }
+
+        // Keyboard navigation support
+        function handleKeyboardNavigation(event) {
+            // Only handle if not typing in an input
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            switch(event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    if (gameData.currentCardIndex > 0) {
+                        prevCard();
+                    }
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    if (gameData.currentCardIndex < 2) {
+                        nextCard();
+                    }
+                    break;
+                case 'Enter':
+                case ' ':
+                    if (event.target.classList.contains('sentence-chip') || event.target.classList.contains('word-chip')) {
+                        event.preventDefault();
+                        event.target.click();
+                    }
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    const modals = document.querySelectorAll('.fixed:not(.hidden)');
+                    if (modals.length > 0) {
+                        // Close the topmost modal
+                        const modal = modals[modals.length - 1];
+                        if (modal.id === 'gemRewardPopup') {
+                            closeGemReward();
+                        } else if (modal.id === 'grammarTipPopup') {
+                            closeGrammarTip();
+                        }
+                    }
+                    break;
+            }
+        }
+
+        // Focus management for modals
+        function trapFocus(element) {
+            const focusableElements = element.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstElement) {
+                            e.preventDefault();
+                            lastElement.focus();
+                        }
+                    } else {
+                        if (document.activeElement === lastElement) {
+                            e.preventDefault();
+                            firstElement.focus();
+                        }
+                    }
+                }
+            });
+
+            firstElement.focus();
+        }
+
+        function flipCard() {
+            const questionCard = document.getElementById('questionCard');
+            questionCard.classList.add('flipping');
+            
+            playPageTurnSound();
+            
+            setTimeout(() => {
+                updateQuestionCard();
+                questionCard.classList.remove('flipping');
+            }, 300);
+        }
+
+        function saveCurrentAnswer() {
+            const textarea = document.getElementById('currentAnswer');
+            if (textarea) {
+                gameData.currentAnswers[gameData.currentCardIndex] = textarea.value;
+            }
+        }
+
+        function nextQuestion() {
+            nextCard();
+        }
+
+        function showGrammarTip() {
+            const portal = portalData[gameData.currentPortal];
+            document.getElementById('grammarTipText').textContent = portal.grammarTip;
+            document.getElementById('grammarExample').textContent = portal.grammarExample;
+            
+            const popup = document.getElementById('grammarTipPopup');
+            popup.classList.remove('hidden');
+            popup.classList.add('modal-focus-trap');
+            
+            // Announce to screen readers
+            announceToScreenReader('Grammar tip opened. ' + portal.grammarTip, false);
+            
+            // Trap focus in modal
+            setTimeout(() => {
+                trapFocus(popup);
+            }, 100);
+        }
+
+        function closeGrammarTip() {
+            const popup = document.getElementById('grammarTipPopup');
+            popup.classList.add('hidden');
+            popup.classList.remove('modal-focus-trap');
+            
+            // Return focus to the grammar tip button
+            const grammarBtn = document.querySelector('button[onclick="showGrammarTip()"]');
+            if (grammarBtn) {
+                grammarBtn.focus();
+            }
+        }
+
+        function repeatQuestion() {
+            const portal = portalData[gameData.currentPortal];
+            const question = portal.questions[gameData.currentCardIndex];
+            
+            // Show transcript/caption
+            showTranscript(question);
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(question);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.1;
+                
+                utterance.onstart = () => {
+                    announceToScreenReader('Reading question aloud: ' + question, false);
+                };
+                
+                utterance.onend = () => {
+                    hideTranscript();
+                };
+                
+                speechSynthesis.speak(utterance);
+            } else {
+                // Fallback for browsers without TTS
+                announceToScreenReader('Text-to-speech not available. Question: ' + question, false);
+                setTimeout(hideTranscript, 3000);
+            }
+            
+            // Visual highlight
+            const questionCard = document.getElementById('questionCard');
+            questionCard.style.transform = 'scale(1.05)';
+            questionCard.style.boxShadow = '0 15px 40px rgba(147, 51, 234, 0.4)';
+            
+            setTimeout(() => {
+                questionCard.style.transform = 'scale(1)';
+                questionCard.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
+            }, 1000);
+        }
+
+        function showTranscript(text) {
+            let transcript = document.getElementById('ttsTranscript');
+            if (!transcript) {
+                transcript = document.createElement('div');
+                transcript.id = 'ttsTranscript';
+                transcript.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-90 text-white px-6 py-3 rounded-lg text-lg font-medium z-50 max-w-2xl text-center';
+                transcript.setAttribute('role', 'status');
+                transcript.setAttribute('aria-live', 'polite');
+                transcript.setAttribute('aria-label', 'Speech transcript');
+                document.body.appendChild(transcript);
+            }
+            
+            transcript.textContent = `🔊 "${text}"`;
+            transcript.classList.remove('hidden');
+        }
+
+        function hideTranscript() {
+            const transcript = document.getElementById('ttsTranscript');
+            if (transcript) {
+                transcript.classList.add('hidden');
+            }
+        }
+
+        function saveAnswers() {
+            saveCurrentAnswer();
+            
+            const portal = portalData[gameData.currentPortal];
+            const answers = [];
+            
+            for (let i = 0; i < portal.questions.length; i++) {
+                const answer = gameData.currentAnswers[i];
+                if (answer && answer.trim()) {
+                    answers.push({ question: portal.questions[i], answer: answer.trim() });
+                }
+            }
+            
+            if (answers.length < portal.questions.length) {
+                showMessage('⚠️ Please answer all questions first.', 'error');
+                return;
+            }
+            
+            // Generate summary
+            const summary = generateSummary(answers, portal);
+            
+            // Add to journal
+            const entry = {
+                portal: gameData.currentPortal,
+                title: portal.title,
+                icon: portal.icon,
+                summary,
+                answers,
+                timestamp: new Date().toISOString()
+            };
+            
+            gameData.journalEntries.push(entry);
+            
+            // Award gem
+            awardGem(portal.gemType, portal.successMessage);
+            
+            showMessage('✅ Saved! Added to your journal.', 'success');
+            
+            setTimeout(() => {
+                backToPortals();
+            }, 3000);
+        }
+
+        function generateSummary(answers, portal) {
+            const answerTexts = answers.map(a => a.answer).join('. ');
+            
+            switch (portal.gemType) {
+                case 'origin':
+                    return `Before I was born, the world was fascinating. ${answerTexts}. I can imagine all the amazing things that existed before my time.`;
+                case 'memory':
+                    return `When I was younger, I had wonderful experiences. ${answerTexts}. These memories helped shape who I am today.`;
+                case 'now':
+                    return `Right now in my life, I am growing and learning. ${answerTexts}. I'm proud of my progress and excited about my goals.`;
+                case 'dream':
+                    return `In the future, I imagine amazing possibilities. ${answerTexts}. The future holds so many exciting opportunities for me.`;
+                default:
+                    return answerTexts;
+            }
+        }
+
+        function awardGem(gemType, successMessage) {
+            gameData.gems[gemType]++;
+            
+            const gemIcons = {
+                origin: '🌟',
+                memory: '💎',
+                now: '🌍',
+                dream: '🔮'
+            };
+            
+            const gemNames = {
+                origin: 'Origin Crystal',
+                memory: 'Memory Gem',
+                now: 'Now Token',
+                dream: 'Dream Coin'
+            };
+            
+            document.getElementById('rewardGemIcon').textContent = gemIcons[gemType];
+            document.getElementById('rewardTitle').textContent = `${gemNames[gemType]} Earned!`;
+            document.getElementById('rewardMessage').textContent = successMessage;
+            
+            // Check for level up
+            const totalGems = Object.values(gameData.gems).reduce((a, b) => a + b, 0);
+            const newLevel = Math.floor(totalGems / 4) + 1;
+            const previousLevel = Math.floor((totalGems - 1) / 4) + 1;
+            
+            if (totalGems % 4 === 0 && totalGems > 0) {
+                document.getElementById('rewardMessage').textContent += ` 🎉 You're now Level ${newLevel} Time Traveller!`;
+                announceLevelUp(newLevel);
+            }
+            
+            // Announce gem earned
+            announceGemEarned(gemNames[gemType], gameData.gems[gemType]);
+            
+            const popup = document.getElementById('gemRewardPopup');
+            popup.classList.remove('hidden');
+            popup.classList.add('modal-focus-trap');
+            
+            // Trap focus in modal
+            setTimeout(() => {
+                trapFocus(popup);
+            }, 100);
+            
+            updateGemDisplay();
+            updatePlayerLevel();
+        }
+
+        function closeGemReward() {
+            const popup = document.getElementById('gemRewardPopup');
+            popup.classList.add('hidden');
+            popup.classList.remove('modal-focus-trap');
+            
+            // Return focus to the main content
+            const textarea = document.getElementById('currentAnswer');
+            if (textarea) {
+                textarea.focus();
+            }
+        }
+
+        function updateGemDisplay() {
+            document.getElementById('originCount').textContent = gameData.gems.origin;
+            document.getElementById('memoryCount').textContent = gameData.gems.memory;
+            document.getElementById('nowCount').textContent = gameData.gems.now;
+            document.getElementById('dreamCount').textContent = gameData.gems.dream;
+        }
+
+        function updatePlayerLevel() {
+            const totalGems = Object.values(gameData.gems).reduce((a, b) => a + b, 0);
+            const level = Math.floor(totalGems / 4) + 1;
+            document.getElementById('playerLevel').textContent = level;
+        }
+
+        function backToPortals() {
+            document.getElementById('questionCarousel').classList.add('hidden');
+            document.getElementById('futureChoice').classList.add('hidden');
+            document.getElementById('journalView').classList.add('hidden');
+            document.getElementById('portalMenu').classList.remove('hidden');
+        }
+
+        function openJournal() {
+            if (gameData.journalEntries.length === 0) {
+                showMessage('No entries yet! Travel through time to start.', 'error');
+                return;
+            }
+            
+            document.getElementById('portalMenu').classList.add('hidden');
+            document.getElementById('journalView').classList.remove('hidden');
+            
+            const container = document.getElementById('journalPages');
+            container.innerHTML = '';
+            
+            gameData.journalEntries.forEach((entry, index) => {
+                const page = document.createElement('div');
+                page.className = 'journal-page rounded-3xl p-10 shadow-2xl transform hover:scale-105 transition-all duration-300';
+                
+                page.innerHTML = `
+                    <div class="flex items-start space-x-8">
+                        <div class="text-8xl">${entry.icon}</div>
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold text-gray-800 mb-6">${entry.title}</h3>
+                            <p class="text-gray-700 leading-relaxed text-xl journal-text" data-index="${index}">${entry.summary}</p>
+                            <div class="mt-6 text-lg text-gray-500">
+                                Entry ${index + 1} • ${new Date(entry.timestamp).toLocaleDateString()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(page);
+            });
+        }
+
+        function readAloud() {
+            if ('speechSynthesis' in window) {
+                const journalTexts = document.querySelectorAll('.journal-text');
+                let currentIndex = 0;
+                
+                function readNext() {
+                    if (currentIndex < journalTexts.length) {
+                        const text = journalTexts[currentIndex];
+                        text.style.backgroundColor = 'rgba(255, 255, 0, 0.4)';
+                        text.style.padding = '10px';
+                        text.style.borderRadius = '10px';
+                        
+                        const utterance = new SpeechSynthesisUtterance(text.textContent);
+                        utterance.rate = 0.8;
+                        utterance.pitch = 1.1;
+                        
+                        utterance.onend = () => {
+                            text.style.backgroundColor = 'transparent';
+                            text.style.padding = '0';
+                            currentIndex++;
+                            setTimeout(readNext, 1000);
+                        };
+                        
+                        speechSynthesis.speak(utterance);
+                    }
+                }
+                
+                readNext();
+                showMessage('🔊 Reading your journal aloud!', 'success');
+            } else {
+                showMessage('Text-to-speech is not supported in your browser.', 'error');
+            }
+        }
+
+        function toggleMusic() {
+            gameData.musicEnabled = !gameData.musicEnabled;
+            const musicIcon = document.getElementById('musicIcon');
+            const musicStatus = document.getElementById('musicStatus');
+            const musicBtn = document.getElementById('musicToggleBtn');
+            
+            if (gameData.musicEnabled) {
+                musicIcon.textContent = '🎵';
+                musicStatus.textContent = 'Music on';
+                musicBtn.setAttribute('aria-pressed', 'true');
+                // In a real implementation, you would start playing background music
+                console.log('🎵 Background music enabled');
+                showMessage('🎵 Background music enabled', 'success');
+            } else {
+                musicIcon.textContent = '🔇';
+                musicStatus.textContent = 'Music off';
+                musicBtn.setAttribute('aria-pressed', 'false');
+                // In a real implementation, you would stop the background music
+                console.log('🔇 Background music disabled');
+                showMessage('🔇 Background music disabled', 'success');
+            }
+        }
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGemDisplay();
+            updatePlayerLevel();
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', handleKeyboardNavigation);
+            
+            // Announce initial state to screen readers
+            announceToScreenReader('Time Travel English Journal loaded. Enter your name to begin your adventure.', false);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98b686b705f4d7e8',t:'MTc1OTkzNTgxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
