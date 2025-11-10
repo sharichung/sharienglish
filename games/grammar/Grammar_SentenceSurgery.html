@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentence Surgery</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f8f5 0%, #d5f4e6 100%);
+            min-height: 100%;
+            color: #2c3e50;
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #26a69a 0%, #00695c 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: "🏥";
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5em;
+        }
+
+        .header::after {
+            content: "⚕️";
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5em;
+        }
+
+        .game-title {
+            font-size: 2.8em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            margin: 15px 0 0 0;
+            opacity: 0.95;
+        }
+
+        .welcome-screen {
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .welcome-message {
+            font-size: 1.6em;
+            margin-bottom: 35px;
+            color: #26a69a;
+            line-height: 1.4;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            font-size: 1.4em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+        }
+
+        .game-screen {
+            display: none;
+            padding: 35px;
+        }
+
+        .patient-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 3px solid #26a69a;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .patient-card::before {
+            content: "📋";
+            position: absolute;
+            top: -18px;
+            left: 25px;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 1.8em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .patient-label {
+            color: #26a69a;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .broken-sentence {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 3px dashed #ffc107;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            position: relative;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .broken-sentence::before {
+            content: "🤒";
+            position: absolute;
+            top: -15px;
+            right: 15px;
+            background: white;
+            padding: 8px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .timer-label {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #26a69a;
+        }
+
+        .timer {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.4em;
+            font-weight: bold;
+            min-width: 90px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+
+        .timer.warning {
+            animation: heartbeat 1s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: bold;
+            color: #26a69a;
+            font-size: 1.2em;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 18px;
+            border: 3px solid #26a69a;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #00695c;
+            box-shadow: 0 0 15px rgba(38,166,154,0.3);
+            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .check-btn {
+            background: linear-gradient(135deg, #26a69a 0%, #00695c 100%);
+            color: white;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(38,166,154,0.4);
+        }
+
+        .reveal-btn {
+            background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+            color: white;
+        }
+
+        .reveal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,193,7,0.4);
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+        }
+
+        .feedback {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .feedback.success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 3px solid #28a745;
+        }
+
+        .feedback.error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 3px solid #dc3545;
+        }
+
+        .feedback.reveal {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+            border: 3px solid #ffc107;
+        }
+
+        .correct-answer {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 3px solid #28a745;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 1.4em;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(40,167,69,0.2);
+        }
+
+        .correct-answer::before {
+            content: "✅";
+            position: absolute;
+            top: -15px;
+            right: 15px;
+            background: white;
+            padding: 8px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #26a69a;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .game-title {
+                font-size: 2.2em;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 250px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="game-container">
+   <div class="header">
+    <h1 class="game-title" id="gameTitle">Sentence Surgery</h1>
+    <p class="subtitle">Grammar Doctor Training Center</p>
+   </div>
+   <div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-message" id="welcomeMessage">
+     Welcome to Sentence Surgery! Fix the grammar mistakes before the timer runs out.
+    </div><button class="start-btn" onclick="startGame()"> 🩺 Start Healing Sentences! </button>
+   </div>
+   <div class="game-screen" id="gameScreen">
+    <div class="stats">
+     <div class="stat-item">
+      <div class="stat-number" id="correctCount">
+       0
+      </div>
+      <div class="stat-label">
+       Patients Healed
+      </div>
+     </div>
+     <div class="stat-item">
+      <div class="stat-number" id="totalCount">
+       0
+      </div>
+      <div class="stat-label">
+       Total Patients
+      </div>
+     </div>
+     <div class="stat-item">
+      <div class="stat-number" id="attemptCount">
+       0
+      </div>
+      <div class="stat-label">
+       Attempts
+      </div>
+     </div>
+    </div>
+    <div class="patient-card">
+     <div class="patient-label">
+      📋 Patient's Broken Sentence:
+     </div>
+     <div class="broken-sentence" id="brokenSentence"></div>
+     <div class="timer-container"><span class="timer-label">⏰ Time Remaining:</span>
+      <div class="timer" id="timer">
+       60
+      </div>
+     </div>
+    </div>
+    <div class="input-section"><label class="input-label" for="answerInput">🩺 Your Corrected Sentence:</label> <input type="text" id="answerInput" class="answer-input" placeholder="Type the corrected sentence here..." onkeypress="handleKeyPress(event)">
+    </div>
+    <div class="button-group"><button class="btn check-btn" id="checkBtn" onclick="checkAnswer()"> 🔍 Check Fix! </button> <button class="btn reveal-btn" id="revealBtn" onclick="revealAnswer()" style="display: none;"> 💡 Show Correct Answer </button> <button class="btn next-btn" id="nextBtn" onclick="nextPatient()"> ➡️ Next Patient </button>
+    </div>
+    <div id="feedback" class="feedback" style="display: none;"></div>
+    <div id="correctAnswer" class="correct-answer" style="display: none;"></div>
+   </div>
+  </div>
+  <script>
+        const cases = [
+            { 
+                broken: "He go to school every day.", 
+                correct: ["He goes to school every day.", "He goes to the school every day."]
+            },
+            { 
+                broken: "They is playing football.", 
+                correct: ["They are playing football.", "They're playing football."] 
+            },
+            { 
+                broken: "She don't like apples.", 
+                correct: ["She doesn't like apples.", "She does not like apples."] 
+            },
+            { 
+                broken: "I am study English.", 
+                correct: ["I am studying English.", "I'm studying English."] 
+            },
+            { 
+                broken: "We was happy yesterday.", 
+                correct: ["We were happy yesterday."] 
+            },
+            { 
+                broken: "My father can to drive.", 
+                correct: ["My father can drive."] 
+            },
+            { 
+                broken: "She very likes music.", 
+                correct: ["She really likes music.", "She likes music very much."] 
+            },
+            { 
+                broken: "It raining now.", 
+                correct: ["It is raining now.", "It's raining now."] 
+            },
+            { 
+                broken: "I have went to the store.", 
+                correct: ["I have gone to the store.", "I went to the store."] 
+            },
+            { 
+                broken: "She are my best friend.", 
+                correct: ["She is my best friend.", "She's my best friend."] 
+            },
+            { 
+                broken: "We doesn't understand.", 
+                correct: ["We don't understand.", "We do not understand."] 
+            },
+            { 
+                broken: "He can speaks English well.", 
+                correct: ["He can speak English well.", "He speaks English well."] 
+            },
+            { 
+                broken: "They was at the party.", 
+                correct: ["They were at the party."] 
+            },
+            { 
+                broken: "I am liking this game.", 
+                correct: ["I like this game.", "I really like this game."] 
+            },
+            { 
+                broken: "She have three cats.", 
+                correct: ["She has three cats."] 
+            }
+        ];
+
+        let currentCase = null;
+        let previousCaseIndex = -1;
+        let timer = null;
+        let timeLeft = 60;
+        let gameStats = {
+            correct: 0,
+            total: 0,
+            attempts: 0
+        };
+
+        const defaultConfig = {
+            game_title: "Sentence Surgery",
+            welcome_message: "Welcome to Sentence Surgery! Fix the grammar mistakes before the timer runs out.",
+            timer_duration: "60"
+        };
+
+        function normalizeText(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^\w\s]/g, '') // Remove punctuation
+                .replace(/\s+/g, ' ')    // Replace multiple spaces with single space
+                .trim();
+        }
+
+        function startGame() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            nextPatient();
+        }
+
+        function getRandomCase() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * cases.length);
+            } while (randomIndex === previousCaseIndex && cases.length > 1);
+            
+            previousCaseIndex = randomIndex;
+            return cases[randomIndex];
+        }
+
+        function nextPatient() {
+            currentCase = getRandomCase();
+            document.getElementById('brokenSentence').textContent = currentCase.broken;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('correctAnswer').style.display = 'none';
+            document.getElementById('revealBtn').style.display = 'none';
+            document.getElementById('checkBtn').style.display = 'inline-block';
+            
+            // Reset timer styling
+            document.getElementById('timer').classList.remove('warning');
+            
+            // Reset and start timer
+            const timerDuration = parseInt(window.elementSdk?.config?.timer_duration || defaultConfig.timer_duration);
+            timeLeft = timerDuration;
+            updateTimerDisplay();
+            startTimer();
+            
+            // Focus on input
+            document.getElementById('answerInput').focus();
+        }
+
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('warning');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer').textContent = timeLeft;
+        }
+
+        function timeUp() {
+            showFeedback("⏰ Time's up! Let's check the correct sentence.", 'reveal');
+            document.getElementById('revealBtn').style.display = 'inline-block';
+            document.getElementById('checkBtn').style.display = 'none';
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            
+            if (!userAnswer) {
+                showFeedback("Please enter your corrected sentence first!", 'error');
+                return;
+            }
+            
+            gameStats.attempts++;
+            updateStats();
+            
+            // Normalize user answer
+            const normalizedUser = normalizeText(userAnswer);
+            
+            // Check against all possible correct answers
+            const isCorrect = currentCase.correct.some(correctAnswer => {
+                const normalizedCorrect = normalizeText(correctAnswer);
+                return normalizedUser === normalizedCorrect;
+            });
+            
+            if (isCorrect) {
+                clearInterval(timer);
+                gameStats.correct++;
+                gameStats.total++;
+                updateStats();
+                showFeedback("✅ The sentence is healed! Great job, Doctor! 🎉", 'success');
+                document.getElementById('checkBtn').style.display = 'none';
+            } else {
+                showFeedback("⚠️ Still sick! Try again, Doctor!", 'error');
+                document.getElementById('revealBtn').style.display = 'inline-block';
+            }
+        }
+
+        function revealAnswer() {
+            clearInterval(timer);
+            gameStats.total++;
+            updateStats();
+            
+            // Show the first correct answer as an example
+            const correctAnswerText = currentCase.correct[0];
+            document.getElementById('correctAnswer').innerHTML = 
+                `<strong>Correct Answer:</strong><br>${correctAnswerText}`;
+            document.getElementById('correctAnswer').style.display = 'block';
+            document.getElementById('revealBtn').style.display = 'none';
+            document.getElementById('checkBtn').style.display = 'none';
+            
+            showFeedback("📚 Here's one correct version. Study it well!", 'reveal');
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+            feedback.style.display = 'block';
+        }
+
+        function updateStats() {
+            document.getElementById('correctCount').textContent = gameStats.correct;
+            document.getElementById('totalCount').textContent = gameStats.total;
+            document.getElementById('attemptCount').textContent = gameStats.attempts;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        }
+
+        // Element SDK Integration
+        const element = {
+            defaultConfig: defaultConfig,
+            
+            render: async (config) => {
+                document.getElementById('gameTitle').textContent = config.game_title || defaultConfig.game_title;
+                document.getElementById('welcomeMessage').textContent = config.welcome_message || defaultConfig.welcome_message;
+            },
+            
+            mapToCapabilities: (config) => ({
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            }),
+            
+            mapToEditPanelValues: (config) => new Map([
+                ["game_title", config.game_title || defaultConfig.game_title],
+                ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+                ["timer_duration", config.timer_duration || defaultConfig.timer_duration]
+            ])
+        };
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init(element);
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99046eec72bb79c1',t:'MTc2MDc1MjczNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

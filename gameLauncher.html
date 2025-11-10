@@ -1,0 +1,1797 @@
+<!doctype html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- add Font Awesome (if not already present) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>遊戲啟動頁面 - 教學管理系統</title>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FDFBF7 0%, #F0F8FF 100%);
+            color: #2C3E50;
+            line-height: 1.6;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 頂部資訊 Bar */
+        .top-info-bar {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(167, 199, 231, 0.15);
+            border-bottom: 2px solid #A7C7E7;
+            height: 50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #2C3E50;
+        }
+
+        .teacher-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #A7C7E7, #FFF5B2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .teacher-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .student-display {
+            font-size: 0.95rem;
+        }
+
+        .switch-student-btn {
+            background: #A7C7E7;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .switch-student-btn:hover {
+            background: #8BB5D9;
+            transform: translateY(-1px);
+        }
+
+        .group-tip {
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            right: 20px;
+            background: #FFF5B2;
+            color: #2C3E50;
+            padding: 8px 12px;
+            border-radius: 0 0 10px 10px;
+            font-size: 0.8rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(255, 245, 178, 0.3);
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .group-tip.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 主要遊戲區域 */
+        .game-section {
+            flex: 1;
+            position: relative;
+            margin: 15px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(167, 199, 231, 0.2);
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-info-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            z-index: 5;
+            border-bottom: 1px solid rgba(167, 199, 231, 0.3);
+        }
+
+        .game-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .game-cover {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #FFF5B2, #A7C7E7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .game-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            color: #2C3E50;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .game-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #A7C7E7;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .tag.level {
+            background: #FFF5B2;
+            color: #2C3E50;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .fullscreen-btn {
+            background: rgba(167, 199, 231, 0.2);
+            color: #2C3E50;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(167, 199, 231, 0.4);
+            transform: scale(1.05);
+        }
+
+        .game-status {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27AE60;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .game-container {
+            flex: 1;
+            background: #F8F9FA;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .game-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 底部浮動工具列 */
+        .bottom-toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px;
+            box-shadow: 0 -4px 16px rgba(167, 199, 231, 0.2);
+            border-top: 2px solid #A7C7E7;
+            z-index: 20;
+            height: 56px;
+            text-align: center;
+        }
+
+        .toolbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .game-switcher {
+            position: relative;
+        }
+
+        .game-select {
+            width: 100%;
+            min-width: 180px;
+            padding: 8px 12px;
+            border: 2px solid #A7C7E7;
+            border-radius: 20px;
+            background: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .toolbar-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-complete {
+            background: #27AE60;
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #2C3E50;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-ai:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-ai::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+
+            50% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+        }
+
+        .btn-end {
+            background: #E74C3C;
+            color: white;
+        }
+
+        .btn-end:hover {
+            background: #C0392B;
+            transform: translateY(-2px);
+        }
+
+        /* 收合區域 */
+        .collapsible-sections {
+            position: fixed;
+            top: 70px;
+            right: 15px;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 280px;
+        }
+
+        .collapsible-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(167, 199, 231, 0.3);
+            border: 2px solid #A7C7E7;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s ease;
+            background: rgba(167, 199, 231, 0.1);
+        }
+
+        .card-header:hover {
+            background: rgba(167, 199, 231, 0.2);
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #2C3E50;
+            font-size: 0.9rem;
+        }
+
+        .expand-icon {
+            transition: transform 0.2s ease;
+            color: #7F8C8D;
+        }
+
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .card-content {
+            max-height: 0;
+            overflow: auto;
+            transition: max-height 0.2s ease;
+        }
+
+        .card-content.expanded {
+            max-height: 300px;
+        }
+
+        .card-inner {
+            padding: 15px;
+        }
+
+        .bookmarked-games {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .game-bookmark {
+            background: #F8F9FA;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid #A7C7E7;
+        }
+
+        .game-bookmark:hover {
+            background: #E8F4FD;
+            transform: translateX(3px);
+        }
+
+        .bookmark-title {
+            font-weight: 600;
+            color: #2C3E50;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .bookmark-meta {
+            font-size: 0.75rem;
+            color: #7F8C8D;
+        }
+
+        .add-game-btn {
+            background: #A7C7E7;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .add-game-btn:hover {
+            background: #8BB5D9;
+            transform: translateY(-1px);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 99999 !important;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 80%;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F8F9FA;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2C3E50;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #2C3E50;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #A7C7E7;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8BB5D9;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: #FFF5B2;
+            color: #2C3E50;
+        }
+
+        .btn-secondary:hover {
+            background: #FFE082;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: #A7C7E7;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #8BB5D9;
+            transform: translateY(-1px);
+        }
+
+        /* Premium 升級卡片 */
+        .premium-float {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #2C3E50;
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 25;
+            max-width: 250px;
+            display: none;
+        }
+
+        .premium-float.show {
+            display: block;
+            animation: bounceIn 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3) translateY(20px);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .premium-float:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .premium-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .premium-desc {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        /* Toast 通知 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2C3E50;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+            }
+
+            .game-section {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .collapsible-sections {
+                position: static;
+                margin: 10px;
+                max-width: none;
+            }
+
+            .toolbar-content {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .game-select {
+                min-width: auto;
+            }
+
+            .bottom-toolbar {
+                height: auto;
+                padding: 10px;
+            }
+
+            .game-container {
+                margin-top: 70px;
+            }
+
+            .premium-float {
+                bottom: 120px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .teacher-info {
+                font-size: 0.85rem;
+            }
+
+            .game-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-info-bar {
+                padding: 8px 15px;
+                flex-direction: column;
+                height: auto;
+                gap: 8px;
+            }
+
+            .game-info-overlay {
+                padding: 10px 15px;
+            }
+
+            .game-container {
+                margin-top: 60px;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 20px;
+            }
+
+            .toolbar-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 可及性改善 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        button:focus,
+        select:focus,
+        input:focus {
+            outline: 2px solid #A7C7E7;
+            outline-offset: 2px;
+        }
+
+        /* Dropdown navigation style (replace/augment collapsible styles) */
+        .dropdown-nav {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(167, 199, 231, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dropdown-toggle:focus {
+            outline: 2px solid #8BB5D9;
+        }
+
+        .dropdown-title {
+            font-weight: 600;
+            color: #2C3E50;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-icon {
+            transition: transform .2s ease;
+            color: #7F8C8D;
+            font-size: x-small;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 320px;
+            max-height: 360px;
+            overflow: auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(167, 199, 231, 0.25);
+            border: 2px solid #A7C7E7;
+            display: none;
+            z-index: 30;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-inner {
+            padding: 12px;
+        }
+
+        .game-bookmark {
+            background: #F8F9FA;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            border-left: 3px solid #A7C7E7;
+            margin-bottom: 8px;
+        }
+
+        .add-game-row {
+            padding: 12px;
+            border-top: 1px dashed rgba(167, 199, 231, 0.15);
+            display: flex;
+            justify-content: center;
+        }
+
+        @media (max-width:480px) {
+            .dropdown-menu {
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-width: unset;
+            }
+        }
+    </style>
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+    <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+    <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+</head>
+
+<body>
+    <!-- 頂部資訊 Bar -->
+    <header class="container-fluid top-info-bar" role="banner">
+        <div class="teacher-info">
+            <div class="teacher-avatar" onclick="toggleStudentMode()" aria-label="切換學生模式" title="點擊切換單人/小組模式">
+                👩‍🏫
+            </div><span class="student-display" id="student-display">你正在教導：小明</span>
+        </div><button class="switch-student-btn" onclick="showSwitchStudentModal()" aria-label="切換學生"> 切換學生
+        </button>
+        <div class="group-tip" id="group-tip" aria-live="polite">
+            🤝 小組模式：記得留意每位學生嘅進度！
+        </div>
+    </header>
+    <div class="container">
+        <!-- 主要遊戲區域 -->
+        <main class="game-section" role="main">
+            <div class="game-info-overlay">
+                <div class="game-header">
+                    <div class="game-cover" id="game-cover" aria-hidden="true">
+                        🍎
+                    </div>
+                    <div class="game-details">
+                        <h1 class="game-title" id="game-title">Fruit Match</h1>
+                        <div class="game-tags" role="list" aria-label="遊戲標籤"><span class="tag" role="listitem"
+                                id="skill-tag">Vocabulary</span> <span class="tag level" role="listitem"
+                                id="level-tag">KS1</span> <span class="tag" role="listitem"
+                                id="category-tag">Language</span>
+                        </div>
+                    </div>
+                    <div class="game-controls"><button class="fullscreen-btn" onclick="toggleFullscreen()"
+                            aria-label="全螢幕模式"> <i class="fa-solid fa-expand" aria-hidden="true"></i> </button>
+
+                        <!-- 加入新遊戲 -->
+                        <section class="dropdown-nav" id="bookmarked-dropdown">
+                            <div class="dropdown-toggle" id="bookmarked-toggle" role="button" tabindex="0"
+                                aria-expanded="false" aria-controls="bookmarked-content"
+                                onclick="toggleDropdown('bookmarked')"
+                                onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleDropdown('bookmarked'); }">
+                                <h2 class="dropdown-title"><i class="fa-solid fa-gamepad" aria-hidden="true" style="margin-right:8px;"></i>切換遊戲</h2>
+                                <span class="dropdown-icon ms-2" id="bookmarked-icon" aria-hidden="true">▼</span>
+                            </div>
+
+                            <div class="dropdown-menu" id="bookmarked-content" aria-hidden="true">
+                                <div class="dropdown-inner">
+                                    <div class="bookmarked-games" role="list">
+                                        <article class="game-bookmark" onclick="loadBookmarkedGame('shape-pairs')"
+                                            role="listitem" tabindex="0">
+                                            <div class="bookmark-title">🔷 Shape Pairs</div>
+                                            <div class="bookmark-meta">Geometry • 昨天使用</div>
+                                        </article>
+
+                                        <article class="game-bookmark" onclick="loadBookmarkedGame('word-listen')"
+                                            role="listitem" tabindex="0">
+                                            <div class="bookmark-title">👂 Word Listen</div>
+                                            <div class="bookmark-meta">Listening • 3天前</div>
+                                        </article>
+
+                                        <article class="game-bookmark" onclick="loadBookmarkedGame('number-count')"
+                                            role="listitem" tabindex="0">
+                                            <div class="bookmark-title">🔢 Number Count</div>
+                                            <div class="bookmark-meta">Math • 1週前</div>
+                                        </article>
+                                    </div>
+
+                                    <div class="add-game-row">
+                                        <button class="add-game-btn" onclick="showAddGameModal()" aria-label="加入新遊戲">➕
+                                            加入新遊戲</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <div class="game-container"><iframe class="game-iframe" id="game-iframe" src="games/free/matching.html"
+                    title="遊戲內容" aria-label="Fruit Match 遊戲"></iframe>
+                <iframe class="game-iframe" id="game-iframe" src="" title="遊戲內容" aria-label="Fruit Match 遊戲"></iframe>
+            </div>
+    </div>
+    </main>
+    <nav class="bottom-toolbar" role="navigation" aria-label="主要操作">
+        <button class="toolbar-btn btn-complete" aria-label="完成此遊戲"> ✅ 完成遊戲 </button>
+        <button class="toolbar-btn btn-end" onclick="endSession()" aria-label="結束課堂"> ⏹ 結束課堂 </button>
+        </div>
+    </nav>
+    </div><!-- Premium 升級浮動卡片 -->
+    <div class="premium-float" id="premium-float" onclick="showUpgradeModal()" role="button" tabindex="0"
+        aria-label="升級至 Premium">
+        <div class="premium-title">
+            🌟 升級至 Premium
+        </div>
+        <div class="premium-desc">
+            解鎖 AI 推薦模組與完整紀錄
+        </div>
+    </div><!-- 切換學生 Modal -->
+    <div id="switchStudentModal" class="modal" role="dialog" aria-labelledby="switch-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 class="modal-title" id="switch-modal-title">切換學生</h3><button class="close"
+                    onclick="closeSwitchStudentModal()" aria-label="關閉">×</button>
+            </header>
+            <form id="switchStudentForm">
+                <div class="form-group"><label for="student-list">選擇學生：</label> <select id="student-list">
+                        <option value="小明">小明</option>
+                        <option value="阿花">阿花</option>
+                        <option value="阿強">阿強</option>
+                        <option value="小美">小美</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>課堂模式：</label>
+                    <div class="radio-group">
+                        <div class="radio-option"><input type="radio" id="single-mode" name="mode" value="single"
+                                checked> <label for="single-mode">1 對 1</label>
+                        </div>
+                        <div class="radio-option"><input type="radio" id="group-mode" name="mode" value="group"> <label
+                                for="group-mode">小組課堂</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions"><button type="button" class="btn-modal btn-secondary"
+                        onclick="closeSwitchStudentModal()"> 取消 </button> <button type="submit"
+                        class="btn-modal btn-primary"> 確認切換 </button>
+                </div>
+            </form>
+        </div>
+    </div><!-- 加入遊戲 Modal -->
+    <div id="addGameModal" class="modal" role="dialog" aria-labelledby="add-game-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 class="modal-title" id="add-game-modal-title">加入新遊戲</h3><button class="close"
+                    onclick="closeAddGameModal()" aria-label="關閉">×</button>
+            </header>
+            <form id="addGameForm">
+                <div class="form-group"><label>選擇來源：</label>
+                    <div class="radio-group">
+                        <div class="radio-option"><input type="radio" id="platform-source" name="source"
+                                value="platform" checked onchange="toggleSourceFields()"> <label
+                                for="platform-source">平台遊戲庫</label>
+                        </div>
+                        <div class="radio-option"><input type="radio" id="external-source" name="source"
+                                value="external" onchange="toggleSourceFields()"> <label
+                                for="external-source">外部連結</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="platform-fields">
+                    <div class="form-group"><label for="platform-game">選擇遊戲：</label> <select id="platform-game"
+                            onchange="fillPlatformGameInfo()">
+                            <option value="">請選擇遊戲...</option>
+                            <option value="fruit-match">🍎 Fruit Match</option>
+                            <option value="shape-pairs">🔷 Shape Pairs</option>
+                            <option value="word-listen">👂 Word Listen</option>
+                            <option value="number-count">🔢 Number Count</option>
+                            <option value="color-mix">🎨 Color Mix</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="external-fields" style="display: none;">
+                    <div class="form-group"><label for="external-url">遊戲連結：</label> <input type="url" id="external-url"
+                            placeholder="https://example.com/game" required>
+                    </div>
+                </div>
+                <div class="form-group"><label for="game-name">遊戲名稱：</label> <input type="text" id="game-name"
+                        placeholder="輸入遊戲名稱" required>
+                </div>
+                <div class="form-group"><label for="game-skills">技能標籤：</label> <input type="text" id="game-skills"
+                        placeholder="例如：Vocabulary, Listening">
+                </div>
+                <div class="modal-actions"><button type="button" class="btn-modal btn-secondary"
+                        onclick="closeAddGameModal()"> 取消 </button> <button type="button"
+                        class="btn-modal btn-secondary" onclick="saveAsBookmark()"> 儲存書籤 </button> <button type="submit"
+                        class="btn-modal btn-primary"> 立即啟動 </button>
+                </div>
+            </form>
+        </div>
+    </div><!-- Premium 升級 Modal -->
+    <div id="upgradeModal" class="modal" role="dialog" aria-labelledby="upgrade-modal-title" aria-hidden="true">
+        <div class="modal-content" style="text-align: center;">
+            <header class="modal-header">
+                <h3 class="modal-title" id="upgrade-modal-title">🌟 升級至 Premium</h3><button class="close"
+                    onclick="closeUpgradeModal()" aria-label="關閉">×</button>
+            </header>
+            <div style="margin: 20px 0;">
+                <p style="color: #7F8C8D; margin-bottom: 20px;">解鎖完整教學功能，提升課堂效率！</p>
+                <div style="text-align: left; margin: 20px 0;">
+                    <div style="margin-bottom: 10px;">
+                        ✨ AI 智能推薦遊戲
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        📊 完整學習紀錄分析
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        🔖 無限遊戲書籤
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        🎯 個人化學習路徑
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        💬 優先客服支援
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions" style="justify-content: center;"><button class="btn-modal btn-secondary"
+                    onclick="closeUpgradeModal()"> 稍後再說 </button> <button class="btn-modal btn-primary"
+                    onclick="upgradeToPremium()"> 了解 Premium 功能 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：完成遊戲彈窗 / 以及把 iframe 顯示成「本堂已完成」檢視 -->
+    <div id="completedModal" class="modal" role="dialog" aria-labelledby="completed-modal-title" aria-hidden="true"
+        style="display:none;">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 class="modal-title" id="completed-modal-title">✅ 本堂已完成的遊戲</h3>
+                <button class="close" onclick="closeCompletedModal()" aria-label="關閉">×</button>
+            </header>
+            <div id="completed-list" style="max-height:320px; overflow:auto; margin:8px 0 16px 0; color:#2C3E50;"></div>
+            <div class="modal-actions" style="justify-content:space-between;">
+                <button class="btn-modal btn-secondary" onclick="closeCompletedModal()"> 繼續課堂 </button>
+                <button class="btn-modal btn-end" onclick="endSession()"> 結束課堂 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：結束課堂確認 Modal（放在 completedModal 旁邊） -->
+    <div id="confirmEndModal" class="modal" role="dialog" aria-labelledby="confirm-end-title" aria-hidden="true" style="display:none;">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 class="modal-title" id="confirm-end-title">⚠️ 確認結束課堂</h3>
+                <button class="close" onclick="closeConfirmEndModal()" aria-label="關閉">×</button>
+            </header>
+            <div style="padding:6px 0 0 0; color:#2C3E50;">
+                <p>確定要結束本堂課並前往回饋頁面嗎？</p>
+            </div>
+            <div class="modal-actions" style="justify-content:space-between;margin-top:18px;">
+                <button type="button" class="btn-modal btn-secondary" onclick="closeConfirmEndModal()"> 取消 </button>
+                <button type="button" class="btn-modal btn-end" onclick="confirmEndSession()"> 確認結束並前往回饋 </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全域變數
+        let currentStudent = '小明';
+        let isGroupMode = false;
+        let sessionStartTime = new Date();
+        let currentGame = {
+            id: 'fruit-match',
+            title: 'Fruit Match',
+            skills: 'Vocabulary',
+            level: 'KS1',
+            category: 'Language',
+            cover: '🍎',
+            url: 'games/speaking/creative-speaking/MyDreamHouse.html'
+        };
+
+        // 平台遊戲庫資料
+        const platformGames = {
+            'fruit-match': {
+                title: 'Fruit Match',
+                skills: 'Vocabulary',
+                level: 'KS1',
+                category: 'Language',
+                cover: '🍎',
+                url: 'games/free/matching.html'
+            },
+            'shape-pairs': {
+                title: 'Shape Pairs',
+                skills: 'Geometry',
+                level: 'KS1',
+                category: 'Math',
+                cover: '🔷',
+                url: 'games/free/SuperheroRescueLetters.html'
+            },
+            'word-listen': {
+                title: 'Word Listen',
+                skills: 'Listening',
+                level: 'KS2',
+                category: 'Language',
+                cover: '👂',
+                url: 'games/grammar/SentenceSurgery.html'
+            },
+            'number-count': {
+                title: 'Number Count',
+                skills: 'Counting',
+                level: 'KS1',
+                category: 'Math',
+                cover: '🔢',
+                url: 'games/financial-literacy/KidsToyShop.html'
+            },
+            'color-mix': {
+                title: 'Color Mix',
+                skills: 'Art, Colors',
+                level: 'KS1',
+                category: 'Art',
+                cover: '🎨',
+                url: 'games/financial-literacy/MiniBusinessTycoonSuper.html'
+            }
+        };
+
+        // 學生紀錄
+        let studentRecords = [];
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            updateStudentDisplay();
+            // 設定初始遊戲 iframe src
+            document.getElementById('game-iframe').src = currentGame.url;
+        });
+
+        // 切換學生模式
+        function toggleStudentMode() {
+            isGroupMode = !isGroupMode;
+            updateStudentDisplay();
+
+            if (isGroupMode) {
+                showToast('已切換至小組模式');
+            } else {
+                showToast('已切換至單人模式');
+            }
+        }
+
+        // 更新學生顯示
+        function updateStudentDisplay() {
+            const studentDisplay = document.getElementById('student-display');
+            const groupTip = document.getElementById('group-tip');
+
+            if (isGroupMode) {
+                studentDisplay.textContent = '你而家教緊：小明、阿花、阿強';
+                groupTip.classList.add('show');
+            } else {
+                studentDisplay.textContent = `你正在教導：${currentStudent}`;
+                groupTip.classList.remove('show');
+            }
+        }
+
+        // 顯示切換學生 Modal
+        function showSwitchStudentModal() {
+            document.getElementById('switchStudentModal').style.display = 'block';
+            document.getElementById('switchStudentModal').setAttribute('aria-hidden', 'false');
+        }
+
+        // 關閉切換學生 Modal
+        function closeSwitchStudentModal() {
+            document.getElementById('switchStudentModal').style.display = 'none';
+            document.getElementById('switchStudentModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // 處理切換學生表單
+        document.getElementById('switchStudentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const selectedStudent = document.getElementById('student-list').value;
+            const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+
+            currentStudent = selectedStudent;
+            isGroupMode = (selectedMode === 'group');
+
+            updateStudentDisplay();
+            closeSwitchStudentModal();
+
+            showToast(`已切換至 ${selectedStudent}${isGroupMode ? ' (小組模式)' : ''}`);
+        });
+
+        // 切換遊戲
+        function switchGame() {
+            const select = document.getElementById('game-select');
+            const gameId = select.value;
+
+            if (gameId && platformGames[gameId]) {
+                loadGame(gameId);
+                select.value = '';
+            }
+        }
+
+        // 載入遊戲
+        function loadGame(gameId) {
+            if (platformGames[gameId]) {
+                currentGame = {
+                    id: gameId,
+                    ...platformGames[gameId]
+                };
+                updateGameDisplay();
+                showToast(`已切換至 ${currentGame.title}`);
+            }
+        }
+
+        // 更新遊戲顯示
+        function updateGameDisplay() {
+            document.getElementById('game-title').textContent = currentGame.title;
+            document.getElementById('skill-tag').textContent = currentGame.skills;
+            document.getElementById('level-tag').textContent = currentGame.level;
+            document.getElementById('category-tag').textContent = currentGame.category;
+            document.getElementById('game-cover').textContent = currentGame.cover;
+            document.getElementById('game-iframe').src = currentGame.url;
+        }
+
+        // 完成遊戲
+        // Replace/augment completeGame() to show completed view in iframe and open modal
+        function completeGame() {
+            console.log('completeGame() called');
+            const record = {
+                student: isGroupMode ? '小明、阿花、阿強' : currentStudent,
+                gameId: currentGame.id,
+                gameTitle: currentGame.title,
+                startedAt: new Date(),
+                finishedAt: new Date(),
+                duration: Math.floor(Math.random() * 300) + 60
+            };
+
+            studentRecords.push(record);
+            showToast(`✅ ${currentGame.title} 已完成！`);
+
+            // 顯示完成彈窗（詢問是否玩下一個或結束）
+            showCompletedModal();
+        }
+
+        // 彈窗控制（更新：同時填充已完成遊戲清單）
+        function showCompletedModal() {
+            console.log('showCompletedModal() called');
+            const modal = document.getElementById('completedModal');
+            const list = document.getElementById('completed-list');
+            if (!modal) {
+                console.error('completedModal element missing');
+                return;
+            }
+            if (!list) {
+                console.error('completed-list element missing');
+                return;
+            }
+
+            // 填充清單內容
+            if (!Array.isArray(studentRecords) || studentRecords.length === 0) {
+                list.innerHTML = '<div style="color:#7F8C8D;padding:8px 0;">尚未完成任何遊戲</div>';
+            } else {
+                list.innerHTML = studentRecords.map(r => {
+                    const time = new Date(r.finishedAt).toLocaleString();
+                    const student = r.student ? escapeHtml(r.student) : '—';
+                    const title = r.gameTitle ? escapeHtml(r.gameTitle) : '未知遊戲';
+                    const duration = r.duration ? `${r.duration}s` : '—';
+                    return `<div style="padding:10px 0;border-bottom:1px solid #eee;">
+                <div style="font-weight:600;color:#2C3E50">${title}</div>
+                <div style="font-size:0.85rem;color:#7F8C8D">玩家：${student} • ${time} • ${duration}</div>
+              </div>`;
+                }).join('');
+            }
+
+            // 確保 modal 在 body 最後面、z-index 足夠高
+            if (modal.parentNode !== document.body) {
+                document.body.appendChild(modal);
+            }
+            modal.style.zIndex = 99999;
+            modal.style.display = 'block';
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        // 小工具：簡單 escape HTML（若尚未定義）
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                } [m]);
+            });
+        }
+
+        function closeCompletedModal() {
+            const modal = document.getElementById('completedModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+
+            // 若要回到剛剛的遊戲視圖，重新載入 currentGame.url
+            const iframe = document.getElementById('game-iframe');
+            if (iframe && currentGame && currentGame.url) {
+                iframe.src = currentGame.url;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const completeBtn = document.querySelector('.btn-complete');
+            if (completeBtn) {
+                completeBtn.addEventListener('click', () => {
+                    console.log('completeBtn clicked');
+                    if (typeof completeGame === 'function') {
+                        try {
+                            completeGame();
+                        } catch (err) {
+                            console.error('completeGame threw', err);
+                        }
+                    } else {
+                        console.error('completeGame is not a function');
+                    }
+                });
+            } else {
+                console.warn('.btn-complete not found');
+            }
+        });
+
+        // 結束課堂
+        function endSession() {
+  // open confirmation modal instead of immediately ending
+  const modal = document.getElementById('confirmEndModal');
+  if (modal) {
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    modal.style.zIndex = 100000;
+    return;
+  }
+  // fallback: if modal missing, still end
+  doEndSession();
+}
+
+function closeConfirmEndModal() {
+  const modal = document.getElementById('confirmEndModal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+// actual end logic (separated so it can be reused)
+function doEndSession() {
+  // close other UI that should be closed
+  if (typeof closeCompletedModal === 'function') closeCompletedModal();
+  // show a toast then redirect
+  showToast('課堂已結束，前往回饋頁面...');
+  // small delay so toast is visible
+  setTimeout(() => {
+    window.location.href = 'lessonFeedback.html';
+  }, 400);
+}
+
+// called when teacher confirms
+function confirmEndSession() {
+  // ensure modal closes
+  closeConfirmEndModal();
+  // perform end behavior
+  doEndSession();
+}
+
+// ensure clicking outside the confirm modal closes it (add to existing background click handler)
+window.addEventListener('click', function (e) {
+  const confirmModal = document.getElementById('confirmEndModal');
+  if (confirmModal && e.target === confirmModal) {
+    closeConfirmEndModal();
+  }
+});
+
+        // 全螢幕功能
+        function toggleFullscreen() {
+            const iframe = document.getElementById('game-iframe');
+
+            if (!document.fullscreenElement) {
+                iframe.requestFullscreen().then(() => {
+                    showToast('已進入全螢幕模式');
+                }).catch(() => {
+                    showToast('無法進入全螢幕模式');
+                });
+            } else {
+                document.exitFullscreen().then(() => {
+                    showToast('已退出全螢幕模式');
+                });
+            }
+        }
+
+        // 切換卡片展開/收起
+        function toggleCard(cardId) {
+            const content = document.getElementById(`${cardId}-content`);
+            const icon = document.getElementById(`${cardId}-icon`);
+            const header = document.querySelector(`[aria-controls="${cardId}-content"]`);
+
+            const isExpanded = content.classList.contains('expanded');
+
+            if (isExpanded) {
+                content.classList.remove('expanded');
+                icon.classList.remove('rotated');
+                content.setAttribute('aria-hidden', 'true');
+                header.setAttribute('aria-expanded', 'false');
+            } else {
+                content.classList.add('expanded');
+                icon.classList.add('rotated');
+                content.setAttribute('aria-hidden', 'false');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // 載入書籤遊戲
+        function loadBookmarkedGame(gameId) {
+            loadGame(gameId);
+        }
+
+        // 顯示加入遊戲 Modal
+        function showAddGameModal() {
+            document.getElementById('addGameModal').style.display = 'block';
+            document.getElementById('addGameModal').setAttribute('aria-hidden', 'false');
+            toggleSourceFields();
+        }
+
+        // 關閉加入遊戲 Modal
+        function closeAddGameModal() {
+            document.getElementById('addGameModal').style.display = 'none';
+            document.getElementById('addGameModal').setAttribute('aria-hidden', 'true');
+            document.getElementById('addGameForm').reset();
+        }
+
+        // 顯示升級 Modal
+        function showUpgradeModal() {
+            document.getElementById('upgradeModal').style.display = 'block';
+            document.getElementById('upgradeModal').setAttribute('aria-hidden', 'false');
+        }
+
+        // 關閉升級 Modal
+        function closeUpgradeModal() {
+            document.getElementById('upgradeModal').style.display = 'none';
+            document.getElementById('upgradeModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // 顯示 Premium 浮動卡片
+        function showPremiumFloat() {
+            const premiumFloat = document.getElementById('premium-float');
+            premiumFloat.classList.add('show');
+
+            setTimeout(() => {
+                premiumFloat.classList.remove('show');
+            }, 5000);
+        }
+
+        // 升級至 Premium
+        function upgradeToPremium() {
+            showToast('跳轉至 Premium 功能介紹頁面...');
+            closeUpgradeModal();
+        }
+
+        // 切換來源欄位
+        function toggleSourceFields() {
+            const platformFields = document.getElementById('platform-fields');
+            const externalFields = document.getElementById('external-fields');
+            const isPlatform = document.getElementById('platform-source').checked;
+
+            if (isPlatform) {
+                platformFields.style.display = 'block';
+                externalFields.style.display = 'none';
+                document.getElementById('external-url').removeAttribute('required');
+            } else {
+                platformFields.style.display = 'none';
+                externalFields.style.display = 'block';
+                document.getElementById('external-url').setAttribute('required', '');
+            }
+        }
+
+        // 填入平台遊戲資訊
+        function fillPlatformGameInfo() {
+            const gameId = document.getElementById('platform-game').value;
+
+            if (gameId && platformGames[gameId]) {
+                const game = platformGames[gameId];
+                document.getElementById('game-name').value = game.title;
+                document.getElementById('game-skills').value = game.skills;
+            }
+        }
+
+        // 儲存為書籤
+        function saveAsBookmark() {
+            const formData = getFormData();
+            if (validateForm(formData)) {
+                addToBookmarks(formData);
+                showToast('遊戲已加入書籤！');
+                closeAddGameModal();
+            }
+        }
+
+        // 處理表單提交
+        document.getElementById('addGameForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = getFormData();
+            if (validateForm(formData)) {
+                const gameId = `custom-${Date.now()}`;
+                const newGame = {
+                    id: gameId,
+                    title: formData.name,
+                    skills: formData.skills,
+                    level: 'Custom',
+                    category: 'Custom',
+                    cover: '🎮',
+                    url: formData.url || createCustomGameUrl(formData.name)
+                };
+
+                platformGames[gameId] = newGame;
+                currentGame = newGame;
+                updateGameDisplay();
+
+                showToast(`已啟動 ${formData.name}！`);
+                closeAddGameModal();
+            }
+        });
+
+        // 獲取表單資料
+        function getFormData() {
+            const isPlatform = document.getElementById('platform-source').checked;
+
+            return {
+                source: isPlatform ? 'platform' : 'external',
+                platformGame: document.getElementById('platform-game').value,
+                url: document.getElementById('external-url').value,
+                name: document.getElementById('game-name').value,
+                skills: document.getElementById('game-skills').value
+            };
+        }
+
+        // 驗證表單
+        function validateForm(data) {
+            if (!data.name.trim()) {
+                showToast('請輸入遊戲名稱');
+                return false;
+            }
+
+            if (data.source === 'external' && !data.url.trim()) {
+                showToast('請輸入遊戲連結');
+                return false;
+            }
+
+            if (data.source === 'platform' && !data.platformGame) {
+                showToast('請選擇平台遊戲');
+                return false;
+            }
+
+            return true;
+        }
+
+        // 加入到書籤
+        function addToBookmarks(data) {
+            const bookmarksContainer = document.querySelector('.bookmarked-games');
+            const bookmark = document.createElement('article');
+            bookmark.className = 'game-bookmark';
+            bookmark.setAttribute('role', 'listitem');
+            bookmark.setAttribute('tabindex', '0');
+            bookmark.onclick = () => loadCustomGame(data);
+
+            bookmark.innerHTML = `
+                <div class="bookmark-title">🎮 ${data.name}</div>
+                <div class="bookmark-meta">${data.skills} • 剛剛加入</div>
+            `;
+
+            bookmarksContainer.appendChild(bookmark);
+        }
+
+        // 載入自訂遊戲
+        function loadCustomGame(data) {
+            const gameId = `custom-${Date.now()}`;
+            const newGame = {
+                id: gameId,
+                title: data.name,
+                skills: data.skills,
+                level: 'Custom',
+                category: 'Custom',
+                cover: '🎮',
+                url: data.url || createCustomGameUrl(data.name)
+            };
+
+            currentGame = newGame;
+            updateGameDisplay();
+            showToast(`已載入 ${data.name}`);
+        }
+
+        // 創建自訂遊戲 URL
+        function createCustomGameUrl(gameName) {
+            return `data:text/html,<html><body style='margin:0;padding:40px;background:linear-gradient(135deg,%23A7C7E7,%23FFF5B2);font-family:Arial;text-align:center;'><h2 style='color:%232C3E50;margin-top:80px;'>🎮 ${encodeURIComponent(gameName)}</h2><p style='color:%237F8C8D;'>自訂遊戲載入中...</p><div style='margin-top:40px;font-size:48px;'>🚀</div></body></html>`;
+        }
+
+        // 顯示提示訊息
+        function showToast(message) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'slideInRight 0.3s ease reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        // 鍵盤導航支援
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                // 關閉所有 Modal
+                closeSwitchStudentModal();
+                closeAddGameModal();
+                closeUpgradeModal();
+            }
+        });
+
+        // 點擊 Modal 背景關閉
+        window.addEventListener('click', function (e) {
+            const switchModal = document.getElementById('switchStudentModal');
+            const addModal = document.getElementById('addGameModal');
+            const upgradeModal = document.getElementById('upgradeModal');
+
+            if (e.target === switchModal) {
+                closeSwitchStudentModal();
+            }
+            if (e.target === addModal) {
+                closeAddGameModal();
+            }
+            if (e.target === upgradeModal) {
+                closeUpgradeModal();
+            }
+        });
+
+        // 為書籤項目添加鍵盤支援
+        document.addEventListener('keydown', function (e) {
+            if (e.target.classList.contains('game-bookmark') && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                e.target.click();
+            }
+        });
+
+        // Premium 浮動卡片鍵盤支援
+        document.getElementById('premium-float').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                showUpgradeModal();
+            }
+        });
+
+        function toggleDropdown(id) {
+            const menu = document.getElementById(`${id}-content`);
+            const icon = document.getElementById(`${id}-icon`);
+            const toggle = document.getElementById(`${id}-toggle`);
+            if (!menu || !toggle) return;
+            const isOpen = menu.classList.toggle('show');
+            menu.setAttribute('aria-hidden', (!isOpen).toString());
+            toggle.setAttribute('aria-expanded', isOpen.toString());
+            if (icon) icon.style.transform = isOpen ? 'rotate(180deg)' : '';
+        }
+
+        // close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('bookmarked-dropdown');
+            if (!dropdown) return;
+            if (!dropdown.contains(e.target)) {
+                const menu = document.getElementById('bookmarked-content');
+                const toggle = document.getElementById('bookmarked-toggle');
+                const icon = document.getElementById('bookmarked-icon');
+                if (menu && menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    menu.setAttribute('aria-hidden', 'true');
+                    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+                    if (icon) icon.style.transform = '';
+                }
+            }
+        });
+
+        // close with Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const menu = document.getElementById('bookmarked-content');
+                const toggle = document.getElementById('bookmarked-toggle');
+                const icon = document.getElementById('bookmarked-icon');
+                if (menu && menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    menu.setAttribute('aria-hidden', 'true');
+                    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+                    if (icon) icon.style.transform = '';
+                }
+            }
+        });
+    </script>
+    <script>
+        (function () {
+            function c() {
+                var b = a.contentDocument || a.contentWindow.document;
+                if (b) {
+                    var d = b.createElement('script');
+                    d.innerHTML =
+                        "window.__CF$cv$params={r:'990accd592777695',t:'MTc2MDgxOTQ5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                    b.getElementsByTagName('head')[0].appendChild(d)
+                }
+            }
+            if (document.body) {
+                var a = document.createElement('iframe');
+                a.height = 1;
+                a.width = 1;
+                a.style.position = 'absolute';
+                a.style.top = 0;
+                a.style.left = 0;
+                a.style.border = 'none';
+                a.style.visibility = 'hidden';
+                document.body.appendChild(a);
+                if ('loading' !== document.readyState) c();
+                else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c);
+                else {
+                    var e = document.onreadystatechange || function () {};
+                    document.onreadystatechange = function (b) {
+                        e(b);
+                        'loading' !== document.readyState && (document.onreadystatechange = e, c())
+                    }
+                }
+            }
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grammar Potion Lab</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 50%, #8e24aa 100%);
+            min-height: 100%;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .game-title {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: #ffd54f;
+            font-weight: 600;
+        }
+
+        .welcome-screen {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .welcome-message {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #e8f5e8;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #66bb6a, #4caf50);
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .game-area {
+            display: none;
+        }
+
+        .ingredients-area {
+            margin: 30px 0;
+            min-height: 120px;
+        }
+
+        .ingredients-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #81c784;
+            font-weight: 500;
+        }
+
+        .ingredients-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            min-height: 70px;
+        }
+
+        .ingredient-card {
+            background: linear-gradient(45deg, #81c784, #66bb6a);
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: grab;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1b5e20;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            user-select: none;
+            border: 2px solid transparent;
+        }
+
+        .ingredient-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border-color: #ffd54f;
+        }
+
+        .ingredient-card.dragging {
+            opacity: 0.7;
+            transform: rotate(5deg) scale(1.05);
+            z-index: 1000;
+        }
+
+        .cauldron-area {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            min-height: 200px;
+            position: relative;
+            border: 3px dashed #ffd54f;
+            backdrop-filter: blur(5px);
+        }
+
+        .cauldron-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #ffd54f;
+            font-weight: 500;
+        }
+
+        .cauldron {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #37474f, #455a64);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            margin: 0 auto 20px;
+            position: relative;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.3);
+            border: 3px solid #263238;
+            transition: all 0.3s ease;
+        }
+
+        .cauldron.glowing {
+            box-shadow: 
+                inset 0 10px 20px rgba(0,0,0,0.3),
+                0 0 20px rgba(255, 213, 79, 0.6),
+                0 0 40px rgba(255, 213, 79, 0.3);
+        }
+
+        .cauldron.shaking {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .sentence-area {
+            min-height: 60px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            border: 2px dashed rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sentence-area.drag-over {
+            background: rgba(255,213,79,0.2);
+            border-color: #ffd54f;
+        }
+
+        .sentence-word {
+            background: linear-gradient(45deg, #ffab91, #ff8a65);
+            padding: 10px 16px;
+            border-radius: 20px;
+            color: #bf360c;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .sentence-word:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .mix-button, .next-button {
+            background: linear-gradient(45deg, #ffd54f, #ffcc02);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            color: #f57f17;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mix-button:hover, .next-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .next-button {
+            background: linear-gradient(45deg, #81c784, #66bb6a);
+            color: #1b5e20;
+            display: none;
+        }
+
+        .feedback {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 20px 0;
+            min-height: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .feedback.success {
+            color: #4caf50;
+        }
+
+        .feedback.error {
+            color: #f44336;
+        }
+
+        .placeholder-text {
+            color: rgba(255,255,255,0.5);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2.2rem;
+            }
+            
+            .welcome-screen {
+                padding: 25px;
+            }
+            
+            .ingredients-container {
+                gap: 10px;
+            }
+            
+            .ingredient-card {
+                padding: 10px 16px;
+                font-size: 1rem;
+            }
+            
+            .cauldron {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .controls {
+                gap: 15px;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="game-container">
+   <h1 class="game-title" id="gameTitle">Grammar Potion Lab</h1>
+   <div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-message" id="welcomeMessage">
+     Welcome to the Grammar Potion Lab! Drag the word cards into the correct order.
+    </div><button class="start-button" onclick="startGame()">Start Brewing!</button>
+   </div>
+   <div class="game-area" id="gameArea">
+    <div class="ingredients-area">
+     <div class="ingredients-title">
+      🧪 Word Ingredients
+     </div>
+     <div class="ingredients-container" id="ingredientsContainer"></div>
+    </div>
+    <div class="cauldron-area">
+     <div class="cauldron-title">
+      🔮 Magic Cauldron
+     </div>
+     <div class="cauldron" id="cauldron"></div>
+     <div class="sentence-area" id="sentenceArea">
+      <div class="placeholder-text">
+       Drop words here...
+      </div>
+     </div>
+    </div>
+    <div class="controls"><button class="mix-button" id="mixButton" onclick="mixPotion()">Mix Potion!</button> <button class="next-button" id="nextButton" onclick="nextRound()">Next Round</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+   </div>
+  </div>
+  <script>
+        // Predefined sentences for ESL students
+        const sentences = [
+            "The cat is sleeping.",
+            "I like apples.",
+            "She is reading a book.",
+            "They are playing soccer.",
+            "We can swim well.",
+            "The sun is shining.",
+            "He has a red car.",
+            "My mom cooks dinner.",
+            "Birds can fly high.",
+            "The dog runs fast.",
+            "Children love ice cream.",
+            "We watch movies together.",
+            "The flowers are beautiful.",
+            "He plays guitar well.",
+            "My family is happy.",
+            "Students study hard.",
+            "The ocean is blue.",
+            "She sings very well.",
+            "We live in a house.",
+            "The moon shines bright.",
+            "Cats climb tall trees.",
+            "I help my friends.",
+            "We learn new things.",
+            "He rides his bike.",
+            "I brush my teeth.",
+            "She wears a dress.",
+            "The fire is hot.",
+            "Snow falls in winter.",
+            "I write in my diary.",
+            "We travel by train.",
+            "The baby is crying.",
+            "Trees grow very tall.",
+            "She paints with colors.",
+            "The clock shows time.",
+            "Rabbits hop very fast.",
+            "I close the door.",
+            "We climb the mountain.",
+            "The bell rings loudly.",
+            "Elephants are very big.",
+            "She cuts the paper.",
+            "The light is bright.",
+            "Monkeys swing on trees.",
+            "She ties her shoes.",
+            "We follow the path.",
+            "The door is open.",
+            "Dolphins jump high up.",
+            "She picks fresh flowers.",
+            "We sit on chairs.",
+            "Horses gallop across fields.",
+            "Lions roar very loudly."
+        ];
+
+        let currentSentence = "";
+        let currentWords = [];
+        let playerSentence = [];
+        let draggedElement = null;
+        let lastSentenceIndex = -1;
+
+        // Configuration object for editable features
+        const defaultConfig = {
+            game_title: "Grammar Potion Lab",
+            welcome_message: "Welcome to the Grammar Potion Lab! Drag the word cards into the correct order.",
+            mix_button_text: "Mix Potion!",
+            next_round_text: "Next Round",
+            success_message: "Great job! Your potion worked!",
+            error_message: "Oops! Try again!"
+        };
+
+        function startGame() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            nextRound();
+        }
+
+        function nextRound() {
+            // Select a random sentence (different from previous)
+            let sentenceIndex;
+            do {
+                sentenceIndex = Math.floor(Math.random() * sentences.length);
+            } while (sentenceIndex === lastSentenceIndex && sentences.length > 1);
+            
+            lastSentenceIndex = sentenceIndex;
+            currentSentence = sentences[sentenceIndex];
+            
+            // Split into words and shuffle
+            currentWords = currentSentence.replace('.', '').split(' ');
+            const shuffledWords = [...currentWords].sort(() => Math.random() - 0.5);
+            
+            // Reset player sentence
+            playerSentence = [];
+            
+            // Create ingredient cards
+            const container = document.getElementById('ingredientsContainer');
+            container.innerHTML = '';
+            
+            shuffledWords.forEach((word, index) => {
+                const card = document.createElement('div');
+                card.className = 'ingredient-card';
+                card.textContent = word;
+                card.draggable = true;
+                card.dataset.word = word;
+                card.dataset.index = index;
+                
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                
+                container.appendChild(card);
+            });
+            
+            // Reset cauldron area
+            const sentenceArea = document.getElementById('sentenceArea');
+            sentenceArea.innerHTML = '<div class="placeholder-text">Drop words here...</div>';
+            
+            // Reset UI
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('nextButton').style.display = 'none';
+            document.getElementById('mixButton').style.display = 'inline-block';
+            document.getElementById('cauldron').className = 'cauldron';
+        }
+
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        // Set up drop zone
+        document.addEventListener('DOMContentLoaded', function() {
+            const sentenceArea = document.getElementById('sentenceArea');
+            
+            sentenceArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+            
+            sentenceArea.addEventListener('dragleave', function(e) {
+                this.classList.remove('drag-over');
+            });
+            
+            sentenceArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                
+                if (draggedElement) {
+                    const word = draggedElement.dataset.word;
+                    addWordToSentence(word);
+                    draggedElement.style.display = 'none';
+                }
+            });
+        });
+
+        function addWordToSentence(word) {
+            playerSentence.push(word);
+            updateSentenceDisplay();
+        }
+
+        function updateSentenceDisplay() {
+            const sentenceArea = document.getElementById('sentenceArea');
+            
+            if (playerSentence.length === 0) {
+                sentenceArea.innerHTML = '<div class="placeholder-text">Drop words here...</div>';
+                return;
+            }
+            
+            sentenceArea.innerHTML = '';
+            
+            playerSentence.forEach((word, index) => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'sentence-word';
+                wordElement.textContent = word;
+                wordElement.onclick = () => removeWordFromSentence(index);
+                
+                sentenceArea.appendChild(wordElement);
+            });
+        }
+
+        function removeWordFromSentence(index) {
+            const removedWord = playerSentence[index];
+            playerSentence.splice(index, 1);
+            
+            // Show the ingredient card again
+            const cards = document.querySelectorAll('.ingredient-card');
+            cards.forEach(card => {
+                if (card.dataset.word === removedWord && card.style.display === 'none') {
+                    card.style.display = 'block';
+                    return;
+                }
+            });
+            
+            updateSentenceDisplay();
+        }
+
+        function mixPotion() {
+            if (playerSentence.length === 0) {
+                showFeedback("Add some word ingredients first!", 'error');
+                return;
+            }
+            
+            // Check if the sentence matches exactly (case-insensitive)
+            const playerSentenceText = playerSentence.join(' ') + '.';
+            const isCorrect = playerSentenceText.toLowerCase() === currentSentence.toLowerCase();
+            
+            const cauldron = document.getElementById('cauldron');
+            
+            if (isCorrect) {
+                const successMsg = window.elementSdk?.config?.success_message || defaultConfig.success_message;
+                showFeedback(successMsg, 'success');
+                cauldron.classList.add('glowing');
+                
+                // Show next round button after 2 seconds
+                setTimeout(() => {
+                    document.getElementById('nextButton').style.display = 'inline-block';
+                    document.getElementById('mixButton').style.display = 'none';
+                }, 2000);
+            } else {
+                const errorMsg = window.elementSdk?.config?.error_message || defaultConfig.error_message;
+                showFeedback(errorMsg, 'error');
+                cauldron.classList.add('shaking');
+                
+                setTimeout(() => {
+                    cauldron.classList.remove('shaking');
+                }, 500);
+            }
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+            
+            // Clear feedback after 3 seconds for error messages
+            if (type === 'error') {
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = 'feedback';
+                }, 3000);
+            }
+        }
+
+        // Element SDK implementation
+        async function render(config) {
+            document.getElementById('gameTitle').textContent = config.game_title || defaultConfig.game_title;
+            document.getElementById('welcomeMessage').textContent = config.welcome_message || defaultConfig.welcome_message;
+            document.getElementById('mixButton').textContent = config.mix_button_text || defaultConfig.mix_button_text;
+            document.getElementById('nextButton').textContent = config.next_round_text || defaultConfig.next_round_text;
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["game_title", config.game_title || defaultConfig.game_title],
+                ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+                ["mix_button_text", config.mix_button_text || defaultConfig.mix_button_text],
+                ["next_round_text", config.next_round_text || defaultConfig.next_round_text],
+                ["success_message", config.success_message || defaultConfig.success_message],
+                ["error_message", config.error_message || defaultConfig.error_message]
+            ]);
+        }
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9904437e53619475',t:'MTc2MDc1MDk1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

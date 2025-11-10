@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="zh-TW">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>書籤與備課頁面 - Ladder Lessons</title>
+  <meta name="description" content="管理教學書籤，快速安排下一堂課，AI智能推薦適合的遊戲模組。">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        }
+        
+        .gradient-soft-pastel {
+            background: linear-gradient(135deg, #FEF7ED 0%, #F0F9FF 30%, #F3F4F6 60%, #FEF3C7 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating-elements {
+            position: absolute;
+            opacity: 0.04;
+            pointer-events: none;
+            animation: float 25s ease-in-out infinite;
+        }
+        
+        .float-1 { top: 8%; left: 5%; animation-delay: 0s; }
+        .float-2 { top: 20%; right: 8%; animation-delay: 8s; }
+        .float-3 { bottom: 15%; left: 10%; animation-delay: 16s; }
+        .float-4 { top: 60%; right: 15%; animation-delay: 12s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.04; }
+            50% { transform: translateY(-25px) rotate(180deg); opacity: 0.08; }
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        
+        .lesson-plan-area {
+            background: linear-gradient(135deg, rgba(219, 234, 254, 0.3) 0%, rgba(191, 219, 254, 0.3) 100%);
+            border: 2px dashed rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-soft-blue {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            color: #1E40AF;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-soft-green {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .btn-soft-yellow {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .btn-soft-pink {
+            background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%);
+            color: #BE185D;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        
+        .btn-soft-red {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            color: #DC2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .skill-tag.listening {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            color: #1E40AF;
+        }
+        
+        .skill-tag.speaking {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+        }
+        
+        .skill-tag.reading {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+        }
+        
+        .skill-tag.writing {
+            background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%);
+            color: #BE185D;
+        }
+        
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+        }
+        
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .premium-gradient {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%);
+        }
+        
+        .ai-suggestion-card {
+            background: linear-gradient(135deg, rgba(167, 243, 208, 0.2) 0%, rgba(209, 250, 229, 0.2) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .draggable {
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .drop-zone {
+            min-height: 120px;
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3B82F6;
+        }
+        
+        .empty-state {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px dashed rgba(0, 0, 0, 0.1);
+        }
+        
+        .grid-responsive {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 640px) {
+            .grid-responsive {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        .notification-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .game-icon {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full gradient-soft-pastel"><!-- Floating Background Elements -->
+  <div class="floating-elements float-1">
+   <svg width="70" height="70" viewbox="0 0 24 24" fill="currentColor" class="text-blue-200"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-2">
+   <svg width="60" height="60" viewbox="0 0 24 24" fill="currentColor" class="text-yellow-200"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-3">
+   <svg width="65" height="65" viewbox="0 0 24 24" fill="currentColor" class="text-pink-200"><path d="M9 11H7v9h2v-9zm4 0h-2v9h2v-9zm4 0h-2v9h2v-9zm2-7v2H5V4h3.5l1-1h5l1 1H19z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-4">
+   <svg width="55" height="55" viewbox="0 0 24 24" fill="currentColor" class="text-green-200"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+   </svg>
+  </div>
+  <div class="min-h-full"><!-- Header -->
+   <header class="bg-white/90 backdrop-blur-sm border-b border-white/30 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+     <div class="flex items-center justify-between"><!-- Left: Back & Logo -->
+      <div class="flex items-center space-x-3"><button onclick="goBack()" class="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg></button>
+       <div class="flex items-center space-x-3">
+        <svg width="32" height="32" viewbox="0 0 32 32" fill="none" class="text-blue-500"><circle cx="16" cy="16" r="14" fill="currentColor" opacity="0.1" /> <path d="M12 10l8 6-8 6V10z" fill="currentColor" />
+        </svg><span class="text-xl font-bold text-gray-800">Ladder Lessons</span>
+       </div>
+      </div><!-- Right: User Info -->
+      <div class="flex items-center space-x-3">
+       <div class="text-sm text-gray-600"><span>Miss Chen</span>
+       </div>
+       <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-semibold">
+        C
+       </div>
+      </div>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><!-- Page Title Section -->
+    <div class="text-center mb-8"><!-- Teacher Planning Illustration -->
+     <div class="mb-6">
+      <svg width="140" height="110" viewbox="0 0 180 130" class="mx-auto"><!-- Background --> <ellipse cx="90" cy="120" rx="70" ry="8" fill="#E5E7EB" opacity="0.3" /> <!-- Desk --> <rect x="30" y="80" width="120" height="8" fill="#8B4513" rx="2" /> <rect x="35" y="88" width="4" height="25" fill="#8B4513" /> <rect x="141" y="88" width="4" height="25" fill="#8B4513" /> <!-- Notebook --> <rect x="60" y="65" width="60" height="40" fill="white" stroke="#E5E7EB" stroke-width="2" rx="2" /> <line x1="65" y1="72" x2="115" y2="72" stroke="#DBEAFE" stroke-width="2" /> <line x1="65" y1="78" x2="110" y2="78" stroke="#DBEAFE" stroke-width="1" /> <line x1="65" y1="84" x2="105" y2="84" stroke="#DBEAFE" stroke-width="1" /> <line x1="65" y1="90" x2="115" y2="90" stroke="#DBEAFE" stroke-width="1" /> <line x1="65" y1="96" x2="100" y2="96" stroke="#DBEAFE" stroke-width="1" /> <!-- Teacher --> <circle cx="90" cy="45" r="15" fill="#FBBF24" /> <path d="M75 45 Q90 30 105 45" stroke="#8B5CF6" stroke-width="2" fill="none" /> <circle cx="85" cy="40" r="2" fill="#374151" /> <circle cx="95" cy="40" r="2" fill="#374151" /> <path d="M87 50 Q90 53 93 50" stroke="#374151" stroke-width="1.5" fill="none" /> <rect x="75" y="60" width="30" height="35" fill="#60A5FA" rx="4" /> <rect x="78" y="63" width="24" height="12" fill="white" rx="2" /> <text x="90" y="71" text-anchor="middle" fill="#374151" font-size="6" font-weight="bold">
+        PLAN
+       </text> <!-- Arms --> <circle cx="60" cy="70" r="10" fill="#FBBF24" /> <circle cx="120" cy="70" r="10" fill="#FBBF24" /> <!-- Floating Game Cards --> <g opacity="0.8"><!-- Card 1 -->
+        <rect x="20" y="20" width="25" height="18" fill="#D1FAE5" stroke="#10B981" rx="3" />
+        <text x="32.5" y="27" text-anchor="middle" fill="#065F46" font-size="4" font-weight="bold">
+         ABC
+        </text>
+        <text x="32.5" y="32" text-anchor="middle" fill="#065F46" font-size="3">
+         Game
+        </text> <!-- Card 2 -->
+        <rect x="135" y="15" width="25" height="18" fill="#FEF3C7" stroke="#F59E0B" rx="3" />
+        <text x="147.5" y="22" text-anchor="middle" fill="#92400E" font-size="4" font-weight="bold">
+         123
+        </text>
+        <text x="147.5" y="27" text-anchor="middle" fill="#92400E" font-size="3">
+         Quiz
+        </text> <!-- Card 3 -->
+        <rect x="25" y="55" width="25" height="18" fill="#FCE7F3" stroke="#EC4899" rx="3" />
+        <text x="37.5" y="62" text-anchor="middle" fill="#BE185D" font-size="4" font-weight="bold">
+         🎵
+        </text>
+        <text x="37.5" y="67" text-anchor="middle" fill="#BE185D" font-size="3">
+         Song
+        </text>
+       </g> <!-- Pencil --> <rect x="118" y="75" width="2" height="15" fill="#FDE68A" /> <polygon points="118,75 120,75 119,72" fill="#F59E0B" /> <rect x="118" y="88" width="2" height="3" fill="#EC4899" /> <!-- Sparkles --> <g fill="#F59E0B" opacity="0.6">
+        <polygon points="45,35 47,37 45,39 43,37" />
+        <polygon points="130,45 132,47 130,49 128,47" />
+        <polygon points="55,15 57,17 55,19 53,17" />
+       </g>
+      </svg>
+     </div>
+     <h1 id="page-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">安排下一堂課</h1>
+     <p id="page-subtitle" class="text-lg text-gray-600 mb-6">你的教學書籤</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><!-- Left Column: Bookmarked Games -->
+     <div class="lg:col-span-2"><!-- Section Header -->
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="text-2xl font-bold text-gray-800">已標記遊戲</h2><button id="add-game-btn" onclick="openAddGameModal()" class="btn-soft-green px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all flex items-center space-x-2">
+        <svg width="18" height="18" viewbox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg><span id="add-game-text">+ 加入新遊戲</span> </button>
+      </div><!-- Bookmarked Games Grid -->
+      <div id="bookmarked-games" class="grid-responsive mb-8"><!-- Games will be loaded here -->
+      </div><!-- Empty State for Bookmarked Games -->
+      <div id="bookmarks-empty-state" class="empty-state rounded-2xl p-8 text-center hidden">
+       <svg width="60" height="60" viewbox="0 0 24 24" fill="currentColor" class="mx-auto mb-4 text-gray-300"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" />
+       </svg>
+       <h3 class="text-xl font-semibold text-gray-600 mb-2">還沒有書籤遊戲</h3>
+       <p class="text-gray-500 mb-4">點擊「加入新遊戲」開始建立你的教學資源庫</p><button onclick="openAddGameModal()" class="btn-soft-blue px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all"> 新增第一個遊戲 </button>
+      </div><!-- AI Suggestions Section -->
+      <div class="mb-8">
+       <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">AI 智能推薦</h2>
+        <div class="flex items-center space-x-2 text-sm text-gray-500">
+         <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+         </svg><span>Premium 功能</span>
+        </div>
+       </div>
+       <div id="ai-suggestions" class="space-y-4"><!-- AI Suggestion Card 1 -->
+        <div class="ai-suggestion-card rounded-2xl p-6 card-hover">
+         <div class="flex items-start space-x-4">
+          <div class="game-icon w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+           🎯
+          </div>
+          <div class="flex-1">
+           <h3 class="text-lg font-bold text-gray-800 mb-2">Speaking Challenge Pro</h3>
+           <div class="flex flex-wrap gap-2 mb-3"><span class="skill-tag speaking px-2 py-1 rounded-full text-xs font-medium">Speaking</span> <span class="skill-tag px-2 py-1 rounded-full text-xs font-medium">KS2</span>
+           </div>
+           <p class="text-sm text-gray-600 mb-3"><span class="font-medium text-green-600">AI 推薦原因：</span> 小明最近在 Listening 表現優秀，建議挑戰 Speaking 技能提升整體能力</p><button onclick="addToLesson('ai-suggestion-1')" class="btn-soft-green px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all text-sm"> 加入下一課 </button>
+          </div>
+         </div>
+        </div><!-- AI Suggestion Card 2 -->
+        <div class="ai-suggestion-card rounded-2xl p-6 card-hover">
+         <div class="flex items-start space-x-4">
+          <div class="game-icon w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+           📚
+          </div>
+          <div class="flex-1">
+           <h3 class="text-lg font-bold text-gray-800 mb-2">Reading Adventure</h3>
+           <div class="flex flex-wrap gap-2 mb-3"><span class="skill-tag reading px-2 py-1 rounded-full text-xs font-medium">Reading</span> <span class="skill-tag px-2 py-1 rounded-full text-xs font-medium">KS1</span>
+           </div>
+           <p class="text-sm text-gray-600 mb-3"><span class="font-medium text-green-600">AI 推薦原因：</span> 根據學習進度分析，適合加強閱讀理解能力的互動遊戲</p><button onclick="addToLesson('ai-suggestion-2')" class="btn-soft-green px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all text-sm"> 加入下一課 </button>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Right Column: Next Lesson Plan -->
+     <div class="lg:col-span-1">
+      <div class="sticky top-24"><!-- Next Lesson Section -->
+       <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">下一課安排</h2><!-- Lesson Plan Drop Zone -->
+        <div id="lesson-plan-area" class="lesson-plan-area rounded-2xl p-6 drop-zone">
+         <div id="planned-games" class="space-y-3 min-h-[120px]"><!-- Planned games will appear here -->
+         </div><!-- Empty State -->
+         <div id="lesson-empty-state" class="text-center py-8">
+          <svg width="48" height="48" viewbox="0 0 24 24" fill="currentColor" class="mx-auto mb-3 text-blue-300"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+          </svg>
+          <p class="text-gray-500 text-sm mb-2">拖拉遊戲到這裡安排課程</p>
+          <p class="text-xs text-gray-400">最多可安排 3 個遊戲</p>
+         </div>
+        </div><!-- Action Buttons -->
+        <div class="flex space-x-3 mt-4"><button id="start-teaching-btn" onclick="startTeaching()" class="flex-1 btn-soft-green py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled> <span id="start-teaching-text">開始教學</span> </button> <button onclick="saveAsPath()" class="btn-soft-blue py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all">
+          <svg width="18" height="18" viewbox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+          </svg></button>
+        </div>
+       </div><!-- Premium Upgrade Section -->
+       <div class="premium-gradient rounded-2xl p-6 text-center shadow-lg">
+        <div class="flex items-center justify-center space-x-2 mb-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-orange-700"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+         </svg>
+         <h3 class="text-lg font-bold text-orange-800">升級至 Premium</h3>
+        </div>
+        <p class="text-orange-700 text-sm mb-4">解鎖 AI 備課建議與教學路徑儲存功能</p>
+        <div class="space-y-2 mb-4">
+         <div class="bg-white/80 rounded-lg p-3 text-left">
+          <div class="flex items-center space-x-2">
+           <div class="text-lg">
+            🤖
+           </div>
+           <div>
+            <h4 class="font-semibold text-orange-800 text-sm">AI 智能推薦</h4>
+            <p class="text-xs text-orange-600">根據學生表現推薦適合遊戲</p>
+           </div>
+          </div>
+         </div>
+         <div class="bg-white/80 rounded-lg p-3 text-left">
+          <div class="flex items-center space-x-2">
+           <div class="text-lg">
+            💾
+           </div>
+           <div>
+            <h4 class="font-semibold text-orange-800 text-sm">教學路徑儲存</h4>
+            <p class="text-xs text-orange-600">儲存並重複使用成功的課程安排</p>
+           </div>
+          </div>
+         </div>
+        </div><button class="bg-white text-orange-600 py-2 px-6 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-lg text-sm"> 了解 Premium 功能 </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div><!-- Add Game Modal -->
+  <div id="add-game-modal" class="fixed inset-0 z-50 hidden">
+   <div class="modal-backdrop absolute inset-0" onclick="closeAddGameModal()"></div>
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 relative slide-up max-h-[90vh] overflow-y-auto"><button onclick="closeAddGameModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+      <svg width="24" height="24" viewbox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+      </svg></button>
+     <h3 class="text-2xl font-bold text-gray-800 mb-6">新增遊戲到書籤</h3><!-- Tab Navigation -->
+     <div class="flex space-x-1 mb-6 bg-gray-100 rounded-xl p-1"><button class="tab-btn flex-1 py-2 px-4 rounded-lg font-medium transition-colors bg-white text-blue-600 shadow-sm" data-tab="platform"> 平台遊戲 </button> <button class="tab-btn flex-1 py-2 px-4 rounded-lg font-medium transition-colors text-gray-600 hover:text-gray-800" data-tab="external"> 外部連結 </button>
+     </div><!-- Platform Games Tab -->
+     <div id="platform-tab" class="tab-content">
+      <div class="mb-4"><input type="text" id="platform-search" placeholder="搜尋平台遊戲..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto"><!-- Sample Platform Games -->
+       <div class="platform-game-card border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors" data-game-id="vocab-builder">
+        <div class="flex items-start space-x-3">
+         <div class="game-icon w-10 h-10 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+          📝
+         </div>
+         <div class="flex-1">
+          <h4 class="font-semibold text-gray-800">Vocabulary Builder</h4>
+          <div class="flex flex-wrap gap-1 mt-1 mb-2"><span class="skill-tag reading px-2 py-1 rounded-full text-xs font-medium">Reading</span> <span class="skill-tag px-2 py-1 rounded-full text-xs font-medium">KS1-KS2</span>
+          </div>
+          <p class="text-xs text-gray-600">互動式詞彙學習遊戲</p>
+         </div>
+        </div>
+       </div>
+       <div class="platform-game-card border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors" data-game-id="listening-lab">
+        <div class="flex items-start space-x-3">
+         <div class="game-icon w-10 h-10 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+          🎧
+         </div>
+         <div class="flex-1">
+          <h4 class="font-semibold text-gray-800">Listening Lab</h4>
+          <div class="flex flex-wrap gap-1 mt-1 mb-2"><span class="skill-tag listening px-2 py-1 rounded-full text-xs font-medium">Listening</span> <span class="skill-tag px-2 py-1 rounded-full text-xs font-medium">KS2-KS3</span>
+          </div>
+          <p class="text-xs text-gray-600">聽力理解訓練遊戲</p>
+         </div>
+        </div>
+       </div>
+       <div class="platform-game-card border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors" data-game-id="speaking-stars">
+        <div class="flex items-start space-x-3">
+         <div class="game-icon w-10 h-10 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+          🎤
+         </div>
+         <div class="flex-1">
+          <h4 class="font-semibold text-gray-800">Speaking Stars</h4>
+          <div class="flex flex-wrap gap-1 mt-1 mb-2"><span class="skill-tag speaking px-2 py-1 rounded-full text-xs font-medium">Speaking</span> <span class="skill-tag px-2 py-1 rounded-full text-xs font-medium">KS1-KS3</span>
+          </div>
+          <p class="text-xs text-gray-600">口語表達練習遊戲</p>
+         </div>
+        </div>
+       </div>
+       <div class="platform-game-card border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors" data-game-id="writing-wizard">
+        <div class="flex items-start space-x-3">
+         <div class="game-icon w-10 h-10 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+          ✍️
+         </div>
+         <div class="flex-1">
+          <h4 class="font-semibold text-gray-800">Writing Wizard</h4>
+          <div class="flex flex-wrap gap-1 mt-1 mb-2"><span class="skill-tag writing px-2 py-1 rounded-full text-xs font-medium">Writing</span> <span class="skill-tag px-2 py-1 rounded-full text-xs font-medium">KS2-KS3</span>
+          </div>
+          <p class="text-xs text-gray-600">創意寫作引導遊戲</p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- External Link Tab -->
+     <div id="external-tab" class="tab-content hidden">
+      <form id="external-game-form" class="space-y-4">
+       <div><label for="external-title" class="block text-sm font-medium text-gray-700 mb-2">遊戲名稱</label> <input type="text" id="external-title" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="輸入遊戲名稱" required>
+       </div>
+       <div><label for="external-link" class="block text-sm font-medium text-gray-700 mb-2">外部連結</label> <input type="url" id="external-link" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="https://wordwall.net/..." required>
+        <p class="text-xs text-gray-500 mt-1">支援 Wordwall、Kahoot、Quizizz 等平台</p>
+       </div>
+       <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-sm font-medium text-gray-700 mb-2">技能標籤</label> <select id="external-skill" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="Listening">Listening</option> <option value="Speaking">Speaking</option> <option value="Reading">Reading</option> <option value="Writing">Writing</option> </select>
+        </div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-2">年級</label> <select id="external-grade" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="KS1">KS1</option> <option value="KS2">KS2</option> <option value="KS3">KS3</option> <option value="KS1-KS2">KS1-KS2</option> <option value="KS2-KS3">KS2-KS3</option> <option value="KS1-KS3">KS1-KS3</option> </select>
+        </div>
+       </div>
+       <div><label for="external-description" class="block text-sm font-medium text-gray-700 mb-2">描述 (可選)</label> <textarea id="external-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" placeholder="簡短描述這個遊戲的特色..."></textarea>
+       </div>
+       <div class="grid grid-cols-2 gap-4">
+        <div><label for="external-difficulty" class="block text-sm font-medium text-gray-700 mb-2">難度</label> <select id="external-difficulty" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <option value="Easy">簡單</option> <option value="Medium">中等</option> <option value="Hard">困難</option> </select>
+        </div>
+        <div><label for="external-time" class="block text-sm font-medium text-gray-700 mb-2">預估時間 (分鐘)</label> <input type="number" id="external-time" min="1" max="60" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="15">
+        </div>
+       </div>
+      </form>
+     </div><!-- Modal Actions -->
+     <div class="flex space-x-3 pt-6 border-t border-gray-200"><button type="button" onclick="closeAddGameModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-200 transition-colors"> 取消 </button> <button id="add-to-bookmarks-btn" onclick="addToBookmarks()" class="flex-1 btn-soft-blue py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all"> 加入書籤 </button> <button id="add-direct-btn" onclick="addDirectToLesson()" class="flex-1 btn-soft-green py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all"> 直接安排 </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            page_title: "安排下一堂課",
+            page_subtitle: "你的教學書籤",
+            add_to_lesson_text: "加入下一課",
+            remove_bookmark_text: "移除書籤",
+            start_teaching_text: "開始教學",
+            add_game_text: "+ 加入新遊戲",
+            primary_color: "#60A5FA",
+            secondary_color: "#34D399",
+            accent_color: "#FBBF24",
+            font_family: "Noto Sans TC",
+            font_size: 16
+        };
+
+        // Game data
+        let bookmarkedGames = [];
+        let plannedGames = [];
+        let currentRecordCount = 0;
+        let selectedPlatformGame = null;
+
+        // Data handler for SDK
+        const dataHandler = {
+            onDataChanged(data) {
+                bookmarkedGames = data;
+                currentRecordCount = data.length;
+                renderBookmarkedGames();
+            }
+        };
+
+        // Render function
+        async function render(config) {
+            // Update text content
+            document.getElementById('page-title').textContent = 
+                config.page_title || defaultConfig.page_title;
+            document.getElementById('page-subtitle').textContent = 
+                config.page_subtitle || defaultConfig.page_subtitle;
+            document.getElementById('add-game-text').textContent = 
+                config.add_game_text || defaultConfig.add_game_text;
+            document.getElementById('start-teaching-text').textContent = 
+                config.start_teaching_text || defaultConfig.start_teaching_text;
+
+            // Apply colors
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            const accentColor = config.accent_color || defaultConfig.accent_color;
+
+            // Update button styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .btn-soft-blue {
+                    background: linear-gradient(135deg, ${primaryColor}20 0%, ${primaryColor}30 100%) !important;
+                    color: ${primaryColor} !important;
+                    border-color: ${primaryColor}40 !important;
+                }
+                .btn-soft-green {
+                    background: linear-gradient(135deg, ${secondaryColor}20 0%, ${secondaryColor}30 100%) !important;
+                    color: ${secondaryColor} !important;
+                    border-color: ${secondaryColor}40 !important;
+                }
+                .btn-soft-yellow {
+                    background: linear-gradient(135deg, ${accentColor}20 0%, ${accentColor}30 100%) !important;
+                    color: ${accentColor} !important;
+                    border-color: ${accentColor}40 !important;
+                }
+                .lesson-plan-area {
+                    background: linear-gradient(135deg, ${primaryColor}10 0%, ${primaryColor}15 100%) !important;
+                    border-color: ${primaryColor}30 !important;
+                }
+            `;
+            
+            // Remove existing style if any
+            const existingStyle = document.getElementById('dynamic-colors');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            style.id = 'dynamic-colors';
+            document.head.appendChild(style);
+
+            // Apply font
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'system-ui, -apple-system, sans-serif';
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+            // Apply font size scaling
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.documentElement.style.fontSize = `${baseSize}px`;
+        }
+
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family,
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
+        }
+
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["page_title", config.page_title || defaultConfig.page_title],
+                ["page_subtitle", config.page_subtitle || defaultConfig.page_subtitle],
+                ["add_to_lesson_text", config.add_to_lesson_text || defaultConfig.add_to_lesson_text],
+                ["remove_bookmark_text", config.remove_bookmark_text || defaultConfig.remove_bookmark_text],
+                ["start_teaching_text", config.start_teaching_text || defaultConfig.start_teaching_text],
+                ["add_game_text", config.add_game_text || defaultConfig.add_game_text]
+            ]);
+        }
+
+        // Render bookmarked games
+        function renderBookmarkedGames() {
+            const container = document.getElementById('bookmarked-games');
+            const emptyState = document.getElementById('bookmarks-empty-state');
+            
+            if (bookmarkedGames.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            container.innerHTML = '';
+            
+            bookmarkedGames.forEach(game => {
+                const gameCard = createGameCard(game);
+                container.appendChild(gameCard);
+            });
+        }
+
+        // Create game card
+        function createGameCard(game) {
+            const card = document.createElement('div');
+            card.className = 'game-card rounded-2xl p-6 card-hover fade-in draggable';
+            card.draggable = true;
+            card.dataset.gameId = game.id;
+            
+            const lastUsed = game.last_used ? 
+                formatTimeAgo(new Date(game.last_used)) : '尚未使用';
+            
+            const skillTags = game.skill_tags ? game.skill_tags.split(',').map(tag => tag.trim()) : [];
+            const gameIcon = getGameIcon(game.game_type, skillTags[0]);
+            
+            card.innerHTML = `
+                <div class="flex items-start space-x-4 mb-4">
+                    <div class="game-icon w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+                        ${gameIcon}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">${game.title}</h3>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            ${skillTags.map(tag => `
+                                <span class="skill-tag ${tag.toLowerCase()} px-2 py-1 rounded-full text-xs font-medium">
+                                    ${tag}
+                                </span>
+                            `).join('')}
+                            <span class="skill-tag px-2 py-1 rounded-full text-xs font-medium">${game.grade}</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-2">上次使用：${lastUsed}</p>
+                        ${game.description ? `<p class="text-sm text-gray-600 mb-3">${game.description}</p>` : ''}
+                        ${game.estimated_time ? `<p class="text-xs text-gray-500">預估時間：${game.estimated_time} 分鐘</p>` : ''}
+                    </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button onclick="addToLesson('${game.id}')" class="flex-1 btn-soft-green py-2.5 px-4 rounded-lg font-medium hover:shadow-lg transition-all text-sm">
+                        ${defaultConfig.add_to_lesson_text}
+                    </button>
+                    <button onclick="removeBookmark('${game.id}')" class="btn-soft-red py-2.5 px-4 rounded-lg font-medium hover:shadow-lg transition-all text-sm">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            // Add drag event listeners
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+            
+            return card;
+        }
+
+        // Get game icon based on type and skill
+        function getGameIcon(gameType, skill) {
+            if (gameType === 'external') {
+                switch (skill?.toLowerCase()) {
+                    case 'listening': return '🎧';
+                    case 'speaking': return '🎤';
+                    case 'reading': return '📚';
+                    case 'writing': return '✍️';
+                    default: return '🎮';
+                }
+            }
+            
+            // Platform games
+            const icons = {
+                'vocab-builder': '📝',
+                'listening-lab': '🎧',
+                'speaking-stars': '🎤',
+                'writing-wizard': '✍️'
+            };
+            
+            return icons[gameType] || '🎯';
+        }
+
+        // Format time ago
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return '今天';
+            if (diffDays === 1) return '昨天';
+            if (diffDays < 7) return `${diffDays} 天前`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} 週前`;
+            return `${Math.floor(diffDays / 30)} 個月前`;
+        }
+
+        // Drag and drop functionality
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        // Initialize drop zone
+        function initializeDropZone() {
+            const dropZone = document.getElementById('lesson-plan-area');
+            
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                this.classList.add('drag-over');
+            });
+            
+            dropZone.addEventListener('dragleave', function(e) {
+                this.classList.remove('drag-over');
+            });
+            
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                
+                if (draggedElement && plannedGames.length < 3) {
+                    const gameId = draggedElement.dataset.gameId;
+                    const game = bookmarkedGames.find(g => g.id === gameId);
+                    if (game && !plannedGames.find(g => g.id === gameId)) {
+                        addToLesson(gameId);
+                    }
+                }
+            });
+        }
+
+        // Add game to lesson plan
+        function addToLesson(gameId) {
+            if (plannedGames.length >= 3) {
+                showNotification('最多只能安排 3 個遊戲', 'error');
+                return;
+            }
+            
+            let game;
+            if (gameId.startsWith('ai-suggestion-')) {
+                // Handle AI suggestions
+                const aiGames = {
+                    'ai-suggestion-1': {
+                        id: 'ai-suggestion-1',
+                        title: 'Speaking Challenge Pro',
+                        skill_tags: 'Speaking',
+                        grade: 'KS2',
+                        game_type: 'platform',
+                        description: 'AI 推薦的口語挑戰遊戲'
+                    },
+                    'ai-suggestion-2': {
+                        id: 'ai-suggestion-2',
+                        title: 'Reading Adventure',
+                        skill_tags: 'Reading',
+                        grade: 'KS1',
+                        game_type: 'platform',
+                        description: 'AI 推薦的閱讀冒險遊戲'
+                    }
+                };
+                game = aiGames[gameId];
+            } else {
+                game = bookmarkedGames.find(g => g.id === gameId);
+            }
+            
+            if (game && !plannedGames.find(g => g.id === gameId)) {
+                plannedGames.push(game);
+                renderPlannedGames();
+                updateStartButton();
+                showNotification(`「${game.title}」已加入課程安排`, 'success');
+            }
+        }
+
+        // Remove game from lesson plan
+        function removeFromLesson(gameId) {
+            plannedGames = plannedGames.filter(g => g.id !== gameId);
+            renderPlannedGames();
+            updateSaveButton();
+            
+            // Hide save status when games are removed
+            const saveStatus = document.getElementById('save-status');
+            saveStatus.classList.add('hidden');
+        }
+
+        // Render planned games
+        function renderPlannedGames() {
+            const container = document.getElementById('planned-games');
+            const emptyState = document.getElementById('lesson-empty-state');
+            
+            if (plannedGames.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            container.innerHTML = '';
+            
+            plannedGames.forEach((game, index) => {
+                const gameItem = createPlannedGameItem(game, index);
+                container.appendChild(gameItem);
+            });
+        }
+
+        // Create planned game item
+        function createPlannedGameItem(game, index) {
+            const item = document.createElement('div');
+            item.className = 'bg-white rounded-xl p-4 border border-blue-200 shadow-sm';
+            
+            const skillTags = game.skill_tags ? game.skill_tags.split(',').map(tag => tag.trim()) : [];
+            const gameIcon = getGameIcon(game.game_type, skillTags[0]);
+            
+            item.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-sm font-bold">
+                        ${index + 1}
+                    </div>
+                    <div class="game-icon w-8 h-8 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+                        ${gameIcon}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-gray-800 text-sm">${game.title}</h4>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                            ${skillTags.slice(0, 2).map(tag => `
+                                <span class="skill-tag ${tag.toLowerCase()} px-2 py-0.5 rounded-full text-xs font-medium">
+                                    ${tag}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <button onclick="removeFromLesson('${game.id}')" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            return item;
+        }
+
+        // Update start button state
+        function updateStartButton() {
+            const startBtn = document.getElementById('start-teaching-btn');
+            if (plannedGames.length > 0) {
+                startBtn.disabled = false;
+                startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                startBtn.disabled = true;
+                startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Modal functions
+        function openAddGameModal() {
+            if (currentRecordCount >= 999) {
+                showNotification('已達到遊戲數量上限 (999)，請聯絡管理員升級帳戶', 'error');
+                return;
+            }
+            
+            document.getElementById('add-game-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Initialize tab functionality
+            initializeTabs();
+            initializePlatformGameSelection();
+        }
+
+        function closeAddGameModal() {
+            document.getElementById('add-game-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            
+            // Reset forms
+            document.getElementById('external-game-form').reset();
+            selectedPlatformGame = null;
+            
+            // Reset platform game selection
+            document.querySelectorAll('.platform-game-card').forEach(card => {
+                card.classList.remove('border-blue-500', 'bg-blue-100');
+            });
+        }
+
+        // Initialize tabs
+        function initializeTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    
+                    // Update button states
+                    tabBtns.forEach(b => {
+                        b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                        b.classList.add('text-gray-600');
+                    });
+                    this.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+                    this.classList.remove('text-gray-600');
+                    
+                    // Update content visibility
+                    tabContents.forEach(content => {
+                        if (content.id === `${targetTab}-tab`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        }
+
+        // Initialize platform game selection
+        function initializePlatformGameSelection() {
+            const gameCards = document.querySelectorAll('.platform-game-card');
+            gameCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selection from all cards
+                    gameCards.forEach(c => {
+                        c.classList.remove('border-blue-500', 'bg-blue-100');
+                    });
+                    
+                    // Add selection to clicked card
+                    this.classList.add('border-blue-500', 'bg-blue-100');
+                    selectedPlatformGame = this.dataset.gameId;
+                });
+            });
+        }
+
+        // Add to bookmarks
+        async function addToBookmarks() {
+            if (currentRecordCount >= 999) {
+                showNotification('已達到遊戲數量上限 (999)，請聯絡管理員升級帳戶', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('add-to-bookmarks-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading-spinner w-5 h-5 border-2 border-current border-t-transparent rounded-full mx-auto"></div>';
+            
+            try {
+                let gameData;
+                
+                if (document.getElementById('platform-tab').classList.contains('hidden')) {
+                    // External game
+                    gameData = {
+                        id: Date.now().toString(),
+                        title: document.getElementById('external-title').value,
+                        skill_tags: document.getElementById('external-skill').value,
+                        grade: document.getElementById('external-grade').value,
+                        external_link: document.getElementById('external-link').value,
+                        description: document.getElementById('external-description').value,
+                        difficulty: document.getElementById('external-difficulty').value,
+                        estimated_time: parseInt(document.getElementById('external-time').value) || 15,
+                        game_type: 'external',
+                        created_at: new Date().toISOString(),
+                        last_used: ""
+                    };
+                } else {
+                    // Platform game
+                    if (!selectedPlatformGame) {
+                        showNotification('請選擇一個平台遊戲', 'error');
+                        return;
+                    }
+                    
+                    const platformGames = {
+                        'vocab-builder': {
+                            title: 'Vocabulary Builder',
+                            skill_tags: 'Reading',
+                            grade: 'KS1-KS2',
+                            description: '互動式詞彙學習遊戲',
+                            estimated_time: 20
+                        },
+                        'listening-lab': {
+                            title: 'Listening Lab',
+                            skill_tags: 'Listening',
+                            grade: 'KS2-KS3',
+                            description: '聽力理解訓練遊戲',
+                            estimated_time: 25
+                        },
+                        'speaking-stars': {
+                            title: 'Speaking Stars',
+                            skill_tags: 'Speaking',
+                            grade: 'KS1-KS3',
+                            description: '口語表達練習遊戲',
+                            estimated_time: 30
+                        },
+                        'writing-wizard': {
+                            title: 'Writing Wizard',
+                            skill_tags: 'Writing',
+                            grade: 'KS2-KS3',
+                            description: '創意寫作引導遊戲',
+                            estimated_time: 35
+                        }
+                    };
+                    
+                    const platformGame = platformGames[selectedPlatformGame];
+                    gameData = {
+                        id: Date.now().toString(),
+                        ...platformGame,
+                        game_type: selectedPlatformGame,
+                        external_link: "",
+                        difficulty: "Medium",
+                        created_at: new Date().toISOString(),
+                        last_used: ""
+                    };
+                }
+                
+                if (window.dataSdk) {
+                    const result = await window.dataSdk.create(gameData);
+                    if (result.isOk) {
+                        showNotification(`遊戲「${gameData.title}」已加入書籤！`, 'success');
+                        closeAddGameModal();
+                    } else {
+                        showNotification('新增遊戲時發生錯誤', 'error');
+                    }
+                }
+            } catch (error) {
+                showNotification('新增遊戲時發生錯誤', 'error');
+            } finally {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '加入書籤';
+                }, 1000);
+            }
+        }
+
+        // Add direct to lesson
+        async function addDirectToLesson() {
+            if (plannedGames.length >= 3) {
+                showNotification('最多只能安排 3 個遊戲', 'error');
+                return;
+            }
+            
+            await addToBookmarks();
+            
+            // Add the newly created game to lesson plan
+            setTimeout(() => {
+                if (bookmarkedGames.length > 0) {
+                    const latestGame = bookmarkedGames[bookmarkedGames.length - 1];
+                    addToLesson(latestGame.id);
+                }
+            }, 500);
+        }
+
+        // Remove bookmark
+        async function removeBookmark(gameId) {
+            const game = bookmarkedGames.find(g => g.id === gameId);
+            if (!game) return;
+            
+            if (window.dataSdk) {
+                const result = await window.dataSdk.delete(game);
+                if (result.isOk) {
+                    showNotification(`遊戲「${game.title}」已從書籤移除`, 'success');
+                    
+                    // Also remove from planned games if present
+                    if (plannedGames.find(g => g.id === gameId)) {
+                        removeFromLesson(gameId);
+                    }
+                } else {
+                    showNotification('移除遊戲時發生錯誤', 'error');
+                }
+            }
+        }
+
+        // Start teaching
+        function startTeaching() {
+            if (plannedGames.length === 0) {
+                showNotification('請先安排至少一個遊戲', 'error');
+                return;
+            }
+            
+            showNotification(`開始教學！已安排 ${plannedGames.length} 個遊戲`, 'success');
+            
+            // Update last used time for planned games
+            plannedGames.forEach(async (game) => {
+                if (game.id.startsWith('ai-suggestion-')) return; // Skip AI suggestions
+                
+                const updatedGame = { ...game, last_used: new Date().toISOString() };
+                if (window.dataSdk) {
+                    await window.dataSdk.update(updatedGame);
+                }
+            });
+            
+            setTimeout(() => {
+                showNotification('正在跳轉至教學介面...', 'info');
+            }, 1500);
+        }
+
+        // Save as path
+        function saveAsPath() {
+            if (plannedGames.length === 0) {
+                showNotification('請先安排至少一個遊戲', 'error');
+                return;
+            }
+            
+            showNotification('教學路徑儲存功能需要 Premium 版本', 'info');
+        }
+
+        // Go back
+        function goBack() {
+            showNotification('返回主控台...', 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-sm`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500 text-white';
+            } else if (type === 'info') {
+                notification.className += ' bg-blue-500 text-white';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500 text-white';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Data SDK
+            if (window.dataSdk) {
+                const initResult = await window.dataSdk.init(dataHandler);
+                if (!initResult.isOk) {
+                    console.error('Failed to initialize Data SDK');
+                }
+            }
+            
+            initializeDropZone();
+            render(defaultConfig);
+        });
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9904acdc530d7695',t:'MTc2MDc1NTI3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

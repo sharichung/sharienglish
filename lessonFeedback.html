@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="zh-TW">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>快速課後反饋 - Ladder Lessons</title>
+  <meta name="description" content="10秒快速記錄學生課堂表現，或選擇稍後補填。">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        }
+        
+        .gradient-soft-pastel {
+            background: linear-gradient(135deg, #F0F9FF 0%, #FEF7ED 25%, #FFFBEB 50%, #F3F4F6 75%, #F0F9FF 100%);
+        }
+        
+        .card-gentle {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .floating-elements {
+            position: absolute;
+            opacity: 0.03;
+            pointer-events: none;
+            animation: float 30s ease-in-out infinite;
+        }
+        
+        .float-1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .float-2 { top: 20%; right: 8%; animation-delay: 10s; }
+        .float-3 { bottom: 15%; left: 10%; animation-delay: 20s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.03; }
+            50% { transform: translateY(-10px) rotate(180deg); opacity: 0.06; }
+        }
+        
+        .rating-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .rating-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .rating-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .rating-card.has-rating {
+            border-color: #60A5FA;
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+        }
+        
+        .rating-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .rating-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .rating-options {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .rating-option {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .rating-option:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .rating-option.selected {
+            background: #60A5FA;
+            color: white;
+            border-color: #60A5FA;
+            transform: scale(1.1);
+        }
+        
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60A5FA 0%, #8B5CF6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin-right: 16px;
+            box-shadow: 0 4px 20px rgba(96, 165, 250, 0.2);
+            flex-shrink: 0;
+        }
+        
+        .lesson-info {
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 8px;
+        }
+        
+        .notes-section {
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .notes-toggle {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        
+        .notes-toggle:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #60A5FA;
+            color: #60A5FA;
+        }
+        
+        .notes-input {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            width: 100%;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        .notes-input:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: #60A5FA;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            outline: none;
+        }
+        
+        .quick-suggestions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .suggestion-tag {
+            background: rgba(96, 165, 250, 0.1);
+            color: #60A5FA;
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .suggestion-tag:hover {
+            background: rgba(96, 165, 250, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+            color: #374151;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .completion-badge {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .reminder-text {
+            text-align: center;
+            color: #6B7280;
+            font-size: 13px;
+            margin-top: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 200px; }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 640px) {
+            .rating-grid {
+                gap: 8px;
+            }
+            
+            .rating-card {
+                padding: 12px 8px;
+                min-height: 100px;
+            }
+            
+            .rating-title {
+                font-size: 11px;
+            }
+            
+            .rating-icon {
+                font-size: 20px;
+                margin-bottom: 6px;
+            }
+            
+            .rating-option {
+                width: 24px;
+                height: 24px;
+                font-size: 14px;
+            }
+            
+            .student-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .student-avatar {
+                margin: 0 auto 12px;
+            }
+        }
+        
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-dot.active {
+            background: #60A5FA;
+            transform: scale(1.2);
+        }
+        
+        .quick-complete-hint {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #92400E;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full gradient-soft-pastel"><!-- Floating Background Elements -->
+  <div class="floating-elements float-1">
+   <svg width="60" height="60" viewbox="0 0 24 24" fill="currentColor" class="text-blue-200"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-2">
+   <svg width="50" height="50" viewbox="0 0 24 24" fill="currentColor" class="text-yellow-200"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-3">
+   <svg width="55" height="55" viewbox="0 0 24 24" fill="currentColor" class="text-pink-200"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+   </svg>
+  </div>
+  <div class="min-h-full"><!-- Header -->
+   <header class="bg-white/90 backdrop-blur-sm border-b border-white/30 sticky top-0 z-40">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 py-3">
+     <div class="flex items-center justify-between"><!-- Left: Back & Logo -->
+      <div class="flex items-center space-x-3"><button onclick="goBack()" class="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg width="18" height="18" viewbox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg></button>
+       <div class="flex items-center space-x-2">
+        <svg width="28" height="28" viewbox="0 0 32 32" fill="none" class="text-blue-500"><circle cx="16" cy="16" r="14" fill="currentColor" opacity="0.1" /> <path d="M12 10l8 6-8 6V10z" fill="currentColor" />
+        </svg><span class="text-lg font-bold text-gray-800">Ladder Lessons</span>
+       </div>
+      </div><!-- Right: Progress -->
+      <div class="progress-indicator">
+       <div class="progress-dot active"></div>
+       <div class="progress-dot"></div>
+       <div class="progress-dot"></div>
+      </div>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main class="max-w-2xl mx-auto px-4 sm:px-6 py-6"><!-- Quick Complete Hint -->
+    <div class="quick-complete-hint fade-in">
+     ⚡ 快速反饋：點選評分即可完成，或選擇稍後補填
+    </div><!-- Completion Header -->
+    <div class="text-center mb-6">
+     <div class="completion-badge fade-in">
+      <svg width="14" height="14" viewbox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg> 課堂完成
+     </div>
+     <h1 class="text-xl font-bold text-gray-800 mb-2"><span id="completion-message">你剛完成教學給：</span><span id="student-name-display" class="text-blue-600">小明</span></h1>
+    </div><!-- Student Info Card -->
+    <div class="card-gentle rounded-2xl p-4 mb-6 fade-in" style="animation-delay: 0.1s">
+     <div class="student-info flex items-center">
+      <div class="student-avatar">
+       👦
+      </div>
+      <div class="flex-1">
+       <h2 class="text-lg font-bold text-gray-800 mb-1">小明的課堂</h2>
+       <div class="lesson-info">
+        <div class="flex items-center justify-between">
+         <div class="flex items-center space-x-2"><span class="text-xl">🎮</span> <span class="font-semibold text-gray-800 text-sm" id="game-name-display">Fruit Match</span>
+         </div><span class="text-xs text-gray-600 font-medium" id="lesson-time-display">10:32–10:45 AM</span>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div><!-- Quick Rating Grid -->
+    <div class="rating-grid fade-in" style="animation-delay: 0.2s"><!-- Participation Rating -->
+     <div class="rating-card" data-rating="participation">
+      <div>
+       <div class="rating-title">
+        參與度
+       </div>
+       <div class="rating-icon">
+        🙋‍♂️
+       </div>
+      </div>
+      <div class="rating-options">
+       <div class="rating-option" data-value="1">
+        1
+       </div>
+       <div class="rating-option" data-value="2">
+        2
+       </div>
+       <div class="rating-option" data-value="3">
+        3
+       </div>
+       <div class="rating-option" data-value="4">
+        4
+       </div>
+       <div class="rating-option" data-value="5">
+        5
+       </div>
+      </div>
+     </div><!-- Joy Rating -->
+     <div class="rating-card" data-rating="joy">
+      <div>
+       <div class="rating-title">
+        情緒反應
+       </div>
+       <div class="rating-icon">
+        😊
+       </div>
+      </div>
+      <div class="rating-options">
+       <div class="rating-option" data-value="1">
+        😢
+       </div>
+       <div class="rating-option" data-value="2">
+        😐
+       </div>
+       <div class="rating-option" data-value="3">
+        🙂
+       </div>
+       <div class="rating-option" data-value="4">
+        😊
+       </div>
+       <div class="rating-option" data-value="5">
+        😄
+       </div>
+      </div>
+     </div><!-- Progress Rating -->
+     <div class="rating-card" data-rating="progress">
+      <div>
+       <div class="rating-title">
+        學習進度
+       </div>
+       <div class="rating-icon">
+        🚀
+       </div>
+      </div>
+      <div class="rating-options">
+       <div class="rating-option" data-value="1">
+        📖
+       </div>
+       <div class="rating-option" data-value="2">
+        📚
+       </div>
+       <div class="rating-option" data-value="3">
+        ✨
+       </div>
+       <div class="rating-option" data-value="4">
+        🌟
+       </div>
+       <div class="rating-option" data-value="5">
+        🚀
+       </div>
+      </div>
+     </div>
+    </div><!-- Notes Section -->
+    <div class="notes-section fade-in" style="animation-delay: 0.3s">
+     <div class="notes-toggle" onclick="toggleNotes()"><span id="add-notes-text">+ 加入備註</span>
+     </div>
+     <div id="notes-expanded" class="hidden"><input type="text" id="teacher-notes" class="notes-input" placeholder="快速記錄學生表現...">
+      <div class="quick-suggestions">
+       <div class="suggestion-tag" onclick="addSuggestion('今日特別投入')">
+        今日特別投入
+       </div>
+       <div class="suggestion-tag" onclick="addSuggestion('需要更多鼓勵')">
+        需要更多鼓勵
+       </div>
+       <div class="suggestion-tag" onclick="addSuggestion('表現優秀')">
+        表現優秀
+       </div>
+       <div class="suggestion-tag" onclick="addSuggestion('可挑戰更難內容')">
+        可挑戰更難內容
+       </div>
+      </div>
+     </div>
+    </div><!-- Action Buttons -->
+    <div class="action-buttons fade-in" style="animation-delay: 0.4s"><button onclick="saveAndContinue()" class="btn-primary"> <span id="save-continue-text">💾 儲存並繼續</span> </button> <button onclick="saveLater()" class="btn-secondary"> <span id="save-later-text">⏳ 稍後補填</span> </button>
+    </div><!-- Reminder Text -->
+    <div class="reminder-text fade-in" style="animation-delay: 0.5s">
+     💡 你可以隨時返嚟補填反饋，平台會幫你記住邊堂未完成
+    </div>
+   </main>
+  </div>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            completion_message: "你剛完成教學給：",
+            game_name: "Fruit Match",
+            lesson_time: "10:32–10:45 AM",
+            save_continue_text: "💾 儲存並繼續",
+            save_later_text: "⏳ 稍後補填",
+            add_notes_text: "+ 加入備註",
+            primary_color: "#60A5FA",
+            secondary_color: "#34D399",
+            accent_color: "#FBBF24",
+            font_family: "Noto Sans TC",
+            font_size: 16
+        };
+
+        // State management
+        let feedbackData = {
+            student_name: "小明",
+            game_name: "Fruit Match",
+            lesson_time: "10:32–10:45 AM",
+            participation_rating: 0,
+            joy_rating: 0,
+            progress_rating: 0,
+            teacher_notes: "",
+            status: "pending",
+            created_at: new Date().toISOString()
+        };
+
+        let currentRecordCount = 0;
+        let notesExpanded = false;
+
+        // Data handler for SDK
+        const dataHandler = {
+            onDataChanged(data) {
+                currentRecordCount = data.length;
+            }
+        };
+
+        // Render function
+        async function render(config) {
+            // Update text content
+            document.getElementById('completion-message').textContent = 
+                config.completion_message || defaultConfig.completion_message;
+            document.getElementById('game-name-display').textContent = 
+                config.game_name || defaultConfig.game_name;
+            document.getElementById('lesson-time-display').textContent = 
+                config.lesson_time || defaultConfig.lesson_time;
+
+            // Update button texts
+            document.getElementById('save-continue-text').textContent = 
+                config.save_continue_text || defaultConfig.save_continue_text;
+            document.getElementById('save-later-text').textContent = 
+                config.save_later_text || defaultConfig.save_later_text;
+            document.getElementById('add-notes-text').textContent = 
+                config.add_notes_text || defaultConfig.add_notes_text;
+
+            // Apply colors
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            const accentColor = config.accent_color || defaultConfig.accent_color;
+
+            // Update styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .btn-primary {
+                    background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%) !important;
+                }
+                .rating-card.has-rating {
+                    border-color: ${primaryColor} !important;
+                    background: linear-gradient(135deg, ${primaryColor}20 0%, ${primaryColor}30 100%) !important;
+                }
+                .rating-option.selected {
+                    background: ${primaryColor} !important;
+                    border-color: ${primaryColor} !important;
+                }
+                .notes-toggle:hover {
+                    border-color: ${primaryColor} !important;
+                    color: ${primaryColor} !important;
+                }
+                .notes-input:focus {
+                    border-color: ${primaryColor} !important;
+                    box-shadow: 0 0 0 3px ${primaryColor}20 !important;
+                }
+                .suggestion-tag {
+                    background: ${primaryColor}20 !important;
+                    color: ${primaryColor} !important;
+                    border-color: ${primaryColor}40 !important;
+                }
+                .progress-dot.active {
+                    background: ${primaryColor} !important;
+                }
+            `;
+            
+            // Remove existing style if any
+            const existingStyle = document.getElementById('dynamic-colors');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            style.id = 'dynamic-colors';
+            document.head.appendChild(style);
+
+            // Apply font
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'system-ui, -apple-system, sans-serif';
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+            // Apply font size scaling
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.documentElement.style.fontSize = `${baseSize}px`;
+
+            // Update feedback data
+            feedbackData.game_name = config.game_name || defaultConfig.game_name;
+            feedbackData.lesson_time = config.lesson_time || defaultConfig.lesson_time;
+        }
+
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family,
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
+        }
+
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["completion_message", config.completion_message || defaultConfig.completion_message],
+                ["game_name", config.game_name || defaultConfig.game_name],
+                ["lesson_time", config.lesson_time || defaultConfig.lesson_time],
+                ["save_continue_text", config.save_continue_text || defaultConfig.save_continue_text],
+                ["save_later_text", config.save_later_text || defaultConfig.save_later_text],
+                ["add_notes_text", config.add_notes_text || defaultConfig.add_notes_text]
+            ]);
+        }
+
+        // Rating functionality
+        function initializeRatings() {
+            document.querySelectorAll('.rating-card').forEach(card => {
+                const ratingType = card.dataset.rating;
+                const options = card.querySelectorAll('.rating-option');
+                
+                options.forEach((option, index) => {
+                    option.addEventListener('click', () => {
+                        const rating = parseInt(option.dataset.value);
+                        setRating(ratingType, rating);
+                        updateRatingDisplay(card, rating);
+                        updateProgressIndicator();
+                    });
+                });
+            });
+        }
+
+        function setRating(type, rating) {
+            feedbackData[`${type}_rating`] = rating;
+        }
+
+        function updateRatingDisplay(card, rating) {
+            const options = card.querySelectorAll('.rating-option');
+            
+            // Clear all selections
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // Select the clicked rating
+            const selectedOption = card.querySelector(`[data-value="${rating}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+            
+            // Mark card as having rating
+            card.classList.add('has-rating');
+        }
+
+        function updateProgressIndicator() {
+            const totalRatings = 3;
+            const completedRatings = [
+                feedbackData.participation_rating,
+                feedbackData.joy_rating,
+                feedbackData.progress_rating
+            ].filter(rating => rating > 0).length;
+            
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                if (index < completedRatings) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Notes functionality
+        function toggleNotes() {
+            const notesExpanded = document.getElementById('notes-expanded');
+            const toggleButton = document.querySelector('.notes-toggle');
+            
+            if (notesExpanded.classList.contains('hidden')) {
+                notesExpanded.classList.remove('hidden');
+                notesExpanded.classList.add('slide-down');
+                toggleButton.innerHTML = '<span>📝 備註</span>';
+                
+                // Focus on input
+                setTimeout(() => {
+                    document.getElementById('teacher-notes').focus();
+                }, 100);
+            } else {
+                notesExpanded.classList.add('hidden');
+                toggleButton.innerHTML = `<span>${defaultConfig.add_notes_text}</span>`;
+            }
+        }
+
+        function addSuggestion(text) {
+            const notesInput = document.getElementById('teacher-notes');
+            const currentValue = notesInput.value.trim();
+            
+            if (currentValue) {
+                notesInput.value = currentValue + ', ' + text;
+            } else {
+                notesInput.value = text;
+            }
+            
+            feedbackData.teacher_notes = notesInput.value;
+        }
+
+        // Save functions
+        async function saveAndContinue() {
+            if (currentRecordCount >= 999) {
+                showNotification('反饋記錄已達上限', 'error');
+                return;
+            }
+
+            // Get notes
+            const notesInput = document.getElementById('teacher-notes');
+            feedbackData.teacher_notes = notesInput.value.trim();
+            feedbackData.status = 'completed';
+            feedbackData.created_at = new Date().toISOString();
+
+            // Show loading state
+            const saveButton = document.querySelector('.btn-primary');
+            const originalText = saveButton.innerHTML;
+            saveButton.innerHTML = `
+                <div class="loading-spinner w-4 h-4 border-2 border-white border-t-transparent rounded-full mx-auto"></div>
+            `;
+            saveButton.disabled = true;
+
+            try {
+                if (window.dataSdk) {
+                    const result = await window.dataSdk.create(feedbackData);
+                    if (result.isOk) {
+                        showNotification('反饋已儲存！正在跳轉...', 'success');
+                        setTimeout(() => {
+                            showNotification('正在開啟下一步...', 'info');
+                        }, 1000);
+                    } else {
+                        showNotification('儲存失敗，請重試', 'error');
+                    }
+                } else {
+                    // Fallback for demo
+                    setTimeout(() => {
+                        showNotification('反饋已儲存！正在跳轉...', 'success');
+                        setTimeout(() => {
+                            showNotification('正在開啟下一步...', 'info');
+                        }, 1000);
+                    }, 800);
+                }
+            } catch (error) {
+                showNotification('儲存時發生錯誤', 'error');
+            } finally {
+                // Restore button
+                setTimeout(() => {
+                    saveButton.innerHTML = originalText;
+                    saveButton.disabled = false;
+                }, 1500);
+            }
+        }
+
+        async function saveLater() {
+            if (currentRecordCount >= 999) {
+                showNotification('記錄已達上限', 'error');
+                return;
+            }
+
+            // Save as pending
+            feedbackData.status = 'pending';
+            feedbackData.created_at = new Date().toISOString();
+
+            // Show loading state
+            const laterButton = document.querySelector('.btn-secondary');
+            const originalText = laterButton.innerHTML;
+            laterButton.innerHTML = `
+                <div class="loading-spinner w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full mx-auto"></div>
+            `;
+            laterButton.disabled = true;
+
+            try {
+                if (window.dataSdk) {
+                    const result = await window.dataSdk.create(feedbackData);
+                    if (result.isOk) {
+                        showNotification('已標記為待補填，你可以隨時返嚟完成', 'success');
+                        setTimeout(() => {
+                            showNotification('正在跳轉...', 'info');
+                        }, 1500);
+                    } else {
+                        showNotification('標記失敗，請重試', 'error');
+                    }
+                } else {
+                    // Fallback for demo
+                    setTimeout(() => {
+                        showNotification('已標記為待補填，你可以隨時返嚟完成', 'success');
+                        setTimeout(() => {
+                            showNotification('正在跳轉...', 'info');
+                        }, 1500);
+                    }, 800);
+                }
+            } catch (error) {
+                showNotification('標記時發生錯誤', 'error');
+            } finally {
+                // Restore button
+                setTimeout(() => {
+                    laterButton.innerHTML = originalText;
+                    laterButton.disabled = false;
+                }, 2000);
+            }
+        }
+
+        // Navigation functions
+        function goBack() {
+            showNotification('返回上一頁...', 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-xs`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500 text-white';
+            } else if (type === 'info') {
+                notification.className += ' bg-blue-500 text-white';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500 text-white';
+            }
+            
+            notification.innerHTML = `<div class="text-sm">${message}</div>`;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Data SDK
+            if (window.dataSdk) {
+                const initResult = await window.dataSdk.init(dataHandler);
+                if (!initResult.isOk) {
+                    console.error('Failed to initialize Data SDK');
+                }
+            }
+            
+            initializeRatings();
+            render(defaultConfig);
+        });
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9906e887e32a9475',t:'MTc2MDc3ODY4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

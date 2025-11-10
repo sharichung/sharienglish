@@ -1,0 +1,1437 @@
+<!doctype html>
+<html lang="zh-TW">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>教學遊戲庫 - Ladder Lessons</title>
+  <meta name="description" content="探索、搜尋、篩選教學遊戲模組，為學生找到最適合的學習挑戰。">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        }
+        
+        .gradient-soft-pastel {
+            background: linear-gradient(135deg, #F0F9FF 0%, #FEF7ED 25%, #FFFBEB 50%, #F3F4F6 75%, #F0F9FF 100%);
+        }
+        
+        .card-gentle {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .game-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .game-card.expanded {
+            transform: scale(1.02);
+            z-index: 10;
+        }
+        
+        .floating-elements {
+            position: absolute;
+            opacity: 0.04;
+            pointer-events: none;
+            animation: float 25s ease-in-out infinite;
+        }
+        
+        .float-1 { top: 15%; left: 5%; animation-delay: 0s; }
+        .float-2 { top: 30%; right: 8%; animation-delay: 8s; }
+        .float-3 { bottom: 25%; left: 10%; animation-delay: 16s; }
+        .float-4 { top: 60%; right: 15%; animation-delay: 12s; }
+        .float-5 { bottom: 40%; right: 25%; animation-delay: 4s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.04; }
+            50% { transform: translateY(-15px) rotate(180deg); opacity: 0.08; }
+        }
+        
+        .skill-tag {
+            transition: all 0.2s ease;
+        }
+        
+        .skill-tag.speaking {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+        }
+        
+        .skill-tag.listening {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            color: #1E40AF;
+        }
+        
+        .skill-tag.reading {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+        }
+        
+        .skill-tag.writing {
+            background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%);
+            color: #BE185D;
+        }
+        
+        .skill-tag.vocabulary {
+            background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+            color: #3730A3;
+        }
+        
+        .skill-tag.grammar {
+            background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%);
+            color: #6B21A8;
+        }
+        
+        .filter-chip {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .filter-chip.active {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            color: #1E40AF;
+            border-color: #3B82F6;
+        }
+        
+        .filter-chip:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3B82F6;
+        }
+        
+        .search-input {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #60A5FA;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-bookmark {
+            background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-bookmark:hover {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-bookmark.bookmarked {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+        }
+        
+        .premium-gradient {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%);
+        }
+        
+        .ai-recommendation {
+            background: linear-gradient(135deg, rgba(167, 243, 208, 0.15) 0%, rgba(209, 250, 229, 0.15) 100%);
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            position: relative;
+        }
+        
+        .ai-recommendation::before {
+            content: '🤖 AI 推薦';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .difficulty-indicator {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .difficulty-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #E5E7EB;
+        }
+        
+        .difficulty-dot.active {
+            background: #F59E0B;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .grid-responsive {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 640px) {
+            .grid-responsive {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #E5E7EB;
+            border-radius: 12px;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .toggle-switch.active {
+            background: #10B981;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+        
+        .expanded-info {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .expanded-info.show {
+            max-height: 200px;
+        }
+        
+        .view-toggle {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .view-toggle.active {
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            color: white;
+            border-color: #3B82F6;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full gradient-soft-pastel"><!-- Floating Background Elements -->
+  <div class="floating-elements float-1">
+   <svg width="90" height="90" viewbox="0 0 24 24" fill="currentColor" class="text-blue-200"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-2">
+   <svg width="75" height="75" viewbox="0 0 24 24" fill="currentColor" class="text-yellow-200"><path d="M14.5 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8.5L14.5 2zM16 18H8v-2h8v2zm0-4H8v-2h8v2zm-2-6V4.5l5.5 5.5H14z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-3">
+   <svg width="80" height="80" viewbox="0 0 24 24" fill="currentColor" class="text-pink-200"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-4">
+   <svg width="85" height="85" viewbox="0 0 24 24" fill="currentColor" class="text-green-200"><path d="M9 11H7v9h2v-9zm4 0h-2v9h2v-9zm4 0h-2v9h2v-9zm2-7v2H5V4h3.5l1-1h5l1 1H19z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-5">
+   <svg width="70" height="70" viewbox="0 0 24 24" fill="currentColor" class="text-purple-200"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+   </svg>
+  </div>
+  <div class="min-h-full"><!-- Header -->
+   <header class="bg-white/90 backdrop-blur-sm border-b border-white/30 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+     <div class="flex items-center justify-between"><!-- Left: Back & Logo -->
+      <div class="flex items-center space-x-3"><button onclick="goBack()" class="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg></button>
+       <div class="flex items-center space-x-3">
+        <svg width="32" height="32" viewbox="0 0 32 32" fill="none" class="text-blue-500"><circle cx="16" cy="16" r="14" fill="currentColor" opacity="0.1" /> <path d="M12 10l8 6-8 6V10z" fill="currentColor" />
+        </svg><span class="text-xl font-bold text-gray-800">Ladder Lessons</span>
+       </div>
+      </div><!-- Right: User Info -->
+      <div class="flex items-center space-x-3">
+       <div class="text-sm text-gray-600"><span>Miss Chen</span>
+       </div>
+       <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-semibold">
+        C
+       </div>
+      </div>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><!-- Page Title Section -->
+    <div class="text-center mb-8"><!-- Teacher & Games Illustration -->
+     <div class="mb-6">
+      <svg width="200" height="140" viewbox="0 0 240 160" class="mx-auto"><!-- Background --> <ellipse cx="120" cy="150" rx="100" ry="8" fill="#E5E7EB" opacity="0.3" /> <!-- Teacher Character --> <g transform="translate(80, 30)"><!-- Head -->
+        <circle cx="20" cy="20" r="16" fill="#FBBF24" />
+        <path d="M4 20 Q20 5 36 20" stroke="#8B5CF6" stroke-width="2" fill="none" />
+        <circle cx="14" cy="16" r="2" fill="#374151" />
+        <circle cx="26" cy="16" r="2" fill="#374151" />
+        <path d="M16 24 Q20 27 24 24" stroke="#374151" stroke-width="1.5" fill="none" /> <!-- Body -->
+        <rect x="5" y="36" width="30" height="35" fill="#60A5FA" rx="6" />
+        <rect x="8" y="40" width="24" height="12" fill="white" rx="3" /> <!-- Arms -->
+        <circle cx="-5" cy="50" r="10" fill="#FBBF24" />
+        <circle cx="45" cy="50" r="10" fill="#FBBF24" /> <!-- Hands holding game cards -->
+        <g transform="translate(-15, 45)">
+         <rect x="0" y="0" width="12" height="16" fill="white" stroke="#E5E7EB" rx="2" />
+         <text x="6" y="6" text-anchor="middle" fill="#10B981" font-size="3">
+          🗣️
+         </text>
+         <text x="6" y="10" text-anchor="middle" fill="#6B7280" font-size="2">
+          Speaking
+         </text>
+         <text x="6" y="13" text-anchor="middle" fill="#6B7280" font-size="2">
+          Game
+         </text>
+        </g>
+        <g transform="translate(43, 45)">
+         <rect x="0" y="0" width="12" height="16" fill="white" stroke="#E5E7EB" rx="2" />
+         <text x="6" y="6" text-anchor="middle" fill="#3B82F6" font-size="3">
+          👂
+         </text>
+         <text x="6" y="10" text-anchor="middle" fill="#6B7280" font-size="2">
+          Listening
+         </text>
+         <text x="6" y="13" text-anchor="middle" fill="#6B7280" font-size="2">
+          Game
+         </text>
+        </g>
+       </g> <!-- Student Character (excited) --> <g transform="translate(140, 40)"><!-- Head -->
+        <circle cx="15" cy="18" r="14" fill="#FBBF24" />
+        <path d="M1 18 Q15 8 29 18" stroke="#F59E0B" stroke-width="2" fill="none" />
+        <circle cx="10" cy="15" r="2" fill="#374151" />
+        <circle cx="20" cy="15" r="2" fill="#374151" />
+        <path d="M8 22 Q15 26 22 22" stroke="#374151" stroke-width="2" fill="none" /> <!-- Body -->
+        <rect x="3" y="32" width="24" height="30" fill="#34D399" rx="5" /> <!-- Arms (raised in excitement) -->
+        <circle cx="-2" cy="40" r="8" fill="#FBBF24" />
+        <circle cx="32" cy="40" r="8" fill="#FBBF24" /> <!-- Excitement stars -->
+        <g fill="#F59E0B" opacity="0.8">
+         <polygon points="35,15 37,19 41,19 38,22 39,26 35,24 31,26 32,22 29,19 33,19" />
+         <polygon points="5,10 7,14 11,14 8,17 9,21 5,19 1,21 2,17 -1,14 3,14" />
+        </g>
+       </g> <!-- Floating Game Cards --> <g opacity="0.7"><!-- Card 1 -->
+        <g transform="translate(30, 80) rotate(-15)">
+         <rect x="0" y="0" width="20" height="26" fill="white" stroke="#DBEAFE" stroke-width="2" rx="3" />
+         <text x="10" y="8" text-anchor="middle" fill="#F59E0B" font-size="4">
+          📖
+         </text>
+         <text x="10" y="14" text-anchor="middle" fill="#6B7280" font-size="3">
+          Reading
+         </text>
+         <text x="10" y="18" text-anchor="middle" fill="#6B7280" font-size="2">
+          Adventure
+         </text>
+         <rect x="3" y="20" width="14" height="2" fill="#DBEAFE" rx="1" />
+        </g> <!-- Card 2 -->
+        <g transform="translate(190, 85) rotate(12)">
+         <rect x="0" y="0" width="20" height="26" fill="white" stroke="#FDE68A" stroke-width="2" rx="3" />
+         <text x="10" y="8" text-anchor="middle" fill="#EF4444" font-size="4">
+          ✍️
+         </text>
+         <text x="10" y="14" text-anchor="middle" fill="#6B7280" font-size="3">
+          Writing
+         </text>
+         <text x="10" y="18" text-anchor="middle" fill="#6B7280" font-size="2">
+          Challenge
+         </text>
+         <rect x="3" y="20" width="14" height="2" fill="#FDE68A" rx="1" />
+        </g> <!-- Card 3 -->
+        <g transform="translate(60, 110) rotate(8)">
+         <rect x="0" y="0" width="20" height="26" fill="white" stroke="#A7F3D0" stroke-width="2" rx="3" />
+         <text x="10" y="8" text-anchor="middle" fill="#8B5CF6" font-size="4">
+          📚
+         </text>
+         <text x="10" y="14" text-anchor="middle" fill="#6B7280" font-size="3">
+          Vocabulary
+         </text>
+         <text x="10" y="18" text-anchor="middle" fill="#6B7280" font-size="2">
+          Builder
+         </text>
+         <rect x="3" y="20" width="14" height="2" fill="#A7F3D0" rx="1" />
+        </g>
+       </g> <!-- Search/Discovery Elements --> <g transform="translate(100, 120)">
+        <circle cx="20" cy="10" r="8" fill="none" stroke="#60A5FA" stroke-width="2" />
+        <path d="26 16 l4 4" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" />
+       </g>
+      </svg>
+     </div>
+     <h1 id="page-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">探索教學遊戲庫</h1>
+     <p id="page-subtitle" class="text-lg text-gray-600">為學生尋找下一個挑戰</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8"><!-- Left Sidebar: Filters -->
+     <div class="lg:col-span-1">
+      <div class="card-gentle rounded-2xl p-6 sticky top-24">
+       <h2 class="text-xl font-bold text-gray-800 mb-6">篩選與搜尋</h2><!-- Search Bar -->
+       <div class="mb-6">
+        <div class="relative"><input type="text" id="search-input" placeholder="搜尋遊戲名稱、技能或主題..." class="search-input w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:outline-none" oninput="handleSearch()">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="absolute left-3 top-3.5 text-gray-400"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+         </svg>
+        </div>
+       </div><!-- AI Recommendations Toggle -->
+       <div class="mb-6 p-4 premium-gradient rounded-xl">
+        <div class="flex items-center justify-between mb-2"><span class="font-semibold text-orange-800">AI 推薦</span>
+         <div class="toggle-switch" id="ai-toggle" onclick="toggleAIRecommendations()">
+         </div>
+        </div>
+        <p class="text-xs text-orange-700">升級 Premium 解鎖智能推薦</p>
+       </div><!-- Skills Filter -->
+       <div class="mb-6">
+        <h3 class="font-semibold text-gray-700 mb-3">技能類型</h3>
+        <div class="flex flex-wrap gap-2"><button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="skill" data-value="speaking" onclick="toggleFilter(this)"> 🗣️ Speaking </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="skill" data-value="listening" onclick="toggleFilter(this)"> 👂 Listening </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="skill" data-value="reading" onclick="toggleFilter(this)"> 📖 Reading </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="skill" data-value="writing" onclick="toggleFilter(this)"> ✍️ Writing </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="skill" data-value="vocabulary" onclick="toggleFilter(this)"> 📚 Vocabulary </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="skill" data-value="grammar" onclick="toggleFilter(this)"> 📝 Grammar </button>
+        </div>
+       </div><!-- Grade Filter -->
+       <div class="mb-6">
+        <h3 class="font-semibold text-gray-700 mb-3">年級</h3>
+        <div class="flex flex-wrap gap-2"><button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="grade" data-value="ks1" onclick="toggleFilter(this)"> KS1 </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="grade" data-value="ks2" onclick="toggleFilter(this)"> KS2 </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="grade" data-value="ks3" onclick="toggleFilter(this)"> KS3 </button>
+        </div>
+       </div><!-- Duration Filter -->
+       <div class="mb-6">
+        <h3 class="font-semibold text-gray-700 mb-3">遊戲長度</h3>
+        <div class="flex flex-wrap gap-2"><button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="duration" data-value="short" onclick="toggleFilter(this)"> ⚡ 短 (5-15分) </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="duration" data-value="medium" onclick="toggleFilter(this)"> ⏱️ 中 (15-30分) </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="duration" data-value="long" onclick="toggleFilter(this)"> 🕐 長 (30分+) </button>
+        </div>
+       </div><!-- Interaction Type Filter -->
+       <div class="mb-6">
+        <h3 class="font-semibold text-gray-700 mb-3">互動方式</h3>
+        <div class="flex flex-wrap gap-2"><button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="interaction" data-value="solo" onclick="toggleFilter(this)"> 👤 單人 </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="interaction" data-value="qa" onclick="toggleFilter(this)"> 💬 對答 </button> <button class="filter-chip px-3 py-1 rounded-full text-sm font-medium" data-filter="interaction" data-value="pair" onclick="toggleFilter(this)"> 👥 配對 </button>
+        </div>
+       </div><!-- Clear Filters --> <button onclick="clearAllFilters()" class="w-full py-2 px-4 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"> 清除所有篩選 </button>
+      </div>
+     </div><!-- Main Content: Games Grid -->
+     <div class="lg:col-span-3"><!-- View Controls -->
+      <div class="flex items-center justify-between mb-6">
+       <div class="flex items-center space-x-4"><span class="text-sm text-gray-600">顯示方式：</span>
+        <div class="flex rounded-lg overflow-hidden"><button class="view-toggle active px-3 py-2 text-sm font-medium" data-view="grid" onclick="toggleView(this)">
+          <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="inline mr-1"><path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z" />
+          </svg> 卡片 </button> <button class="view-toggle px-3 py-2 text-sm font-medium" data-view="list" onclick="toggleView(this)">
+          <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="inline mr-1"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+          </svg> 清單 </button>
+        </div>
+       </div>
+       <div class="text-sm text-gray-600">
+        找到 <span id="results-count">24</span> 個遊戲
+       </div>
+      </div><!-- AI Recommendations Section -->
+      <div id="ai-recommendations" class="mb-8 hidden">
+       <h2 class="text-2xl font-bold text-gray-800 mb-4">🤖 AI 為您推薦</h2>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><!-- AI Recommendation cards will be inserted here -->
+       </div>
+      </div><!-- Games Grid -->
+      <div id="games-container" class="grid-responsive"><!-- Game cards will be loaded here -->
+      </div><!-- Loading State -->
+      <div id="loading-state" class="text-center py-12 hidden">
+       <div class="loading-spinner w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full mx-auto mb-4"></div>
+       <p class="text-gray-600">載入遊戲中...</p>
+      </div><!-- Empty State -->
+      <div id="empty-state" class="text-center py-12 hidden">
+       <svg width="80" height="80" viewbox="0 0 24 24" fill="currentColor" class="mx-auto mb-4 text-gray-300"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+       </svg>
+       <h3 class="text-xl font-semibold text-gray-600 mb-2">找不到符合條件的遊戲</h3>
+       <p class="text-gray-500 mb-4">試試調整篩選條件或搜尋關鍵字</p><button onclick="clearAllFilters()" class="btn-primary px-6 py-2 rounded-xl font-medium"> 清除篩選條件 </button>
+      </div><!-- Tips Section -->
+      <div class="mt-8 card-gentle rounded-2xl p-6">
+       <h3 class="text-lg font-semibold text-gray-800 mb-4">💡 操作提示</h3>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex items-start space-x-3">
+         <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+          👆
+         </div>
+         <div>
+          <h4 class="font-medium text-gray-800">點擊卡片預覽</h4>
+          <p class="text-sm text-gray-600">點擊遊戲卡片可展開詳細資訊</p>
+         </div>
+        </div>
+        <div class="flex items-start space-x-3">
+         <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+          🔖
+         </div>
+         <div>
+          <h4 class="font-medium text-gray-800">書籤功能</h4>
+          <p class="text-sm text-gray-600">加入書籤後可在備課頁快速安排</p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Premium Upgrade Section -->
+      <div class="mt-8 premium-gradient rounded-2xl p-6 text-center">
+       <div class="flex items-center justify-center space-x-2 mb-3">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-orange-700"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        <h3 class="text-lg font-bold text-orange-800">升級至 Premium</h3>
+       </div>
+       <p class="text-orange-700 text-sm mb-4">解鎖 AI 推薦、進階篩選與遊戲預覽功能</p>
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+        <div class="bg-white/80 rounded-lg p-3">
+         <div class="text-lg mb-1">
+          🤖
+         </div>
+         <h4 class="font-semibold text-orange-800 text-sm">AI 智能推薦</h4>
+         <p class="text-xs text-orange-600">根據學生需求推薦最適合的遊戲</p>
+        </div>
+        <div class="bg-white/80 rounded-lg p-3">
+         <div class="text-lg mb-1">
+          🔍
+         </div>
+         <h4 class="font-semibold text-orange-800 text-sm">進階篩選</h4>
+         <p class="text-xs text-orange-600">更多篩選條件與排序選項</p>
+        </div>
+        <div class="bg-white/80 rounded-lg p-3">
+         <div class="text-lg mb-1">
+          👀
+         </div>
+         <h4 class="font-semibold text-orange-800 text-sm">遊戲預覽</h4>
+         <p class="text-xs text-orange-600">課前預覽遊戲內容與流程</p>
+        </div>
+       </div><button onclick="learnPremium()" class="bg-orange-600 text-white py-2 px-6 rounded-xl font-semibold hover:bg-orange-700 transition-colors shadow-lg"> 了解 Premium 功能 </button>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            page_title: "探索教學遊戲庫",
+            page_subtitle: "為學生尋找下一個挑戰",
+            bookmark_text: "加入書籤",
+            assign_text: "安排給學生",
+            search_placeholder: "搜尋遊戲名稱、技能或主題...",
+            primary_color: "#60A5FA",
+            secondary_color: "#34D399",
+            accent_color: "#FBBF24",
+            font_family: "Noto Sans TC",
+            font_size: 16
+        };
+
+        // Game data and state
+        let allGames = [];
+        let filteredGames = [];
+        let bookmarkedGames = [];
+        let currentRecordCount = 0;
+        let activeFilters = {
+            skill: [],
+            grade: [],
+            duration: [],
+            interaction: [],
+            search: ''
+        };
+        let currentView = 'grid';
+        let aiRecommendationsEnabled = false;
+
+        // Sample games data
+        const sampleGames = [
+            {
+                id: "game-001",
+                title: "Vocabulary Adventure",
+                skills: ["vocabulary", "reading"],
+                grade: "ks2",
+                theme: "Animals",
+                duration: "medium",
+                interaction: "solo",
+                difficulty: 3,
+                description: "探索動物世界，學習新詞彙！透過互動故事和圖片配對，讓學生在冒險中掌握動物相關詞彙。",
+                studentReaction: 4.5,
+                completionRate: 85,
+                avgTime: 22,
+                isRecommended: false
+            },
+            {
+                id: "game-002",
+                title: "Speaking Stars",
+                skills: ["speaking", "vocabulary"],
+                grade: "ks1",
+                theme: "Daily Life",
+                duration: "short",
+                interaction: "qa",
+                difficulty: 2,
+                description: "練習日常對話，成為口語之星！透過角色扮演和情境對話，提升學生的口語表達能力。",
+                studentReaction: 4.8,
+                completionRate: 92,
+                avgTime: 12,
+                isRecommended: true
+            },
+            {
+                id: "game-003",
+                title: "Listening Detective",
+                skills: ["listening", "vocabulary"],
+                grade: "ks2",
+                theme: "Mystery",
+                duration: "long",
+                interaction: "solo",
+                difficulty: 4,
+                description: "化身偵探，透過聽力線索解開謎團！訓練學生的聽力理解和推理能力。",
+                studentReaction: 4.3,
+                completionRate: 78,
+                avgTime: 35,
+                isRecommended: false
+            },
+            {
+                id: "game-004",
+                title: "Grammar Quest",
+                skills: ["grammar", "writing"],
+                grade: "ks3",
+                theme: "Fantasy",
+                duration: "medium",
+                interaction: "solo",
+                difficulty: 4,
+                description: "在奇幻世界中掌握文法規則！透過任務和挑戰，讓學生在遊戲中學習複雜的文法概念。",
+                studentReaction: 4.0,
+                completionRate: 72,
+                avgTime: 28,
+                isRecommended: false
+            },
+            {
+                id: "game-005",
+                title: "Reading Explorer",
+                skills: ["reading", "vocabulary"],
+                grade: "ks2",
+                theme: "Adventure",
+                duration: "long",
+                interaction: "solo",
+                difficulty: 3,
+                description: "踏上閱讀探險之旅！透過互動故事和理解測驗，提升學生的閱讀理解能力。",
+                studentReaction: 4.4,
+                completionRate: 88,
+                avgTime: 40,
+                isRecommended: true
+            },
+            {
+                id: "game-006",
+                title: "Writing Workshop",
+                skills: ["writing", "grammar"],
+                grade: "ks3",
+                theme: "Creative",
+                duration: "long",
+                interaction: "solo",
+                difficulty: 5,
+                description: "創意寫作工作坊！引導學生創作故事，同時學習寫作技巧和文法應用。",
+                studentReaction: 3.9,
+                completionRate: 65,
+                avgTime: 45,
+                isRecommended: false
+            },
+            {
+                id: "game-007",
+                title: "Phonics Fun",
+                skills: ["speaking", "listening"],
+                grade: "ks1",
+                theme: "Phonics",
+                duration: "short",
+                interaction: "qa",
+                difficulty: 1,
+                description: "趣味自然發音練習！透過歌曲和韻律，讓學生輕鬆掌握英語發音規則。",
+                studentReaction: 4.7,
+                completionRate: 95,
+                avgTime: 15,
+                isRecommended: true
+            },
+            {
+                id: "game-008",
+                title: "Conversation Cafe",
+                skills: ["speaking", "listening"],
+                grade: "ks2",
+                theme: "Social",
+                duration: "medium",
+                interaction: "pair",
+                difficulty: 3,
+                description: "模擬咖啡廳對話情境！學生扮演顧客和服務員，練習實用的日常對話。",
+                studentReaction: 4.6,
+                completionRate: 89,
+                avgTime: 25,
+                isRecommended: false
+            }
+        ];
+
+        // Data handler for SDK
+        const dataHandler = {
+            onDataChanged(data) {
+                bookmarkedGames = data.length > 0 ? data : [];
+                currentRecordCount = data.length;
+                updateBookmarkStates();
+            }
+        };
+
+        // Render function
+        async function render(config) {
+            // Update text content
+            document.getElementById('page-title').textContent = 
+                config.page_title || defaultConfig.page_title;
+            document.getElementById('page-subtitle').textContent = 
+                config.page_subtitle || defaultConfig.page_subtitle;
+            document.getElementById('search-input').placeholder = 
+                config.search_placeholder || defaultConfig.search_placeholder;
+
+            // Apply colors
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            const accentColor = config.accent_color || defaultConfig.accent_color;
+
+            // Update button styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .btn-primary {
+                    background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%) !important;
+                }
+                .btn-secondary {
+                    background: linear-gradient(135deg, ${secondaryColor} 0%, ${secondaryColor}CC 100%) !important;
+                }
+                .btn-bookmark {
+                    background: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}CC 100%) !important;
+                }
+                .filter-chip.active {
+                    background: linear-gradient(135deg, ${primaryColor}20 0%, ${primaryColor}30 100%) !important;
+                    color: ${primaryColor} !important;
+                    border-color: ${primaryColor} !important;
+                }
+                .toggle-switch.active {
+                    background: ${secondaryColor} !important;
+                }
+                .view-toggle.active {
+                    background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%) !important;
+                }
+            `;
+            
+            // Remove existing style if any
+            const existingStyle = document.getElementById('dynamic-colors');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            style.id = 'dynamic-colors';
+            document.head.appendChild(style);
+
+            // Apply font
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'system-ui, -apple-system, sans-serif';
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+            // Apply font size scaling
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.documentElement.style.fontSize = `${baseSize}px`;
+
+            // Update button text in rendered cards
+            updateButtonTexts(config);
+        }
+
+        // Update button texts in game cards
+        function updateButtonTexts(config) {
+            const bookmarkButtons = document.querySelectorAll('.bookmark-btn-text');
+            const assignButtons = document.querySelectorAll('.assign-btn-text');
+            
+            bookmarkButtons.forEach(btn => {
+                btn.textContent = config.bookmark_text || defaultConfig.bookmark_text;
+            });
+            
+            assignButtons.forEach(btn => {
+                btn.textContent = config.assign_text || defaultConfig.assign_text;
+            });
+        }
+
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family,
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
+        }
+
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["page_title", config.page_title || defaultConfig.page_title],
+                ["page_subtitle", config.page_subtitle || defaultConfig.page_subtitle],
+                ["bookmark_text", config.bookmark_text || defaultConfig.bookmark_text],
+                ["assign_text", config.assign_text || defaultConfig.assign_text],
+                ["search_placeholder", config.search_placeholder || defaultConfig.search_placeholder]
+            ]);
+        }
+
+        // Initialize games
+        function initializeGames() {
+            allGames = [...sampleGames];
+            filteredGames = [...allGames];
+            renderGames();
+            updateResultsCount();
+        }
+
+        // Render games
+        function renderGames() {
+            const container = document.getElementById('games-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (filteredGames.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            
+            // Update grid class based on view
+            if (currentView === 'list') {
+                container.className = 'space-y-4';
+            } else {
+                container.className = 'grid-responsive';
+            }
+            
+            container.innerHTML = '';
+            
+            filteredGames.forEach((game, index) => {
+                const gameCard = createGameCard(game, index);
+                container.appendChild(gameCard);
+            });
+        }
+
+        // Create game card
+        function createGameCard(game, index) {
+            const card = document.createElement('div');
+            card.className = `game-card card-gentle rounded-2xl p-6 fade-in ${currentView === 'list' ? 'flex items-center space-x-6' : ''}`;
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.dataset.gameId = game.id;
+            
+            const isBookmarked = bookmarkedGames.some(b => b.game_id === game.id);
+            const skillTags = game.skills.map(skill => `
+                <span class="skill-tag ${skill} px-2 py-1 rounded-full text-xs font-medium">
+                    ${getSkillIcon(skill)} ${getSkillName(skill)}
+                </span>
+            `).join('');
+            
+            const difficultyDots = Array.from({length: 5}, (_, i) => `
+                <div class="difficulty-dot ${i < game.difficulty ? 'active' : ''}"></div>
+            `).join('');
+
+            if (currentView === 'list') {
+                card.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-2xl text-white">
+                            ${getSkillIcon(game.skills[0])}
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">${game.title}</h3>
+                                <div class="flex flex-wrap gap-2 mb-2">
+                                    ${skillTags}
+                                </div>
+                                <div class="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                                    <span class="bg-gray-100 px-2 py-1 rounded-full">${getGradeName(game.grade)}</span>
+                                    <span>${game.theme}</span>
+                                    <span>${getDurationText(game.duration)}</span>
+                                    <span>${getInteractionText(game.interaction)}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 line-clamp-2">${game.description}</p>
+                            </div>
+                            <div class="flex flex-col space-y-2 ml-4">
+                                <button class="btn-bookmark px-4 py-2 rounded-xl text-sm font-medium ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${game.id}', event)">
+                                    ${isBookmarked ? '✓' : '🔖'} <span class="bookmark-btn-text">${defaultConfig.bookmark_text}</span>
+                                </button>
+                                <button class="btn-secondary px-4 py-2 rounded-xl text-sm font-medium" onclick="assignGame('${game.id}', event)">
+                                    <span class="assign-btn-text">${defaultConfig.assign_text}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    ${game.isRecommended ? '<div class="ai-recommendation-badge"></div>' : ''}
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-xl text-white flex-shrink-0">
+                            ${getSkillIcon(game.skills[0])}
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="btn-bookmark px-3 py-1 rounded-lg text-xs font-medium ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${game.id}', event)">
+                                ${isBookmarked ? '✓' : '🔖'}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">${game.title}</h3>
+                    
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${skillTags}
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm text-gray-600 mb-3">
+                        <span class="bg-gray-100 px-2 py-1 rounded-full">${getGradeName(game.grade)}</span>
+                        <span>${game.theme}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                        <div class="flex items-center space-x-1">
+                            <span>難度:</span>
+                            <div class="difficulty-indicator">
+                                ${difficultyDots}
+                            </div>
+                        </div>
+                        <span>${getDurationText(game.duration)}</span>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 mb-4 line-clamp-3">${game.description}</p>
+                    
+                    <div class="expanded-info" id="expanded-${game.id}">
+                        <div class="border-t pt-4 mt-4">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-blue-600">${game.studentReaction}/5</div>
+                                    <div class="text-xs text-gray-500">學生反應</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-green-600">${game.completionRate}%</div>
+                                    <div class="text-xs text-gray-500">完成率</div>
+                                </div>
+                            </div>
+                            <div class="text-center mb-4">
+                                <div class="text-sm text-gray-600">平均遊戲時間: ${game.avgTime} 分鐘</div>
+                                <div class="text-sm text-gray-600">互動方式: ${getInteractionText(game.interaction)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-secondary w-full py-2 px-4 rounded-xl font-medium" onclick="assignGame('${game.id}', event)">
+                        <span class="assign-btn-text">${defaultConfig.assign_text}</span>
+                    </button>
+                `;
+            }
+            
+            // Add click handler for expansion (grid view only)
+            if (currentView === 'grid') {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        toggleCardExpansion(game.id);
+                    }
+                });
+            }
+            
+            return card;
+        }
+
+        // Toggle card expansion
+        function toggleCardExpansion(gameId) {
+            const expandedInfo = document.getElementById(`expanded-${gameId}`);
+            const card = document.querySelector(`[data-game-id="${gameId}"]`);
+            
+            if (expandedInfo.classList.contains('show')) {
+                expandedInfo.classList.remove('show');
+                card.classList.remove('expanded');
+            } else {
+                // Close other expanded cards
+                document.querySelectorAll('.expanded-info.show').forEach(info => {
+                    info.classList.remove('show');
+                });
+                document.querySelectorAll('.game-card.expanded').forEach(c => {
+                    c.classList.remove('expanded');
+                });
+                
+                // Expand this card
+                expandedInfo.classList.add('show');
+                card.classList.add('expanded');
+            }
+        }
+
+        // Helper functions
+        function getSkillIcon(skill) {
+            const icons = {
+                speaking: '🗣️',
+                listening: '👂',
+                reading: '📖',
+                writing: '✍️',
+                vocabulary: '📚',
+                grammar: '📝'
+            };
+            return icons[skill] || '📚';
+        }
+
+        function getSkillName(skill) {
+            const names = {
+                speaking: 'Speaking',
+                listening: 'Listening',
+                reading: 'Reading',
+                writing: 'Writing',
+                vocabulary: 'Vocabulary',
+                grammar: 'Grammar'
+            };
+            return names[skill] || skill;
+        }
+
+        function getGradeName(grade) {
+            const names = {
+                ks1: 'KS1',
+                ks2: 'KS2',
+                ks3: 'KS3'
+            };
+            return names[grade] || grade;
+        }
+
+        function getDurationText(duration) {
+            const texts = {
+                short: '短 (5-15分)',
+                medium: '中 (15-30分)',
+                long: '長 (30分+)'
+            };
+            return texts[duration] || duration;
+        }
+
+        function getInteractionText(interaction) {
+            const texts = {
+                solo: '單人',
+                qa: '對答',
+                pair: '配對'
+            };
+            return texts[interaction] || interaction;
+        }
+
+        // Filter functions
+        function toggleFilter(button) {
+            const filterType = button.dataset.filter;
+            const filterValue = button.dataset.value;
+            
+            button.classList.toggle('active');
+            
+            if (button.classList.contains('active')) {
+                if (!activeFilters[filterType].includes(filterValue)) {
+                    activeFilters[filterType].push(filterValue);
+                }
+            } else {
+                activeFilters[filterType] = activeFilters[filterType].filter(v => v !== filterValue);
+            }
+            
+            applyFilters();
+        }
+
+        function handleSearch() {
+            const searchInput = document.getElementById('search-input');
+            activeFilters.search = searchInput.value.toLowerCase();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            filteredGames = allGames.filter(game => {
+                // Search filter
+                if (activeFilters.search) {
+                    const searchTerm = activeFilters.search;
+                    const searchableText = `${game.title} ${game.skills.join(' ')} ${game.theme} ${game.description}`.toLowerCase();
+                    if (!searchableText.includes(searchTerm)) {
+                        return false;
+                    }
+                }
+                
+                // Skill filter
+                if (activeFilters.skill.length > 0) {
+                    if (!activeFilters.skill.some(skill => game.skills.includes(skill))) {
+                        return false;
+                    }
+                }
+                
+                // Grade filter
+                if (activeFilters.grade.length > 0) {
+                    if (!activeFilters.grade.includes(game.grade)) {
+                        return false;
+                    }
+                }
+                
+                // Duration filter
+                if (activeFilters.duration.length > 0) {
+                    if (!activeFilters.duration.includes(game.duration)) {
+                        return false;
+                    }
+                }
+                
+                // Interaction filter
+                if (activeFilters.interaction.length > 0) {
+                    if (!activeFilters.interaction.includes(game.interaction)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            renderGames();
+            updateResultsCount();
+        }
+
+        function clearAllFilters() {
+            // Reset active filters
+            activeFilters = {
+                skill: [],
+                grade: [],
+                duration: [],
+                interaction: [],
+                search: ''
+            };
+            
+            // Clear search input
+            document.getElementById('search-input').value = '';
+            
+            // Remove active class from all filter chips
+            document.querySelectorAll('.filter-chip.active').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            // Reset filtered games
+            filteredGames = [...allGames];
+            renderGames();
+            updateResultsCount();
+        }
+
+        function updateResultsCount() {
+            document.getElementById('results-count').textContent = filteredGames.length;
+        }
+
+        // View toggle
+        function toggleView(button) {
+            const view = button.dataset.view;
+            currentView = view;
+            
+            // Update button states
+            document.querySelectorAll('.view-toggle').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            renderGames();
+        }
+
+        // AI recommendations
+        function toggleAIRecommendations() {
+            const toggle = document.getElementById('ai-toggle');
+            const recommendationsSection = document.getElementById('ai-recommendations');
+            
+            aiRecommendationsEnabled = !aiRecommendationsEnabled;
+            toggle.classList.toggle('active', aiRecommendationsEnabled);
+            
+            if (aiRecommendationsEnabled) {
+                recommendationsSection.classList.remove('hidden');
+                renderAIRecommendations();
+            } else {
+                recommendationsSection.classList.add('hidden');
+            }
+        }
+
+        function renderAIRecommendations() {
+            const container = document.getElementById('ai-recommendations').querySelector('.grid');
+            const recommendedGames = allGames.filter(game => game.isRecommended);
+            
+            container.innerHTML = '';
+            
+            recommendedGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'ai-recommendation card-gentle rounded-xl p-4';
+                
+                card.innerHTML = `
+                    <div class="flex items-start space-x-3 mt-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center text-lg text-white flex-shrink-0">
+                            ${getSkillIcon(game.skills[0])}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800 mb-1">${game.title}</h4>
+                            <p class="text-sm text-gray-600 mb-2">
+                                ${getAIRecommendationReason(game)}
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex space-x-2">
+                                    ${game.skills.map(skill => `
+                                        <span class="skill-tag ${skill} px-2 py-1 rounded-full text-xs font-medium">
+                                            ${getSkillIcon(skill)}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                                <button class="btn-secondary px-3 py-1 rounded-lg text-xs font-medium" onclick="assignGame('${game.id}', event)">
+                                    選擇
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function getAIRecommendationReason(game) {
+            const reasons = [
+                "根據學生最近的學習表現，推薦此遊戲來加強相關技能",
+                "學生在類似遊戲中表現優秀，建議嘗試此進階版本",
+                "此遊戲能很好地補強學生目前較弱的技能領域",
+                "基於學生的興趣偏好，推薦此主題的學習遊戲"
+            ];
+            return reasons[Math.floor(Math.random() * reasons.length)];
+        }
+
+        // Bookmark functions
+        async function toggleBookmark(gameId, event) {
+            event.stopPropagation();
+            
+            if (currentRecordCount >= 999) {
+                showNotification('書籤數量已達上限 (999)，請先刪除一些書籤', 'error');
+                return;
+            }
+            
+            const button = event.target.closest('button');
+            const isCurrentlyBookmarked = bookmarkedGames.some(b => b.game_id === gameId);
+            
+            // Show loading state
+            button.disabled = true;
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<div class="loading-spinner w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>';
+            
+            try {
+                if (isCurrentlyBookmarked) {
+                    // Remove bookmark
+                    const bookmark = bookmarkedGames.find(b => b.game_id === gameId);
+                    if (bookmark && window.dataSdk) {
+                        const result = await window.dataSdk.delete(bookmark);
+                        if (result.isOk) {
+                            showNotification('已移除書籤', 'success');
+                        } else {
+                            showNotification('移除書籤失敗', 'error');
+                        }
+                    }
+                } else {
+                    // Add bookmark
+                    if (window.dataSdk) {
+                        const result = await window.dataSdk.create({
+                            game_id: gameId,
+                            bookmarked: true,
+                            bookmark_date: new Date().toISOString(),
+                            teacher_notes: "",
+                            usage_count: 0
+                        });
+                        if (result.isOk) {
+                            showNotification('已加入書籤', 'success');
+                        } else {
+                            showNotification('加入書籤失敗', 'error');
+                        }
+                    }
+                }
+            } catch (error) {
+                showNotification('操作失敗，請稍後再試', 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
+        }
+
+        function updateBookmarkStates() {
+            document.querySelectorAll('.game-card').forEach(card => {
+                const gameId = card.dataset.gameId;
+                const isBookmarked = bookmarkedGames.some(b => b.game_id === gameId);
+                const bookmarkBtn = card.querySelector('button[onclick*="toggleBookmark"]');
+                
+                if (bookmarkBtn) {
+                    if (isBookmarked) {
+                        bookmarkBtn.classList.add('bookmarked');
+                        bookmarkBtn.innerHTML = bookmarkBtn.innerHTML.replace('🔖', '✓');
+                    } else {
+                        bookmarkBtn.classList.remove('bookmarked');
+                        bookmarkBtn.innerHTML = bookmarkBtn.innerHTML.replace('✓', '🔖');
+                    }
+                }
+            });
+        }
+
+        // Game assignment
+        function assignGame(gameId, event) {
+            event.stopPropagation();
+            const game = allGames.find(g => g.id === gameId);
+            showNotification(`正在安排「${game.title}」給學生...`, 'info');
+        }
+
+        // Navigation functions
+        function goBack() {
+            showNotification('返回上一頁...', 'info');
+        }
+
+        function learnPremium() {
+            showNotification('了解 Premium 功能...', 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-sm`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500 text-white';
+            } else if (type === 'info') {
+                notification.className += ' bg-blue-500 text-white';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500 text-white';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Data SDK
+            if (window.dataSdk) {
+                const initResult = await window.dataSdk.init(dataHandler);
+                if (!initResult.isOk) {
+                    console.error('Failed to initialize Data SDK');
+                }
+            }
+            
+            initializeGames();
+            render(defaultConfig);
+        });
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9906c347263e614f',t:'MTc2MDc3NzE2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

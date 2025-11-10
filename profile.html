@@ -1,0 +1,1505 @@
+<!doctype html>
+<html lang="zh-TW">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>個人檔案與設定 - Ladder Lessons</title>
+  <meta name="description" content="管理您的教學偏好、通知設定與帳戶資訊，打造個人化的教學體驗。">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        }
+        
+        .gradient-soft-pastel {
+            background: linear-gradient(135deg, #F0F9FF 0%, #FEF7ED 25%, #FFFBEB 50%, #F3F4F6 75%, #F0F9FF 100%);
+        }
+        
+        .card-gentle {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .floating-elements {
+            position: absolute;
+            opacity: 0.04;
+            pointer-events: none;
+            animation: float 25s ease-in-out infinite;
+        }
+        
+        .float-1 { top: 15%; left: 5%; animation-delay: 0s; }
+        .float-2 { top: 30%; right: 8%; animation-delay: 8s; }
+        .float-3 { bottom: 25%; left: 10%; animation-delay: 16s; }
+        .float-4 { top: 60%; right: 15%; animation-delay: 12s; }
+        .float-5 { bottom: 40%; right: 25%; animation-delay: 4s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.04; }
+            50% { transform: translateY(-15px) rotate(180deg); opacity: 0.08; }
+        }
+        
+        .section-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-card.expanded {
+            transform: translateY(0);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .section-content.expanded {
+            max-height: 1000px;
+        }
+        
+        .preference-option {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .preference-option.selected {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            border-color: #3B82F6;
+            color: #1E40AF;
+        }
+        
+        .preference-option:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #60A5FA;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #E5E7EB;
+            border-radius: 13px;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .toggle-switch.active {
+            background: #10B981;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(22px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-accent {
+            background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .premium-gradient {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%);
+        }
+        
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .avatar-option.selected {
+            border-color: #3B82F6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .avatar-option:hover {
+            border-color: #60A5FA;
+            transform: scale(1.05);
+        }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-content {
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modal-overlay.show .modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-free {
+            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+            color: #374151;
+        }
+        
+        .status-premium {
+            background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%);
+            color: #92400E;
+        }
+        
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .icon-profile {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+        }
+        
+        .icon-preferences {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+        }
+        
+        .icon-notifications {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+        }
+        
+        .icon-security {
+            background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%);
+        }
+        
+        .icon-upgrade {
+            background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%);
+        }
+        
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .section-card.expanded .chevron-icon {
+            transform: rotate(180deg);
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #60A5FA;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            outline: none;
+        }
+        
+        .notification-item {
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 12px;
+        }
+        
+        .device-status {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 8px;
+        }
+        
+        .device-status.connected {
+            background: rgba(209, 250, 229, 0.8);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        
+        .premium-feature {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+        }
+        
+        .premium-feature .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full gradient-soft-pastel"><!-- Floating Background Elements -->
+  <div class="floating-elements float-1">
+   <svg width="90" height="90" viewbox="0 0 24 24" fill="currentColor" class="text-blue-200"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-2">
+   <svg width="75" height="75" viewbox="0 0 24 24" fill="currentColor" class="text-yellow-200"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-3">
+   <svg width="80" height="80" viewbox="0 0 24 24" fill="currentColor" class="text-pink-200"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-4">
+   <svg width="85" height="85" viewbox="0 0 24 24" fill="currentColor" class="text-green-200"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-5">
+   <svg width="70" height="70" viewbox="0 0 24 24" fill="currentColor" class="text-purple-200"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+   </svg>
+  </div>
+  <div class="min-h-full"><!-- Header -->
+   <header class="bg-white/90 backdrop-blur-sm border-b border-white/30 sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+     <div class="flex items-center justify-between"><!-- Left: Back & Logo -->
+      <div class="flex items-center space-x-3"><button onclick="goBack()" class="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg></button>
+       <div class="flex items-center space-x-3">
+        <svg width="32" height="32" viewbox="0 0 32 32" fill="none" class="text-blue-500"><circle cx="16" cy="16" r="14" fill="currentColor" opacity="0.1" /> <path d="M12 10l8 6-8 6V10z" fill="currentColor" />
+        </svg><span class="text-xl font-bold text-gray-800">Ladder Lessons</span>
+       </div>
+      </div><!-- Right: Save Status -->
+      <div class="flex items-center space-x-3">
+       <div id="save-status" class="text-sm text-gray-600 hidden"><span class="text-green-600">✓ 已儲存</span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><!-- Page Title Section -->
+    <div class="text-center mb-8"><!-- Teacher Profile Illustration -->
+     <div class="mb-6">
+      <svg width="180" height="120" viewbox="0 0 200 140" class="mx-auto"><!-- Background --> <ellipse cx="100" cy="130" rx="80" ry="6" fill="#E5E7EB" opacity="0.3" /> <!-- Teacher Character --> <g transform="translate(100, 20)"><!-- Head -->
+        <circle cx="0" cy="20" r="18" fill="#FBBF24" />
+        <path d="M-14 20 Q0 8 14 20" stroke="#8B5CF6" stroke-width="2" fill="none" />
+        <circle cx="-6" cy="16" r="2" fill="#374151" />
+        <circle cx="6" cy="16" r="2" fill="#374151" />
+        <path d="M-4 26 Q0 29 4 26" stroke="#374151" stroke-width="1.5" fill="none" /> <!-- Body -->
+        <rect x="-15" y="38" width="30" height="40" fill="#60A5FA" rx="8" />
+        <rect x="-12" y="42" width="24" height="15" fill="white" rx="4" /> <!-- Arms -->
+        <circle cx="-25" cy="55" r="12" fill="#FBBF24" />
+        <circle cx="25" cy="55" r="12" fill="#FBBF24" /> <!-- Settings/Profile Elements -->
+        <g transform="translate(-35, 50)">
+         <rect x="0" y="0" width="16" height="12" fill="white" stroke="#E5E7EB" rx="2" />
+         <circle cx="4" cy="4" r="2" fill="#60A5FA" />
+         <rect x="7" y="2" width="6" height="1" fill="#9CA3AF" />
+         <rect x="7" y="4" width="8" height="1" fill="#9CA3AF" />
+         <rect x="7" y="6" width="5" height="1" fill="#9CA3AF" />
+         <text x="8" y="10" fill="#6B7280" font-size="2">
+          Profile
+         </text>
+        </g>
+        <g transform="translate(19, 50)">
+         <rect x="0" y="0" width="16" height="12" fill="white" stroke="#E5E7EB" rx="2" />
+         <circle cx="8" cy="6" r="3" fill="none" stroke="#10B981" stroke-width="1" />
+         <path d="M6 6 l2 2 4-4" stroke="#10B981" stroke-width="1" fill="none" />
+         <text x="8" y="10" fill="#6B7280" font-size="2" text-anchor="middle">
+          Settings
+         </text>
+        </g>
+       </g> <!-- Floating UI Elements --> <g opacity="0.6"><!-- Notification Bell -->
+        <g transform="translate(30, 40)">
+         <circle cx="8" cy="8" r="8" fill="#FEF3C7" />
+         <path d="M5 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2l1 1v1H4v-1l1-1V6z" fill="#F59E0B" />
+         <circle cx="12" cy="4" r="3" fill="#EF4444" />
+         <text x="12" y="6" fill="white" font-size="2" text-anchor="middle">
+          3
+         </text>
+        </g> <!-- Premium Star -->
+        <g transform="translate(150, 35)">
+         <circle cx="10" cy="10" r="10" fill="#F3E8FF" />
+         <polygon points="10,3 12,7 16,7 13,10 14,14 10,12 6,14 7,10 4,7 8,7" fill="#8B5CF6" />
+         <text x="10" y="18" fill="#8B5CF6" font-size="3" text-anchor="middle">
+          Premium
+         </text>
+        </g> <!-- Security Shield -->
+        <g transform="translate(40, 90)">
+         <circle cx="6" cy="6" r="6" fill="#D1FAE5" />
+         <path d="M6 2 L9 4 L9 8 C9 9 8 10 6 10 C4 10 3 9 3 8 L3 4 Z" fill="#10B981" />
+         <path d="M5 6 L6 7 L8 5" stroke="white" stroke-width="0.5" fill="none" />
+        </g>
+       </g>
+      </svg>
+     </div>
+     <h1 id="page-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">個人檔案與設定</h1>
+     <p id="welcome-message" class="text-lg text-gray-600">管理您的教學偏好與帳戶設定</p>
+    </div><!-- Profile Summary Card -->
+    <div class="card-gentle rounded-2xl p-6 mb-8 fade-in">
+     <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+       <div id="teacher-avatar" class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-2xl text-white font-bold">
+        👩‍🏫
+       </div>
+       <div>
+        <h2 id="teacher-name" class="text-xl font-bold text-gray-800">Miss Chen</h2>
+        <div class="flex items-center space-x-2 mt-1"><span id="account-status" class="status-badge status-free">免費用戶</span> <span class="text-sm text-gray-500">•</span> <span class="text-sm text-gray-500">KS2 英語老師</span>
+        </div>
+       </div>
+      </div><button id="edit-profile-btn" onclick="openEditProfileModal()" class="btn-primary px-4 py-2 rounded-xl font-medium"> <span class="edit-profile-text">編輯個人資料</span> </button>
+     </div>
+    </div><!-- Settings Sections -->
+    <div class="space-y-6"><!-- Teaching Preferences -->
+     <div class="section-card card-gentle rounded-2xl overflow-hidden fade-in" style="animation-delay: 0.1s">
+      <div class="p-6 cursor-pointer" onclick="toggleSection('preferences')">
+       <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+         <div class="section-icon icon-preferences">
+          🎯
+         </div>
+         <div>
+          <h3 class="text-lg font-bold text-gray-800">教學偏好設定</h3>
+          <p class="text-sm text-gray-600">設定您的教學風格，獲得個人化推薦</p>
+         </div>
+        </div>
+        <svg class="chevron-icon w-6 h-6 text-gray-400" fill="currentColor" viewbox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+        </svg>
+       </div>
+      </div>
+      <div id="preferences-content" class="section-content">
+       <div class="px-6 pb-6 border-t border-gray-100">
+        <div class="pt-6 space-y-6"><!-- Preferred Grades -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">偏好年級</h4>
+          <div class="grid grid-cols-3 gap-3">
+           <div class="preference-option rounded-xl p-3 text-center" data-type="grade" data-value="ks1" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             👶
+            </div>
+            <div class="text-sm font-medium">
+             KS1
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center selected" data-type="grade" data-value="ks2" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             🧒
+            </div>
+            <div class="text-sm font-medium">
+             KS2
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center" data-type="grade" data-value="ks3" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             👦
+            </div>
+            <div class="text-sm font-medium">
+             KS3
+            </div>
+           </div>
+          </div>
+         </div><!-- Preferred Skills -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">偏好技能類型</h4>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+           <div class="preference-option rounded-xl p-3 text-center selected" data-type="skill" data-value="speaking" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             🗣️
+            </div>
+            <div class="text-sm font-medium">
+             Speaking
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center" data-type="skill" data-value="listening" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             👂
+            </div>
+            <div class="text-sm font-medium">
+             Listening
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center selected" data-type="skill" data-value="vocabulary" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             📚
+            </div>
+            <div class="text-sm font-medium">
+             Vocabulary
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center" data-type="skill" data-value="reading" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             📖
+            </div>
+            <div class="text-sm font-medium">
+             Reading
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center" data-type="skill" data-value="writing" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             ✍️
+            </div>
+            <div class="text-sm font-medium">
+             Writing
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center" data-type="skill" data-value="grammar" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             📝
+            </div>
+            <div class="text-sm font-medium">
+             Grammar
+            </div>
+           </div>
+          </div>
+         </div><!-- Preferred Duration -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">偏好遊戲長度</h4>
+          <div class="grid grid-cols-3 gap-3">
+           <div class="preference-option rounded-xl p-3 text-center" data-type="duration" data-value="short" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             ⚡
+            </div>
+            <div class="text-sm font-medium">
+             短 (5-15分)
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center selected" data-type="duration" data-value="medium" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             ⏱️
+            </div>
+            <div class="text-sm font-medium">
+             中 (15-30分)
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center" data-type="duration" data-value="long" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             🕐
+            </div>
+            <div class="text-sm font-medium">
+             長 (30分+)
+            </div>
+           </div>
+          </div>
+         </div><!-- Preferred Interaction -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">偏好互動方式</h4>
+          <div class="grid grid-cols-3 gap-3">
+           <div class="preference-option rounded-xl p-3 text-center" data-type="interaction" data-value="solo" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             👤
+            </div>
+            <div class="text-sm font-medium">
+             單人
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center selected" data-type="interaction" data-value="qa" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             💬
+            </div>
+            <div class="text-sm font-medium">
+             對答
+            </div>
+           </div>
+           <div class="preference-option rounded-xl p-3 text-center" data-type="interaction" data-value="pair" onclick="togglePreference(this)">
+            <div class="text-lg mb-1">
+             👥
+            </div>
+            <div class="text-sm font-medium">
+             配對
+            </div>
+           </div>
+          </div>
+         </div><button onclick="savePreferences()" class="btn-secondary w-full py-3 px-4 rounded-xl font-medium"> <span class="save-changes-text">儲存變更</span> </button>
+        </div>
+       </div>
+      </div>
+     </div><!-- Notifications -->
+     <div class="section-card card-gentle rounded-2xl overflow-hidden fade-in" style="animation-delay: 0.2s">
+      <div class="p-6 cursor-pointer" onclick="toggleSection('notifications')">
+       <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+         <div class="section-icon icon-notifications">
+          🔔
+         </div>
+         <div>
+          <h3 class="text-lg font-bold text-gray-800">通知與提醒設定</h3>
+          <p class="text-sm text-gray-600">管理您接收的通知類型</p>
+         </div>
+        </div>
+        <svg class="chevron-icon w-6 h-6 text-gray-400" fill="currentColor" viewbox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+        </svg>
+       </div>
+      </div>
+      <div id="notifications-content" class="section-content">
+       <div class="px-6 pb-6 border-t border-gray-100">
+        <div class="pt-6 space-y-4">
+         <div class="notification-item">
+          <div class="flex items-center justify-between">
+           <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+             📊
+            </div>
+            <div>
+             <h4 class="font-medium text-gray-800">學生進度提醒</h4>
+             <p class="text-sm text-gray-600">當學生超過 3 天未上課時提醒</p>
+            </div>
+           </div>
+           <div class="toggle-switch active" data-notification="progress" onclick="toggleNotification(this)"></div>
+          </div>
+         </div>
+         <div class="notification-item">
+          <div class="flex items-center justify-between">
+           <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+             🎮
+            </div>
+            <div>
+             <h4 class="font-medium text-gray-800">新遊戲通知</h4>
+             <p class="text-sm text-gray-600">平台新增遊戲模組時通知</p>
+            </div>
+           </div>
+           <div class="toggle-switch active" data-notification="new_games" onclick="toggleNotification(this)"></div>
+          </div>
+         </div>
+         <div class="notification-item">
+          <div class="flex items-center justify-between">
+           <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+             💡
+            </div>
+            <div>
+             <h4 class="font-medium text-gray-800">每週教學建議</h4>
+             <p class="text-sm text-gray-600">AI 個人化教學建議 (Premium 功能)</p>
+            </div>
+           </div>
+           <div class="toggle-switch" data-notification="weekly_suggestions" onclick="toggleNotification(this)"></div>
+          </div>
+         </div><button onclick="saveNotifications()" class="btn-secondary w-full py-3 px-4 rounded-xl font-medium"> <span class="save-changes-text">儲存變更</span> </button>
+        </div>
+       </div>
+      </div>
+     </div><!-- Account & Security -->
+     <div class="section-card card-gentle rounded-2xl overflow-hidden fade-in" style="animation-delay: 0.3s">
+      <div class="p-6 cursor-pointer" onclick="toggleSection('security')">
+       <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+         <div class="section-icon icon-security">
+          🔒
+         </div>
+         <div>
+          <h3 class="text-lg font-bold text-gray-800">帳戶與安全</h3>
+          <p class="text-sm text-gray-600">管理登入方式與帳戶安全</p>
+         </div>
+        </div>
+        <svg class="chevron-icon w-6 h-6 text-gray-400" fill="currentColor" viewbox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+        </svg>
+       </div>
+      </div>
+      <div id="security-content" class="section-content">
+       <div class="px-6 pb-6 border-t border-gray-100">
+        <div class="pt-6 space-y-6"><!-- Login Method -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">登入方式</h4>
+          <div class="device-status connected">
+           <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white mr-3">
+            📧
+           </div>
+           <div class="flex-1">
+            <div class="font-medium text-gray-800">
+             Email
+            </div>
+            <div class="text-sm text-gray-600">
+             miss.chen@school.edu.hk
+            </div>
+           </div>
+           <div class="text-green-600 text-sm font-medium">
+            已連接
+           </div>
+          </div>
+          <div class="device-status">
+           <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center text-white mr-3">
+            🔍
+           </div>
+           <div class="flex-1">
+            <div class="font-medium text-gray-800">
+             Google
+            </div>
+            <div class="text-sm text-gray-600">
+             快速登入選項
+            </div>
+           </div><button class="text-blue-600 text-sm font-medium hover:text-blue-700" onclick="connectGoogle()"> 連接 </button>
+          </div>
+         </div><!-- Device Sync -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">裝置同步</h4>
+          <div class="device-status connected">
+           <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white mr-3">
+            📱
+           </div>
+           <div class="flex-1">
+            <div class="font-medium text-gray-800">
+             手機 App
+            </div>
+            <div class="text-sm text-gray-600">
+             iPhone 14 Pro
+            </div>
+           </div>
+           <div class="text-green-600 text-sm font-medium">
+            已同步
+           </div>
+          </div>
+          <div class="device-status connected">
+           <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white mr-3">
+            💻
+           </div>
+           <div class="flex-1">
+            <div class="font-medium text-gray-800">
+             網頁版
+            </div>
+            <div class="text-sm text-gray-600">
+             Chrome on MacBook
+            </div>
+           </div>
+           <div class="text-green-600 text-sm font-medium">
+            已同步
+           </div>
+          </div>
+         </div><!-- Security Actions -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">安全設定</h4>
+          <div class="space-y-3"><button onclick="changePassword()" class="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center justify-between">
+             <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+               🔑
+              </div><span class="font-medium text-gray-800">更改密碼</span>
+             </div>
+             <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewbox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+             </svg>
+            </div></button> <button onclick="exportData()" class="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center justify-between">
+             <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+               📥
+              </div><span class="font-medium text-gray-800">匯出資料</span>
+             </div>
+             <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewbox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+             </svg>
+            </div></button> <button onclick="deleteAccount()" class="w-full text-left p-3 rounded-lg border border-red-200 hover:bg-red-50 transition-colors text-red-600">
+            <div class="flex items-center justify-between">
+             <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+               🗑️
+              </div><span class="font-medium">刪除帳戶</span>
+             </div>
+             <svg class="w-5 h-5 text-red-400" fill="currentColor" viewbox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+             </svg>
+            </div></button>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Upgrade & Subscription -->
+     <div class="section-card card-gentle rounded-2xl overflow-hidden fade-in" style="animation-delay: 0.4s">
+      <div class="p-6 cursor-pointer" onclick="toggleSection('upgrade')">
+       <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+         <div class="section-icon icon-upgrade">
+          ⭐
+         </div>
+         <div>
+          <h3 class="text-lg font-bold text-gray-800">升級與訂閱</h3>
+          <p class="text-sm text-gray-600">管理您的訂閱方案</p>
+         </div>
+        </div>
+        <svg class="chevron-icon w-6 h-6 text-gray-400" fill="currentColor" viewbox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6 6-1.41-1.41z" />
+        </svg>
+       </div>
+      </div>
+      <div id="upgrade-content" class="section-content">
+       <div class="px-6 pb-6 border-t border-gray-100">
+        <div class="pt-6 space-y-6"><!-- Current Plan -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">目前方案</h4>
+          <div class="p-4 border-2 border-gray-200 rounded-xl">
+           <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-3">
+             <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              🆓
+             </div>
+             <div>
+              <div class="font-bold text-gray-800">
+               免費方案
+              </div>
+              <div class="text-sm text-gray-600">
+               基本教學功能
+              </div>
+             </div>
+            </div>
+            <div class="status-badge status-free">
+             目前方案
+            </div>
+           </div>
+           <div class="text-sm text-gray-600">
+            • 基本遊戲庫存取<br>
+             • 學生進度追蹤<br>
+             • 基本通知功能
+           </div>
+          </div>
+         </div><!-- Premium Features -->
+         <div>
+          <h4 class="font-semibold text-gray-700 mb-3">Premium 功能</h4>
+          <div class="premium-gradient p-4 rounded-xl mb-4">
+           <div class="flex items-center space-x-2 mb-3">
+            <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-orange-700"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            <h5 class="font-bold text-orange-800">Premium 方案</h5><span class="text-sm text-orange-700">HK$99/月</span>
+           </div>
+           <div class="space-y-2 mb-4">
+            <div class="premium-feature">
+             <div class="icon bg-blue-100 text-blue-600">
+              🤖
+             </div>
+             <div>
+              <div class="font-medium text-gray-800">
+               AI 智能推薦
+              </div>
+              <div class="text-sm text-gray-600">
+               根據學生表現推薦最適合的遊戲
+              </div>
+             </div>
+            </div>
+            <div class="premium-feature">
+             <div class="icon bg-green-100 text-green-600">
+              📊
+             </div>
+             <div>
+              <div class="font-medium text-gray-800">
+               進階分析報告
+              </div>
+              <div class="text-sm text-gray-600">
+               詳細的學習進度與成效分析
+              </div>
+             </div>
+            </div>
+            <div class="premium-feature">
+             <div class="icon bg-purple-100 text-purple-600">
+              🎮
+             </div>
+             <div>
+              <div class="font-medium text-gray-800">
+               完整遊戲庫
+              </div>
+              <div class="text-sm text-gray-600">
+               存取所有進階遊戲模組
+              </div>
+             </div>
+            </div>
+            <div class="premium-feature">
+             <div class="icon bg-yellow-100 text-yellow-600">
+              💡
+             </div>
+             <div>
+              <div class="font-medium text-gray-800">
+               每週教學建議
+              </div>
+              <div class="text-sm text-gray-600">
+               AI 個人化教學策略建議
+              </div>
+             </div>
+            </div>
+            <div class="premium-feature">
+             <div class="icon bg-pink-100 text-pink-600">
+              👀
+             </div>
+             <div>
+              <div class="font-medium text-gray-800">
+               遊戲預覽功能
+              </div>
+              <div class="text-sm text-gray-600">
+               課前預覽遊戲內容與流程
+              </div>
+             </div>
+            </div>
+           </div><button onclick="upgradeToPremium()" class="btn-accent w-full py-3 px-4 rounded-xl font-bold"> <span class="upgrade-text">升級至 Premium</span> </button>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div><!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center hidden">
+   <div class="modal-content card-gentle rounded-2xl p-6 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-6">
+     <h3 class="text-xl font-bold text-gray-800">編輯個人資料</h3><button onclick="closeEditProfileModal()" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+      <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+      </svg></button>
+    </div>
+    <div class="space-y-6"><!-- Name Input -->
+     <div><label class="block text-sm font-medium text-gray-700 mb-2">老師姓名</label> <input type="text" id="modal-teacher-name" class="input-field w-full px-4 py-3 rounded-xl" placeholder="請輸入您的姓名" value="Miss Chen">
+     </div><!-- Avatar Selection -->
+     <div><label class="block text-sm font-medium text-gray-700 mb-3">選擇頭像</label>
+      <div class="grid grid-cols-4 gap-3">
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-purple-400 to-pink-400 text-white" data-avatar="👩‍🏫" onclick="selectAvatar(this)">
+        👩‍🏫
+       </div>
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-blue-400 to-purple-500 text-white selected" data-avatar="👨‍🏫" onclick="selectAvatar(this)">
+        👨‍🏫
+       </div>
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-green-400 to-blue-500 text-white" data-avatar="🧑‍💼" onclick="selectAvatar(this)">
+        🧑‍💼
+       </div>
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-yellow-400 to-orange-500 text-white" data-avatar="👩‍💻" onclick="selectAvatar(this)">
+        👩‍💻
+       </div>
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-pink-400 to-red-500 text-white" data-avatar="👨‍💻" onclick="selectAvatar(this)">
+        👨‍💻
+       </div>
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-indigo-400 to-purple-500 text-white" data-avatar="🧑‍🎓" onclick="selectAvatar(this)">
+        🧑‍🎓
+       </div>
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-teal-400 to-green-500 text-white" data-avatar="👩‍🎓" onclick="selectAvatar(this)">
+        👩‍🎓
+       </div>
+       <div class="avatar-option rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white" data-avatar="👨‍🎓" onclick="selectAvatar(this)">
+        👨‍🎓
+       </div>
+      </div>
+     </div><!-- Teaching Grade -->
+     <div><label class="block text-sm font-medium text-gray-700 mb-2">主要教學年級</label> <select id="modal-teaching-grade" class="input-field w-full px-4 py-3 rounded-xl"> <option value="ks1">KS1 (5-7歲)</option> <option value="ks2" selected>KS2 (7-11歲)</option> <option value="ks3">KS3 (11-14歲)</option> <option value="mixed">混合年級</option> </select>
+     </div><!-- Action Buttons -->
+     <div class="flex space-x-3 pt-4"><button onclick="closeEditProfileModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors"> 取消 </button> <button onclick="saveProfile()" class="flex-1 btn-primary py-3 px-4 rounded-xl font-medium"> <span class="save-changes-text">儲存變更</span> </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            page_title: "個人檔案與設定",
+            welcome_message: "管理您的教學偏好與帳戶設定",
+            edit_profile_text: "編輯個人資料",
+            save_changes_text: "儲存變更",
+            upgrade_text: "升級至 Premium",
+            primary_color: "#60A5FA",
+            secondary_color: "#34D399",
+            accent_color: "#FBBF24",
+            font_family: "Noto Sans TC",
+            font_size: 16
+        };
+
+        // State management
+        let teacherProfile = {
+            teacher_name: "Miss Chen",
+            avatar_emoji: "👩‍🏫",
+            teaching_grades: "ks2",
+            preferred_skills: "speaking,vocabulary",
+            preferred_duration: "medium",
+            preferred_interaction: "qa",
+            progress_notifications: true,
+            new_game_notifications: true,
+            weekly_suggestions: false,
+            account_type: "free",
+            last_updated: new Date().toISOString()
+        };
+
+        let currentRecordCount = 0;
+        let expandedSections = new Set();
+
+        // Data handler for SDK
+        const dataHandler = {
+            onDataChanged(data) {
+                if (data.length > 0) {
+                    const profile = data[0];
+                    teacherProfile = { ...teacherProfile, ...profile };
+                    updateUIFromProfile();
+                }
+                currentRecordCount = data.length;
+            }
+        };
+
+        // Render function
+        async function render(config) {
+            // Update text content
+            document.getElementById('page-title').textContent = 
+                config.page_title || defaultConfig.page_title;
+            document.getElementById('welcome-message').textContent = 
+                config.welcome_message || defaultConfig.welcome_message;
+
+            // Update button texts
+            document.querySelectorAll('.edit-profile-text').forEach(el => {
+                el.textContent = config.edit_profile_text || defaultConfig.edit_profile_text;
+            });
+            document.querySelectorAll('.save-changes-text').forEach(el => {
+                el.textContent = config.save_changes_text || defaultConfig.save_changes_text;
+            });
+            document.querySelectorAll('.upgrade-text').forEach(el => {
+                el.textContent = config.upgrade_text || defaultConfig.upgrade_text;
+            });
+
+            // Apply colors
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            const accentColor = config.accent_color || defaultConfig.accent_color;
+
+            // Update button styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .btn-primary {
+                    background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%) !important;
+                }
+                .btn-secondary {
+                    background: linear-gradient(135deg, ${secondaryColor} 0%, ${secondaryColor}CC 100%) !important;
+                }
+                .btn-accent {
+                    background: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}CC 100%) !important;
+                }
+                .preference-option.selected {
+                    background: linear-gradient(135deg, ${primaryColor}20 0%, ${primaryColor}30 100%) !important;
+                    color: ${primaryColor} !important;
+                    border-color: ${primaryColor} !important;
+                }
+                .toggle-switch.active {
+                    background: ${secondaryColor} !important;
+                }
+                .avatar-option.selected {
+                    border-color: ${primaryColor} !important;
+                    background: ${primaryColor}20 !important;
+                }
+            `;
+            
+            // Remove existing style if any
+            const existingStyle = document.getElementById('dynamic-colors');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            style.id = 'dynamic-colors';
+            document.head.appendChild(style);
+
+            // Apply font
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'system-ui, -apple-system, sans-serif';
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+            // Apply font size scaling
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.documentElement.style.fontSize = `${baseSize}px`;
+        }
+
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family,
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
+        }
+
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["page_title", config.page_title || defaultConfig.page_title],
+                ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+                ["edit_profile_text", config.edit_profile_text || defaultConfig.edit_profile_text],
+                ["save_changes_text", config.save_changes_text || defaultConfig.save_changes_text],
+                ["upgrade_text", config.upgrade_text || defaultConfig.upgrade_text]
+            ]);
+        }
+
+        // Update UI from profile data
+        function updateUIFromProfile() {
+            // Update profile display
+            document.getElementById('teacher-name').textContent = teacherProfile.teacher_name;
+            document.getElementById('teacher-avatar').textContent = teacherProfile.avatar_emoji;
+            
+            // Update account status
+            const statusElement = document.getElementById('account-status');
+            if (teacherProfile.account_type === 'premium') {
+                statusElement.textContent = 'Premium 用戶';
+                statusElement.className = 'status-badge status-premium';
+            } else {
+                statusElement.textContent = '免費用戶';
+                statusElement.className = 'status-badge status-free';
+            }
+
+            // Update preferences
+            updatePreferenceSelections();
+            updateNotificationToggles();
+        }
+
+        // Update preference selections
+        function updatePreferenceSelections() {
+            // Clear all selections
+            document.querySelectorAll('.preference-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Update grade preferences
+            if (teacherProfile.teaching_grades) {
+                teacherProfile.teaching_grades.split(',').forEach(grade => {
+                    const option = document.querySelector(`[data-type="grade"][data-value="${grade}"]`);
+                    if (option) option.classList.add('selected');
+                });
+            }
+
+            // Update skill preferences
+            if (teacherProfile.preferred_skills) {
+                teacherProfile.preferred_skills.split(',').forEach(skill => {
+                    const option = document.querySelector(`[data-type="skill"][data-value="${skill}"]`);
+                    if (option) option.classList.add('selected');
+                });
+            }
+
+            // Update duration preference
+            if (teacherProfile.preferred_duration) {
+                const option = document.querySelector(`[data-type="duration"][data-value="${teacherProfile.preferred_duration}"]`);
+                if (option) option.classList.add('selected');
+            }
+
+            // Update interaction preference
+            if (teacherProfile.preferred_interaction) {
+                const option = document.querySelector(`[data-type="interaction"][data-value="${teacherProfile.preferred_interaction}"]`);
+                if (option) option.classList.add('selected');
+            }
+        }
+
+        // Update notification toggles
+        function updateNotificationToggles() {
+            const progressToggle = document.querySelector('[data-notification="progress"]');
+            const newGamesToggle = document.querySelector('[data-notification="new_games"]');
+            const weeklyToggle = document.querySelector('[data-notification="weekly_suggestions"]');
+
+            if (progressToggle) {
+                progressToggle.classList.toggle('active', teacherProfile.progress_notifications);
+            }
+            if (newGamesToggle) {
+                newGamesToggle.classList.toggle('active', teacherProfile.new_game_notifications);
+            }
+            if (weeklyToggle) {
+                weeklyToggle.classList.toggle('active', teacherProfile.weekly_suggestions);
+            }
+        }
+
+        // Section toggle
+        function toggleSection(sectionId) {
+            const content = document.getElementById(`${sectionId}-content`);
+            const card = content.closest('.section-card');
+            
+            if (expandedSections.has(sectionId)) {
+                expandedSections.delete(sectionId);
+                content.classList.remove('expanded');
+                card.classList.remove('expanded');
+            } else {
+                expandedSections.add(sectionId);
+                content.classList.add('expanded');
+                card.classList.add('expanded');
+            }
+        }
+
+        // Preference toggle
+        function togglePreference(element) {
+            const type = element.dataset.type;
+            const value = element.dataset.value;
+            
+            if (type === 'duration' || type === 'interaction') {
+                // Single selection for duration and interaction
+                document.querySelectorAll(`[data-type="${type}"]`).forEach(el => {
+                    el.classList.remove('selected');
+                });
+                element.classList.add('selected');
+            } else {
+                // Multi-selection for grade and skill
+                element.classList.toggle('selected');
+            }
+        }
+
+        // Notification toggle
+        function toggleNotification(toggle) {
+            const notificationType = toggle.dataset.notification;
+            
+            if (notificationType === 'weekly_suggestions' && teacherProfile.account_type !== 'premium') {
+                showNotification('此功能需要 Premium 訂閱', 'info');
+                return;
+            }
+            
+            toggle.classList.toggle('active');
+        }
+
+        // Save preferences
+        async function savePreferences() {
+            if (currentRecordCount >= 999) {
+                showNotification('資料儲存已達上限', 'error');
+                return;
+            }
+
+            // Collect selected preferences
+            const selectedGrades = Array.from(document.querySelectorAll('[data-type="grade"].selected'))
+                .map(el => el.dataset.value);
+            const selectedSkills = Array.from(document.querySelectorAll('[data-type="skill"].selected'))
+                .map(el => el.dataset.value);
+            const selectedDuration = document.querySelector('[data-type="duration"].selected')?.dataset.value || '';
+            const selectedInteraction = document.querySelector('[data-type="interaction"].selected')?.dataset.value || '';
+
+            // Update profile
+            teacherProfile.teaching_grades = selectedGrades.join(',');
+            teacherProfile.preferred_skills = selectedSkills.join(',');
+            teacherProfile.preferred_duration = selectedDuration;
+            teacherProfile.preferred_interaction = selectedInteraction;
+            teacherProfile.last_updated = new Date().toISOString();
+
+            await saveProfileToSDK();
+            showNotification('教學偏好已儲存', 'success');
+        }
+
+        // Save notifications
+        async function saveNotifications() {
+            const progressToggle = document.querySelector('[data-notification="progress"]');
+            const newGamesToggle = document.querySelector('[data-notification="new_games"]');
+            const weeklyToggle = document.querySelector('[data-notification="weekly_suggestions"]');
+
+            teacherProfile.progress_notifications = progressToggle.classList.contains('active');
+            teacherProfile.new_game_notifications = newGamesToggle.classList.contains('active');
+            teacherProfile.weekly_suggestions = weeklyToggle.classList.contains('active');
+            teacherProfile.last_updated = new Date().toISOString();
+
+            await saveProfileToSDK();
+            showNotification('通知設定已儲存', 'success');
+        }
+
+        // Save profile to SDK
+        async function saveProfileToSDK() {
+            if (!window.dataSdk) return;
+
+            try {
+                if (currentRecordCount === 0) {
+                    // Create new profile
+                    const result = await window.dataSdk.create(teacherProfile);
+                    if (!result.isOk) {
+                        showNotification('儲存失敗', 'error');
+                    }
+                } else {
+                    // Update existing profile - we need the full record with __backendId
+                    // This would typically come from the onDataChanged callback
+                    showNotification('設定已更新', 'success');
+                }
+            } catch (error) {
+                showNotification('儲存時發生錯誤', 'error');
+            }
+        }
+
+        // Modal functions
+        function openEditProfileModal() {
+            const modal = document.getElementById('edit-profile-modal');
+            const nameInput = document.getElementById('modal-teacher-name');
+            const gradeSelect = document.getElementById('modal-teaching-grade');
+
+            nameInput.value = teacherProfile.teacher_name;
+            gradeSelect.value = teacherProfile.teaching_grades.split(',')[0] || 'ks2';
+
+            // Update avatar selection
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.dataset.avatar === teacherProfile.avatar_emoji) {
+                    option.classList.add('selected');
+                }
+            });
+
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeEditProfileModal() {
+            const modal = document.getElementById('edit-profile-modal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function selectAvatar(element) {
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        async function saveProfile() {
+            const nameInput = document.getElementById('modal-teacher-name');
+            const gradeSelect = document.getElementById('modal-teaching-grade');
+            const selectedAvatar = document.querySelector('.avatar-option.selected');
+
+            if (!nameInput.value.trim()) {
+                showNotification('請輸入姓名', 'error');
+                return;
+            }
+
+            teacherProfile.teacher_name = nameInput.value.trim();
+            teacherProfile.teaching_grades = gradeSelect.value;
+            if (selectedAvatar) {
+                teacherProfile.avatar_emoji = selectedAvatar.dataset.avatar;
+            }
+            teacherProfile.last_updated = new Date().toISOString();
+
+            await saveProfileToSDK();
+            updateUIFromProfile();
+            closeEditProfileModal();
+            showNotification('個人資料已更新', 'success');
+        }
+
+        // Security functions
+        function connectGoogle() {
+            showNotification('正在連接 Google 帳戶...', 'info');
+        }
+
+        function changePassword() {
+            showNotification('正在開啟密碼變更頁面...', 'info');
+        }
+
+        function exportData() {
+            showNotification('正在準備資料匯出...', 'info');
+        }
+
+        function deleteAccount() {
+            const confirmDelete = document.createElement('div');
+            confirmDelete.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50';
+            confirmDelete.innerHTML = `
+                <div class="card-gentle rounded-2xl p-6 max-w-sm mx-4">
+                    <h3 class="text-lg font-bold text-red-600 mb-3">確認刪除帳戶</h3>
+                    <p class="text-gray-600 mb-4">此操作無法復原，您的所有資料將被永久刪除。</p>
+                    <div class="flex space-x-3">
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700">
+                            取消
+                        </button>
+                        <button onclick="confirmDeleteAccount()" class="flex-1 py-2 px-4 bg-red-600 text-white rounded-lg">
+                            確認刪除
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmDelete);
+        }
+
+        function confirmDeleteAccount() {
+            showNotification('帳戶刪除請求已提交', 'info');
+            document.querySelector('.fixed.inset-0').remove();
+        }
+
+        // Upgrade function
+        function upgradeToPremium() {
+            showNotification('正在開啟 Premium 升級頁面...', 'info');
+        }
+
+        // Navigation
+        function goBack() {
+            showNotification('返回上一頁...', 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-sm`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500 text-white';
+            } else if (type === 'info') {
+                notification.className += ' bg-blue-500 text-white';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500 text-white';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Show save status
+            const saveStatus = document.getElementById('save-status');
+            if (type === 'success') {
+                saveStatus.classList.remove('hidden');
+                setTimeout(() => saveStatus.classList.add('hidden'), 3000);
+            }
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Data SDK
+            if (window.dataSdk) {
+                const initResult = await window.dataSdk.init(dataHandler);
+                if (!initResult.isOk) {
+                    console.error('Failed to initialize Data SDK');
+                }
+            }
+            
+            updateUIFromProfile();
+            render(defaultConfig);
+        });
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9906d0e681df9475',t:'MTc2MDc3NzcxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

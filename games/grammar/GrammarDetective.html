@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grammar Detective</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite:wght@400&amp;family=Fredoka+One:wght@400&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Special Elite', cursive;
+            background: linear-gradient(135deg, #f5f1e8 0%, #e8dcc0 100%);
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .game-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #f39c12;
+            padding: clamp(0.5rem, 2vw, 1rem);
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .score {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            margin-top: 0.5rem;
+            color: #f1c40f;
+        }
+
+        /* Top Zone - Clue Area */
+        .clue-zone {
+            height: 15%;
+            padding: clamp(0.5rem, 2vw, 1rem);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .clue-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            padding: clamp(0.8rem, 2vw, 1.2rem);
+            box-shadow: 0 8px 16px rgba(52, 152, 219, 0.3);
+            max-width: 90%;
+            text-align: center;
+            position: relative;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .clue-card.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .clue-card::before {
+            content: "🔍";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            font-size: 1.5rem;
+            background: #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clue-text {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        /* Middle Zone - Sentence Builder */
+        .sentence-zone {
+            height: 65%;
+            padding: clamp(0.5rem, 2vw, 1rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(1rem, 3vw, 2rem);
+        }
+
+        .case-intro {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: clamp(0.8rem, 2vw, 1.2rem);
+            border-radius: 15px;
+            text-align: center;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+            max-width: 90%;
+        }
+
+        .sentence-builder {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(0.5rem, 1.5vw, 0.8rem);
+            justify-content: center;
+            align-items: center;
+            max-width: 95%;
+        }
+
+        .sentence-slot {
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            border: 3px dashed #95a5a6;
+            border-radius: 12px;
+            padding: clamp(0.6rem, 1.5vw, 1rem) clamp(0.8rem, 2vw, 1.2rem);
+            min-width: clamp(80px, 15vw, 120px);
+            min-height: clamp(40px, 8vw, 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: bold;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sentence-slot.filled {
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+            border: 3px solid #27ae60;
+            color: #2c3e50;
+            transform: scale(1.05);
+        }
+
+        .sentence-slot.correct {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            animation: correctPop 0.6s ease;
+        }
+
+        .sentence-slot.incorrect {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            animation: incorrectShake 0.6s ease;
+        }
+
+        /* Bottom Zone - Controls */
+        .control-zone {
+            height: 20%;
+            padding: clamp(0.5rem, 2vw, 1rem);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.5rem, 1.5vw, 0.8rem);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(0.3rem, 1vw, 0.5rem);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .word-option {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+            font-size: clamp(0.8rem, 1.8vw, 1rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .word-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.5);
+        }
+
+        .word-option.used {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            cursor: not-allowed;
+            transform: scale(0.9);
+            opacity: 0.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: clamp(0.5rem, 2vw, 1rem);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: clamp(0.6rem, 1.5vw, 0.8rem) clamp(1rem, 2.5vw, 1.5rem);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(243, 156, 18, 0.3);
+            font-family: 'Special Elite', cursive;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(243, 156, 18, 0.5);
+        }
+
+        .btn:disabled {
+            background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        /* Feedback */
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: clamp(1rem, 3vw, 2rem);
+            border-radius: 20px;
+            text-align: center;
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .feedback.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .feedback.success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .feedback.error {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        /* Animations */
+        @keyframes correctPop {
+            0% { transform: scale(1.05); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1.05); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes scoreIncrease {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); color: #f1c40f; }
+            100% { transform: scale(1); }
+        }
+
+        .score-animate {
+            animation: scoreIncrease 0.6s ease;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: -10px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            animation: confetti-fall 3s linear infinite;
+            z-index: 999;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Start Screen */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            color: white;
+            text-align: center;
+            transition: all 0.8s ease;
+        }
+
+        .start-screen.hidden {
+            opacity: 0;
+            transform: translateY(-100%);
+            pointer-events: none;
+        }
+
+        .start-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(2rem, 6vw, 4rem);
+            color: #f39c12;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            margin-bottom: clamp(1rem, 3vw, 2rem);
+        }
+
+        .start-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+            color: #ecf0f1;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: clamp(1rem, 3vw, 1.5rem) clamp(2rem, 5vw, 3rem);
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(231, 76, 60, 0.4);
+            font-family: 'Special Elite', cursive;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(231, 76, 60, 0.6);
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="start-screen" id="startScreen">
+   <div class="start-title" id="gameTitle">
+    Grammar Detective
+   </div>
+   <div class="start-subtitle" id="welcomeMessage">
+    Welcome, Grammar Detective!
+   </div>
+   <div class="start-subtitle" id="instructions">
+    Solve grammar mysteries by building correct sentences!
+   </div><button class="start-btn" onclick="startGame()">Start Investigation</button>
+  </div>
+  <div class="game-container" id="gameContainer">
+   <header class="header">
+    <h1 id="headerTitle">Grammar Detective</h1>
+    <div class="score" id="scoreDisplay">
+     Cases Solved: 0
+    </div>
+   </header>
+   <main class="clue-zone">
+    <div class="clue-card" id="clueCard">
+     <div class="clue-text" id="clueText">
+      Click "Reveal Clue" to start investigating!
+     </div>
+    </div>
+   </main>
+   <section class="sentence-zone">
+    <div class="case-intro" id="caseIntro">
+     Ready to solve your first case?
+    </div>
+    <div class="sentence-builder" id="sentenceBuilder"></div>
+   </section>
+   <section class="control-zone">
+    <div class="word-bank" id="wordBank"></div>
+    <div class="controls"><button class="btn" id="revealClueBtn" onclick="revealClue()">Reveal Clue</button> <button class="btn success" id="checkBtn" onclick="checkSentence()" disabled>Check Sentence</button> <button class="btn danger" id="resetBtn" onclick="resetSentence()" disabled>Reset</button> <button class="btn" id="nextCaseBtn" onclick="nextCase()" disabled>Next Case</button>
+    </div>
+   </section>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <script>
+        const mysteries = [
+            {
+                case: "Who was watching something yesterday?",
+                skeleton: ["Subject", "Auxiliary", "Verb(-ing)", "Object", "Time"],
+                clues: [
+                    "Subject: plural pronoun",
+                    "Tense: Past Continuous (was/were + -ing)",
+                    "Object: something you watch",
+                    "Time: in the past"
+                ],
+                wordBank: {
+                    Subject: ["They", "We", "He"],
+                    Auxiliary: ["was", "were"],
+                    "Verb(-ing)": ["watching", "reading"],
+                    Object: ["TV", "movie", "music"],
+                    Time: ["yesterday", "today"]
+                },
+                correct: ["They", "were", "watching", "TV", "yesterday"]
+            },
+            {
+                case: "Who has finished homework?",
+                skeleton: ["Subject", "Auxiliary", "Verb(past participle)", "Object"],
+                clues: [
+                    "Subject: singular female pronoun",
+                    "Tense: Present Perfect (has/have + past participle)",
+                    "Object: school-related task"
+                ],
+                wordBank: {
+                    Subject: ["He", "She", "They"],
+                    Auxiliary: ["has", "have"],
+                    "Verb(past participle)": ["finished", "done", "eaten"],
+                    Object: ["homework", "lunch", "dinner"]
+                },
+                correct: ["She", "has", "finished", "homework"]
+            },
+            {
+                case: "Who will go to school tomorrow?",
+                skeleton: ["Subject", "Modal", "Verb(base)", "Preposition", "Place", "Time"],
+                clues: [
+                    "Subject: first person singular",
+                    "Tense: Future Simple (will + base verb)",
+                    "Place: where you study",
+                    "Time: in the future"
+                ],
+                wordBank: {
+                    Subject: ["I", "You", "We"],
+                    Modal: ["will", "can", "must"],
+                    "Verb(base)": ["go", "run", "walk"],
+                    Preposition: ["to", "at"],
+                    Place: ["school", "park", "home"],
+                    Time: ["tomorrow", "yesterday", "today"]
+                },
+                correct: ["I", "will", "go", "to", "school", "tomorrow"]
+            },
+            {
+                case: "Who is eating lunch now?",
+                skeleton: ["Subject", "Auxiliary", "Verb(-ing)", "Object", "Time"],
+                clues: [
+                    "Subject: third person singular male",
+                    "Tense: Present Continuous (is/are + -ing)",
+                    "Object: midday meal",
+                    "Time: at this moment"
+                ],
+                wordBank: {
+                    Subject: ["He", "She", "They"],
+                    Auxiliary: ["is", "are", "was"],
+                    "Verb(-ing)": ["eating", "drinking", "cooking"],
+                    Object: ["lunch", "breakfast", "dinner"],
+                    Time: ["now", "yesterday", "tomorrow"]
+                },
+                correct: ["He", "is", "eating", "lunch", "now"]
+            },
+            {
+                case: "Who played soccer last week?",
+                skeleton: ["Subject", "Verb(past)", "Object", "Time"],
+                clues: [
+                    "Subject: plural first person",
+                    "Tense: Simple Past",
+                    "Object: a sport with a ball",
+                    "Time: seven days ago"
+                ],
+                wordBank: {
+                    Subject: ["We", "They", "I"],
+                    "Verb(past)": ["played", "watched", "bought"],
+                    Object: ["soccer", "tennis", "music"],
+                    Time: ["last week", "next week", "today"]
+                },
+                correct: ["We", "played", "soccer", "last week"]
+            }
+        ];
+
+        let currentMystery = 0;
+        let currentClue = 0;
+        let score = 0;
+        let attempts = 0;
+        let maxAttempts = 3;
+        let selectedSlot = null;
+        let userSentence = [];
+        let usedCases = [];
+
+        // Configuration object for edit panel
+        const defaultConfig = {
+            game_title: "Grammar Detective",
+            welcome_message: "Welcome, Grammar Detective!",
+            instructions: "Solve grammar mysteries by building correct sentences!"
+        };
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            loadNewCase();
+        }
+
+        function loadNewCase() {
+            // Select random case that hasn't been used
+            let availableCases = mysteries.filter((_, index) => !usedCases.includes(index));
+            if (availableCases.length === 0) {
+                usedCases = [];
+                availableCases = mysteries;
+            }
+            
+            currentMystery = mysteries.indexOf(availableCases[Math.floor(Math.random() * availableCases.length)]);
+            usedCases.push(currentMystery);
+            
+            currentClue = 0;
+            attempts = 0;
+            userSentence = [];
+            selectedSlot = null;
+
+            const mystery = mysteries[currentMystery];
+            document.getElementById('caseIntro').textContent = mystery.case;
+            document.getElementById('clueText').textContent = "Click 'Reveal Clue' to start investigating!";
+            document.getElementById('clueCard').classList.remove('show');
+
+            createSentenceBuilder();
+            createWordBank();
+            updateButtons();
+        }
+
+        function createSentenceBuilder() {
+            const builder = document.getElementById('sentenceBuilder');
+            const mystery = mysteries[currentMystery];
+            
+            builder.innerHTML = '';
+            userSentence = new Array(mystery.skeleton.length).fill('');
+
+            mystery.skeleton.forEach((slot, index) => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'sentence-slot';
+                slotDiv.textContent = slot;
+                slotDiv.dataset.index = index;
+                slotDiv.onclick = () => selectSlot(index);
+                builder.appendChild(slotDiv);
+            });
+        }
+
+        function createWordBank() {
+            const bank = document.getElementById('wordBank');
+            const mystery = mysteries[currentMystery];
+            
+            bank.innerHTML = '';
+            
+            Object.entries(mystery.wordBank).forEach(([category, words]) => {
+                words.forEach(word => {
+                    const wordBtn = document.createElement('button');
+                    wordBtn.className = 'word-option';
+                    wordBtn.textContent = word;
+                    wordBtn.onclick = () => selectWord(word);
+                    bank.appendChild(wordBtn);
+                });
+            });
+        }
+
+        function selectSlot(index) {
+            document.querySelectorAll('.sentence-slot').forEach((slot, i) => {
+                slot.style.border = i === index ? '3px solid #f39c12' : '3px dashed #95a5a6';
+            });
+            selectedSlot = index;
+        }
+
+        function selectWord(word) {
+            if (selectedSlot === null) {
+                showFeedback('Please select a slot first!', 'error');
+                return;
+            }
+
+            const slots = document.querySelectorAll('.sentence-slot');
+            const slot = slots[selectedSlot];
+            
+            // Clear previous word from this slot
+            if (userSentence[selectedSlot]) {
+                const prevWordBtn = Array.from(document.querySelectorAll('.word-option'))
+                    .find(btn => btn.textContent === userSentence[selectedSlot]);
+                if (prevWordBtn) {
+                    prevWordBtn.classList.remove('used');
+                }
+            }
+
+            userSentence[selectedSlot] = word;
+            slot.textContent = word;
+            slot.classList.add('filled');
+
+            // Mark word as used
+            const wordBtn = Array.from(document.querySelectorAll('.word-option'))
+                .find(btn => btn.textContent === word);
+            if (wordBtn) {
+                wordBtn.classList.add('used');
+            }
+
+            selectedSlot = null;
+            slots.forEach(s => s.style.border = '3px dashed #95a5a6');
+            
+            updateButtons();
+        }
+
+        function revealClue() {
+            const mystery = mysteries[currentMystery];
+            if (currentClue < mystery.clues.length) {
+                document.getElementById('clueText').textContent = mystery.clues[currentClue];
+                document.getElementById('clueCard').classList.add('show');
+                currentClue++;
+                
+                if (currentClue === 1) {
+                    // After first clue, enable sentence building
+                    updateButtons();
+                }
+            }
+            
+            if (currentClue >= mystery.clues.length) {
+                document.getElementById('revealClueBtn').disabled = true;
+            }
+        }
+
+        function checkSentence() {
+            const mystery = mysteries[currentMystery];
+            const slots = document.querySelectorAll('.sentence-slot');
+            let correct = true;
+            let allFilled = true;
+
+            // Check if all slots are filled
+            userSentence.forEach((word, index) => {
+                if (!word) {
+                    allFilled = false;
+                    slots[index].classList.add('incorrect');
+                    setTimeout(() => slots[index].classList.remove('incorrect'), 600);
+                }
+            });
+
+            if (!allFilled) {
+                showFeedback('Please fill all slots!', 'error');
+                return;
+            }
+
+            // Check correctness
+            userSentence.forEach((word, index) => {
+                if (word !== mystery.correct[index]) {
+                    correct = false;
+                    slots[index].classList.add('incorrect');
+                    setTimeout(() => slots[index].classList.remove('incorrect'), 600);
+                } else {
+                    slots[index].classList.add('correct');
+                }
+            });
+
+            attempts++;
+
+            if (correct) {
+                score++;
+                updateScore();
+                showFeedback('🎉 Case Solved! Excellent detective work!', 'success');
+                createConfetti();
+                document.getElementById('nextCaseBtn').disabled = false;
+                document.getElementById('checkBtn').disabled = true;
+                document.getElementById('resetBtn').disabled = true;
+            } else {
+                if (attempts >= maxAttempts) {
+                    showFeedback(`Case closed! The correct answer was: ${mystery.correct.join(' ')}`, 'error');
+                    document.getElementById('nextCaseBtn').disabled = false;
+                    document.getElementById('checkBtn').disabled = true;
+                    document.getElementById('resetBtn').disabled = true;
+                } else {
+                    showFeedback(`Not quite right! ${maxAttempts - attempts} attempts remaining. Try again!`, 'error');
+                }
+            }
+        }
+
+        function resetSentence() {
+            userSentence = new Array(mysteries[currentMystery].skeleton.length).fill('');
+            const slots = document.querySelectorAll('.sentence-slot');
+            
+            slots.forEach((slot, index) => {
+                slot.textContent = mysteries[currentMystery].skeleton[index];
+                slot.classList.remove('filled', 'correct', 'incorrect');
+                slot.style.border = '3px dashed #95a5a6';
+            });
+
+            document.querySelectorAll('.word-option').forEach(btn => {
+                btn.classList.remove('used');
+            });
+
+            selectedSlot = null;
+            updateButtons();
+        }
+
+        function nextCase() {
+            loadNewCase();
+        }
+
+        function updateButtons() {
+            const hasFilledSlots = userSentence.some(word => word !== '');
+            const hasStarted = currentClue > 0;
+            
+            document.getElementById('checkBtn').disabled = !hasFilledSlots || !hasStarted;
+            document.getElementById('resetBtn').disabled = !hasFilledSlots;
+            document.getElementById('nextCaseBtn').disabled = true;
+        }
+
+        function updateScore() {
+            const scoreElement = document.getElementById('scoreDisplay');
+            scoreElement.textContent = `Cases Solved: ${score}`;
+            scoreElement.classList.add('score-animate');
+            setTimeout(() => scoreElement.classList.remove('score-animate'), 600);
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type} show`;
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 3000);
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'][Math.floor(Math.random() * 5)];
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Element SDK implementation
+        async function render(config) {
+            document.getElementById('gameTitle').textContent = config.game_title || defaultConfig.game_title;
+            document.getElementById('headerTitle').textContent = config.game_title || defaultConfig.game_title;
+            document.getElementById('welcomeMessage').textContent = config.welcome_message || defaultConfig.welcome_message;
+            document.getElementById('instructions').textContent = config.instructions || defaultConfig.instructions;
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["game_title", config.game_title || defaultConfig.game_title],
+                ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+                ["instructions", config.instructions || defaultConfig.instructions]
+            ]);
+        }
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'990711d6a335e911',t:'MTc2MDc4MDM3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

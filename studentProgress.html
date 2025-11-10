@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="zh-TW">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學生歷程總覽 - Ladder Lessons</title>
+  <meta name="description" content="回顧學生學習成果、情緒反應與技能發展，溫馨的教學歷程追蹤。">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        }
+        
+        .gradient-soft-pastel {
+            background: linear-gradient(135deg, #F0F9FF 0%, #FEF7ED 25%, #FFFBEB 50%, #F3F4F6 75%, #F0F9FF 100%);
+        }
+        
+        .card-gentle {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .floating-elements {
+            position: absolute;
+            opacity: 0.03;
+            pointer-events: none;
+            animation: float 30s ease-in-out infinite;
+        }
+        
+        .float-1 { top: 10%; left: 8%; animation-delay: 0s; }
+        .float-2 { top: 25%; right: 12%; animation-delay: 10s; }
+        .float-3 { bottom: 20%; left: 15%; animation-delay: 20s; }
+        .float-4 { top: 65%; right: 20%; animation-delay: 15s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.03; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.06; }
+        }
+        
+        .btn-soft-blue {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            color: #1E40AF;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-soft-green {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .btn-soft-yellow {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .btn-soft-pink {
+            background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%);
+            color: #BE185D;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .skill-tag.speaking {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+        }
+        
+        .skill-tag.listening {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            color: #1E40AF;
+        }
+        
+        .skill-tag.reading {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+        }
+        
+        .skill-tag.writing {
+            background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%);
+            color: #BE185D;
+        }
+        
+        .skill-tag.vocabulary {
+            background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+            color: #3730A3;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: -1.5rem;
+            width: 2px;
+            background: linear-gradient(to bottom, #BFDBFE, #E0E7FF);
+        }
+        
+        .timeline-item:last-child::before {
+            bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            width: 1rem;
+            height: 1rem;
+            background: linear-gradient(135deg, #60A5FA, #3B82F6);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+        
+        .score-bar {
+            height: 8px;
+            background: #F3F4F6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease-out;
+        }
+        
+        .score-excellent { background: linear-gradient(90deg, #10B981, #34D399); }
+        .score-good { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
+        .score-average { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+        .score-needs-improvement { background: linear-gradient(90deg, #EF4444, #F87171); }
+        
+        .premium-gradient {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%);
+        }
+        
+        .student-avatar {
+            background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            border: 4px solid white;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+        }
+        
+        .suggestion-card {
+            background: linear-gradient(135deg, rgba(167, 243, 208, 0.15) 0%, rgba(209, 250, 229, 0.15) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .radar-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .student-tag {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #6B7280;
+        }
+        
+        .student-tag.positive {
+            background: linear-gradient(135d, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+        }
+        
+        .student-tag.attention {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .notification-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .grid-responsive {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 640px) {
+            .grid-responsive {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full gradient-soft-pastel"><!-- Floating Background Elements -->
+  <div class="floating-elements float-1">
+   <svg width="80" height="80" viewbox="0 0 24 24" fill="currentColor" class="text-blue-200"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-2">
+   <svg width="70" height="70" viewbox="0 0 24 24" fill="currentColor" class="text-yellow-200"><path d="M9 11H7v9h2v-9zm4 0h-2v9h2v-9zm4 0h-2v9h2v-9zm2-7v2H5V4h3.5l1-1h5l1 1H19z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-3">
+   <svg width="75" height="75" viewbox="0 0 24 24" fill="currentColor" class="text-pink-200"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-4">
+   <svg width="65" height="65" viewbox="0 0 24 24" fill="currentColor" class="text-green-200"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+   </svg>
+  </div>
+  <div class="min-h-full"><!-- Header -->
+   <header class="bg-white/90 backdrop-blur-sm border-b border-white/30 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+     <div class="flex items-center justify-between"><!-- Left: Back & Logo -->
+      <div class="flex items-center space-x-3"><button onclick="goBack()" class="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg></button>
+       <div class="flex items-center space-x-3">
+        <svg width="32" height="32" viewbox="0 0 32 32" fill="none" class="text-blue-500"><circle cx="16" cy="16" r="14" fill="currentColor" opacity="0.1" /> <path d="M12 10l8 6-8 6V10z" fill="currentColor" />
+        </svg><span class="text-xl font-bold text-gray-800">Ladder Lessons</span>
+       </div>
+      </div><!-- Right: User Info -->
+      <div class="flex items-center space-x-3">
+       <div class="text-sm text-gray-600"><span>Miss Chen</span>
+       </div>
+       <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-semibold">
+        C
+       </div>
+      </div>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><!-- Page Title Section -->
+    <div class="text-center mb-8"><!-- Student Learning Illustration -->
+     <div class="mb-6">
+      <svg width="160" height="120" viewbox="0 0 200 140" class="mx-auto"><!-- Background --> <ellipse cx="100" cy="130" rx="80" ry="8" fill="#E5E7EB" opacity="0.3" /> <!-- Student Character --> <circle cx="100" cy="50" r="18" fill="#FBBF24" /> <path d="M82 50 Q100 32 118 50" stroke="#8B5CF6" stroke-width="2" fill="none" /> <circle cx="93" cy="45" r="2" fill="#374151" /> <circle cx="107" cy="45" r="2" fill="#374151" /> <path d="M95 55 Q100 58 105 55" stroke="#374151" stroke-width="1.5" fill="none" /> <!-- Body --> <rect x="85" y="68" width="30" height="40" fill="#60A5FA" rx="6" /> <rect x="88" y="72" width="24" height="15" fill="white" rx="3" /> <text x="100" y="82" text-anchor="middle" fill="#374151" font-size="8" font-weight="bold">
+        ABC
+       </text> <!-- Arms --> <circle cx="70" cy="80" r="12" fill="#FBBF24" /> <circle cx="130" cy="80" r="12" fill="#FBBF24" /> <!-- Learning Progress Chart --> <g transform="translate(40, 85)">
+        <rect x="0" y="0" width="35" height="25" fill="white" stroke="#E5E7EB" rx="3" />
+        <text x="17.5" y="8" text-anchor="middle" fill="#6B7280" font-size="4">
+         Progress
+        </text> <!-- Mini bars -->
+        <rect x="3" y="12" width="6" height="8" fill="#10B981" rx="1" />
+        <rect x="11" y="14" width="6" height="6" fill="#3B82F6" rx="1" />
+        <rect x="19" y="10" width="6" height="10" fill="#F59E0B" rx="1" />
+        <rect x="27" y="13" width="6" height="7" fill="#EF4444" rx="1" />
+       </g> <!-- Skills Icons --> <g transform="translate(125, 85)">
+        <rect x="0" y="0" width="35" height="25" fill="white" stroke="#E5E7EB" rx="3" />
+        <text x="17.5" y="8" text-anchor="middle" fill="#6B7280" font-size="4">
+         Skills
+        </text> <!-- Skill icons -->
+        <text x="6" y="18" fill="#10B981" font-size="6">
+         🗣️
+        </text>
+        <text x="14" y="18" fill="#3B82F6" font-size="6">
+         👂
+        </text>
+        <text x="22" y="18" fill="#F59E0B" font-size="6">
+         📖
+        </text>
+        <text x="28" y="18" fill="#EF4444" font-size="6">
+         ✍️
+        </text>
+       </g> <!-- Achievement Stars --> <g fill="#F59E0B" opacity="0.7">
+        <polygon points="50,25 52,29 56,29 53,32 54,36 50,34 46,36 47,32 44,29 48,29" />
+        <polygon points="150,30 152,34 156,34 153,37 154,41 150,39 146,41 147,37 144,34 148,34" />
+        <polygon points="65,15 67,19 71,19 68,22 69,26 65,24 61,26 62,22 59,19 63,19" />
+       </g> <!-- Learning Path --> <path d="M20 110 Q50 100 80 110 Q110 120 140 110 Q170 100 180 110" stroke="#BFDBFE" stroke-width="3" fill="none" stroke-dasharray="5,5" /> <!-- Path dots --> <circle cx="30" cy="108" r="3" fill="#60A5FA" /> <circle cx="70" cy="112" r="3" fill="#34D399" /> <circle cx="120" cy="115" r="3" fill="#FBBF24" /> <circle cx="160" cy="108" r="3" fill="#F472B6" />
+      </svg>
+     </div>
+     <h1 id="page-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">學習歷程總覽</h1>
+     <p class="text-lg text-gray-600">追蹤學生成長軌跡，發現學習亮點</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><!-- Left Column: Student Info & Timeline -->
+     <div class="lg:col-span-2 space-y-8"><!-- Student Information Card -->
+      <div class="card-gentle rounded-2xl p-6 fade-in">
+       <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">學生資訊</h2><button id="switch-student-btn" onclick="switchStudent()" class="btn-soft-blue px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all"> <span id="switch-student-text">切換學生</span> </button>
+       </div>
+       <div class="flex items-start space-x-6"><!-- Student Avatar -->
+        <div class="student-avatar w-20 h-20 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
+         😊
+        </div><!-- Student Details -->
+        <div class="flex-1">
+         <h3 id="student-name" class="text-2xl font-bold text-gray-800 mb-2">小明</h3>
+         <div class="flex items-center space-x-3 mb-3"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">KS2</span> <span class="text-gray-500 text-sm">學習時數：24 小時</span>
+         </div><!-- Student Tags -->
+         <div class="flex flex-wrap gap-2 mb-4"><span class="student-tag positive px-3 py-1 rounded-full text-sm font-medium"> 🎮 喜歡遊戲 </span> <span class="student-tag attention px-3 py-1 rounded-full text-sm font-medium"> 💪 需要鼓勵 </span> <span class="student-tag px-3 py-1 rounded-full text-sm font-medium"> 🌟 積極參與 </span>
+         </div><!-- Quick Stats -->
+         <div class="grid grid-cols-3 gap-4">
+          <div class="text-center">
+           <div class="text-2xl font-bold text-blue-600">
+            15
+           </div>
+           <div class="text-xs text-gray-500">
+            完成課程
+           </div>
+          </div>
+          <div class="text-center">
+           <div class="text-2xl font-bold text-green-600">
+            4.2
+           </div>
+           <div class="text-xs text-gray-500">
+            平均評分
+           </div>
+          </div>
+          <div class="text-center">
+           <div class="text-2xl font-bold text-yellow-600">
+            8
+           </div>
+           <div class="text-xs text-gray-500">
+            獲得徽章
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- Learning Timeline -->
+      <div class="card-gentle rounded-2xl p-6 slide-up">
+       <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">課堂歷程時間軸</h2>
+        <div class="text-sm text-gray-500">
+         最近 5 次課堂
+        </div>
+       </div>
+       <div id="timeline-container" class="space-y-6"><!-- Timeline items will be loaded here -->
+       </div><!-- Empty State -->
+       <div id="timeline-empty-state" class="text-center py-8 hidden">
+        <svg width="60" height="60" viewbox="0 0 24 24" fill="currentColor" class="mx-auto mb-4 text-gray-300"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" /> <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+        </svg>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">還沒有課堂記錄</h3>
+        <p class="text-gray-500">開始第一堂課來建立學習歷程</p>
+       </div>
+      </div>
+     </div><!-- Right Column: Skills & Suggestions -->
+     <div class="lg:col-span-1 space-y-8"><!-- Skills Radar Chart -->
+      <div class="card-gentle rounded-2xl p-6 slide-up">
+       <h2 class="text-2xl font-bold text-gray-800 mb-6">技能雷達圖</h2>
+       <div class="radar-container mb-4">
+        <canvas id="skillsRadarChart"></canvas>
+       </div><!-- Skill Legends -->
+       <div class="grid grid-cols-2 gap-3">
+        <div class="flex items-center space-x-2">
+         <div class="w-3 h-3 bg-green-500 rounded-full"></div><span class="text-sm text-gray-600">Speaking 🗣️</span>
+        </div>
+        <div class="flex items-center space-x-2">
+         <div class="w-3 h-3 bg-blue-500 rounded-full"></div><span class="text-sm text-gray-600">Listening 👂</span>
+        </div>
+        <div class="flex items-center space-x-2">
+         <div class="w-3 h-3 bg-yellow-500 rounded-full"></div><span class="text-sm text-gray-600">Reading 📖</span>
+        </div>
+        <div class="flex items-center space-x-2">
+         <div class="w-3 h-3 bg-pink-500 rounded-full"></div><span class="text-sm text-gray-600">Writing ✍️</span>
+        </div>
+        <div class="flex items-center space-x-2">
+         <div class="w-3 h-3 bg-purple-500 rounded-full"></div><span class="text-sm text-gray-600">Vocabulary 📚</span>
+        </div>
+        <div class="flex items-center space-x-2">
+         <div class="w-3 h-3 bg-indigo-500 rounded-full"></div><span class="text-sm text-gray-600">Grammar 📝</span>
+        </div>
+       </div>
+      </div><!-- Teaching Suggestions -->
+      <div class="card-gentle rounded-2xl p-6 slide-up">
+       <h2 class="text-2xl font-bold text-gray-800 mb-6">教學建議</h2>
+       <div class="space-y-4"><!-- AI Suggestion -->
+        <div class="suggestion-card rounded-xl p-4">
+         <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+           🤖
+          </div>
+          <div class="flex-1">
+           <h4 class="font-semibold text-gray-800 mb-2">AI 智能分析</h4>
+           <p class="text-sm text-gray-600 mb-3">小明最近在 Listening 表現優秀（平均 4.5 分），建議挑戰 Speaking 技能來提升整體溝通能力。</p>
+           <div class="flex items-center space-x-2"><span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full"> 📈 進步中 </span> <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"> 🎯 建議挑戰 </span>
+           </div>
+          </div>
+         </div>
+        </div><!-- Strength Highlight -->
+        <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+         <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+           💪
+          </div>
+          <div class="flex-1">
+           <h4 class="font-semibold text-blue-800 mb-2">學習優勢</h4>
+           <p class="text-sm text-blue-700">在遊戲化學習中表現突出，參與度高，適合互動式教學方法。</p>
+          </div>
+         </div>
+        </div><!-- Attention Area -->
+        <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+         <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center text-lg flex-shrink-0">
+           ⚠️
+          </div>
+          <div class="flex-1">
+           <h4 class="font-semibold text-yellow-800 mb-2">需要關注</h4>
+           <p class="text-sm text-yellow-700">Writing 技能相對較弱，建議增加創意寫作練習。</p>
+          </div>
+         </div>
+        </div>
+       </div><!-- Action Button --> <button id="plan-next-lesson-btn" onclick="planNextLesson()" class="w-full btn-soft-green py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all mt-6"> <span id="plan-next-lesson-text">安排下一課</span> </button>
+      </div><!-- Premium Upgrade Section -->
+      <div class="premium-gradient rounded-2xl p-6 text-center shadow-lg slide-up">
+       <div class="flex items-center justify-center space-x-2 mb-3">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-orange-700"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        <h3 class="text-lg font-bold text-orange-800">升級至 Premium</h3>
+       </div>
+       <p class="text-orange-700 text-sm mb-4">解鎖完整歷程分析與報告匯出功能</p>
+       <div class="space-y-3 mb-4">
+        <div class="bg-white/80 rounded-lg p-3 text-left">
+         <div class="flex items-center space-x-2">
+          <div class="text-lg">
+           📊
+          </div>
+          <div>
+           <h4 class="font-semibold text-orange-800 text-sm">詳細學習分析</h4>
+           <p class="text-xs text-orange-600">深度分析學習模式與進步趨勢</p>
+          </div>
+         </div>
+        </div>
+        <div class="bg-white/80 rounded-lg p-3 text-left">
+         <div class="flex items-center space-x-2">
+          <div class="text-lg">
+           📄
+          </div>
+          <div>
+           <h4 class="font-semibold text-orange-800 text-sm">學習報告匯出</h4>
+           <p class="text-xs text-orange-600">生成專業學習報告與家長溝通</p>
+          </div>
+         </div>
+        </div>
+        <div class="bg-white/80 rounded-lg p-3 text-left">
+         <div class="flex items-center space-x-2">
+          <div class="text-lg">
+           🎯
+          </div>
+          <div>
+           <h4 class="font-semibold text-orange-800 text-sm">個人化建議</h4>
+           <p class="text-xs text-orange-600">AI 客製化教學策略推薦</p>
+          </div>
+         </div>
+        </div>
+       </div>
+       <div class="space-y-2"><button id="export-report-btn" onclick="exportReport()" class="w-full bg-white/90 text-orange-600 py-2 px-4 rounded-xl font-semibold hover:bg-white transition-colors shadow-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled> <span id="export-report-text">匯出學生報告</span> </button> <button onclick="learnPremium()" class="w-full bg-orange-600 text-white py-2 px-4 rounded-xl font-semibold hover:bg-orange-700 transition-colors shadow-lg text-sm"> 了解 Premium 功能 </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            page_title: "學習歷程總覽",
+            student_name: "小明",
+            switch_student_text: "切換學生",
+            plan_next_lesson_text: "安排下一課",
+            export_report_text: "匯出學生報告",
+            primary_color: "#60A5FA",
+            secondary_color: "#34D399",
+            accent_color: "#FBBF24",
+            font_family: "Noto Sans TC",
+            font_size: 16
+        };
+
+        // Learning data
+        let learningRecords = [];
+        let currentRecordCount = 0;
+        let skillsChart = null;
+
+        // Sample data for demonstration
+        const sampleLearningRecords = [
+            {
+                id: "1",
+                student_id: "xiaoming",
+                lesson_date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                game_name: "Vocabulary Builder Pro",
+                skill_tags: "Vocabulary,Reading",
+                participation_score: 4.5,
+                emotion_score: 4.8,
+                progress_score: 4.2,
+                teacher_notes: "小明今天表現很棒！詞彙記憶力有明顯進步，特別是動物單字部分。",
+                lesson_duration: 25
+            },
+            {
+                id: "2",
+                student_id: "xiaoming",
+                lesson_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                game_name: "Listening Adventure",
+                skill_tags: "Listening,Speaking",
+                participation_score: 4.8,
+                emotion_score: 4.5,
+                progress_score: 4.6,
+                teacher_notes: "聽力理解能力提升很多，能夠準確回答問題。建議下次挑戰更難的內容。",
+                lesson_duration: 30
+            },
+            {
+                id: "3",
+                student_id: "xiaoming",
+                lesson_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                game_name: "Grammar Quest",
+                skill_tags: "Grammar,Writing",
+                participation_score: 3.8,
+                emotion_score: 3.5,
+                progress_score: 3.9,
+                teacher_notes: "文法概念理解不錯，但寫作時還需要多練習。鼓勵多嘗試造句。",
+                lesson_duration: 20
+            },
+            {
+                id: "4",
+                student_id: "xiaoming",
+                lesson_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                game_name: "Speaking Stars",
+                skill_tags: "Speaking,Vocabulary",
+                participation_score: 4.2,
+                emotion_score: 4.0,
+                progress_score: 4.1,
+                teacher_notes: "口語表達越來越自信，發音也有進步。繼續保持練習的熱忱！",
+                lesson_duration: 28
+            },
+            {
+                id: "5",
+                student_id: "xiaoming",
+                lesson_date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+                game_name: "Reading Explorer",
+                skill_tags: "Reading,Vocabulary",
+                participation_score: 4.0,
+                emotion_score: 4.3,
+                progress_score: 3.8,
+                teacher_notes: "閱讀理解能力穩定成長，對故事內容很有興趣。可以嘗試更長的文章。",
+                lesson_duration: 35
+            }
+        ];
+
+        // Data handler for SDK
+        const dataHandler = {
+            onDataChanged(data) {
+                learningRecords = data.length > 0 ? data : sampleLearningRecords;
+                currentRecordCount = data.length;
+                renderTimeline();
+                updateSkillsChart();
+            }
+        };
+
+        // Render function
+        async function render(config) {
+            // Update text content
+            document.getElementById('page-title').textContent = 
+                config.page_title || defaultConfig.page_title;
+            document.getElementById('student-name').textContent = 
+                config.student_name || defaultConfig.student_name;
+            document.getElementById('switch-student-text').textContent = 
+                config.switch_student_text || defaultConfig.switch_student_text;
+            document.getElementById('plan-next-lesson-text').textContent = 
+                config.plan_next_lesson_text || defaultConfig.plan_next_lesson_text;
+            document.getElementById('export-report-text').textContent = 
+                config.export_report_text || defaultConfig.export_report_text;
+
+            // Apply colors
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            const accentColor = config.accent_color || defaultConfig.accent_color;
+
+            // Update button styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .btn-soft-blue {
+                    background: linear-gradient(135deg, ${primaryColor}20 0%, ${primaryColor}30 100%) !important;
+                    color: ${primaryColor} !important;
+                    border-color: ${primaryColor}40 !important;
+                }
+                .btn-soft-green {
+                    background: linear-gradient(135deg, ${secondaryColor}20 0%, ${secondaryColor}30 100%) !important;
+                    color: ${secondaryColor} !important;
+                    border-color: ${secondaryColor}40 !important;
+                }
+                .btn-soft-yellow {
+                    background: linear-gradient(135deg, ${accentColor}20 0%, ${accentColor}30 100%) !important;
+                    color: ${accentColor} !important;
+                    border-color: ${accentColor}40 !important;
+                }
+                .timeline-dot {
+                    background: linear-gradient(135deg, ${primaryColor}, ${primaryColor}CC) !important;
+                }
+                .student-avatar {
+                    background: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}CC 100%) !important;
+                }
+            `;
+            
+            // Remove existing style if any
+            const existingStyle = document.getElementById('dynamic-colors');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            style.id = 'dynamic-colors';
+            document.head.appendChild(style);
+
+            // Apply font
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'system-ui, -apple-system, sans-serif';
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+            // Apply font size scaling
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.documentElement.style.fontSize = `${baseSize}px`;
+        }
+
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family,
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
+        }
+
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["page_title", config.page_title || defaultConfig.page_title],
+                ["student_name", config.student_name || defaultConfig.student_name],
+                ["switch_student_text", config.switch_student_text || defaultConfig.switch_student_text],
+                ["plan_next_lesson_text", config.plan_next_lesson_text || defaultConfig.plan_next_lesson_text],
+                ["export_report_text", config.export_report_text || defaultConfig.export_report_text]
+            ]);
+        }
+
+        // Render timeline
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            const emptyState = document.getElementById('timeline-empty-state');
+            
+            if (learningRecords.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            container.innerHTML = '';
+            
+            // Sort by date (newest first) and take first 5
+            const recentRecords = learningRecords
+                .sort((a, b) => new Date(b.lesson_date) - new Date(a.lesson_date))
+                .slice(0, 5);
+            
+            recentRecords.forEach((record, index) => {
+                const timelineItem = createTimelineItem(record, index);
+                container.appendChild(timelineItem);
+            });
+        }
+
+        // Create timeline item
+        function createTimelineItem(record, index) {
+            const item = document.createElement('div');
+            item.className = 'timeline-item fade-in';
+            item.style.animationDelay = `${index * 0.1}s`;
+            
+            const date = new Date(record.lesson_date);
+            const formattedDate = formatDate(date);
+            const skillTags = record.skill_tags.split(',').map(tag => tag.trim());
+            
+            item.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm card-hover">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800 mb-1">${record.game_name}</h4>
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                ${skillTags.map(tag => `
+                                    <span class="skill-tag ${tag.toLowerCase()} px-2 py-1 rounded-full text-xs font-medium">
+                                        ${tag}
+                                    </span>
+                                `).join('')}
+                            </div>
+                            <p class="text-sm text-gray-500">${formattedDate} • ${record.lesson_duration} 分鐘</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Scores -->
+                    <div class="grid grid-cols-3 gap-3 mb-3">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-gray-600">參與度</span>
+                                <span class="text-xs font-semibold text-gray-800">${record.participation_score}/5</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill ${getScoreClass(record.participation_score)}" style="width: ${(record.participation_score / 5) * 100}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-gray-600">情緒</span>
+                                <span class="text-xs font-semibold text-gray-800">${record.emotion_score}/5</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill ${getScoreClass(record.emotion_score)}" style="width: ${(record.emotion_score / 5) * 100}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-gray-600">進度</span>
+                                <span class="text-xs font-semibold text-gray-800">${record.progress_score}/5</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill ${getScoreClass(record.progress_score)}" style="width: ${(record.progress_score / 5) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Teacher Notes -->
+                    ${record.teacher_notes ? `
+                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                            <div class="flex items-start space-x-2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-blue-500 mt-0.5 flex-shrink-0">
+                                    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                                </svg>
+                                <p class="text-sm text-blue-800">${record.teacher_notes}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            return item;
+        }
+
+        // Get score class for styling
+        function getScoreClass(score) {
+            if (score >= 4.5) return 'score-excellent';
+            if (score >= 3.5) return 'score-good';
+            if (score >= 2.5) return 'score-average';
+            return 'score-needs-improvement';
+        }
+
+        // Format date
+        function formatDate(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return '今天';
+            if (diffDays === 1) return '昨天';
+            if (diffDays < 7) return `${diffDays} 天前`;
+            
+            return date.toLocaleDateString('zh-TW', {
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Update skills radar chart
+        function updateSkillsChart() {
+            const ctx = document.getElementById('skillsRadarChart').getContext('2d');
+            
+            // Calculate average scores for each skill
+            const skillAverages = calculateSkillAverages();
+            
+            if (skillsChart) {
+                skillsChart.destroy();
+            }
+            
+            skillsChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Speaking', 'Listening', 'Reading', 'Writing', 'Vocabulary', 'Grammar'],
+                    datasets: [{
+                        label: '技能評分',
+                        data: [
+                            skillAverages.speaking,
+                            skillAverages.listening,
+                            skillAverages.reading,
+                            skillAverages.writing,
+                            skillAverages.vocabulary,
+                            skillAverages.grammar
+                        ],
+                        backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                        borderColor: 'rgba(96, 165, 250, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: [
+                            '#10B981', // Speaking - Green
+                            '#3B82F6', // Listening - Blue
+                            '#F59E0B', // Reading - Yellow
+                            '#EF4444', // Writing - Red
+                            '#8B5CF6', // Vocabulary - Purple
+                            '#6366F1'  // Grammar - Indigo
+                        ],
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                font: {
+                                    size: 10
+                                },
+                                color: '#6B7280'
+                            },
+                            grid: {
+                                color: 'rgba(107, 114, 128, 0.2)'
+                            },
+                            angleLines: {
+                                color: 'rgba(107, 114, 128, 0.2)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                color: '#374151'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calculate skill averages
+        function calculateSkillAverages() {
+            const skillCounts = {
+                speaking: { total: 0, count: 0 },
+                listening: { total: 0, count: 0 },
+                reading: { total: 0, count: 0 },
+                writing: { total: 0, count: 0 },
+                vocabulary: { total: 0, count: 0 },
+                grammar: { total: 0, count: 0 }
+            };
+            
+            learningRecords.forEach(record => {
+                const skills = record.skill_tags.toLowerCase().split(',').map(s => s.trim());
+                const avgScore = (record.participation_score + record.emotion_score + record.progress_score) / 3;
+                
+                skills.forEach(skill => {
+                    if (skillCounts[skill]) {
+                        skillCounts[skill].total += avgScore;
+                        skillCounts[skill].count += 1;
+                    }
+                });
+            });
+            
+            // Calculate averages, default to 3.0 if no data
+            return {
+                speaking: skillCounts.speaking.count > 0 ? skillCounts.speaking.total / skillCounts.speaking.count : 3.8,
+                listening: skillCounts.listening.count > 0 ? skillCounts.listening.total / skillCounts.listening.count : 4.2,
+                reading: skillCounts.reading.count > 0 ? skillCounts.reading.total / skillCounts.reading.count : 3.9,
+                writing: skillCounts.writing.count > 0 ? skillCounts.writing.total / skillCounts.writing.count : 3.2,
+                vocabulary: skillCounts.vocabulary.count > 0 ? skillCounts.vocabulary.total / skillCounts.vocabulary.count : 4.0,
+                grammar: skillCounts.grammar.count > 0 ? skillCounts.grammar.total / skillCounts.grammar.count : 3.5
+            };
+        }
+
+        // Navigation functions
+        function goBack() {
+            showNotification('返回學生選擇頁面...', 'info');
+        }
+
+        function switchStudent() {
+            showNotification('切換至其他學生...', 'info');
+        }
+
+        function planNextLesson() {
+            showNotification('跳轉至課程安排頁面...', 'info');
+        }
+
+        function exportReport() {
+            showNotification('匯出報告功能需要 Premium 版本', 'info');
+        }
+
+        function learnPremium() {
+            showNotification('了解 Premium 功能...', 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-sm`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500 text-white';
+            } else if (type === 'info') {
+                notification.className += ' bg-blue-500 text-white';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500 text-white';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Data SDK
+            if (window.dataSdk) {
+                const initResult = await window.dataSdk.init(dataHandler);
+                if (!initResult.isOk) {
+                    console.error('Failed to initialize Data SDK');
+                    // Load sample data if SDK fails
+                    learningRecords = sampleLearningRecords;
+                    renderTimeline();
+                    updateSkillsChart();
+                }
+            } else {
+                // Load sample data if no SDK
+                learningRecords = sampleLearningRecords;
+                renderTimeline();
+                updateSkillsChart();
+            }
+            
+            render(defaultConfig);
+        });
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9906b7b82428ce7b',t:'MTc2MDc3NjY4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

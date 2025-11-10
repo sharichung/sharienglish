@@ -746,8 +746,8 @@ const groups = [{
     ],
     "spellingPractice": {
       "words": [
-        "zip", "zap", "zig", "zoo",
-        "win", "web", "wig", "wax",
+        "zip", "zap", "zig",
+        "win", "web", "wig",
         "ring", "sing", "long", "song",
         "wing", "king", "bang", "hung"
       ]
@@ -1079,7 +1079,7 @@ const groups = [{
         "out", "shout", "loud", "mouth",
         "oil", "coin", "boil", "soil",
         "blue", "glue", "cue", "true",
-        "suit", "rescue", "value", "argue"
+        "rescue", "value", "argue"
       ]
     },
     "nextGroupId": 14

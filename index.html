@@ -1,1974 +1,1488 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Class Helper</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700&display=swap');
-
+<!doctype html>
+<html lang="zh-TW">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ladder Lessons - 用遊戲，教出學生嘅笑容</title>
+  <meta name="description" content="由真實網課老師設計，超過 100 款互動英文遊戲，支援 Wordwall、Kahoot 整合。免費開始使用！">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f0f9ff;
-            color: #333;
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
         }
-
-        .wheel-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
+        
+        .gradient-soft-hero {
+            background: linear-gradient(135deg, #F0F9FF 0%, #FEF7ED 25%, #FFFBEB 50%, #F3F4F6 75%, #F8FAFC 100%);
         }
-
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
+        
+        .gradient-soft-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+        }
+        
+        .floating-elements {
+            position: absolute;
+            opacity: 0.06;
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .float-1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .float-2 { top: 20%; right: 8%; animation-delay: 6s; }
+        .float-3 { bottom: 25%; left: 10%; animation-delay: 12s; }
+        .float-4 { top: 50%; right: 15%; animation-delay: 3s; }
+        .float-5 { bottom: 35%; left: 20%; animation-delay: 9s; }
+        .float-6 { top: 70%; right: 25%; animation-delay: 15s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.06; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.12; }
+        }
+        
+        .hero-illustration {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 50%, #93C5FD 100%);
+            border-radius: 32px;
+            padding: 48px 32px;
+            text-align: center;
             position: relative;
             overflow: hidden;
-            transition: transform 3s ease-out;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 32px;
         }
-
-        .wheel-center {
+        
+        .hero-illustration::before {
+            content: '';
             position: absolute;
-            width: 50px;
-            height: 50px;
-            background-color: #fff;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: shimmer 6s ease-in-out infinite;
         }
-
-        .wheel-arrow {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #ff6b6b;
-            z-index: 20;
+        
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
         }
-
-        .topic-button {
-            transition: all 0.3s ease;
-        }
-
-        .topic-button:hover {
-            transform: translateY(-5px);
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            opacity: 0;
-        }
-
-        @keyframes fall {
-            0% {
-                opacity: 1;
-                top: -10px;
-                transform: translateX(0) rotate(0deg);
-            }
-
-            100% {
-                opacity: 0;
-                top: 100%;
-                transform: translateX(100px) rotate(360deg);
-            }
-        }
-
-        .flashcard {
-            perspective: 1000px;
-            height: 100%;
-        }
-
-        .flashcard-inner {
+        
+        .feature-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+            border-radius: 24px;
+            padding: 32px 24px;
+            border: 2px solid rgba(96, 165, 250, 0.1);
+            transition: all 0.4s ease;
             position: relative;
-            width: 100%;
+            overflow: hidden;
             height: 100%;
             text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
         }
-
-        .flashcard-front,
-        .flashcard-back {
+        
+        .feature-card::before {
+            content: '';
             position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #60A5FA 0%, #34D399 50%, #FBBF24 100%);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 1rem;
+            font-size: 36px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
         }
-
-        .flashcard-back {
-            transform: rotateY(180deg);
+        
+        .step-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
         }
-
-        .keyboard-shortcut {
+        
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            margin: 0 auto 16px;
+        }
+        
+        .step-arrow {
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #60A5FA;
+            font-size: 24px;
+            z-index: 10;
+        }
+        
+        .founder-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+            border-radius: 24px;
+            padding: 40px;
+            border: 2px solid rgba(96, 165, 250, 0.1);
+            position: relative;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+        
+        .founder-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 24px;
+            border: 4px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .student-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+            border-radius: 20px;
+            padding: 24px;
+            border: 2px solid rgba(34, 197, 94, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .student-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 16px;
+            border: 3px solid rgba(251, 191, 36, 0.2);
+        }
+        
+        .game-preview {
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            border: 2px solid rgba(34, 197, 94, 0.1);
+        }
+        
+        .progress-indicator {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        
+        .comparison-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+            border-radius: 20px;
+            padding: 24px;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .comparison-card.premium {
+            border-color: #FBBF24;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.3) 0%, rgba(253, 230, 138, 0.3) 100%);
+        }
+        
+        .comparison-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            min-width: 24px;
-            height: 24px;
-            padding: 0 5px;
-            background-color: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 12px;
+            gap: 8px;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #374151;
+            border: 2px solid rgba(96, 165, 250, 0.2);
+            padding: 14px 28px;
+            border-radius: 16px;
             font-weight: 600;
-            color: #64748b;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-    </style>
-    <style>
-        *,
-        ::before,
-        ::after {
-            --tw-border-spacing-x: 0;
-            --tw-border-spacing-y: 0;
-            --tw-translate-x: 0;
-            --tw-translate-y: 0;
-            --tw-rotate: 0;
-            --tw-skew-x: 0;
-            --tw-skew-y: 0;
-            --tw-scale-x: 1;
-            --tw-scale-y: 1;
-            --tw-pan-x: ;
-            --tw-pan-y: ;
-            --tw-pinch-zoom: ;
-            --tw-scroll-snap-strictness: proximity;
-            --tw-gradient-from-position: ;
-            --tw-gradient-via-position: ;
-            --tw-gradient-to-position: ;
-            --tw-ordinal: ;
-            --tw-slashed-zero: ;
-            --tw-numeric-figure: ;
-            --tw-numeric-spacing: ;
-            --tw-numeric-fraction: ;
-            --tw-ring-inset: ;
-            --tw-ring-offset-width: 0px;
-            --tw-ring-offset-color: #fff;
-            --tw-ring-color: rgb(59 130 246 / 0.5);
-            --tw-ring-offset-shadow: 0 0 #0000;
-            --tw-ring-shadow: 0 0 #0000;
-            --tw-shadow: 0 0 #0000;
-            --tw-shadow-colored: 0 0 #0000;
-            --tw-blur: ;
-            --tw-brightness: ;
-            --tw-contrast: ;
-            --tw-grayscale: ;
-            --tw-hue-rotate: ;
-            --tw-invert: ;
-            --tw-saturate: ;
-            --tw-sepia: ;
-            --tw-drop-shadow: ;
-            --tw-backdrop-blur: ;
-            --tw-backdrop-brightness: ;
-            --tw-backdrop-contrast: ;
-            --tw-backdrop-grayscale: ;
-            --tw-backdrop-hue-rotate: ;
-            --tw-backdrop-invert: ;
-            --tw-backdrop-opacity: ;
-            --tw-backdrop-saturate: ;
-            --tw-backdrop-sepia: ;
-            --tw-contain-size: ;
-            --tw-contain-layout: ;
-            --tw-contain-paint: ;
-            --tw-contain-style:
+        
+        .btn-secondary:hover {
+            background: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.4);
+            transform: translateY(-2px);
         }
-
-        ::backdrop {
-            --tw-border-spacing-x: 0;
-            --tw-border-spacing-y: 0;
-            --tw-translate-x: 0;
-            --tw-translate-y: 0;
-            --tw-rotate: 0;
-            --tw-skew-x: 0;
-            --tw-skew-y: 0;
-            --tw-scale-x: 1;
-            --tw-scale-y: 1;
-            --tw-pan-x: ;
-            --tw-pan-y: ;
-            --tw-pinch-zoom: ;
-            --tw-scroll-snap-strictness: proximity;
-            --tw-gradient-from-position: ;
-            --tw-gradient-via-position: ;
-            --tw-gradient-to-position: ;
-            --tw-ordinal: ;
-            --tw-slashed-zero: ;
-            --tw-numeric-figure: ;
-            --tw-numeric-spacing: ;
-            --tw-numeric-fraction: ;
-            --tw-ring-inset: ;
-            --tw-ring-offset-width: 0px;
-            --tw-ring-offset-color: #fff;
-            --tw-ring-color: rgb(59 130 246 / 0.5);
-            --tw-ring-offset-shadow: 0 0 #0000;
-            --tw-ring-shadow: 0 0 #0000;
-            --tw-shadow: 0 0 #0000;
-            --tw-shadow-colored: 0 0 #0000;
-            --tw-blur: ;
-            --tw-brightness: ;
-            --tw-contrast: ;
-            --tw-grayscale: ;
-            --tw-hue-rotate: ;
-            --tw-invert: ;
-            --tw-saturate: ;
-            --tw-sepia: ;
-            --tw-drop-shadow: ;
-            --tw-backdrop-blur: ;
-            --tw-backdrop-brightness: ;
-            --tw-backdrop-contrast: ;
-            --tw-backdrop-grayscale: ;
-            --tw-backdrop-hue-rotate: ;
-            --tw-backdrop-invert: ;
-            --tw-backdrop-opacity: ;
-            --tw-backdrop-saturate: ;
-            --tw-backdrop-sepia: ;
-            --tw-contain-size: ;
-            --tw-contain-layout: ;
-            --tw-contain-paint: ;
-            --tw-contain-style:
+        
+        .btn-accent {
+            background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-
-        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
-        *,
-        ::after,
-        ::before {
-            box-sizing: border-box;
-            border-width: 0;
-            border-style: solid;
-            border-color: #e5e7eb
+        
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
         }
-
-        ::after,
-        ::before {
-            --tw-content: ''
+        
+        .faq-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
-
-        :host,
-        html {
-            line-height: 1.5;
-            -webkit-text-size-adjust: 100%;
-            -moz-tab-size: 4;
-            tab-size: 4;
-            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-            font-feature-settings: normal;
-            font-variation-settings: normal;
-            -webkit-tap-highlight-color: transparent
+        
+        .faq-question {
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #374151;
+            transition: all 0.3s ease;
         }
-
-        body {
-            margin: 0;
-            line-height: inherit
+        
+        .faq-question:hover {
+            background: rgba(96, 165, 250, 0.05);
         }
-
-        hr {
-            height: 0;
-            color: inherit;
-            border-top-width: 1px
+        
+        .faq-answer {
+            padding: 0 24px 20px;
+            color: #6B7280;
+            line-height: 1.6;
+            display: none;
         }
-
-        abbr:where([title]) {
-            -webkit-text-decoration: underline dotted;
-            text-decoration: underline dotted
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-size: inherit;
-            font-weight: inherit
-        }
-
-        a {
-            color: inherit;
-            text-decoration: inherit
-        }
-
-        b,
-        strong {
-            font-weight: bolder
-        }
-
-        code,
-        kbd,
-        pre,
-        samp {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-feature-settings: normal;
-            font-variation-settings: normal;
-            font-size: 1em
-        }
-
-        small {
-            font-size: 80%
-        }
-
-        sub,
-        sup {
-            font-size: 75%;
-            line-height: 0;
-            position: relative;
-            vertical-align: baseline
-        }
-
-        sub {
-            bottom: -.25em
-        }
-
-        sup {
-            top: -.5em
-        }
-
-        table {
-            text-indent: 0;
-            border-color: inherit;
-            border-collapse: collapse
-        }
-
-        button,
-        input,
-        optgroup,
-        select,
-        textarea {
-            font-family: inherit;
-            font-feature-settings: inherit;
-            font-variation-settings: inherit;
-            font-size: 100%;
-            font-weight: inherit;
-            line-height: inherit;
-            letter-spacing: inherit;
-            color: inherit;
-            margin: 0;
-            padding: 0
-        }
-
-        button,
-        select {
-            text-transform: none
-        }
-
-        button,
-        input:where([type=button]),
-        input:where([type=reset]),
-        input:where([type=submit]) {
-            appearance: button;
-            -webkit-appearance: button;
-            background-color: transparent;
-            background-image: none
-        }
-
-        :-moz-focusring {
-            outline: auto
-        }
-
-        :-moz-ui-invalid {
-            box-shadow: none
-        }
-
-        progress {
-            vertical-align: baseline
-        }
-
-        ::-webkit-inner-spin-button,
-        ::-webkit-outer-spin-button {
-            height: auto
-        }
-
-        [type=search] {
-            appearance: textfield;
-            -webkit-appearance: textfield;
-            outline-offset: -2px
-        }
-
-        ::-webkit-search-decoration {
-            -webkit-appearance: none
-        }
-
-        ::-webkit-file-upload-button {
-            -webkit-appearance: button;
-            font: inherit
-        }
-
-        summary {
-            display: list-item
-        }
-
-        blockquote,
-        dd,
-        dl,
-        figure,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        hr,
-        p,
-        pre {
-            margin: 0
-        }
-
-        fieldset {
-            margin: 0;
-            padding: 0
-        }
-
-        legend {
-            padding: 0
-        }
-
-        menu,
-        ol,
-        ul {
-            list-style: none;
-            margin: 0;
-            padding: 0
-        }
-
-        dialog {
-            padding: 0
-        }
-
-        textarea {
-            resize: vertical
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            opacity: 1;
-            color: #9ca3af
-        }
-
-        [role=button],
-        button {
-            cursor: pointer
-        }
-
-        :disabled {
-            cursor: default;
-        }
-
-        audio,
-        canvas,
-        embed,
-        iframe,
-        img,
-        object,
-        svg,
-        video {
+        
+        .faq-item.active .faq-answer {
             display: block;
-            vertical-align: middle;
+            animation: slideDown 0.3s ease-out;
         }
-
-        img,
-        video {
-            max-width: 100%;
-            height: auto
+        
+        .faq-toggle {
+            transition: transform 0.3s ease;
         }
-
-        [hidden]:where(:not([hidden=until-found])) {
-            display: none
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(180deg);
         }
-
-        .container {
-            width: 100%
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        @media (min-width: 640px) {
-            .container {
-                max-width: 640px
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .carousel-slide {
+            min-width: 100%;
+            flex-shrink: 0;
+        }
+        
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(96, 165, 250, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-dot.active {
+            background: #60A5FA;
+            transform: scale(1.2);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin: 40px 0;
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+        
+        .social-link {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .step-arrow {
+                display: none;
+            }
+            
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-illustration {
+                padding: 32px 20px;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-accent {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 12px;
             }
         }
-
-        @media (min-width: 768px) {
-            .container {
-                max-width: 768px
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .container {
-                max-width: 1024px
-            }
-        }
-
-        @media (min-width: 1280px) {
-            .container {
-                max-width: 1280px
-            }
-        }
-
-        @media (min-width: 1536px) {
-            .container {
-                max-width: 1536px
-            }
-        }
-
-        .mx-auto {
-            margin-left: auto;
-            margin-right: auto
-        }
-
-        .mb-2 {
-            margin-bottom: 0.5rem
-        }
-
-        .mb-3 {
-            margin-bottom: 0.75rem
-        }
-
-        .mb-4 {
-            margin-bottom: 1rem
-        }
-
-        .mb-6 {
-            margin-bottom: 1.5rem
-        }
-
-        .ml-2 {
-            margin-left: 0.5rem
-        }
-
-        .mr-1 {
-            margin-right: 0.25rem
-        }
-
-        .mr-2 {
-            margin-right: 0.5rem
-        }
-
-        .mt-2 {
-            margin-top: 0.5rem
-        }
-
-        .mt-6 {
-            margin-top: 1.5rem
-        }
-
-        .block {
-            display: block
-        }
-
-        .flex {
-            display: flex
-        }
-
-        .grid {
-            display: grid
-        }
-
-        .hidden {
-            display: none
-        }
-
-        .h-40 {
-            height: 10rem
-        }
-
-        .h-80 {
-            height: 20rem
-        }
-
-        .min-h-screen {
-            min-height: 100vh
-        }
-
-        .w-full {
-            width: 100%
-        }
-
-        .max-w-4xl {
-            max-width: 56rem
-        }
-
-        .flex-1 {
-            flex: 1 1 0%
-        }
-
-        .grid-cols-1 {
-            grid-template-columns: repeat(1, minmax(0, 1fr))
-        }
-
-        .grid-cols-2 {
-            grid-template-columns: repeat(2, minmax(0, 1fr))
-        }
-
-        .items-center {
-            align-items: center
-        }
-
-        .justify-center {
-            justify-content: center
-        }
-
-        .justify-between {
-            justify-content: space-between
-        }
-
-        .gap-2 {
-            gap: 0.5rem
-        }
-
-        .gap-4 {
-            gap: 1rem
-        }
-
-        .gap-6 {
-            gap: 1.5rem
-        }
-
-        .space-x-2> :not([hidden])~ :not([hidden]) {
-            --tw-space-x-reverse: 0;
-            margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-            margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))
-        }
-
-        .space-x-4> :not([hidden])~ :not([hidden]) {
-            --tw-space-x-reverse: 0;
-            margin-right: calc(1rem * var(--tw-space-x-reverse));
-            margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)))
-        }
-
-        .space-y-2> :not([hidden])~ :not([hidden]) {
-            --tw-space-y-reverse: 0;
-            margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
-            margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
-        }
-
-        .rounded-lg {
-            border-radius: 0.5rem
-        }
-
-        .rounded-xl {
-            border-radius: 0.75rem
-        }
-
-        .border {
-            border-width: 1px
-        }
-
-        .bg-blue-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-blue-50 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-blue-500 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-gray-200 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-gray-50 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-green-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-green-500 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-orange-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(255 237 213 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-orange-500 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(249 115 22 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-pink-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(252 231 243 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-purple-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(243 232 255 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-purple-500 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(168 85 247 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-red-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-teal-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(204 251 241 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-white {
-            --tw-bg-opacity: 1;
-            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-yellow-100 {
-            --tw-bg-opacity: 1;
-            background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1))
-        }
-
-        .bg-gradient-to-r {
-            background-image: linear-gradient(to right, var(--tw-gradient-stops))
-        }
-
-        .from-blue-100 {
-            --tw-gradient-from: #dbeafe var(--tw-gradient-from-position);
-            --tw-gradient-to: rgb(219 234 254 / 0) var(--tw-gradient-to-position);
-            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
-        }
-
-        .from-orange-100 {
-            --tw-gradient-from: #ffedd5 var(--tw-gradient-from-position);
-            --tw-gradient-to: rgb(255 237 213 / 0) var(--tw-gradient-to-position);
-            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
-        }
-
-        .to-purple-100 {
-            --tw-gradient-to: #f3e8ff var(--tw-gradient-to-position)
-        }
-
-        .to-yellow-100 {
-            --tw-gradient-to: #fef9c3 var(--tw-gradient-to-position)
-        }
-
-        .p-2 {
-            padding: 0.5rem
-        }
-
-        .p-3 {
-            padding: 0.75rem
-        }
-
-        .p-4 {
-            padding: 1rem
-        }
-
-        .p-6 {
-            padding: 1.5rem
-        }
-
-        .p-8 {
-            padding: 2rem
-        }
-
-        .px-4 {
-            padding-left: 1rem;
-            padding-right: 1rem
-        }
-
-        .py-2 {
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem
-        }
-
-        .py-3 {
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem
-        }
-
-        .text-center {
-            text-align: center
-        }
-
-        .text-2xl {
-            font-size: 1.5rem;
-            line-height: 2rem
-        }
-
-        .text-4xl {
-            font-size: 2.25rem;
-            line-height: 2.5rem
-        }
-
-        .text-6xl {
-            font-size: 3.75rem;
-            line-height: 1
-        }
-
-        .text-lg {
-            font-size: 1.125rem;
-            line-height: 1.75rem
-        }
-
-        .text-sm {
-            font-size: 0.875rem;
-            line-height: 1.25rem
-        }
-
-        .text-xl {
-            font-size: 1.25rem;
-            line-height: 1.75rem
-        }
-
-        .font-bold {
-            font-weight: 700
-        }
-
-        .text-blue-500 {
-            --tw-text-opacity: 1;
-            color: rgb(59 130 246 / var(--tw-text-opacity, 1))
-        }
-
-        .text-blue-600 {
-            --tw-text-opacity: 1;
-            color: rgb(37 99 235 / var(--tw-text-opacity, 1))
-        }
-
-        .text-blue-700 {
-            --tw-text-opacity: 1;
-            color: rgb(29 78 216 / var(--tw-text-opacity, 1))
-        }
-
-        .text-gray-600 {
-            --tw-text-opacity: 1;
-            color: rgb(75 85 99 / var(--tw-text-opacity, 1))
-        }
-
-        .text-gray-700 {
-            --tw-text-opacity: 1;
-            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
-        }
-
-        .text-green-600 {
-            --tw-text-opacity: 1;
-            color: rgb(22 163 74 / var(--tw-text-opacity, 1))
-        }
-
-        .text-orange-600 {
-            --tw-text-opacity: 1;
-            color: rgb(234 88 12 / var(--tw-text-opacity, 1))
-        }
-
-        .text-purple-600 {
-            --tw-text-opacity: 1;
-            color: rgb(147 51 234 / var(--tw-text-opacity, 1))
-        }
-
-        .text-purple-700 {
-            --tw-text-opacity: 1;
-            color: rgb(126 34 206 / var(--tw-text-opacity, 1))
-        }
-
-        .text-white {
-            --tw-text-opacity: 1;
-            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
-        }
-
-        .shadow-lg {
-            --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
-            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
-        }
-
-        .transition {
-            transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms
-        }
-
-        .hover\:bg-blue-600:hover {
-            --tw-bg-opacity: 1;
-            background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1))
-        }
-
-        .hover\:bg-gray-300:hover {
-            --tw-bg-opacity: 1;
-            background-color: rgb(209 213 219 / var(--tw-bg-opacity, 1))
-        }
-
-        .hover\:bg-green-600:hover {
-            --tw-bg-opacity: 1;
-            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
-        }
-
-        .hover\:bg-orange-600:hover {
-            --tw-bg-opacity: 1;
-            background-color: rgb(234 88 12 / var(--tw-bg-opacity, 1))
-        }
-
-        .hover\:bg-purple-600:hover {
-            --tw-bg-opacity: 1;
-            background-color: rgb(147 51 234 / var(--tw-bg-opacity, 1))
-        }
-
-        .focus\:outline-none:focus {
-            outline: 2px solid transparent;
-            outline-offset: 2px
-        }
-
-        .focus\:ring-2:focus {
-            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
-        }
-
-        .focus\:ring-blue-500:focus {
-            --tw-ring-opacity: 1;
-            --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity, 1))
-        }
-
-        .focus\:ring-purple-500:focus {
-            --tw-ring-opacity: 1;
-            --tw-ring-color: rgb(168 85 247 / var(--tw-ring-opacity, 1))
-        }
-
-        @media (min-width: 768px) {
-            .md\:grid-cols-2 {
-                grid-template-columns: repeat(2, minmax(0, 1fr))
-            }
-
-            .md\:grid-cols-4 {
-                grid-template-columns: repeat(4, minmax(0, 1fr))
-            }
-
-            .md\:p-8 {
-                padding: 2rem
+        
+        @media (max-width: 480px) {
+            .feature-card, .founder-card, .student-card {
+                padding: 24px 20px;
             }
         }
     </style>
-</head>
-
-<body data-new-gr-c-s-check-loaded="14.1240.0" data-gr-ext-installed="" data-new-gr-c-s-loaded="14.1240.0">
-    <div class="min-h-screen p-4 md:p-8">
-        <!-- Header -->
-        <header class="text-center mb-6">
-            <h1 class="text-4xl font-bold text-blue-600 mb-2">Shari's English Class</h1>
-        </header>
-
-        <!-- Main Container -->
-        <div class="container mx-auto">
-            <!-- Main Screen (Student Selection) -->
-            <div id="mainScreen" class="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Left Column: Student Input -->
-                    <div>
-                        <h2 class="text-2xl font-bold text-purple-600 mb-4">Student Names</h2>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 mb-2">Paste student names (one per line):</label>
-                            <textarea id="studentNamesInput"
-                                class="w-full h-40 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                placeholder="Alice
-Brian
-Candy
-David"></textarea>
-                        </div>
-                        <div class="flex space-x-2 mb-4">
-                            <button id="createWheelBtn"
-                                class="flex-1 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition">
-                                Create Wheel
-                            </button>
-                            <button id="saveListBtn"
-                                class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
-                                Save List
-                            </button>
-                            <button id="loadListBtn"
-                                class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
-                                Load List
-                            </button>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 mb-2">Saved Lists:</label>
-                            <select id="savedLists"
-                                class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select a saved list...</option>
-                                <option value="sample">Sample Class</option>
-                            </select>
-                        </div>
-                        <div class="bg-gray-50 p-3 rounded-lg">
-                            <p class="text-sm text-gray-600 mb-2">Keyboard Shortcuts:</p>
-                            <div class="grid grid-cols-2 gap-2 text-sm">
-                                <div><span class="keyboard-shortcut">Space</span> Spin the wheel</div>
-                                <div><span class="keyboard-shortcut">→</span> Next card</div>
-                                <div><span class="keyboard-shortcut">Esc</span> Return to main screen</div>
-                                <div><span class="keyboard-shortcut">F</span> Flip card</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column: Wheel -->
-                    <div>
-                        <h2 class="text-2xl font-bold text-purple-600 mb-4">Student Selector</h2>
-                        <div class="wheel-container mb-6">
-                            <div class="wheel-arrow"></div>
-                            <div class="wheel" id="wheel"></div>
-                            <div class="wheel-center">
-                                <span class="text-2xl">🎯</span>
-                            </div>
-                        </div>
-                        <button id="spinWheelBtn"
-                            class="w-full bg-purple-500 text-white py-3 px-4 rounded-lg text-xl font-bold hover:bg-purple-600 transition flex items-center justify-center mb-4"
-                            disabled="">
-                            <span class="mr-2">Start Wheel</span> 🎡
-                        </button>
-                        <div id="selectedStudentContainer" class="p-4 bg-purple-100 rounded-lg text-center hidden">
-                            <p class="text-lg">Selected Student: <span id="selectedStudentName"
-                                    class="font-bold text-purple-700"></span></p>
-                            <p class="mt-2">Please choose a topic:</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Topic Selection (Hidden initially) -->
-                <div id="topicSelectionContainer" class="mt-6 hidden">
-                    <h2 class="text-2xl font-bold text-green-600 mb-4">Choose a Topic</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <button class="topic-button bg-red-100 p-6 rounded-lg text-center" data-topic="Food">
-                            <div class="text-4xl mb-2">🍎</div>
-                            <h3 class="font-bold text-lg">Food</h3>
-                        </button>
-                        <button class="topic-button bg-blue-100 p-6 rounded-lg text-center" data-topic="Hobbies">
-                            <div class="text-4xl mb-2">🎨</div>
-                            <h3 class="font-bold text-lg">Hobbies</h3>
-                        </button>
-                        <button class="topic-button bg-yellow-100 p-6 rounded-lg text-center" data-topic="Weather">
-                            <div class="text-4xl mb-2">☁️</div>
-                            <h3 class="font-bold text-lg">Weather</h3>
-                        </button>
-                        <button class="topic-button bg-green-100 p-6 rounded-lg text-center" data-topic="School Life">
-                            <div class="text-4xl mb-2">🏫</div>
-                            <h3 class="font-bold text-lg">School Life</h3>
-                        </button>
-                        <button class="topic-button bg-purple-100 p-6 rounded-lg text-center" data-topic="Animals">
-                            <div class="text-4xl mb-2">🐘</div>
-                            <h3 class="font-bold text-lg">Animals</h3>
-                        </button>
-                        <button class="topic-button bg-pink-100 p-6 rounded-lg text-center" data-topic="Travel">
-                            <div class="text-4xl mb-2">✈️</div>
-                            <h3 class="font-bold text-lg">Travel</h3>
-                        </button>
-                        <button class="topic-button bg-orange-100 p-6 rounded-lg text-center" data-topic="Sports">
-                            <div class="text-4xl mb-2">⚽</div>
-                            <h3 class="font-bold text-lg">Sports</h3>
-                        </button>
-                        <button class="topic-button bg-teal-100 p-6 rounded-lg text-center" data-topic="Emotions">
-                            <div class="text-4xl mb-2">😊</div>
-                            <h3 class="font-bold text-lg">Emotions</h3>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Flashcard Screen (Hidden initially) -->
-            <div id="flashcardScreen" class="hidden">
-                <div class="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto">
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h2 class="text-2xl font-bold text-orange-600">Topic: <span id="currentTopic">Food</span>
-                            </h2>
-                            <p class="text-lg text-gray-600">Student: <span id="currentStudent">Alice</span></p>
-                        </div>
-                        <button id="exitFlashcardBtn"
-                            class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg transition flex items-center">
-                            <span class="mr-1">Exit</span> <span class="keyboard-shortcut">Esc</span>
-                        </button>
-                    </div>
-
-                    <div class="flashcard h-80 mb-6">
-                        <div class="flashcard-inner" id="flashcardInner">
-                            <div class="flashcard-front bg-gradient-to-r from-orange-100 to-yellow-100 p-8 rounded-xl">
-                                <div class="text-6xl mb-6" id="cardEmoji">🍎</div>
-                                <h3 id="cardWord" class="text-4xl font-bold mb-4">apple</h3>
-                                <p id="cardQuestion" class="text-xl">What is your favorite fruit?</p>
-                            </div>
-                            <div class="flashcard-back bg-gradient-to-r from-blue-100 to-purple-100 p-8 rounded-xl">
-                                <h3 class="text-2xl font-bold mb-4">Hints:</h3>
-                                <ul id="cardHints" class="text-xl space-y-2">
-                                    <li>Think about taste (sweet, sour, juicy)</li>
-                                    <li>Consider texture (crunchy, soft)</li>
-                                    <li>When do you usually eat this?</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <details class="bg-blue-50 p-6 rounded-xl mb-6" id="sentenceFramesDetails">
-                        <summary class="font-bold text-blue-700 mb-3 text-xl cursor-pointer select-none">
-                            Sentence Frames
-                        </summary>
-                        <ul id="sentenceFrames" class="text-xl text-blue-600 space-y-2 mt-3">
-                            <li>"I like ___ because it tastes ___."</li>
-                            <li>"My favorite ___ is ___ because ___."</li>
-                            <li>"___ are healthy/delicious because ___."</li>
-                        </ul>
-                    </details>
-
-                    <div class="flex space-x-4">
-                        <button id="flipCardBtn"
-                            class="flex-1 bg-blue-500 text-white py-3 px-4 rounded-lg font-bold hover:bg-blue-600 transition flex items-center justify-center">
-                            <span class="mr-2">Flip Card</span> 🔄 <span class="ml-2 keyboard-shortcut">F</span>
-                        </button>
-                        <button id="nextCardBtn"
-                            class="flex-1 bg-orange-500 text-white py-3 px-4 rounded-lg font-bold hover:bg-orange-600 transition flex items-center justify-center">
-                            <span class="mr-2">Next Card</span> ⏭️ <span class="ml-2 keyboard-shortcut">→</span>
-                        </button>
-                        <button id="nextStudentBtn"
-                            class="flex-1 bg-purple-500 text-white py-3 px-4 rounded-lg font-bold hover:bg-purple-600 transition flex items-center justify-center">
-                            <span class="mr-2">Next Student</span> 👨‍👩‍👧‍👦
-                        </button>
-                    </div>
-                </div>
-            </div>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="min-h-full"><!-- Floating Background Elements -->
+  <div class="floating-elements float-1">
+   <svg width="60" height="60" viewbox="0 0 24 24" fill="currentColor" class="text-blue-200"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-2">
+   <svg width="70" height="70" viewbox="0 0 24 24" fill="currentColor" class="text-yellow-200"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-3">
+   <svg width="65" height="65" viewbox="0 0 24 24" fill="currentColor" class="text-green-200"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-4">
+   <svg width="55" height="55" viewbox="0 0 24 24" fill="currentColor" class="text-purple-200"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+   </svg>
+  </div>
+  <div class="floating-elements float-5">
+   <svg width="75" height="75" viewbox="0 0 24 24" fill="currentColor" class="text-pink-200"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+   </svg>
+  </div>
+  <div class="floating-elements float-6">
+   <svg width="50" height="50" viewbox="0 0 24 24" fill="currentColor" class="text-indigo-200"><path d="M13 10V3L4 14h7v7l9-11h-7z" />
+   </svg>
+  </div>
+  <div class="min-h-full"><!-- Header -->
+   <header class="bg-white/90 backdrop-blur-sm border-b border-white/30 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+     <div class="flex items-center justify-between"><!-- Logo -->
+      <div class="flex items-center space-x-3">
+       <svg width="40" height="40" viewbox="0 0 40 40" fill="none" class="text-blue-500"><circle cx="20" cy="20" r="18" fill="currentColor" opacity="0.1" /> <path d="M15 12l10 8-10 8V12z" fill="currentColor" />
+       </svg>
+       <div>
+        <div class="text-2xl font-bold text-gray-800">
+         Ladder Lessons
         </div>
+        <div class="text-sm text-gray-500">
+         互動教學平台
+        </div>
+       </div>
+      </div><!-- Navigation -->
+      <nav class="hidden md:flex items-center space-x-8"><a href="#features" class="text-gray-600 hover:text-blue-600 transition-colors">功能特色</a> <a href="#how-it-works" class="text-gray-600 hover:text-blue-600 transition-colors">使用方法</a> <a href="#students" class="text-gray-600 hover:text-blue-600 transition-colors">學生反應</a> <a href="#pricing" class="text-gray-600 hover:text-blue-600 transition-colors">方案比較</a> <a href="#faq" class="text-gray-600 hover:text-blue-600 transition-colors">常見問題</a> <button onclick="startFree()" class="btn-primary"> 免費開始 </button>
+      </nav><!-- Mobile Menu Button --> <button class="md:hidden p-2 text-gray-600" onclick="toggleMobileMenu()">
+       <svg width="24" height="24" viewbox="0 0 24 24" fill="currentColor"><path d="M3 12h18m-9 9l9-9-9-9" />
+       </svg></button>
+     </div>
     </div>
-
-    <script>
-        // Data storage
-        const appData = {
-            students: [],
-            selectedStudent: null,
-            selectedTopic: null,
-            currentCardIndex: 0,
-            savedLists: {
-                'sample': ['Alice', 'Brian', 'Candy', 'David', 'Emma', 'Frank', 'Grace', 'Henry']
-            },
-            topics: {
-                'Food': {
-                    emoji: '🍎',
-                    cards: [{
-                            word: 'apple',
-                            emoji: '🍎',
-                            question: 'What is your favorite fruit?',
-                            hints: [
-                                'Think about taste (sweet, sour, juicy)',
-                                'Consider texture (crunchy, soft)',
-                                'When do you usually eat this?'
-                            ]
-                        },
-                        {
-                            word: 'sandwich',
-                            emoji: '🥪',
-                            question: 'What do you like in your sandwich?',
-                            hints: [
-                                'Think about fillings',
-                                'Consider bread types',
-                                'Is it for breakfast, lunch, or dinner?'
-                            ]
-                        },
-                        {
-                            word: 'chicken',
-                            emoji: '🍗',
-                            question: 'How do you like your chicken cooked?',
-                            hints: [
-                                'Think about cooking methods (fried, baked, grilled)',
-                                'What flavors do you enjoy?',
-                                'What side dishes go well with it?'
-                            ]
-                        },
-                        {
-                            word: 'orange juice',
-                            emoji: '🍊',
-                            question: 'Do you prefer juice or water?',
-                            hints: [
-                                'Think about when you drink it',
-                                'Consider taste and health benefits',
-                                'What other drinks do you enjoy?'
-                            ]
-                        },
-                        {
-                            word: 'vegetables',
-                            emoji: '🥦',
-                            question: 'What vegetables do you eat?',
-                            hints: [
-                                'Think about colors and tastes',
-                                'How are they prepared?',
-                                'Which ones are your favorites?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"I like ___ because it tastes ___."',
-                        '"My favorite ___ is ___ because ___."',
-                        '"___ are healthy/delicious because ___."'
-                    ]
-                },
-                'Hobbies': {
-                    emoji: '🎨',
-                    cards: [{
-                            word: 'drawing',
-                            emoji: '🎨',
-                            question: 'What do you like to draw?',
-                            hints: [
-                                'Think about subjects (people, animals, landscapes)',
-                                'What materials do you use?',
-                                'When do you enjoy drawing?'
-                            ]
-                        },
-                        {
-                            word: 'reading',
-                            emoji: '📚',
-                            question: 'What kind of books do you enjoy?',
-                            hints: [
-                                'Think about genres (adventure, mystery, fantasy)',
-                                'Who are your favorite authors?',
-                                'Where do you like to read?'
-                            ]
-                        },
-                        {
-                            word: 'sports',
-                            emoji: '⚽',
-                            question: 'What sports do you play?',
-                            hints: [
-                                'Think about team vs individual sports',
-                                'Where do you play?',
-                                'Why do you enjoy it?'
-                            ]
-                        },
-                        {
-                            word: 'music',
-                            emoji: '🎵',
-                            question: 'Do you play any instruments?',
-                            hints: [
-                                'Think about what instruments interest you',
-                                'Do you take lessons?',
-                                'Do you prefer listening or playing?'
-                            ]
-                        },
-                        {
-                            word: 'video games',
-                            emoji: '🎮',
-                            question: 'What games do you like to play?',
-                            hints: [
-                                'Think about types of games',
-                                'Who do you play with?',
-                                'How often do you play?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"I enjoy ___ because ___."',
-                        '"In my free time, I like to ___."',
-                        '"My favorite hobby is ___ because ___."'
-                    ]
-                },
-                'Weather': {
-                    emoji: '☁️',
-                    cards: [{
-                            word: 'sunny',
-                            emoji: '☀️',
-                            question: 'What do you do on sunny days?',
-                            hints: [
-                                'Think about outdoor activities',
-                                'How does sunshine make you feel?',
-                                'What clothes do you wear?'
-                            ]
-                        },
-                        {
-                            word: 'rainy',
-                            emoji: '🌧️',
-                            question: 'Do you like rainy days?',
-                            hints: [
-                                'Think about indoor activities',
-                                'What sounds do you hear?',
-                                'What do you wear in the rain?'
-                            ]
-                        },
-                        {
-                            word: 'snowy',
-                            emoji: '❄️',
-                            question: 'What can you do in the snow?',
-                            hints: [
-                                'Think about winter activities',
-                                'How does snow feel?',
-                                'What do you wear in snowy weather?'
-                            ]
-                        },
-                        {
-                            word: 'windy',
-                            emoji: '🌬️',
-                            question: 'Is it windy today?',
-                            hints: [
-                                'Think about how wind feels',
-                                'What moves in the wind?',
-                                'Is wind helpful or harmful?'
-                            ]
-                        },
-                        {
-                            word: 'seasons',
-                            emoji: '🍂',
-                            question: 'What is your favorite season?',
-                            hints: [
-                                'Think about weather in each season',
-                                'What activities can you do?',
-                                'What holidays happen in that season?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"When it\'s ___, I like to ___."',
-                        '"My favorite weather is ___ because ___."',
-                        '"In ___ weather, you should ___."'
-                    ]
-                },
-                'School Life': {
-                    emoji: '🏫',
-                    cards: [{
-                            word: 'classroom',
-                            emoji: '🏫',
-                            question: 'What is your favorite subject?',
-                            hints: [
-                                'Think about what you learn',
-                                'Why do you enjoy it?',
-                                'Who teaches this subject?'
-                            ]
-                        },
-                        {
-                            word: 'homework',
-                            emoji: '📝',
-                            question: 'Where do you do your homework?',
-                            hints: [
-                                'Think about time and place',
-                                'Do you have a routine?',
-                                'Who helps you with homework?'
-                            ]
-                        },
-                        {
-                            word: 'friends',
-                            emoji: '👫',
-                            question: 'What do you do with friends at school?',
-                            hints: [
-                                'Think about activities during breaks',
-                                'How do you help each other?',
-                                'What makes someone a good friend?'
-                            ]
-                        },
-                        {
-                            word: 'lunch time',
-                            emoji: '🍱',
-                            question: 'What do you eat for lunch at school?',
-                            hints: [
-                                'Think about your favorite school meals',
-                                'Do you bring lunch or buy it?',
-                                'Who do you sit with?'
-                            ]
-                        },
-                        {
-                            word: 'learning',
-                            emoji: '📚',
-                            question: 'How do you learn best?',
-                            hints: [
-                                'Think about different learning styles',
-                                'Do you prefer group work or individual work?',
-                                'What helps you remember information?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"At school, I enjoy ___ because ___."',
-                        '"My favorite part of school is ___ because ___."',
-                        '"I learn best when ___."'
-                    ]
-                },
-                'Animals': {
-                    emoji: '🐘',
-                    cards: [{
-                            word: 'pets',
-                            emoji: '🐕',
-                            question: 'Do you have any pets?',
-                            hints: [
-                                'Think about types of pets',
-                                'How do you care for them?',
-                                'What are their names?'
-                            ]
-                        },
-                        {
-                            word: 'wild animals',
-                            emoji: '🦁',
-                            question: 'What wild animal would you like to see?',
-                            hints: [
-                                'Think about where they live',
-                                'What do they eat?',
-                                'Why are they interesting?'
-                            ]
-                        },
-                        {
-                            word: 'ocean animals',
-                            emoji: '🐠',
-                            question: 'Name some animals that live in the ocean',
-                            hints: [
-                                'Think about different sizes',
-                                'Consider different depths of ocean',
-                                'How do they move?'
-                            ]
-                        },
-                        {
-                            word: 'insects',
-                            emoji: '🐝',
-                            question: 'Are you afraid of any insects?',
-                            hints: [
-                                'Think about different types',
-                                'Where do you see them?',
-                                'Are they helpful or harmful?'
-                            ]
-                        },
-                        {
-                            word: 'birds',
-                            emoji: '🦜',
-                            question: 'Can you name three types of birds?',
-                            hints: [
-                                'Think about birds in your area',
-                                'Consider their colors and sizes',
-                                'What sounds do they make?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"My favorite animal is ___ because ___."',
-                        '"___ live in ___ and they ___."',
-                        '"I think ___ are interesting because ___."'
-                    ]
-                },
-                'Travel': {
-                    emoji: '✈️',
-                    cards: [{
-                            word: 'countries',
-                            emoji: '🌎',
-                            question: 'What country would you like to visit?',
-                            hints: [
-                                'Think about location and climate',
-                                'What language do they speak?',
-                                'What would you see there?'
-                            ]
-                        },
-                        {
-                            word: 'transportation',
-                            emoji: '🚂',
-                            question: 'How do you like to travel?',
-                            hints: [
-                                'Think about different vehicles',
-                                "What's the fastest way to travel?",
-                                "What's the most comfortable?"
-                            ]
-                        },
-                        {
-                            word: 'suitcase',
-                            emoji: '🧳',
-                            question: 'What would you pack for a beach holiday?',
-                            hints: [
-                                'Think about clothes',
-                                'Consider weather and activities',
-                                'What else would you need?'
-                            ]
-                        },
-                        {
-                            word: 'souvenirs',
-                            emoji: '🎁',
-                            question: 'What souvenirs would you buy?',
-                            hints: [
-                                'Think about gifts for family',
-                                'What reminds you of a place?',
-                                "What's special about different locations?"
-                            ]
-                        },
-                        {
-                            word: 'landmarks',
-                            emoji: '🗽',
-                            question: 'What famous landmarks do you know?',
-                            hints: [
-                                'Think about buildings and monuments',
-                                'Where are they located?',
-                                'Why are they famous?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"I would like to visit ___ because ___."',
-                        '"The best part about traveling is ___."',
-                        '"When I travel, I always ___."'
-                    ]
-                },
-                'Sports': {
-                    emoji: '⚽',
-                    cards: [{
-                            word: 'football',
-                            emoji: '⚽',
-                            question: 'Do you play football?',
-                            hints: [
-                                'Think about positions',
-                                'Where do you play?',
-                                'What skills do you need?'
-                            ]
-                        },
-                        {
-                            word: 'swimming',
-                            emoji: '🏊',
-                            question: 'Can you swim?',
-                            hints: [
-                                'Think about different strokes',
-                                'Where do you swim?',
-                                'Why is swimming important?'
-                            ]
-                        },
-                        {
-                            word: 'basketball',
-                            emoji: '🏀',
-                            question: 'Have you played basketball?',
-                            hints: [
-                                'Think about team roles',
-                                'What skills are needed?',
-                                'Where can you play?'
-                            ]
-                        },
-                        {
-                            word: 'running',
-                            emoji: '🏃',
-                            question: 'Do you enjoy running?',
-                            hints: [
-                                'Think about where to run',
-                                'What equipment do you need?',
-                                'Why is running good for you?'
-                            ]
-                        },
-                        {
-                            word: 'team sports',
-                            emoji: '🤼',
-                            question: 'Do you like team sports?',
-                            hints: [
-                                'What team sports do you know?',
-                                'Why are team sports fun?',
-                                'What is your favorite team sport?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"I play ___ because ___."',
-                        '"My favorite sport is ___ because ___."',
-                        '"___ is fun because ___."'
-                    ]
-                },
-                'Emotions': {
-                    emoji: '😊',
-                    cards: [{
-                            word: 'happy',
-                            emoji: '😊',
-                            question: 'What makes you happy?',
-                            hints: [
-                                'Think about activities',
-                                'Consider people in your life',
-                                'What events make you smile?'
-                            ]
-                        },
-                        {
-                            word: 'sad',
-                            emoji: '😢',
-                            question: 'What do you do when you feel sad?',
-                            hints: [
-                                'Think about coping strategies',
-                                'Who helps you feel better?',
-                                'How do you express sadness?'
-                            ]
-                        },
-                        {
-                            word: 'excited',
-                            emoji: '🤩',
-                            question: 'What are you excited about?',
-                            hints: [
-                                'Think about upcoming events',
-                                'Consider goals or wishes',
-                                'How does excitement feel?'
-                            ]
-                        },
-                        {
-                            word: 'nervous',
-                            emoji: '😰',
-                            question: 'When do you feel nervous?',
-                            hints: [
-                                'Think about challenging situations',
-                                'How does your body feel?',
-                                'What helps you calm down?'
-                            ]
-                        },
-                        {
-                            word: 'proud',
-                            emoji: '🥇',
-                            question: 'What are you proud of?',
-                            hints: [
-                                'Think about achievements',
-                                "Consider skills you've developed",
-                                'Who has helped you succeed?'
-                            ]
-                        }
-                    ],
-                    sentenceFrames: [
-                        '"I feel ___ when ___."',
-                        '"When I\'m ___, I usually ___."',
-                        '"___ makes me feel ___ because ___."'
-                    ]
-                }
-            }
+   </header><!-- Hero Section -->
+   <section class="gradient-soft-hero py-16 md:py-24 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+     <div class="text-center fade-in"><!-- Hero Illustration -->
+      <div class="hero-illustration max-w-2xl mx-auto">
+       <div class="text-8xl mb-6">
+        👩‍🏫👨‍🎓
+       </div>
+       <div class="text-6xl mb-4">
+        🎮✨📚
+       </div>
+       <div class="text-5xl">
+        😊💡🎯
+       </div>
+      </div><!-- Main Slogan -->
+      <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6" id="main-slogan">用遊戲，教出學生嘅笑容</h1><!-- Sub Slogan -->
+      <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed" id="sub-slogan">由真實網課老師設計，超過 100 款互動英文遊戲，支援 Wordwall、Kahoot 整合</p><!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"><button onclick="startFree()" class="btn-primary text-lg px-8 py-4" id="primary-cta-btn">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg><span id="primary-cta">免費開始</span> </button> <button onclick="exploreGames()" class="btn-secondary text-lg px-8 py-4" id="secondary-cta-btn">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg><span id="secondary-cta">睇下有咩遊戲</span> </button>
+      </div><!-- Trust Indicators -->
+      <div class="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500">
+       <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg> 完全免費開始
+       </div>
+       <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-blue-500"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg> 無需安裝軟件
+       </div>
+       <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-purple-500"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg> 支援所有裝置
+       </div>
+       <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-orange-500"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg> 適用 Zoom 教學
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Features Section -->
+   <section id="features" class="py-16 md:py-24 gradient-soft-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+     <div class="text-center mb-16 fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6" id="features-title">為老師度身訂造的教學助手</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">我們深知老師的需要，每個功能都為提升教學效果而設計</p>
+     </div>
+     <div class="features-grid fade-in" style="animation-delay: 0.2s"><!-- 獨家英文學習遊戲庫 -->
+      <div class="feature-card">
+       <div class="feature-icon">
+        🎮
+       </div>
+       <h3 class="text-2xl font-bold text-gray-800 mb-4">獨家英文學習遊戲庫</h3>
+       <p class="text-gray-600 text-lg leading-relaxed">每款經過學生實測與改進，超過 100 款互動遊戲讓課堂充滿歡樂</p>
+      </div><!-- 整合外部遊戲連結 -->
+      <div class="feature-card">
+       <div class="feature-icon">
+        🔗
+       </div>
+       <h3 class="text-2xl font-bold text-gray-800 mb-4">整合外部遊戲連結</h3>
+       <p class="text-gray-600 text-lg leading-relaxed">支援 Wordwall、Kahoot 等平台，一個地方管理所有教學遊戲</p>
+      </div><!-- 自動記錄學生歷程 -->
+      <div class="feature-card">
+       <div class="feature-icon">
+        📊
+       </div>
+       <h3 class="text-2xl font-bold text-gray-800 mb-4">自動記錄學生歷程與情緒反應</h3>
+       <p class="text-gray-600 text-lg leading-relaxed">無需手動記錄，系統自動追蹤每個學生的學習進度和課堂反應</p>
+      </div><!-- AI 推薦下一課內容 -->
+      <div class="feature-card">
+       <div class="feature-icon">
+        🤖
+       </div>
+       <h3 class="text-2xl font-bold text-gray-800 mb-4">AI 推薦下一課內容</h3>
+       <p class="text-gray-600 text-lg leading-relaxed">根據學生表現智能推薦下次課堂內容，讓教學更有針對性</p>
+      </div><!-- 教學建議與備課提示 -->
+      <div class="feature-card">
+       <div class="feature-icon">
+        🧠
+       </div>
+       <h3 class="text-2xl font-bold text-gray-800 mb-4">教學建議與備課提示</h3>
+       <p class="text-gray-600 text-lg leading-relaxed">AI 分析學生表現，主動提供個人化教學建議，讓你的備課更有方向</p>
+      </div><!-- 家長亦可使用 -->
+      <div class="feature-card">
+       <div class="feature-icon">
+        👨‍👩‍👧
+       </div>
+       <h3 class="text-2xl font-bold text-gray-800 mb-4">家長亦可使用</h3>
+       <p class="text-gray-600 text-lg leading-relaxed">適合一對一教學，家長在家也能輕鬆陪伴孩子學英文</p>
+      </div>
+     </div>
+    </div>
+   </section><!-- How It Works Section -->
+   <section id="how-it-works" class="py-16 md:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+     <div class="text-center mb-16 fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">簡單 4 步，開始互動教學</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">無需複雜設定，幾分鐘內就能開始使用</p>
+     </div>
+     <div class="steps-grid fade-in" style="animation-delay: 0.2s"><!-- Step 1 -->
+      <div class="step-card">
+       <div class="step-number">
+        1
+       </div>
+       <div class="text-4xl mb-4">
+        👥
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-3">選擇學生</h3>
+       <p class="text-gray-600">建立學生檔案，記錄基本資料和學習程度</p>
+       <div class="step-arrow hidden md:block">
+        →
+       </div>
+      </div><!-- Step 2 -->
+      <div class="step-card">
+       <div class="step-number">
+        2
+       </div>
+       <div class="text-4xl mb-4">
+        🎮
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-3">開始遊戲</h3>
+       <p class="text-gray-600">AI 推薦適合的互動遊戲，與學生一起玩樂學習</p>
+       <div class="step-arrow hidden md:block">
+        →
+       </div>
+      </div><!-- Step 3 -->
+      <div class="step-card">
+       <div class="step-number">
+        3
+       </div>
+       <div class="text-4xl mb-4">
+        📝
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-3">記錄反應</h3>
+       <p class="text-gray-600">系統自動記錄學生表現，你也可以添加個人觀察</p>
+       <div class="step-arrow hidden md:block">
+        →
+       </div>
+      </div><!-- Step 4 -->
+      <div class="step-card">
+       <div class="step-number">
+        4
+       </div>
+       <div class="text-4xl mb-4">
+        🎯
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-3">安排下一課</h3>
+       <p class="text-gray-600">根據學習歷程，AI 建議下次課堂的重點和遊戲</p>
+      </div>
+     </div>
+    </div>
+   </section><!-- Founder Testimonial Section -->
+   <section class="py-16 md:py-24 gradient-soft-section">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"><!-- Founder Quote -->
+      <div class="fade-in">
+       <div class="founder-card">
+        <div class="founder-avatar">
+         👩‍🏫
+        </div>
+        <blockquote class="text-xl md:text-2xl font-medium text-gray-800 mb-6 leading-relaxed" id="founder-quote">
+         「我係一個網課老師，教咗幾百個學生。我設計呢個平台，係因為我自己每日都要搵遊戲、記學生反應、安排下一課。而家我用緊呢個平台，真係慳咗好多時間，學生都學得開心啲。」
+        </blockquote>
+        <div class="text-lg text-gray-600 mb-2">
+         Miss Wong
+        </div>
+        <div class="text-gray-500">
+         Ladder Lessons 創辦人 · 資深英語老師
+        </div>
+        <div class="flex justify-center items-center gap-8 mt-8 text-sm text-gray-500">
+         <div class="flex items-center gap-2">
+          <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-yellow-500"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg> 5+ 年教學經驗
+         </div>
+         <div class="flex items-center gap-2">
+          <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg> 500+ 學生教過
+         </div>
+         <div class="flex items-center gap-2">
+          <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-blue-500"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg> 親身體驗設計
+         </div>
+        </div>
+       </div>
+      </div><!-- Zoom Teaching Illustration -->
+      <div class="fade-in" style="animation-delay: 0.3s">
+       <div class="bg-gradient-to-br from-blue-100 via-white to-yellow-100 p-8 rounded-3xl"><!-- Zoom Teaching Scene -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+         <div class="flex items-center gap-3 mb-4">
+          <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+          <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+          <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+          <div class="text-sm text-gray-500 ml-auto">
+           Zoom Meeting
+          </div>
+         </div>
+         <div class="grid grid-cols-3 gap-3"><!-- Teacher -->
+          <div class="bg-blue-100 rounded-lg p-3 text-center">
+           <div class="text-3xl mb-2">
+            👩‍🏫
+           </div>
+           <div class="text-xs text-gray-600">
+            Miss Wong
+           </div>
+          </div><!-- Students -->
+          <div class="bg-green-100 rounded-lg p-3 text-center">
+           <div class="text-3xl mb-2">
+            😊
+           </div>
+           <div class="text-xs text-gray-600">
+            Amy
+           </div>
+          </div>
+          <div class="bg-yellow-100 rounded-lg p-3 text-center">
+           <div class="text-3xl mb-2">
+            🤗
+           </div>
+           <div class="text-xs text-gray-600">
+            Ben
+           </div>
+          </div>
+          <div class="bg-pink-100 rounded-lg p-3 text-center">
+           <div class="text-3xl mb-2">
+            😄
+           </div>
+           <div class="text-xs text-gray-600">
+            Chloe
+           </div>
+          </div>
+          <div class="bg-purple-100 rounded-lg p-3 text-center">
+           <div class="text-3xl mb-2">
+            🥳
+           </div>
+           <div class="text-xs text-gray-600">
+            David
+           </div>
+          </div>
+          <div class="bg-orange-100 rounded-lg p-3 text-center">
+           <div class="text-3xl mb-2">
+            😍
+           </div>
+           <div class="text-xs text-gray-600">
+            Emma
+           </div>
+          </div>
+         </div>
+        </div><!-- Game Elements Floating -->
+        <div class="relative">
+         <div class="flex justify-center items-center gap-4 text-4xl"><span class="animate-bounce" style="animation-delay: 0s;">🎮</span> <span class="animate-bounce" style="animation-delay: 0.2s;">✨</span> <span class="animate-bounce" style="animation-delay: 0.4s;">🎯</span> <span class="animate-bounce" style="animation-delay: 0.6s;">🏆</span>
+         </div>
+         <div class="text-center mt-4 text-gray-600 font-medium">
+          學生笑住玩遊戲，老師輕鬆教學
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Student Reactions Section -->
+   <section id="students" class="py-16 md:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+     <div class="text-center mb-16 fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6" id="student-section-title">學生最鍾意嘅學習時刻</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">真實課堂記錄，見證每個學生的成長與歡樂</p>
+     </div>
+     <div class="students-grid fade-in" style="animation-delay: 0.2s"><!-- Student 1 - Amy -->
+      <div class="student-card">
+       <div class="student-avatar">
+        👧
+       </div>
+       <h3 class="text-lg font-bold text-gray-800 mb-2">Amy (6歲)</h3>
+       <blockquote class="text-lg text-gray-700 mb-4 italic">
+        「我最鍾意配水果果個遊戲！」
+       </blockquote>
+       <div class="game-preview">
+        <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🍎🍌🍊</span> <span class="text-sm text-gray-600">水果配對遊戲</span>
+        </div>
+        <div class="text-xs text-gray-500">
+         剛剛玩過 · 正確率 85%
+        </div>
+       </div>
+       <div class="progress-indicator">
+        <div class="text-sm font-medium text-gray-700 mb-1">
+         學習進步
+        </div>
+        <div class="text-xs text-gray-600">
+         由只識 3 個水果 → 而家識 12 個
+        </div>
+       </div>
+      </div><!-- Student 2 - Ben -->
+      <div class="student-card">
+       <div class="student-avatar">
+        👦
+       </div>
+       <h3 class="text-lg font-bold text-gray-800 mb-2">Ben (8歲)</h3>
+       <blockquote class="text-lg text-gray-700 mb-4 italic">
+        「我而家識講 'I like apples!'」
+       </blockquote>
+       <div class="game-preview">
+        <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🗣️💬</span> <span class="text-sm text-gray-600">句子組合遊戲</span>
+        </div>
+        <div class="text-xs text-gray-500">
+         剛剛完成 · 流暢度提升
+        </div>
+       </div>
+       <div class="progress-indicator">
+        <div class="text-sm font-medium text-gray-700 mb-1">
+         口語進步
+        </div>
+        <div class="text-xs text-gray-600">
+         由單詞 → 而家能講完整句子
+        </div>
+       </div>
+      </div><!-- Student 3 - Chloe -->
+      <div class="student-card">
+       <div class="student-avatar">
+        👧
+       </div>
+       <h3 class="text-lg font-bold text-gray-800 mb-2">Chloe (7歲)</h3>
+       <blockquote class="text-lg text-gray-700 mb-4 italic">
+        「我想再玩一次嗰個動物聲音遊戲！」
+       </blockquote>
+       <div class="game-preview">
+        <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🐶🐱🐸</span> <span class="text-sm text-gray-600">動物聲音遊戲</span>
+        </div>
+        <div class="text-xs text-gray-500">
+         要求重玩 3 次 · 超級投入
+        </div>
+       </div>
+       <div class="progress-indicator">
+        <div class="text-sm font-medium text-gray-700 mb-1">
+         參與度
+        </div>
+        <div class="text-xs text-gray-600">
+         由被動 → 而家主動要求學習
+        </div>
+       </div>
+      </div>
+     </div><!-- Real-time Recording Note -->
+     <div class="mt-12 text-center fade-in" style="animation-delay: 0.4s">
+      <div class="bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-2xl border border-blue-100 max-w-4xl mx-auto">
+       <div class="flex items-center justify-center gap-3 mb-3">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-blue-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg><span class="text-sm font-semibold text-gray-700">真實課堂記錄</span>
+       </div>
+       <p class="text-sm text-gray-600 leading-relaxed">以上反應都係真實課堂中記錄，由老師即場輸入或平台自動生成。每個學生的學習歷程都被完整保存，幫助老師更好地了解學生需要。</p>
+      </div>
+     </div>
+    </div>
+   </section><!-- Pricing Comparison Section -->
+   <section id="pricing" class="py-16 md:py-24 gradient-soft-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+     <div class="text-center mb-16 fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">選擇適合你的方案</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">免費開始使用，隨時升級享受更多功能</p>
+     </div>
+     <div class="comparison-grid fade-in" style="animation-delay: 0.2s"><!-- Free Plan -->
+      <div class="comparison-card">
+       <div class="text-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">免費版</h3>
+        <div class="text-4xl font-bold text-gray-800 mb-2">
+         £0
+        </div>
+        <div class="text-gray-500">
+         永久免費
+        </div>
+       </div>
+       <ul class="space-y-4 mb-8">
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 基本遊戲庫存取</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 最多 5 個學生檔案</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 基本學習記錄</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-gray-400"><path d="M6 18L18 6M6 6l12 12" />
+         </svg><span class="text-gray-400">AI 推薦功能</span></li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-gray-400"><path d="M6 18L18 6M6 6l12 12" />
+         </svg><span class="text-gray-400">教學建議</span></li>
+       </ul><button onclick="startFree()" class="btn-secondary w-full"> 立即開始使用 </button>
+      </div><!-- Premium Plan -->
+      <div class="comparison-card premium">
+       <div class="text-center mb-6">
+        <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+         <svg width="14" height="14" viewbox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+         </svg> 推薦方案
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Premium</h3>
+        <div class="text-4xl font-bold text-gray-800 mb-2">
+         £6.99
+        </div>
+        <div class="text-gray-500">
+         每月 (年費更優惠)
+        </div>
+       </div>
+       <ul class="space-y-4 mb-8">
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 完整遊戲庫存取</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 無限學生檔案</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 完整學習歷程追蹤</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> AI 智能推薦</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 個人化教學建議</li>
+        <li class="flex items-center gap-3">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+         </svg> 學習報告匯出</li>
+       </ul>
+       <div class="space-y-3"><button onclick="learnPremium()" class="btn-secondary w-full"> 了解 Premium 功能 </button> <button onclick="tryPremium()" class="btn-accent w-full"> 試用 Premium 7 日 </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Brand Story Section -->
+   <section class="py-16 md:py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"><!-- Story Text -->
+      <div class="fade-in">
+       <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-8">我哋唔係科技公司，<br>
+        我哋係老師</h2>
+       <div class="bg-gradient-to-r from-blue-50 to-yellow-50 p-8 rounded-3xl border-l-4 border-blue-300">
+        <blockquote class="text-xl md:text-2xl text-gray-700 leading-relaxed italic mb-6">
+         「我哋唔係科技公司，我哋係老師。每款遊戲都係我哋親自教過、見過學生反應、改過玩法先至推出。你教緊嘅學生，可能就係我哋設計呢款遊戲時見過嘅學生。」
+        </blockquote>
+        <div class="flex items-center gap-4">
+         <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center"><span class="text-2xl">👨‍🏫</span>
+         </div>
+         <div>
+          <div class="font-semibold text-gray-800">
+           Ladder Lessons 創辦團隊
+          </div>
+          <div class="text-gray-600">
+           資深英語老師 × 教育科技專家
+          </div>
+         </div>
+        </div>
+       </div>
+       <div class="mt-8 grid grid-cols-2 gap-6">
+        <div class="text-center p-4 bg-blue-50 rounded-2xl">
+         <div class="text-3xl font-bold text-blue-600 mb-2">
+          5+
+         </div>
+         <div class="text-gray-600">
+          年網課教學經驗
+         </div>
+        </div>
+        <div class="text-center p-4 bg-yellow-50 rounded-2xl">
+         <div class="text-3xl font-bold text-yellow-600 mb-2">
+          1000+
+         </div>
+         <div class="text-gray-600">
+          學生實測改進
+         </div>
+        </div>
+       </div>
+      </div><!-- Illustration -->
+      <div class="fade-in" style="animation-delay: 0.3s">
+       <div class="bg-gradient-to-br from-blue-100 via-white to-yellow-100 p-8 rounded-3xl"><!-- Teacher Preparation Scene -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+         <div class="text-center mb-4">
+          <div class="text-4xl mb-2">
+           👩‍🏫
+          </div>
+          <div class="text-sm text-gray-600">
+           老師備課中...
+          </div>
+         </div>
+         <div class="grid grid-cols-2 gap-3">
+          <div class="bg-blue-50 rounded-lg p-3 text-center">
+           <div class="text-2xl mb-1">
+            📚
+           </div>
+           <div class="text-xs text-gray-600">
+            設計遊戲
+           </div>
+          </div>
+          <div class="bg-green-50 rounded-lg p-3 text-center">
+           <div class="text-2xl mb-1">
+            👥
+           </div>
+           <div class="text-xs text-gray-600">
+            觀察學生
+           </div>
+          </div>
+          <div class="bg-yellow-50 rounded-lg p-3 text-center">
+           <div class="text-2xl mb-1">
+            🔄
+           </div>
+           <div class="text-xs text-gray-600">
+            改進玩法
+           </div>
+          </div>
+          <div class="bg-purple-50 rounded-lg p-3 text-center">
+           <div class="text-2xl mb-1">
+            ✨
+           </div>
+           <div class="text-xs text-gray-600">
+            完善平台
+           </div>
+          </div>
+         </div>
+        </div><!-- Platform Development -->
+        <div class="relative">
+         <div class="flex justify-center items-center gap-4 text-3xl"><span class="animate-pulse" style="animation-delay: 0s;">💡</span> <span class="animate-pulse" style="animation-delay: 0.3s;">→</span> <span class="animate-pulse" style="animation-delay: 0.6s;">💻</span> <span class="animate-pulse" style="animation-delay: 0.9s;">→</span> <span class="animate-pulse" style="animation-delay: 1.2s;">🎮</span>
+         </div>
+         <div class="text-center mt-4 text-gray-600 font-medium">
+          由教學經驗到平台設計
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- FAQ Section -->
+   <section id="faq" class="py-16 md:py-24 gradient-soft-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+     <div class="text-center mb-16 fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">常見問題</h2>
+      <p class="text-xl text-gray-600">解答你對平台使用的疑問</p>
+     </div>
+     <div class="fade-in" style="animation-delay: 0.2s">
+      <div class="faq-item" onclick="toggleFAQ(this)">
+       <div class="faq-question"><span>要唔要安裝軟件？</span>
+        <svg class="faq-toggle w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" />
+        </svg>
+       </div>
+       <div class="faq-answer">
+        完全不需要！Ladder Lessons 是網頁版平台，只要有瀏覽器就能使用。支援電腦、平板、手機，隨時隨地都能教學。
+       </div>
+      </div>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+       <div class="faq-question"><span>可以用喺 Zoom 教學嗎？</span>
+        <svg class="faq-toggle w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" />
+        </svg>
+       </div>
+       <div class="faq-answer">
+        當然可以！你可以在 Zoom 中分享螢幕，讓學生看到遊戲畫面。平台設計考慮到線上教學需求，非常適合遠距教學使用。
+       </div>
+      </div>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+       <div class="faq-question"><span>家長可以用嗎？</span>
+        <svg class="faq-toggle w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" />
+        </svg>
+       </div>
+       <div class="faq-answer">
+        當然可以！平台特別適合家長進行一對一教學。介面簡單易用，即使沒有教學經驗的家長也能輕鬆上手，陪伴孩子學英文。
+       </div>
+      </div>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+       <div class="faq-question"><span>免費版有咩限制？</span>
+        <svg class="faq-toggle w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" />
+        </svg>
+       </div>
+       <div class="faq-answer">
+        免費版可以建立最多 5 個學生檔案，使用基本遊戲庫和學習記錄功能。升級到 Premium 後可享有無限學生檔案、AI 推薦和完整教學建議。
+       </div>
+      </div>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+       <div class="faq-question"><span>適合邊個年齡層的學生？</span>
+        <svg class="faq-toggle w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" />
+        </svg>
+       </div>
+       <div class="faq-answer">
+        平台適合 3-16 歲學生，涵蓋幼稚園到中學階段。遊戲內容按年齡和程度分類，AI 會根據學生資料推薦最適合的活動。
+       </div>
+      </div>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+       <div class="faq-question"><span>支援邊啲外部平台？</span>
+        <svg class="faq-toggle w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" />
+        </svg>
+       </div>
+       <div class="faq-answer">
+        目前支援 Wordwall、Kahoot、Quizlet 等主流教學遊戲平台。你可以將外部遊戲連結整合到平台中，統一管理所有教學資源。
+       </div>
+      </div>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+       <div class="faq-question"><span>學生資料會唔會外洩？</span>
+        <svg class="faq-toggle w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" />
+        </svg>
+       </div>
+       <div class="faq-answer">
+        我們非常重視資料保護，採用銀行級加密技術保護所有資料。學生資料只有你能存取，我們絕不會與第三方分享或用作其他用途。
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Final CTA Section -->
+   <section class="py-16 md:py-24 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+     <div class="fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">準備好開始互動教學？</h2>
+      <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">加入數千位老師，體驗遊戲化教學帶來的改變。完全免費開始，無需信用卡。</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"><button onclick="startFree()" class="btn-primary text-lg px-8 py-4">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg> 立即免費開始 </button> <button onclick="joinCommunity()" class="btn-secondary text-lg px-8 py-4">
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg> 加入教師社群 </button>
+      </div><!-- Final Trust Indicators -->
+      <div class="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500">
+       <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-green-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg> 5000+ 老師信賴
+       </div>
+       <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-blue-500"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg> 資料安全保護
+       </div>
+       <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewbox="0 0 24 24" fill="currentColor" class="text-purple-500"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg> 24/7 客服支援
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Footer -->
+   <footer class="bg-gray-800 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8"><!-- Logo & Tagline -->
+      <div class="md:col-span-2">
+       <div class="flex items-center space-x-3 mb-4">
+        <svg width="32" height="32" viewbox="0 0 32 32" fill="none" class="text-blue-400"><circle cx="16" cy="16" r="14" fill="currentColor" opacity="0.2" /> <path d="M12 9l8 7-8 7V9z" fill="currentColor" />
+        </svg>
+        <div class="text-xl font-bold">
+         Ladder Lessons
+        </div>
+       </div>
+       <p class="text-gray-300 mb-4 max-w-md" id="footer-tagline">讓每個學生都愛上學習</p>
+       <div class="social-links"><a href="#" class="social-link" onclick="openSocial('facebook')">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+         </svg></a> <a href="#" class="social-link" onclick="openSocial('instagram')">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987c6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.611-3.197-1.559-.748-.948-1.197-2.25-1.197-3.654 0-1.404.449-2.706 1.197-3.654.749-.948 1.9-1.559 3.197-1.559s2.448.611 3.197 1.559c.748.948 1.197 2.25 1.197 3.654 0 1.404-.449 2.706-1.197 3.654-.749.948-1.9 1.559-3.197 1.559z" />
+         </svg></a> <a href="#" class="social-link" onclick="openSocial('youtube')">
+         <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+         </svg></a>
+       </div>
+      </div><!-- Quick Links -->
+      <div>
+       <h4 class="text-lg font-semibold mb-4">快速連結</h4>
+       <ul class="space-y-2">
+        <li><a href="#features" class="text-gray-300 hover:text-white transition-colors">功能特色</a></li>
+        <li><a href="#how-it-works" class="text-gray-300 hover:text-white transition-colors">使用方法</a></li>
+        <li><a href="#students" class="text-gray-300 hover:text-white transition-colors">學生反應</a></li>
+        <li><a href="#pricing" class="text-gray-300 hover:text-white transition-colors">方案比較</a></li>
+        <li><a href="#faq" class="text-gray-300 hover:text-white transition-colors">常見問題</a></li>
+       </ul>
+      </div><!-- Support -->
+      <div>
+       <h4 class="text-lg font-semibold mb-4">支援服務</h4>
+       <ul class="space-y-2">
+        <li><a href="#" onclick="contactSupport()" class="text-gray-300 hover:text-white transition-colors">聯絡客服</a></li>
+        <li><a href="#" onclick="joinCommunity()" class="text-gray-300 hover:text-white transition-colors">教師社群</a></li>
+        <li><a href="#" onclick="inviteFriend()" class="text-gray-300 hover:text-white transition-colors">邀請朋友</a></li>
+        <li><a href="#" onclick="viewTerms()" class="text-gray-300 hover:text-white transition-colors">使用條款</a></li>
+       </ul>
+      </div>
+     </div><!-- Bottom Bar -->
+     <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
+      <div class="text-gray-400 text-sm mb-4 md:mb-0">
+       © 2024 Ladder Lessons. 版權所有。
+      </div>
+      <div class="flex items-center gap-6 text-sm text-gray-400"><a href="#" onclick="viewPrivacy()" class="hover:text-white transition-colors">私隱政策</a> <a href="#" onclick="viewTerms()" class="hover:text-white transition-colors">服務條款</a> <a href="#" onclick="contactSupport()" class="hover:text-white transition-colors">support@ladderlessons.com</a>
+      </div>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            main_slogan: "用遊戲，教出學生嘅笑容",
+            sub_slogan: "由真實網課老師設計，超過 100 款互動英文遊戲，支援 Wordwall、Kahoot 整合",
+            primary_cta: "免費開始",
+            secondary_cta: "睇下有咩遊戲",
+            features_title: "為老師度身訂造的教學助手",
+            founder_quote: "我係一個網課老師，教咗幾百個學生。我設計呢個平台，係因為我自己每日都要搵遊戲、記學生反應、安排下一課。而家我用緊呢個平台，真係慳咗好多時間，學生都學得開心啲。",
+            student_section_title: "學生最鍾意嘅學習時刻",
+            footer_tagline: "讓每個學生都愛上學習",
+            primary_color: "#60A5FA",
+            secondary_color: "#34D399",
+            accent_color: "#FBBF24",
+            font_family: "Noto Sans TC",
+            font_size: 16
         };
-        // DOM Elements
-        const mainScreen = document.getElementById('mainScreen');
-        const flashcardScreen = document.getElementById('flashcardScreen');
-        const studentNamesInput = document.getElementById('studentNamesInput');
-        const createWheelBtn = document.getElementById('createWheelBtn');
-        const saveListBtn = document.getElementById('saveListBtn');
-        const loadListBtn = document.getElementById('loadListBtn');
-        const savedListsSelect = document.getElementById('savedLists');
-        const wheel = document.getElementById('wheel');
-        const spinWheelBtn = document.getElementById('spinWheelBtn');
-        const selectedStudentContainer = document.getElementById('selectedStudentContainer');
-        const selectedStudentName = document.getElementById('selectedStudentName');
-        const topicSelectionContainer = document.getElementById('topicSelectionContainer');
-        const topicButtons = document.querySelectorAll('.topic-button');
-        const currentTopic = document.getElementById('currentTopic');
-        const currentStudent = document.getElementById('currentStudent');
-        const cardEmoji = document.getElementById('cardEmoji');
-        const cardWord = document.getElementById('cardWord');
-        const cardQuestion = document.getElementById('cardQuestion');
-        const cardHints = document.getElementById('cardHints');
-        const sentenceFrames = document.getElementById('sentenceFrames');
-        const flashcardInner = document.getElementById('flashcardInner');
-        const flipCardBtn = document.getElementById('flipCardBtn');
-        const nextCardBtn = document.getElementById('nextCardBtn');
-        const nextStudentBtn = document.getElementById('nextStudentBtn');
-        const exitFlashcardBtn = document.getElementById('exitFlashcardBtn');
 
-        // Initialize with sample data
-        studentNamesInput.value = appData.savedLists['sample'].join('\n');
+        // Render function
+        async function render(config) {
+            // Update text content
+            document.getElementById('main-slogan').textContent = 
+                config.main_slogan || defaultConfig.main_slogan;
+            document.getElementById('sub-slogan').textContent = 
+                config.sub_slogan || defaultConfig.sub_slogan;
+            document.getElementById('primary-cta').textContent = 
+                config.primary_cta || defaultConfig.primary_cta;
+            document.getElementById('secondary-cta').textContent = 
+                config.secondary_cta || defaultConfig.secondary_cta;
+            document.getElementById('features-title').textContent = 
+                config.features_title || defaultConfig.features_title;
+            document.getElementById('founder-quote').textContent = 
+                config.founder_quote || defaultConfig.founder_quote;
+            document.getElementById('student-section-title').textContent = 
+                config.student_section_title || defaultConfig.student_section_title;
+            document.getElementById('footer-tagline').textContent = 
+                config.footer_tagline || defaultConfig.footer_tagline;
 
-        // Functions
-        function createWheel() {
-            const names = studentNamesInput.value.trim().split('\n').filter(name =>
-                name.trim() !== '');
+            // Apply colors
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            const accentColor = config.accent_color || defaultConfig.accent_color;
 
-            if (names.length === 0) {
-                alert('Please enter at least one student name.');
-                return;
+            // Update styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .btn-primary {
+                    background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%) !important;
+                }
+                .btn-primary:hover {
+                    background: linear-gradient(135deg, ${primaryColor}CC 0%, ${primaryColor}AA 100%) !important;
+                    box-shadow: 0 8px 25px ${primaryColor}66 !important;
+                }
+                .btn-accent {
+                    background: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}CC 100%) !important;
+                }
+                .btn-accent:hover {
+                    background: linear-gradient(135deg, ${accentColor}CC 0%, ${accentColor}AA 100%) !important;
+                    box-shadow: 0 8px 25px ${accentColor}66 !important;
+                }
+                .step-number {
+                    background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%) !important;
+                }
+                .feature-card::before {
+                    background: linear-gradient(90deg, ${primaryColor} 0%, ${secondaryColor} 50%, ${accentColor} 100%) !important;
+                }
+                .comparison-card.premium {
+                    border-color: ${accentColor} !important;
+                }
+            `;
+            
+            // Remove existing style if any
+            const existingStyle = document.getElementById('dynamic-colors');
+            if (existingStyle) {
+                existingStyle.remove();
             }
+            style.id = 'dynamic-colors';
+            document.head.appendChild(style);
 
-            appData.students = names;
-            updateWheel();
-            spinWheelBtn.disabled = false;
+            // Apply font
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'system-ui, -apple-system, sans-serif';
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+            // Apply font size scaling
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.documentElement.style.fontSize = `${baseSize}px`;
         }
 
-        function updateWheel() {
-            wheel.innerHTML = '';
-            if (appData.students.length === 0) {
-                wheel.style.background = '#f0f0f0';
-                return;
-            }
-            const size = 300;
-            const radius = size / 2;
-            const sliceAngle = 2 * Math.PI / appData.students.length;
-            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA', '#F8B195', '#F67280',
-                '#C06C84', '#6C5B7B'
-            ];
-
-            // Create SVG
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', size);
-            svg.setAttribute('height', size);
-            svg.style.display = 'block';
-            svg.style.margin = '0 auto';
-
-            // Draw slices
-            for (let i = 0; i < appData.students.length; i++) {
-                const startAngle = i * sliceAngle - Math.PI / 2;
-                const endAngle = (i + 1) * sliceAngle - Math.PI / 2;
-                const x1 = radius + radius * Math.cos(startAngle);
-                const y1 = radius + radius * Math.sin(startAngle);
-                const x2 = radius + radius * Math.cos(endAngle);
-                const y2 = radius + radius * Math.sin(endAngle);
-
-                const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
-                const pathData = [
-                    `M${radius},${radius}`,
-                    `L${x1},${y1}`,
-                    `A${radius},${radius} 0 ${largeArcFlag} 1 ${x2},${y2}`,
-                    'Z'
-                ].join(' ');
-
-                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                path.setAttribute('d', pathData);
-                path.setAttribute('fill', colors[i % colors.length]);
-                svg.appendChild(path);
-
-                // Add text
-                const textAngle = startAngle + sliceAngle / 2;
-                const textRadius = radius * 0.65;
-                const tx = radius + textRadius * Math.cos(textAngle);
-                const ty = radius + textRadius * Math.sin(textAngle);
-
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', tx);
-                text.setAttribute('y', ty);
-                text.setAttribute('fill', '#333');
-                text.setAttribute('font-size', '16');
-                text.setAttribute('font-family', 'Nunito, sans-serif');
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('alignment-baseline', 'middle');
-                text.setAttribute('transform', `rotate(${(textAngle * 180 / Math.PI)},${tx},${ty})`);
-                text.textContent = appData.students[i];
-                svg.appendChild(text);
-            }
-
-            wheel.appendChild(svg);
-            wheel.style.background = '';
-            wheel.style.transform = '';
+        // Capabilities mapping
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: {
+                    get: () => config.font_family || defaultConfig.font_family,
+                    set: (value) => {
+                        config.font_family = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    }
+                },
+                fontSizeable: {
+                    get: () => config.font_size || defaultConfig.font_size,
+                    set: (value) => {
+                        config.font_size = value;
+                        if (window.elementSdk) {
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }
+            };
         }
 
+        // Edit panel values mapping
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["main_slogan", config.main_slogan || defaultConfig.main_slogan],
+                ["sub_slogan", config.sub_slogan || defaultConfig.sub_slogan],
+                ["primary_cta", config.primary_cta || defaultConfig.primary_cta],
+                ["secondary_cta", config.secondary_cta || defaultConfig.secondary_cta],
+                ["features_title", config.features_title || defaultConfig.features_title],
+                ["founder_quote", config.founder_quote || defaultConfig.founder_quote],
+                ["student_section_title", config.student_section_title || defaultConfig.student_section_title],
+                ["footer_tagline", config.footer_tagline || defaultConfig.footer_tagline]
+            ]);
+        }
 
-        function spinWheel() {
-            if (appData.students.length === 0) {
-                alert('Please create the wheel first!');
-                return;
+        // FAQ functionality
+        function toggleFAQ(element) {
+            const isActive = element.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                element.classList.add('active');
             }
+        }
 
-            const spins = 8; // was 5, now spins at least 2 full circles (8*360=2880deg)
-            const degrees = spins * 360 + Math.floor(Math.random() * 360);
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            showNotification('手機選單功能開發中...', 'info');
+        }
 
-            wheel.style.transform = `rotate(${degrees}deg)`;
+        // Action functions
+        function startFree() {
+            showNotification('正在跳轉到註冊頁面...', 'success');
+        }
 
+        function exploreGames() {
+            showNotification('正在載入遊戲庫...', 'info');
+        }
+
+        function learnPremium() {
+            showNotification('正在跳轉到 Premium 功能頁面...', 'info');
+        }
+
+        function tryPremium() {
+            showNotification('正在開始 7 日免費試用...', 'success');
+        }
+
+        function joinCommunity() {
+            showNotification('正在跳轉到教師社群...', 'info');
+        }
+
+        function contactSupport() {
+            showNotification('正在開啟客服對話...', 'info');
+        }
+
+        function inviteFriend() {
+            showNotification('正在生成邀請連結...', 'info');
+        }
+
+        function viewTerms() {
+            showNotification('正在載入使用條款...', 'info');
+        }
+
+        function viewPrivacy() {
+            showNotification('正在載入私隱政策...', 'info');
+        }
+
+        function openSocial(platform) {
+            showNotification(`正在開啟 ${platform} 頁面...`, 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-sm`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500 text-white';
+            } else if (type === 'info') {
+                notification.className += ' bg-blue-500 text-white';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500 text-white';
+            }
+            
+            notification.innerHTML = `<div class="text-sm font-medium">${message}</div>`;
+            document.body.appendChild(notification);
+            
+            // Animate in
             setTimeout(() => {
-                // Calculate which student is selected
-                const normalizedDegrees = degrees % 360;
-                const sliceAngle = 360 / appData.students.length;
-                let selectedIndex = Math.floor((360 - normalizedDegrees) / sliceAngle) % appData.students
-                    .length;
-                // Fix negative index
-                selectedIndex = ((selectedIndex % appData.students.length) + appData.students.length) % appData
-                    .students.length;
-
-                appData.selectedStudent = appData.students[selectedIndex];
-                selectedStudentName.textContent = appData.selectedStudent;
-                selectedStudentContainer.classList.remove('hidden');
-                topicSelectionContainer.classList.remove('hidden');
-
-                // Create confetti effect
-                createConfetti();
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
             }, 3000);
         }
 
-        function createConfetti() {
-            const container = document.querySelector('.wheel-container');
-            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7',
-                '#C7CEEA'
-            ];
-
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() *
-                    colors.length)];
-                confetti.style.left = Math.random() * 300 + 'px';
-                confetti.style.width = Math.random() * 10 + 5 + 'px';
-                confetti.style.height = Math.random() * 10 + 5 + 'px';
-                confetti.style.opacity = Math.random();
-                confetti.style.animation =
-                    `fall ${Math.random() * 3 + 2}s linear forwards`;
-
-                container.appendChild(confetti);
-
-                setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
-            }
-        }
-
-        function selectTopic(topic) {
-            if (!appData.selectedStudent) {
-                alert('Please select a student first!');
-                return;
-            }
-
-            appData.selectedTopic = topic;
-            appData.currentCardIndex = 0;
-
-            // Switch to flashcard screen
-            mainScreen.classList.add('hidden');
-            flashcardScreen.classList.remove('hidden');
-
-            // Update flashcard content
-            currentTopic.textContent = topic;
-            currentStudent.textContent = appData.selectedStudent;
-
-            updateFlashcard();
-        }
-
-        function updateFlashcard() {
-            const topic = appData.topics[appData.selectedTopic];
-            const card = topic.cards[appData.currentCardIndex];
-
-            // Reset card to front side
-            flashcardInner.style.transform = '';
-
-            // Update card content
-            cardEmoji.textContent = card.emoji;
-            cardWord.textContent = card.word;
-            cardQuestion.textContent = card.question;
-
-            // Update hints
-            cardHints.innerHTML = '';
-            card.hints.forEach(hint => {
-                const li = document.createElement('li');
-                li.textContent = hint;
-                cardHints.appendChild(li);
-            });
-
-            // Update sentence frames
-            sentenceFrames.innerHTML = '';
-            topic.sentenceFrames.forEach(frame => {
-                const li = document.createElement('li');
-                li.textContent = frame;
-                sentenceFrames.appendChild(li);
-            });
-        }
-
-        function flipCard() {
-            flashcardInner.style.transform = flashcardInner.style.transform ===
-                'rotateY(180deg)' ? '' : 'rotateY(180deg)';
-        }
-
-        function nextCard() {
-            const topic = appData.topics[appData.selectedTopic];
-            appData.currentCardIndex = (appData.currentCardIndex + 1) % topic.cards
-                .length;
-            updateFlashcard();
-        }
-
-        function nextStudent() {
-            // Return to main screen
-            flashcardScreen.classList.add('hidden');
-            mainScreen.classList.remove('hidden');
-
-            // Reset selection
-            appData.selectedStudent = null;
-            appData.selectedTopic = null;
-            selectedStudentContainer.classList.add('hidden');
-            topicSelectionContainer.classList.add('hidden');
-        }
-
-        function exitFlashcard() {
-            nextStudent();
-        }
-
-        function saveStudentList() {
-            const listName = prompt('Enter a name for this student list:');
-            if (listName && listName.trim() !== '') {
-                const students = studentNamesInput.value.trim().split('\n').filter(
-                    name => name.trim() !== '');
-                if (students.length > 0) {
-                    appData.savedLists[listName] = students;
-
-                    // Prevent duplicate options
-                    let exists = false;
-                    for (let i = 0; i < savedListsSelect.options.length; i++) {
-                        if (savedListsSelect.options[i].value === listName) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    if (!exists) {
-                        const option = document.createElement('option');
-                        option.value = listName;
-                        option.textContent = listName;
-                        savedListsSelect.appendChild(option);
-                    }
-
-                    alert(`List "${listName}" saved successfully!`);
-                } else {
-                    alert('Please enter at least one student name.');
-                }
-            }
-        }
-
-        function loadStudentList() {
-            const selectedList = savedListsSelect.value;
-            if (selectedList && appData.savedLists[selectedList]) {
-                studentNamesInput.value = appData.savedLists[selectedList].join(
-                    '\n');
-                alert(`List "${selectedList}" loaded successfully!`);
-            }
-        }
-
-        // Event Listeners
-        createWheelBtn.addEventListener('click', createWheel);
-        spinWheelBtn.addEventListener('click', spinWheel);
-        saveListBtn.addEventListener('click', saveStudentList);
-        loadListBtn.addEventListener('click', loadStudentList);
-
-        topicButtons.forEach(button => {
-            button.addEventListener('click', () => selectTopic(button.dataset
-                .topic));
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            render(defaultConfig);
         });
 
-        flipCardBtn.addEventListener('click', flipCard);
-        nextCardBtn.addEventListener('click', nextCard);
-        nextStudentBtn.addEventListener('click', nextStudent);
-        exitFlashcardBtn.addEventListener('click', exitFlashcard);
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !mainScreen.classList.contains(
-                    'hidden')) {
-                e.preventDefault();
-                if (!spinWheelBtn.disabled) {
-                    spinWheel();
-                }
-            } else if (e.code === 'ArrowRight' && !flashcardScreen.classList
-                .contains('hidden')) {
-                nextCard();
-            } else if (e.code === 'Escape' && !flashcardScreen.classList
-                .contains('hidden')) {
-                exitFlashcard();
-            } else if (e.code === 'KeyF' && !flashcardScreen.classList.contains(
-                    'hidden')) {
-                flipCard();
-            }
-        });
-
-        // Initialize with sample data in the textarea
-        studentNamesInput.value = appData.savedLists['sample'].join('\n');
-        updateWheel();
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
     </script>
-
-</body>
-
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99071c1ce0a2b2a4',t:'MTc2MDc4MDc5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

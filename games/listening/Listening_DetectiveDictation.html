@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detective Dictation</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+            color: #f5f5dc;
+            min-height: 100%;
+        }
+
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(245, 245, 220, 0.98);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            color: #2c3e50;
+            border: 3px solid #b8860b;
+            position: relative;
+        }
+
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, #b8860b, #daa520, #b8860b);
+            border-radius: 18px;
+            z-index: -1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #2c3e50;
+            border-radius: 12px;
+            color: #f5f5dc;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header::before {
+            content: "🔍";
+            position: absolute;
+            top: -15px;
+            left: 25px;
+            font-size: 2.5em;
+            background: #b8860b;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header::after {
+            content: "📋";
+            position: absolute;
+            top: -15px;
+            right: 25px;
+            font-size: 2.5em;
+            background: #b8860b;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-title {
+            font-size: 2.8em;
+            margin: 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            letter-spacing: 3px;
+            color: #b8860b;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .welcome-message {
+            font-size: 2em;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .instruction-text {
+            font-size: 1.3em;
+            margin-bottom: 35px;
+            color: #5d4037;
+            line-height: 1.7;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .case-container {
+            background: #fff;
+            border: 3px solid #b8860b;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .case-container::before {
+            content: "EVIDENCE";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #b8860b;
+            color: #fff;
+            padding: 5px 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .case-number {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffecb3, #fff3c4);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffc107;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .audio-controls {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border: 3px solid #4caf50;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .audio-controls::before {
+            content: "🎧";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            border-radius: 50%;
+            padding: 8px;
+            font-size: 1.5em;
+        }
+
+        .listen-button {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            font-size: 1.3em;
+            font-family: inherit;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        .listen-button:hover {
+            background: linear-gradient(135deg, #43a047, #4caf50);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .listen-button:active {
+            transform: translateY(-1px);
+        }
+
+        .listen-button:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .audio-status {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .report-template {
+            font-size: 1.4em;
+            line-height: 2.2;
+            margin: 25px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 10px;
+            border-left: 6px solid #2c3e50;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .blank-input {
+            display: inline-block;
+            border: none;
+            border-bottom: 4px solid #2c3e50;
+            background: rgba(184, 134, 11, 0.1);
+            font-family: inherit;
+            font-size: inherit;
+            padding: 8px 12px;
+            margin: 0 8px;
+            min-width: 120px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-bottom-color: #1976d2;
+            background: rgba(25, 118, 210, 0.15);
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+        }
+
+        .blank-input.correct {
+            border-bottom-color: #4caf50;
+            background: rgba(76, 175, 80, 0.15);
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .blank-input.incorrect {
+            border-bottom-color: #f44336;
+            background: rgba(244, 67, 54, 0.15);
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .game-buttons {
+            text-align: center;
+            margin: 35px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #f5f5dc;
+            border: none;
+            padding: 18px 35px;
+            font-size: 1.2em;
+            font-family: inherit;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 0 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(44, 62, 80, 0.4);
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            box-shadow: 0 6px 15px rgba(25, 118, 210, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50, #43a047);
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #43a047, #388e3c);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            box-shadow: 0 6px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #f57c00, #ef6c00);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.5);
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .feedback.success {
+            background: linear-gradient(135deg, #c8e6c9, #dcedc8);
+            color: #1b5e20;
+            border: 3px solid #4caf50;
+        }
+
+        .feedback.error {
+            background: linear-gradient(135deg, #ffcdd2, #ffebee);
+            color: #b71c1c;
+            border: 3px solid #f44336;
+        }
+
+        .attempts-counter {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #5d4037;
+            font-weight: bold;
+            background: rgba(184, 134, 11, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .answers-reveal {
+            background: linear-gradient(135deg, #fff3e0, #fef7e0);
+            border: 3px solid #ff9800;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .answers-reveal h3 {
+            color: #e65100;
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+
+        .answer-item {
+            margin: 12px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            font-weight: bold;
+            border-left: 4px solid #ff9800;
+        }
+
+        @media (max-width: 700px) {
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .game-title {
+                font-size: 2.2em;
+                letter-spacing: 1px;
+            }
+            
+            .btn, .listen-button {
+                display: block;
+                margin: 12px auto;
+                width: 250px;
+            }
+            
+            .blank-input {
+                min-width: 100px;
+                margin: 8px 4px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 10px;
+            }
+
+            .report-template {
+                font-size: 1.2em;
+                line-height: 2;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <main class="game-container">
+   <header class="header">
+    <h1 class="game-title" id="gameTitle">Detective Dictation</h1>
+   </header>
+   <div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-message" id="welcomeMessage">
+     Welcome to Detective Dictation!
+    </div>
+    <div class="instruction-text" id="instructionText">
+     Listen carefully to the case and fill in the missing details.
+    </div><button class="btn btn-primary" onclick="startGame()">Start Investigation</button>
+   </div>
+   <div id="gameScreen" style="display: none;">
+    <div class="case-container">
+     <div class="case-number" id="caseNumber">
+      Case #1
+     </div>
+     <div class="audio-controls"><button class="listen-button" id="listenButton" onclick="playAudio()">🔊 Listen to the Case</button>
+      <div class="audio-status" id="audioStatus"></div>
+     </div>
+     <div class="report-template" id="reportTemplate"></div>
+     <div class="attempts-counter" id="attemptsCounter"></div>
+     <div class="game-buttons"><button class="btn btn-primary" id="solveButton" onclick="checkAnswers()">Solve Case!</button> <button class="btn btn-warning" id="revealButton" onclick="revealAnswers()" style="display: none;">Reveal Answers</button> <button class="btn btn-success" id="nextButton" onclick="nextCase()" style="display: none;">Next Case</button>
+     </div>
+     <div id="feedback" class="feedback" style="display: none;"></div>
+     <div id="answersReveal" class="answers-reveal" style="display: none;"></div>
+    </div>
+   </div>
+  </main>
+  <script>
+        const cases = [
+            {
+                audioText: "Someone stole the cookies at 3 p.m. in the kitchen.",
+                reportTemplate: "Case Report – _____ stole the _____ at _____ in the _____.",
+                answers: ["Someone", "cookies", "3 p.m.", "kitchen"]
+            },
+            {
+                audioText: "The dog chased a cat near the park at noon.",
+                reportTemplate: "Case Report – The _____ chased a _____ near the _____ at _____.",
+                answers: ["dog", "cat", "park", "noon"]
+            },
+            {
+                audioText: "Lily found a lost wallet at the library yesterday.",
+                reportTemplate: "Case Report – _____ found a _____ at the _____ _____.",
+                answers: ["Lily", "lost wallet", "library", "yesterday"]
+            },
+            {
+                audioText: "Tom broke the window at 5 o'clock in the classroom.",
+                reportTemplate: "Case Report – _____ broke the _____ at _____ in the _____.",
+                answers: ["Tom", "window", "5 o'clock", "classroom"]
+            },
+            {
+                audioText: "The children found a treasure map under the old tree.",
+                reportTemplate: "Case Report – The _____ found a _____ under the _____ _____.",
+                answers: ["children", "treasure map", "old", "tree"]
+            },
+            {
+                audioText: "Mrs. Johnson lost her purse at the shopping mall this afternoon.",
+                reportTemplate: "Case Report – _____ lost her _____ at the _____ this _____.",
+                answers: ["Mrs. Johnson", "purse", "shopping mall", "afternoon"]
+            }
+        ];
+
+        let currentCase = null;
+        let previousCaseIndex = -1;
+        let attempts = 0;
+        let caseNumber = 1;
+        let inputs = [];
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+
+        const defaultConfig = {
+            game_title: "Detective Dictation",
+            welcome_message: "Welcome to Detective Dictation!",
+            instruction_text: "Listen carefully to the case and fill in the missing details.",
+            listen_button: "🔊 Listen to the Case",
+            solve_button: "Solve Case!",
+            next_button: "Next Case",
+            reveal_button: "Reveal Answers"
+        };
+
+        function startGame() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            loadRandomCase();
+        }
+
+        function loadRandomCase() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * cases.length);
+            } while (randomIndex === previousCaseIndex && cases.length > 1);
+            
+            previousCaseIndex = randomIndex;
+            currentCase = cases[randomIndex];
+            attempts = 0;
+            
+            document.getElementById('caseNumber').textContent = `Case #${caseNumber}`;
+            document.getElementById('audioStatus').textContent = '';
+            
+            createInputFields();
+            updateUI();
+        }
+
+        function createInputFields() {
+            const template = currentCase.reportTemplate;
+            const reportElement = document.getElementById('reportTemplate');
+            
+            let html = template;
+            inputs = [];
+            let inputIndex = 0;
+            
+            html = html.replace(/_____/g, () => {
+                const inputId = `input-${inputIndex}`;
+                inputs.push(inputId);
+                inputIndex++;
+                return `<input type="text" class="blank-input" id="${inputId}" maxlength="50" placeholder="?">`;
+            });
+            
+            reportElement.innerHTML = html;
+        }
+
+        function playAudio() {
+            if (!currentCase) return;
+
+            // Stop any currently playing speech
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+            }
+
+            const listenButton = document.getElementById('listenButton');
+            const audioStatus = document.getElementById('audioStatus');
+            
+            listenButton.disabled = true;
+            audioStatus.textContent = '🔊 Playing audio clue...';
+
+            currentUtterance = new SpeechSynthesisUtterance(currentCase.audioText);
+            
+            // Configure speech settings
+            currentUtterance.rate = 0.8; // Slightly slower for better comprehension
+            currentUtterance.pitch = 1.0;
+            currentUtterance.volume = 1.0;
+
+            // Try to use a clear English voice
+            const voices = speechSynthesis.getVoices();
+            const englishVoice = voices.find(voice => 
+                voice.lang.startsWith('en') && 
+                (voice.name.includes('Google') || voice.name.includes('Microsoft') || voice.default)
+            );
+            if (englishVoice) {
+                currentUtterance.voice = englishVoice;
+            }
+
+            currentUtterance.onend = function() {
+                listenButton.disabled = false;
+                audioStatus.textContent = '✅ Audio complete. Fill in the blanks!';
+                currentUtterance = null;
+            };
+
+            currentUtterance.onerror = function(event) {
+                listenButton.disabled = false;
+                audioStatus.textContent = '❌ Audio error. Try again or ask your teacher to read the clue.';
+                currentUtterance = null;
+            };
+
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function checkAnswers() {
+            const userAnswers = inputs.map(id => 
+                document.getElementById(id).value.trim()
+            );
+            
+            let allCorrect = true;
+            
+            inputs.forEach((id, index) => {
+                const input = document.getElementById(id);
+                const userAnswer = userAnswers[index].toLowerCase();
+                const correctAnswer = currentCase.answers[index].toLowerCase();
+                
+                input.classList.remove('correct', 'incorrect');
+                
+                if (userAnswer === correctAnswer) {
+                    input.classList.add('correct');
+                } else {
+                    input.classList.add('incorrect');
+                    allCorrect = false;
+                }
+            });
+            
+            attempts++;
+            
+            if (allCorrect) {
+                showFeedback("🎉 Case Solved! Excellent work, Detective!", "success");
+                document.getElementById('solveButton').style.display = 'none';
+                document.getElementById('nextButton').style.display = 'inline-block';
+                
+                // Stop any playing audio
+                if (currentUtterance) {
+                    speechSynthesis.cancel();
+                    currentUtterance = null;
+                }
+            } else {
+                showFeedback("❗ Some clues don't match. Try again!", "error");
+                if (attempts >= 2) {
+                    document.getElementById('revealButton').style.display = 'inline-block';
+                }
+            }
+            
+            updateUI();
+        }
+
+        function revealAnswers() {
+            const answersDiv = document.getElementById('answersReveal');
+            let html = '<h3>🔍 Correct Answers:</h3>';
+            
+            currentCase.answers.forEach((answer, index) => {
+                html += `<div class="answer-item">Blank ${index + 1}: <strong>${answer}</strong></div>`;
+            });
+            
+            answersDiv.innerHTML = html;
+            answersDiv.style.display = 'block';
+            
+            inputs.forEach((id, index) => {
+                const input = document.getElementById(id);
+                input.value = currentCase.answers[index];
+                input.classList.remove('incorrect');
+                input.classList.add('correct');
+            });
+            
+            document.getElementById('solveButton').style.display = 'none';
+            document.getElementById('revealButton').style.display = 'none';
+            document.getElementById('nextButton').style.display = 'inline-block';
+        }
+
+        function nextCase() {
+            caseNumber++;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('answersReveal').style.display = 'none';
+            document.getElementById('solveButton').style.display = 'inline-block';
+            document.getElementById('nextButton').style.display = 'none';
+            document.getElementById('revealButton').style.display = 'none';
+            
+            // Stop any playing audio
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+                currentUtterance = null;
+            }
+            
+            loadRandomCase();
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+            feedback.style.display = 'block';
+        }
+
+        function updateUI() {
+            const config = window.elementSdk?.config || defaultConfig;
+            document.getElementById('attemptsCounter').textContent = 
+                attempts > 0 ? `Attempts: ${attempts}/2` : 'Click "Listen" to hear the clue, then fill in the blanks!';
+            
+            document.getElementById('listenButton').textContent = config.listen_button || defaultConfig.listen_button;
+            document.getElementById('solveButton').textContent = config.solve_button || defaultConfig.solve_button;
+            document.getElementById('nextButton').textContent = config.next_button || defaultConfig.next_button;
+            document.getElementById('revealButton').textContent = config.reveal_button || defaultConfig.reveal_button;
+        }
+
+        async function render(config) {
+            document.getElementById('gameTitle').textContent = config.game_title || defaultConfig.game_title;
+            document.getElementById('welcomeMessage').textContent = config.welcome_message || defaultConfig.welcome_message;
+            document.getElementById('instructionText').textContent = config.instruction_text || defaultConfig.instruction_text;
+            updateUI();
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["game_title", config.game_title || defaultConfig.game_title],
+                ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+                ["instruction_text", config.instruction_text || defaultConfig.instruction_text],
+                ["listen_button", config.listen_button || defaultConfig.listen_button],
+                ["solve_button", config.solve_button || defaultConfig.solve_button],
+                ["next_button", config.next_button || defaultConfig.next_button],
+                ["reveal_button", config.reveal_button || defaultConfig.reveal_button]
+            ]);
+        }
+
+        // Initialize voices when they become available
+        function initializeVoices() {
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.addEventListener('voiceschanged', initializeVoices);
+            }
+        }
+
+        // Initialize the app
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        // Initialize voices
+        initializeVoices();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9906850cf65379c1',t:'MTc2MDc3NDYxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

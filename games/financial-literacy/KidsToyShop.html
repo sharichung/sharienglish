@@ -25,11 +25,6 @@
         /* Start Screen */
         .start-screen {
             text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-top: 50px;
         }
 
         .start-screen h1 {
@@ -55,6 +50,7 @@
         .game-goal h2 {
             color: #FF6B9D;
             font-size: 1.8rem;
+            margin-top: 0;
             margin-bottom: 15px;
         }
 
@@ -73,7 +69,7 @@
             background: linear-gradient(45deg, #FF6B9D, #4ECDC4);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 10px 20px;
             font-size: 1.2rem;
             border-radius: 25px;
             cursor: pointer;
@@ -863,6 +859,8 @@
             resetDailyStats();
             generateNewCustomer();
             updateDisplay();
+            // show the teacher "End Game" button when the player sees the game screen
+    showEndGameBtn(true);
         }
 
         function resetDailyStats() {
@@ -1388,7 +1386,7 @@
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('dailySummary').style.display = 'none';
             document.getElementById('endScreen').style.display = 'block';
-            
+            showEndGameBtn(false);
             document.getElementById('finalMoney').textContent = gameState.money;
             document.getElementById('finalRating').textContent = gameState.storeRating.toFixed(1);
             
@@ -1461,8 +1459,9 @@
                 currentRequest: null
             };
             
-            document.getElementById('endScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'block';
+            showEndGameBtn(false);
+    document.getElementById('endScreen').style.display = 'none';
+    document.getElementById('startScreen').style.display = 'block';
         }
 
         // Initialize display
@@ -1482,8 +1481,15 @@
         endGameBtn.style.cursor = 'pointer';
         endGameBtn.style.fontSize = '0.9rem';
         endGameBtn.style.zIndex = '999';
+        // hide while on the start screen
+        endGameBtn.style.display = 'none';
         endGameBtn.onclick = endGame;
         document.body.appendChild(endGameBtn);
+
+        // helper to toggle visibility
+function showEndGameBtn(show) {
+  endGameBtn.style.display = show ? 'block' : 'none';
+}
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98809f12e30f942a',t:'MTc1OTM3MDU4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
