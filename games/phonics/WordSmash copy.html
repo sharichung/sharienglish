@@ -946,59 +946,32 @@ Or: the, said, one, was" rows="6"></textarea>
             document.getElementById('loading').style.display = show ? 'block' : 'none';
         }
 
-        function throwRock() {
-            if (!gameState.isPlaying || !gameState.currentObstacle) return;
+        function showMessage(message) {
+            // Create a simple toast message
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #FF6B6B;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 10px;
+                z-index: 2000;
+                font-size: 1.1rem;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
 
-            // Mark obstacle as hit (not missed)
-            gameState.currentObstacle.dataset.missed = 'true';
+            // 讀取 obstacle 的動畫時間（單位是秒），轉成毫秒
+            const duration = parseFloat(getComputedStyle(obstacle).animationDuration) * 1000;
 
-            // Create projectile rock
-            const projectile = document.createElement('div');
-            projectile.className = 'projectile';
-            projectile.innerHTML = '🪨';
-
-            // Position at launcher
-            const launcher = document.getElementById('rockLauncher');
-            const launcherRect = launcher.getBoundingClientRect();
-            const gameArea = document.querySelector('.game-area');
-            const gameRect = gameArea.getBoundingClientRect();
-
-            projectile.style.left = (launcherRect.left - gameRect.left + 30) + 'px';
-            projectile.style.bottom = '180px';
-
-            gameArea.appendChild(projectile);
-
-            // Start flying animation
-            projectile.classList.add('flying');
-
-            // Score points for successful hit
-            gameState.score += 10;
-            gameState.wordsHit++;
-            updateUI();
-
-            // Create celebration effect at obstacle position
-            createCelebrationEffect(gameState.currentObstacle);
-
-            // Remove the obstacle
-            if (gameState.currentObstacle.parentNode) {
-                gameState.currentObstacle.remove();
-            }
-            gameState.currentObstacle = null;
-
-            // --- FIX: spawn the next obstacle ---
-            // small delay so animation/cleanup doesn't clash with the new obstacle
-            if (gameState.isPlaying) {
-                setTimeout(() => {
-                    spawnObstacle();
-                }, 250);
-            }
-
-            // Remove projectile after animation
             setTimeout(() => {
-                if (projectile.parentNode) {
-                    projectile.remove();
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
                 }
-            }, 1000);
+            }, duration);
 
         }
 
@@ -1156,16 +1129,7 @@ Or: the, said, one, was" rows="6"></textarea>
             if (gameState.currentObstacle.parentNode) {
                 gameState.currentObstacle.remove();
             }
-            // clear current obstacle reference immediately
             gameState.currentObstacle = null;
-
-            // spawn the next obstacle quickly to tighten rhythm
-            if (gameState.isPlaying) {
-                // small delay to avoid DOM/animation conflicts (adjust ms to taste)
-                setTimeout(() => {
-                    spawnObstacle();
-                }, 100);
-            }
 
             // Remove projectile after animation
             setTimeout(() => {
@@ -1463,7 +1427,8 @@ Or: the, said, one, was" rows="6"></textarea>
                     difficulty: "basic",
                     // Always give each record a unique ID so deleteWord() can find it
                     __backendId: (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") ?
-                        crypto.randomUUID() : "local-" + Date.now() + "-" + Math.floor(Math.random() * 1000)
+                        crypto.randomUUID() :
+                        "local-" + Date.now() + "-" + Math.floor(Math.random() * 1000)
                 };
 
                 currentWords.push(localRecord);
