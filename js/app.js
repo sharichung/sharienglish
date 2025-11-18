@@ -746,7 +746,7 @@ const groups = [{
     ],
     "spellingPractice": {
       "words": [
-        "zip", "zap", "zig",
+        "zip", "zap", "zig", "zag",
         "win", "web", "wig",
         "ring", "sing", "long", "song",
         "wing", "king", "bang", "hung"
