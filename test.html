@@ -1,0 +1,450 @@
+html>
+<html lang="zh-HK" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purplewood UX Case Study Carousel</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Noto Sans TC', 'Space Grotesk', sans-serif; }
+    .slide { scroll-snap-align: center; }
+    .carousel-container { scroll-snap-type: x mandatory; }
+    .accent-text { color: #1a4d4d; }
+    .accent-bg { background-color: #1a4d4d; }
+    .accent-border { border-color: #1a4d4d; }
+  </style>
+</head>
+<body class="h-full bg-gray-100 overflow-auto">
+  <div class="h-full flex flex-col items-center justify-center p-4">
+    <!-- Carousel Container -->
+    <div class="relative w-full max-w-md">
+      <!-- Slides Container -->
+      <div id="carousel" class="carousel-container flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none; -ms-overflow-style: none;">
+        
+        <!-- Slide 1: Hook / Title -->
+        <div class="slide flex-shrink-0 w-full bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center min-h-[520px]" style="aspect-ratio: 4/5;">
+          <div class="space-y-6">
+            <p id="case-study-label" class="text-sm tracking-wider text-gray-500 uppercase">Case Study: Purplewood 日系女裝店</p>
+            <h1 id="main-headline" class="text-3xl font-black leading-tight text-gray-900">Purplewood 犯咗<br/>3 個 UX 錯誤</h1>
+            <h3 class="text-xl font-medium accent-text">你嘅網店好大機會都中咗</h3>
+            <div class="pt-8">
+              <div class="w-16 h-1 accent-bg rounded-full"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 2: UX Error 1 -->
+        <div class="slide flex-shrink-0 w-full bg-white rounded-2xl shadow-lg p-6 flex flex-col min-h-[520px]" style="aspect-ratio: 4/5;">
+          <div class="space-y-4 flex-1 flex flex-col">
+            <h1 class="text-xl font-bold text-gray-900 leading-snug">錯誤 1：交貨期要入到商品頁先見到</h1>
+            <p class="text-sm text-gray-600 leading-relaxed">客人喺分類頁見到商品，唔知要等幾耐先到貨。結果？加咗購物車，結帳先發現，直接走人。</p>
+            
+            <!-- Before / After -->
+            <div class="flex-1 grid grid-cols-2 gap-3 pt-2">
+              <!-- Before -->
+              <div class="space-y-2">
+                <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">Before</span>
+                <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 h-full">
+                  <div class="bg-gray-200 rounded-lg h-24 mb-2"></div>
+                  <div class="space-y-1">
+                    <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                  <div class="mt-3 text-red-400 text-xs">❌ 無交貨期資訊</div>
+                </div>
+              </div>
+              <!-- After -->
+              <div class="space-y-2">
+                <span class="text-xs font-medium accent-text uppercase tracking-wide">After</span>
+                <div class="bg-gray-50 rounded-xl p-3 border-2 accent-border h-full">
+                  <div class="relative">
+                    <div class="bg-gray-200 rounded-lg h-24 mb-2"></div>
+                    <span class="absolute top-1 left-1 text-[10px] font-medium accent-bg text-white px-2 py-0.5 rounded">預訂 4–6 週</span>
+                  </div>
+                  <div class="space-y-1">
+                    <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                  <div class="mt-3 accent-text text-xs">✓ 清晰標示</div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="text-xs text-gray-500 text-center pt-2 border-t border-gray-100">透明度 = 信任度。信任度 = 訂單。</p>
+          </div>
+        </div>
+
+        <!-- Slide 3: UX Error 2 -->
+        <div class="slide flex-shrink-0 w-full bg-white rounded-2xl shadow-lg p-6 flex flex-col min-h-[520px]" style="aspect-ratio: 4/5;">
+          <div class="space-y-4 flex-1 flex flex-col">
+            <h1 class="text-xl font-bold text-gray-900 leading-snug">錯誤 2：客人唔知點問 size / 布料 / 到貨時間</h1>
+            <p class="text-sm text-gray-600 leading-relaxed">有問題但搵唔到聯絡方式？客人唔會花時間搵，直接關 tab 走人。</p>
+            
+            <!-- Before / After -->
+            <div class="flex-1 grid grid-cols-2 gap-3 pt-2">
+              <!-- Before -->
+              <div class="space-y-2">
+                <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">Before</span>
+                <div class="bg-gray-900 rounded-2xl p-2 h-full flex flex-col">
+                  <div class="bg-gray-700 rounded-lg h-3 w-1/2 mx-auto mt-1 mb-2"></div>
+                  <div class="flex-1 bg-gray-800 rounded-xl p-2 space-y-2">
+                    <div class="bg-gray-600 rounded h-16"></div>
+                    <div class="h-2 bg-gray-600 rounded w-3/4"></div>
+                    <div class="h-2 bg-gray-700 rounded w-1/2"></div>
+                    <div class="h-6 bg-gray-600 rounded mt-2"></div>
+                  </div>
+                  <div class="text-red-400 text-[10px] text-center mt-2">❌ 冇支援按鈕</div>
+                </div>
+              </div>
+              <!-- After -->
+              <div class="space-y-2">
+                <span class="text-xs font-medium accent-text uppercase tracking-wide">After</span>
+                <div class="bg-gray-900 rounded-2xl p-2 h-full flex flex-col relative">
+                  <div class="bg-gray-700 rounded-lg h-3 w-1/2 mx-auto mt-1 mb-2"></div>
+                  <div class="flex-1 bg-gray-800 rounded-xl p-2 space-y-2">
+                    <div class="bg-gray-600 rounded h-16"></div>
+                    <div class="h-2 bg-gray-600 rounded w-3/4"></div>
+                    <div class="h-2 bg-gray-700 rounded w-1/2"></div>
+                    <div class="h-6 bg-gray-600 rounded mt-2"></div>
+                  </div>
+                  <!-- WhatsApp Button -->
+                  <div class="absolute bottom-8 right-3 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                  </div>
+                  <div class="accent-text text-[10px] text-center mt-2">✓ WhatsApp 按鈕</div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="text-xs text-gray-500 text-center pt-2 border-t border-gray-100">一個按鈕，救返好多本來會走嘅客。</p>
+          </div>
+        </div>
+
+        <!-- Slide 4: UX Error 3 -->
+        <div class="slide flex-shrink-0 w-full bg-white rounded-2xl shadow-lg p-6 flex flex-col min-h-[520px]" style="aspect-ratio: 4/5;">
+          <div class="space-y-4 flex-1 flex flex-col">
+            <h1 class="text-xl font-bold text-gray-900 leading-snug">錯誤 3：手機版無 Sticky Add-to-Cart</h1>
+            <p class="text-sm text-gray-600 leading-relaxed">客人碌落去睇詳情、睇評論，想買嗰陣 CTA 已經唔見咗。要碌返上去？大部分人會放棄。</p>
+            
+            <!-- Before / After -->
+            <div class="flex-1 grid grid-cols-2 gap-3 pt-2">
+              <!-- Before -->
+              <div class="space-y-2">
+                <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">Before</span>
+                <div class="bg-gray-900 rounded-2xl p-2 h-full flex flex-col">
+                  <div class="bg-gray-700 rounded-lg h-3 w-1/2 mx-auto mt-1 mb-2"></div>
+                  <div class="flex-1 bg-gray-800 rounded-xl p-2 space-y-2 overflow-hidden">
+                    <div class="bg-gray-600 rounded h-12"></div>
+                    <div class="h-5 bg-gray-500 rounded w-full text-[8px] text-gray-300 flex items-center justify-center">加入購物車</div>
+                    <div class="h-2 bg-gray-600 rounded w-3/4"></div>
+                    <div class="h-2 bg-gray-700 rounded w-full"></div>
+                    <div class="h-2 bg-gray-700 rounded w-5/6"></div>
+                    <div class="h-2 bg-gray-600 rounded w-2/3"></div>
+                    <div class="text-[8px] text-gray-400 mt-1">↓ 碌落去...</div>
+                  </div>
+                  <div class="text-red-400 text-[10px] text-center mt-2">❌ CTA 消失咗</div>
+                </div>
+              </div>
+              <!-- After -->
+              <div class="space-y-2">
+                <span class="text-xs font-medium accent-text uppercase tracking-wide">After</span>
+                <div class="bg-gray-900 rounded-2xl p-2 h-full flex flex-col">
+                  <div class="bg-gray-700 rounded-lg h-3 w-1/2 mx-auto mt-1 mb-2"></div>
+                  <div class="flex-1 bg-gray-800 rounded-xl p-2 space-y-2 overflow-hidden">
+                    <div class="bg-gray-600 rounded h-12"></div>
+                    <div class="h-2 bg-gray-600 rounded w-3/4"></div>
+                    <div class="h-2 bg-gray-700 rounded w-full"></div>
+                    <div class="h-2 bg-gray-700 rounded w-5/6"></div>
+                    <div class="h-2 bg-gray-600 rounded w-2/3"></div>
+                    <div class="h-2 bg-gray-700 rounded w-4/5"></div>
+                  </div>
+                  <!-- Sticky CTA -->
+                  <div class="accent-bg rounded-lg h-7 mx-1 mb-1 flex items-center justify-center">
+                    <span class="text-white text-[10px] font-medium">🛒 加入購物車 – $380</span>
+                  </div>
+                  <div class="accent-text text-[10px] text-center">✓ Sticky CTA</div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="text-xs text-gray-500 text-center pt-2 border-t border-gray-100">CTA 永遠見到 → 加購率提升 10–20%。</p>
+          </div>
+        </div>
+
+        <!-- Slide 5: Toolkit Tease -->
+        <div class="slide flex-shrink-0 w-full bg-white rounded-2xl shadow-lg p-6 flex flex-col min-h-[520px]" style="aspect-ratio: 4/5;">
+          <div class="space-y-5 flex-1 flex flex-col">
+            <h1 class="text-xl font-bold text-gray-900 leading-snug">以上只係 9 個 UX Snippet Modules 入面嘅 3 個</h1>
+            
+            <div class="flex-1 space-y-3">
+              <!-- Module List -->
+              <div class="space-y-2">
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div class="w-8 h-8 accent-bg rounded-lg flex items-center justify-center text-white text-sm">🏷️</div>
+                  <div>
+                    <div class="text-sm font-medium text-gray-800">信任徽章 Trust Badge</div>
+                    <div class="text-xs text-gray-500">提升結帳信心</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div class="w-8 h-8 accent-bg rounded-lg flex items-center justify-center text-white text-sm">🔍</div>
+                  <div>
+                    <div class="text-sm font-medium text-gray-800">智能篩選 Smart Filter</div>
+                    <div class="text-xs text-gray-500">縮短搵貨時間</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div class="w-8 h-8 accent-bg rounded-lg flex items-center justify-center text-white text-sm">⭐</div>
+                  <div>
+                    <div class="text-sm font-medium text-gray-800">評論輪播 Review Carousel</div>
+                    <div class="text-xs text-gray-500">Social Proof 加持</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div class="w-8 h-8 accent-bg rounded-lg flex items-center justify-center text-white text-sm">📸</div>
+                  <div>
+                    <div class="text-sm font-medium text-gray-800">IG 實穿 Grid</div>
+                    <div class="text-xs text-gray-500">真人著用增加信任</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div class="w-8 h-8 accent-bg rounded-lg flex items-center justify-center text-white text-sm">❓</div>
+                  <div>
+                    <div class="text-sm font-medium text-gray-800">FAQ Accordion</div>
+                    <div class="text-xs text-gray-500">減少客服負擔</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="text-xs text-gray-500 text-center pt-2 border-t border-gray-100">你嘅網站唔係冇人買，只係 UX 阻住你賺錢。</p>
+          </div>
+        </div>
+
+        <!-- Slide 6: CTA -->
+        <div class="slide flex-shrink-0 w-full bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center min-h-[520px]" style="aspect-ratio: 4/5;">
+          <div class="space-y-6 text-center">
+            <h1 class="text-2xl font-black text-gray-900 leading-tight">想知你嘅網站<br/>中咗幾多個？</h1>
+            
+            <div class="space-y-4 text-left bg-gray-50 rounded-2xl p-5">
+              <p class="text-sm text-gray-700 leading-relaxed">
+                <span class="font-bold accent-text">DM 我：「SHOPIFY」</span><br/>
+                我會幫你做免費 UX 診斷，<br/>
+                仲會建議邊幾個 snippet modules<br/>
+                最適合你嘅網店。
+              </p>
+            </div>
+            
+            <button id="cta-button" class="w-full accent-bg text-white font-bold py-4 px-6 rounded-xl text-lg shadow-lg hover:opacity-90 transition-opacity">
+              DM『SHOPIFY』
+            </button>
+            
+            <p class="text-xs text-gray-500 pt-4">由『有流量但冇單』變成<br/>『會自動賣嘢嘅網站』。</p>
+            
+            <div class="flex justify-center gap-2 pt-2">
+              <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+              <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+              <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+              <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+              <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+              <div class="w-2 h-2 rounded-full accent-bg"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Navigation Dots -->
+      <div class="flex justify-center gap-2 mt-4">
+        <button class="nav-dot w-2 h-2 rounded-full accent-bg opacity-100" data-slide="0"></button>
+        <button class="nav-dot w-2 h-2 rounded-full bg-gray-300" data-slide="1"></button>
+        <button class="nav-dot w-2 h-2 rounded-full bg-gray-300" data-slide="2"></button>
+        <button class="nav-dot w-2 h-2 rounded-full bg-gray-300" data-slide="3"></button>
+        <button class="nav-dot w-2 h-2 rounded-full bg-gray-300" data-slide="4"></button>
+        <button class="nav-dot w-2 h-2 rounded-full bg-gray-300" data-slide="5"></button>
+      </div>
+
+      <!-- Swipe Hint -->
+      <p class="text-center text-xs text-gray-400 mt-3">← 左右滑動瀏覽 →</p>
+    </div>
+  </div>
+
+  <script>
+    const defaultConfig = {
+      case_study_label: "Case Study: Purplewood 日系女裝店",
+      main_headline: "Purplewood 犯咗 3 個 UX 錯誤",
+      cta_text: "DM『SHOPIFY』",
+      primary_color: "#1a4d4d",
+      background_color: "#ffffff",
+      text_color: "#111827",
+      secondary_surface: "#f9fafb",
+      accent_light: "#f0fdfa"
+    };
+
+    const carousel = document.getElementById('carousel');
+    const navDots = document.querySelectorAll('.nav-dot');
+    let currentSlide = 0;
+
+    // Update active dot
+    function updateDots(index) {
+      navDots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.remove('bg-gray-300');
+          dot.classList.add('accent-bg', 'opacity-100');
+        } else {
+          dot.classList.remove('accent-bg', 'opacity-100');
+          dot.classList.add('bg-gray-300');
+        }
+      });
+    }
+
+    // Navigate to slide
+    function goToSlide(index) {
+      const slides = carousel.querySelectorAll('.slide');
+      if (index >= 0 && index < slides.length) {
+        slides[index].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        currentSlide = index;
+        updateDots(index);
+      }
+    }
+
+    // Click navigation
+    navDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const slideIndex = parseInt(dot.dataset.slide);
+        goToSlide(slideIndex);
+      });
+    });
+
+    // Scroll detection
+    carousel.addEventListener('scroll', () => {
+      const slides = carousel.querySelectorAll('.slide');
+      const scrollLeft = carousel.scrollLeft;
+      const slideWidth = slides[0].offsetWidth + 16;
+      const newIndex = Math.round(scrollLeft / slideWidth);
+      if (newIndex !== currentSlide && newIndex >= 0 && newIndex < slides.length) {
+        currentSlide = newIndex;
+        updateDots(currentSlide);
+      }
+    });
+
+    // Element SDK integration
+    async function onConfigChange(config) {
+      const caseStudyLabel = document.getElementById('case-study-label');
+      const mainHeadline = document.getElementById('main-headline');
+      const ctaButton = document.getElementById('cta-button');
+
+      if (caseStudyLabel) {
+        caseStudyLabel.textContent = config.case_study_label || defaultConfig.case_study_label;
+      }
+      if (mainHeadline) {
+        const headline = config.main_headline || defaultConfig.main_headline;
+        mainHeadline.innerHTML = headline.replace(/(\d+)/, '<br/>$1');
+      }
+      if (ctaButton) {
+        ctaButton.textContent = config.cta_text || defaultConfig.cta_text;
+      }
+
+      // Apply colors
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const secondarySurface = config.secondary_surface || defaultConfig.secondary_surface;
+
+      document.documentElement.style.setProperty('--primary-color', primaryColor);
+      
+      // Update accent elements
+      document.querySelectorAll('.accent-bg').forEach(el => {
+        el.style.backgroundColor = primaryColor;
+      });
+      document.querySelectorAll('.accent-text').forEach(el => {
+        el.style.color = primaryColor;
+      });
+      document.querySelectorAll('.accent-border').forEach(el => {
+        el.style.borderColor = primaryColor;
+      });
+      
+      // Update slides background
+      document.querySelectorAll('.slide').forEach(el => {
+        el.style.backgroundColor = bgColor;
+      });
+      
+      // Update text colors
+      document.querySelectorAll('h1').forEach(el => {
+        el.style.color = textColor;
+      });
+
+      // Update secondary surfaces
+      document.querySelectorAll('.bg-gray-50').forEach(el => {
+        el.style.backgroundColor = secondarySurface;
+      });
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              config.background_color = value;
+              window.elementSdk.setConfig({ background_color: value });
+            }
+          },
+          {
+            get: () => config.secondary_surface || defaultConfig.secondary_surface,
+            set: (value) => {
+              config.secondary_surface = value;
+              window.elementSdk.setConfig({ secondary_surface: value });
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => config.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              config.primary_color = value;
+              window.elementSdk.setConfig({ primary_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["case_study_label", config.case_study_label || defaultConfig.case_study_label],
+        ["main_headline", config.main_headline || defaultConfig.main_headline],
+        ["cta_text", config.cta_text || defaultConfig.cta_text]
+      ]);
+    }
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+  </script>
+</body>
+</html>

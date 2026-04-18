@@ -830,10 +830,10 @@ const groups = [{
     ],
     "spellingPractice": {
       "words": [
-        "van", "vet", "vase", "vote",
-        "moon", "soon", "boot", "food",
+        "van", "vet",
+        "moon", "soon", "boot", "food", "good", "wood",
         "book", "look", "cook", "foot",
-        "good", "wood", "hook", "wool"
+        "hook"
       ]
     },
     "nextGroupId": 11

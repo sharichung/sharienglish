@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tense Practice</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4DA3FF;
+      --secondary-a: #FFD85C;
+      --secondary-b: #A88CFF;
+      --secondary-c: #7EDFB2;
+      --neutral-900: #2A2A2A;
+      --neutral-100: #E9ECF2;
+      --neutral-300: #B8C0CC;
+      --neutral-0: #FFFFFF;
+
+      --c-primary: var(--primary);
+      --c-secondary: var(--secondary-c);
+      --c-accent: var(--secondary-a);
+      --c-violet: var(--secondary-b);
+      --c-danger: var(--secondary-a);
+      --n-bg: var(--neutral-100);
+      --n-surface: #fffffff2;
+      --n-text: var(--neutral-900);
+      --n-muted: #5f6b7a;
+
+      --status-correct-bg: #eaf9f1;
+      --status-correct-border: var(--secondary-c);
+      --status-correct-text: #21684a;
+      --status-wrong-bg: #fff8df;
+      --status-wrong-border: var(--secondary-a);
+      --status-wrong-text: #7a5a00;
+
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-3: 16px;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --radius-pill: 999px;
+      --shadow-card: 0 10px 24px -16px rgba(42, 42, 42, 0.25);
+      --shadow-soft: 0 8px 16px -12px rgba(42, 42, 42, 0.22);
+    }
+
+    * { font-family: 'Nunito', sans-serif; }
+    h1, h2, h3, .kid-heading { font-family: 'Baloo 2', cursive; letter-spacing: 0.3px; }
+    html, body { font-size: 18px; }
+
+    .game-shell { background: linear-gradient(160deg, #f4f8ff 0%, #f1efff 55%, #eefaf5 100%); }
+    .bg-decor { position: absolute; inset: 0; pointer-events: none; opacity: 0.7; z-index: 0; }
+
+    .ui-icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+      filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.65));
+      flex: 0 0 auto;
+    }
+    .ui-icon-lg { width: 22px; height: 22px; }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-1);
+      background: var(--n-surface);
+      border: 2px solid var(--neutral-0);
+      border-radius: var(--radius-md);
+      padding: 6px 44px 6px 12px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-1);
+      min-height: 48px;
+      position: relative;
+      z-index: 2;
+    }
+    .top-left { display: flex; align-items: baseline; gap: var(--space-1); min-width: 0; flex-shrink: 0; }
+    .top-bar-title { font-size: 1.2rem; color: var(--n-text); font-weight: 800; line-height: 1; white-space: nowrap; }
+    .top-bar-subtitle { font-size: 0.88rem; color: var(--n-muted); font-weight: 700; line-height: 1.2; white-space: nowrap; }
+
+    .header-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, max-content));
+      gap: var(--space-1);
+      align-items: center;
+      justify-content: end;
+      margin-right: 6px;
+      min-width: 0;
+    }
+    .header-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #fffffff2;
+      border: 2px solid var(--neutral-0);
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      min-height: 30px;
+      box-shadow: var(--shadow-soft);
+      white-space: nowrap;
+    }
+    .header-chip .icon { color: #3656b6; display: grid; place-items: center; }
+    .header-chip .label { font-size: 0.78rem; font-weight: 800; color: var(--n-muted); line-height: 1.2; }
+    .header-chip .value { font-size: 0.95rem; font-weight: 900; color: var(--n-text); line-height: 1; }
+
+    .keyword { background: linear-gradient(120deg, #fff3c4 0%, var(--secondary-a) 100%); padding: 4px 10px; border-radius: var(--radius-sm); font-weight: 800; font-size: 1.05em; color: #604500; }
+    .blank { border-bottom: 4px dashed var(--primary); min-width: 124px; display: inline-block; text-align: center; font-weight: 800; color: #2b5f99; padding: 6px 0; font-size: 1.05em; background: #f3f8ff; border-radius: 10px; }
+    .correct-answer { color: #21684a; font-weight: 900; font-size: 1.15em; }
+    .wrong-answer { color: #7a5a00; font-weight: 900; }
+
+    .cloud-card { background: var(--n-surface); border: 2px solid var(--neutral-0); box-shadow: var(--shadow-card); backdrop-filter: blur(4px); }
+    .progress-track { background: #fffffff0; border: 2px solid #d6e4f6; box-shadow: inset 0 2px 10px rgba(42, 42, 42, 0.08); }
+    .progress-stars { display: flex; justify-content: center; gap: 6px; margin-top: 1rem; }
+    .progress-star { width: 42px; height: 42px; border-radius: 999px; display: grid; place-items: center; background: #edf1f7; color: #6f7f95; transition: all 0.3s ease; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.12); }
+    .progress-star.filled { background: linear-gradient(140deg, #fff3c4, var(--secondary-a)); color: #845a00; transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 14px -10px rgba(132, 90, 0, 0.5); }
+    
+    .section-tab {
+      transition: all 0.2s ease;
+      font-size: 0.86em;
+      font-weight: 800;
+      border: 1.5px solid #ffffff;
+      border-radius: var(--radius-pill);
+      min-height: 42px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.1px;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .section-tab .ui-icon { width: 16px; height: 16px; }
+    .section-tab:hover { filter: saturate(1.06) brightness(1.01); }
+    .section-tab:active { filter: saturate(0.98); }
+    .section-tab.active {
+      box-shadow: 0 7px 14px -10px rgba(42, 42, 42, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.65);
+      border-color: rgba(255, 255, 255, 0.9);
+    }
+    .tab-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(140deg, #f8fbff 0%, #f2f7ff 100%);
+      border: 2px solid #ffffff;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      padding: 8px 10px;
+    }
+    .tab-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-cluster {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 2px solid var(--neutral-0);
+      border-radius: var(--radius-pill);
+      padding: 5px 8px;
+      box-shadow: var(--shadow-soft);
+    }
+    .progress-caption {
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: var(--n-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      padding: 0 2px;
+    }
+    .progress-cluster .progress-stars { margin-top: 0; gap: 4px; }
+    .progress-cluster .progress-star { width: 30px; height: 30px; }
+    .tab-keyword { background: linear-gradient(135deg, #cfe8ff, #8fc7ff); color: #1e4f86; }
+    .tab-fill { background: linear-gradient(135deg, #d4f6e5, #9ce6c4); color: #1f5a3f; }
+    .tab-mix { background: linear-gradient(135deg, #e4dcff, #bca7ff); color: #443283; }
+
+    input { font-size: 1.1em !important; }
+    .answer-btn {
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      color: #23356d;
+      min-height: 56px;
+      min-width: 170px;
+      padding: 12px 18px;
+      border: 2px solid var(--neutral-0);
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+    .answer-btn:hover { filter: brightness(1.02) saturate(1.03); }
+    .answer-btn:active { transform: translateY(0) scale(0.99); }
+    .answer-primary { background: linear-gradient(135deg, #c8e5ff, var(--c-primary)); }
+    .answer-accent { background: linear-gradient(135deg, #ffeeb3, var(--c-accent)); }
+    .answer-violet { background: linear-gradient(135deg, #ddd2ff, var(--c-violet)); }
+    .answer-success { background: linear-gradient(135deg, #cff5e3, var(--c-secondary)); }
+    .answer-danger { background: linear-gradient(135deg, #ddd2ff, var(--c-violet)); }
+
+    .pill-btn {
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--neutral-0);
+      box-shadow: var(--shadow-soft);
+      min-height: 48px;
+      padding: 10px 20px;
+      font-weight: 800;
+      color: #23356d;
+      transition: transform 0.2s ease;
+    }
+    .pill-btn:hover { filter: brightness(1.02) saturate(1.03); }
+
+    .feedback-card { border: 2px solid transparent; box-shadow: var(--shadow-soft); }
+    .feedback-good { background: linear-gradient(140deg, #ecfdf5, var(--status-correct-bg)); border-color: var(--status-correct-border); color: var(--status-correct-text); }
+    .feedback-bad { background: linear-gradient(140deg, #fffef3, var(--status-wrong-bg)); border-color: var(--status-wrong-border); color: var(--status-wrong-text); }
+
+    .streak-pop { animation: streakPop 0.45s ease; }
+    @keyframes streakPop { 0% { transform: scale(0.9); } 45% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    .bounce { animation: bounce 0.5s ease; }
+    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+    .shake { animation: shake 0.5s ease; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .spark { position: fixed; width: 10px; height: 10px; border-radius: 999px; opacity: 0.9; animation: sparkFloat 900ms ease-out forwards; z-index: 60; pointer-events: none; }
+    @keyframes sparkFloat { 0% { transform: translate(0, 0) scale(1); opacity: 0.95; } 100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; } }
+
+    .mute-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--neutral-0);
+      background: linear-gradient(145deg, var(--c-primary), #2f82de);
+      color: #ffffff;
+      font-size: 14px;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-soft);
+      transition: background-color 0.2s ease, opacity 0.2s ease;
+    }
+    .mute-icon:hover { background: linear-gradient(145deg, #62b1ff, #428fe8); filter: brightness(1.03); }
+
+    .answer-btn:focus-visible,
+    .pill-btn:focus-visible,
+    .section-tab:focus-visible,
+    .mute-icon:focus-visible,
+    .mobile-hints summary:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+    .answer-btn:disabled,
+    .pill-btn:disabled,
+    .section-tab:disabled,
+    .mute-icon:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.25);
+      transform: none;
+    }
+
+    #app-container {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    .content-shell {
+      width: 100%;
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 0.5rem;
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .compact-main {
+      display: grid;
+      gap: var(--space-2);
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      min-height: 0;
+      grid-template-rows: auto auto auto minmax(0, 1fr);
+    }
+    .play-layout { display: grid; gap: var(--space-2); align-items: stretch; height: 100%; }
+    .section-stage { min-height: 0; display: flex; flex-direction: column; flex: 1; }
+    #section1:not(.hidden), #section2:not(.hidden), #section3:not(.hidden) { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+
+    .hints-panel { background: var(--n-surface); border: 2px solid var(--neutral-0); border-radius: var(--radius-md); padding: var(--space-2); box-shadow: var(--shadow-card); }
+    .hints-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-1); font-size: 0.78rem; }
+    .hint-card { border-radius: var(--radius-sm); padding: var(--space-1); }
+    .hints-grid .hint-card p { line-height: 1.35; }
+    .hints-grid .hint-card p.font-bold { font-size: 0.92rem; }
+    .hints-grid .hint-card p:not(.font-bold) { font-size: 0.86rem; }
+    .hints-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--neutral-0);
+      background: #ffffff;
+      color: var(--n-text);
+      font-weight: 800;
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .hints-trigger:hover { box-shadow: 0 10px 18px -12px rgba(42, 42, 42, 0.35); filter: brightness(1.02); }
+    .hints-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 42, 42, 0.45);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 90;
+    }
+    .hints-modal-card {
+      width: min(620px, 100%);
+      max-height: 80vh;
+      overflow: auto;
+      background: var(--n-surface);
+      border: 2px solid var(--neutral-0);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 14px;
+    }
+    .hints-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .hints-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid var(--neutral-0);
+      background: #ffffff;
+      color: var(--n-text);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .question-card { min-height: 220px; height: 100%; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .sentence-box { font-size: 1.6rem; padding-top: 16px; padding-bottom: 16px; margin-bottom: 10px; }
+    .section-title { margin-bottom: 6px; }
+    .section-desc { margin-bottom: 8px; font-size: 1rem; line-height: 1.35; }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --n-bg: #243046;
+        --n-surface: #2f3b58e8;
+        --n-text: #f0f4ff;
+        --n-muted: #ced8eb;
+        --shadow-card: 0 12px 26px -16px rgba(2, 6, 23, 0.85);
+        --shadow-soft: 0 10px 18px -14px rgba(2, 6, 23, 0.75);
+      }
+      .game-shell { background: linear-gradient(160deg, #3a4670 0%, #443f77 55%, #315748 100%); }
+      .hint-card.bg-blue-50 { background: #345395; }
+      .hint-card.bg-amber-50 { background: #8a6b1b; }
+      .hint-card.bg-purple-50 { background: #5a4aa1; }
+      .hint-card p { color: #e2e8f0 !important; }
+      #s1-sentence, #s2-sentence, #s3-sentence { color: #e2e8f0; }
+      .top-bar-title, .header-chip .value { color: #e2e8f0; }
+    }
+
+    @media (max-width: 768px) {
+      html, body { font-size: 17px; }
+      .answer-btn { min-width: 100%; }
+      .top-bar { padding: 6px 40px 6px 10px; display: grid; grid-template-columns: 1fr; gap: 4px; }
+      .top-left { gap: 6px; }
+      .top-bar-title { font-size: 1.05rem; }
+      .top-bar-subtitle { display: none; }
+      .header-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; margin-right: 0; }
+      .header-chip { justify-content: center; gap: 4px; padding: 2px 6px; }
+      .header-chip .label { display: none; }
+      .sentence-box { font-size: 1.35rem; }
+      .section-tab { min-height: 40px; }
+      .tab-row { grid-template-columns: 1fr; gap: 8px; }
+      .tab-group { justify-content: center; }
+      .progress-cluster { justify-content: center; width: 100%; }
+      .hints-trigger { justify-self: center; }
+    }
+    @media (min-width: 1024px) {
+      .play-layout { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+  <style>html, body { height: 100%; } body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div id="app-container" class="h-full overflow-auto relative game-shell" style="background: var(--n-bg);">
+  <div class="w-full max-w-6xl mx-auto px-2 py-2 relative content-shell">
+    <!-- Header -->
+    <svg class="bg-decor" viewBox="0 0 1200 820" preserveAspectRatio="none" aria-hidden="true">
+     <path d="M70 120 C190 20, 350 30, 420 130 C500 240, 430 320, 300 330 C170 340, 10 250, 70 120 Z" fill="#bfdbfe"></path>
+     <path d="M920 60 C1040 -20, 1160 40, 1140 170 C1110 280, 980 300, 860 240 C760 190, 810 120, 920 60 Z" fill="#d9f99d"></path>
+     <path d="M980 640 C1100 580, 1190 650, 1170 760 C1140 840, 1030 860, 930 820 C860 790, 880 690, 980 640 Z" fill="#fecdd3"></path>
+    </svg>
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;">
+     <defs>
+      <symbol id="svg-part-keyword" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="M7 9h10M7 13h6"></path></symbol>
+      <symbol id="svg-part-fill" viewBox="0 0 24 24"><path d="M5 18h14"></path><path d="M7 16l8-8 2 2-8 8H7z"></path><path d="M14 7l2 2"></path></symbol>
+      <symbol id="svg-part-mix" viewBox="0 0 24 24"><rect x="3.5" y="5" width="7" height="7" rx="2"></rect><rect x="13.5" y="12" width="7" height="7" rx="2"></rect><path d="M10.5 8.5h5"></path><path d="M15.5 8.5l-1.6-1.6"></path><path d="M15.5 8.5l-1.6 1.6"></path><path d="M13.5 15.5h-5"></path><path d="M8.5 15.5l1.6-1.6"></path><path d="M8.5 15.5l1.6 1.6"></path></symbol>
+      <symbol id="svg-hints" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.1.8-1.1 1.8"></path><circle cx="12" cy="16.7" r=".8" fill="currentColor" stroke="none"></circle></symbol>
+      <symbol id="svg-sound-on" viewBox="0 0 24 24"><path d="M4 14V10h4l5-4v12l-5-4H4z"></path><path d="M17 9a4.2 4.2 0 0 1 0 6"></path><path d="M19.8 6.8a7.5 7.5 0 0 1 0 10.4"></path></symbol>
+      <symbol id="svg-sound-off" viewBox="0 0 24 24"><path d="M4 14V10h4l5-4v12l-5-4H4z"></path><path d="M17 10l4 4M21 10l-4 4"></path></symbol>
+      <symbol id="svg-star" viewBox="0 0 24 24"><path d="M12 3.5l2.7 5.5 6 .9-4.4 4.2 1 6-5.3-2.8-5.3 2.8 1-6L3.3 9.9l6-.9L12 3.5z"></path></symbol>
+      <symbol id="svg-score-badge" viewBox="0 0 24 24"><circle cx="12" cy="10" r="4.5"></circle><path d="M9.2 14.1L8 20l4-2.4L16 20l-1.2-5.9"></path><path d="M10.2 10.1l1.1 1.1 2.5-2.5"></path></symbol>
+      <symbol id="svg-streak-flame" viewBox="0 0 24 24"><path d="M12.2 3.5c1.2 2-.1 2.8-.1 4 0 1 .8 1.8 1.8 1.8 1.2 0 2.1-1 2-2.2 1.8 1.3 3 3.2 3 5.6 0 3.8-2.9 6.6-6.8 6.6s-6.8-2.8-6.8-6.5c0-2.8 1.6-4.8 3.8-6-.1 1 .6 1.8 1.5 1.8 1.1 0 1.8-.9 1.6-2.1z"></path><path d="M10.8 13.5h1.6l-.8 2.1h1.6l-2.6 3.1.7-2.1h-1.3z"></path></symbol>
+      </defs>
+    </svg>
+    <div class="top-bar relative">
+     <button id="sound-toggle" class="mute-icon absolute top-1/2 right-2 -translate-y-1/2" title="Mute sound" aria-label="Mute sound">
+      <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use id="sound-icon-use" href="#svg-sound-on"></use></svg>
+     </button>
+     <div class="top-left">
+      <h1 id="main-title" class="top-bar-title kid-heading">🌈 Tense Practice Quest</h1>
+      <p class="top-bar-subtitle">Present, Past and Continuous missions</p>
+     </div>
+     <div class="header-stats">
+      <div class="header-chip">
+      <span class="icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-score-badge"></use></svg></span>
+       <span class="label">Score</span>
+       <span id="score" class="value">0</span>
+      </div>
+      <div class="header-chip">
+      <span class="icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-hints"></use></svg></span>
+       <span class="label">Question</span>
+       <span class="value"><span id="current-q">1</span>/<span id="total-q">10</span></span>
+      </div>
+      <div id="streak-card" class="header-chip transition-all duration-300">
+      <span class="icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-streak-flame"></use></svg></span>
+       <span class="label">Streak</span>
+       <span id="streak" class="value" style="color:#c2410c;">0</span>
+      </div>
+     </div>
+    </div>
+    <div class="compact-main">
+    <div class="tab-row">
+     <div class="tab-group" role="tablist" aria-label="Practice parts">
+      <button onclick="showSection(1)" id="tab1" class="section-tab tab-keyword active"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-part-keyword"></use></svg> Part 1: Keyword </button>
+      <button onclick="showSection(2)" id="tab2" class="section-tab tab-fill"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-part-fill"></use></svg> Part 2: Fill In </button>
+      <button onclick="showSection(3)" id="tab3" class="section-tab tab-mix"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-part-mix"></use></svg> Part 3: Mix Tense </button>
+     </div>
+      <div class="progress-cluster" aria-label="Progress stars">
+       <span class="progress-caption">Stars</span>
+       <div id="progress-stars" class="progress-stars" aria-label="Progress stars">
+      <div class="progress-star" id="star-1"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-star"></use></svg></div>
+      <div class="progress-star" id="star-2"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-star"></use></svg></div>
+      <div class="progress-star" id="star-3"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-star"></use></svg></div>
+      <div class="progress-star" id="star-4"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-star"></use></svg></div>
+      <div class="progress-star" id="star-5"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-star"></use></svg></div>
+       </div>
+      </div>
+      <button id="open-hints" class="hints-trigger" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#svg-hints"></use></svg> Hints</button>
+     </div>
+     <div>
+      <div class="progress-track rounded-full h-5 overflow-hidden">
+       <div id="progress-bar" class="h-full rounded-full transition-all duration-500" style="width: 0%; background: linear-gradient(90deg, #6366f1, #8b5cf6);"></div>
+      </div>
+     </div>
+    <div class="play-layout">
+     <div class="section-stage">
+    <div id="section1" class="fade-in">
+     <div class="cloud-card question-card rounded-3xl p-4 mb-3">
+      <div class="flex items-center gap-2 section-title">
+       <span class="text-xl">🔵</span>
+       <h2 class="text-lg font-bold text-indigo-900">Part 1: Find the Keyword &amp; Tense</h2>
+      </div>
+      <p class="text-indigo-600 section-desc">Read the sentence and identify the tense. Look for keywords!</p>
+      <div id="s1-sentence" class="sentence-box text-center px-4 bg-indigo-50 rounded-3xl font-bold text-gray-800 leading-relaxed"></div>
+      <div class="text-center mb-3">
+      <p class="text-lg text-indigo-700 font-bold mb-2">What tense is this?</p>
+       <div class="flex flex-wrap justify-center gap-4">
+        <button onclick="checkS1Answer('present')" class="answer-btn answer-primary"> 🟦 Simple Present </button> <button onclick="checkS1Answer('past')" class="answer-btn answer-accent"> 🟧 Simple Past </button> <button onclick="checkS1Answer('continuous')" class="answer-btn answer-violet"> 🟪 Present Continuous </button>
+       </div>
+      </div>
+      <div id="s1-feedback" class="text-center py-3 rounded-2xl font-bold text-xl hidden"></div>
+     </div>
+     <div class="text-center">
+      <button onclick="nextS1Question()" id="s1-next" class="hidden pill-btn answer-primary"> Next Question → </button>
+     </div>
+    </div><!-- Section 2: Fill In Practice -->
+    <div id="section2" class="hidden fade-in">
+     <div class="cloud-card question-card rounded-3xl p-4 mb-3">
+      <div class="flex items-center gap-2 section-title">
+       <span class="text-xl">🟢</span>
+       <h2 class="text-lg font-bold text-green-800">Part 2: Fill in the Blank</h2>
+      </div>
+      <p class="text-green-600 section-desc font-semibold">Use the correct form of the verb in brackets!</p>
+      <div id="s2-sentence" class="sentence-box text-center px-4 bg-green-50 rounded-3xl font-bold text-gray-800 leading-relaxed"></div>
+      <div class="text-center mb-3">
+        <input type="text" id="s2-input" class="px-4 py-3 text-xl text-center border-4 border-green-400 rounded-2xl focus:outline-none focus:ring-4 focus:ring-green-200 font-bold w-72" placeholder="Type your answer"> <button onclick="checkS2Answer()" class="ml-2 answer-btn answer-success"> ✅ Check </button>
+      </div>
+      <div id="s2-feedback" class="text-center py-3 rounded-2xl font-bold text-xl hidden"></div>
+     </div>
+     <div class="text-center">
+            <button onclick="nextS2Question()" id="s2-next" class="hidden pill-btn answer-success text-xl"> Next Question → </button>
+     </div>
+    </div><!-- Section 3: Mix Tense Practice -->
+    <div id="section3" class="hidden fade-in">
+           <div class="cloud-card question-card rounded-3xl p-4 mb-3">
+      <div class="flex items-center gap-2 section-title">
+      <span class="text-xl">🟣</span>
+       <h2 class="text-lg font-bold text-purple-800">Part 3: Mix Tense Challenge</h2>
+      </div>
+      <p class="text-purple-600 section-desc">Fill in BOTH blanks with the correct verb forms!</p>
+      <p id="s3-phase-banner" class="hidden text-center mb-2 rounded-2xl px-3 py-2 text-sm font-bold text-purple-900 bg-purple-100 border border-purple-200"></p>
+      <div id="s3-sentence" class="sentence-box text-center px-4 bg-purple-50 rounded-3xl font-bold text-gray-800 leading-relaxed"></div>
+      <div class="flex flex-wrap justify-center gap-4 mb-3">
+       <div>
+        <label class="block text-purple-700 font-bold text-xl mb-1">Blank 1:</label> <input type="text" id="s3-input1" class="px-4 py-3 text-xl text-center border-4 border-purple-400 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-200 font-bold w-48" placeholder="Answer 1">
+       </div>
+       <div>
+        <label class="block text-purple-700 font-bold text-xl mb-1">Blank 2:</label> <input type="text" id="s3-input2" class="px-4 py-3 text-xl text-center border-4 border-purple-400 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-200 font-bold w-48" placeholder="Answer 2">
+       </div>
+      </div>
+      <div class="text-center mb-3">
+        <button onclick="checkS3Answer()" class="answer-btn answer-danger"> ✅ Check Both </button>
+      </div>
+      <div id="s3-feedback" class="text-center py-3 rounded-2xl font-bold text-xl hidden"></div>
+     </div>
+     <div class="text-center">
+            <button onclick="nextS3Question()" id="s3-next" class="hidden pill-btn answer-danger text-xl"> Next Question → </button>
+     </div>
+    </div><!-- Completion Screen -->
+    <div id="completion" class="hidden fade-in">
+           <div class="cloud-card rounded-3xl p-8 text-center">
+      <div class="text-6xl mb-4">
+       🎉
+      </div>
+      <h2 class="text-3xl font-extrabold text-indigo-900 mb-4">Section Complete!</h2>
+      <p id="completion-message" class="text-xl text-indigo-700 mb-2"></p>
+      <p class="text-2xl font-bold text-indigo-900 mb-6">Your Score: <span id="final-score" class="text-green-600"></span></p><button onclick="restartSection()" class="pill-btn answer-primary"> Try Again 🔄 </button>
+     </div>
+    </div>
+      </div>
+     </div>
+    </div>
+    <div id="hints-modal" class="hints-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="hints-title">
+     <div class="hints-modal-card">
+      <div class="hints-modal-head">
+       <h3 id="hints-title" class="font-bold text-indigo-900 text-lg">📚 Keyword Hints</h3>
+       <button id="close-hints" class="hints-close" type="button" aria-label="Close hints">✕</button>
+      </div>
+      <div class="hints-grid">
+       <div class="hint-card bg-blue-50">
+        <p class="font-bold text-blue-800 mb-1">Simple Present:</p>
+        <p class="text-blue-700">always, usually, often, sometimes, every day, on Sundays</p>
+       </div>
+       <div class="hint-card bg-amber-50">
+        <p class="font-bold text-amber-800 mb-1">Simple Past:</p>
+        <p class="text-amber-700">yesterday, last night, years ago, before, last week</p>
+       </div>
+       <div class="hint-card bg-purple-50">
+        <p class="font-bold text-purple-800 mb-1">Present Continuous:</p>
+        <p class="text-purple-700">now, at the moment, Look!, Listen!, right now</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  <div id="reaction-layer" class="pointer-events-none"></div>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      app_title: '🎯 Tense Practice',
+      encouragement_text: 'Great job! Keep practicing!',
+      primary_color: '#4f46e5',
+      secondary_color: '#e0e7ff',
+      text_color: '#312e81',
+      accent_color: '#22c55e',
+      surface_color: '#ffffff'
+    };
+
+    // Section 1 Questions
+    const s1Questions = [
+      { sentence: '<span class="keyword">On Sundays</span>, I play football.', answer: 'present', keyword: 'On Sundays', explanation: '"On Sundays" = habit/routine → Simple Present' },
+      { sentence: '<span class="keyword">Look!</span> The cat is sleeping.', answer: 'continuous', keyword: 'Look!', explanation: '"Look!" = happening now → Present Continuous' },
+      { sentence: 'I visited my grandma <span class="keyword">yesterday</span>.', answer: 'past', keyword: 'yesterday', explanation: '"Yesterday" = finished action → Simple Past' },
+      { sentence: 'She <span class="keyword">usually</span> drinks milk in the morning.', answer: 'present', keyword: 'usually', explanation: '"Usually" = habit → Simple Present' },
+      { sentence: 'We are doing homework <span class="keyword">at the moment</span>.', answer: 'continuous', keyword: 'at the moment', explanation: '"At the moment" = right now → Present Continuous' },
+      { sentence: 'I went to the park <span class="keyword">last night</span>.', answer: 'past', keyword: 'last night', explanation: '"Last night" = finished → Simple Past' },
+      { sentence: 'He <span class="keyword">always</span> watches TV.', answer: 'present', keyword: 'always', explanation: '"Always" = habit → Simple Present' },
+      { sentence: '<span class="keyword">Listen!</span> The baby is crying.', answer: 'continuous', keyword: 'Listen!', explanation: '"Listen!" = happening now → Present Continuous' },
+      { sentence: 'They lived here <span class="keyword">years ago</span>.', answer: 'past', keyword: 'years ago', explanation: '"Years ago" = past time → Simple Past' },
+      { sentence: 'I read a book <span class="keyword">before</span>.', answer: 'past', keyword: 'before', explanation: '"Before" = past action → Simple Past' }
+    ];
+
+    // Section 2 Questions
+    const s2Questions = [
+      { sentence: 'On Sundays, Daniel <span class="blank">______</span> (play) football.', answer: 'plays', hint: 'On Sundays = habit → Simple Present (he/she/it + s)' },
+      { sentence: 'Look! The dog <span class="blank">______</span> (run).', answer: 'is running', hint: 'Look! = now → Present Continuous (is + verb-ing)' },
+      { sentence: 'I <span class="blank">______</span> (visit) my aunt yesterday.', answer: 'visited', hint: 'Yesterday = past → Simple Past (+ed)' },
+      { sentence: 'She usually <span class="blank">______</span> (watch) TV.', answer: 'watches', hint: 'Usually = habit → Simple Present (she + es)' },
+      { sentence: 'We <span class="blank">______</span> (have) lunch at the moment.', answer: 'are having', hint: 'At the moment = now → Present Continuous' },
+      { sentence: 'They <span class="blank">______</span> (live) here years ago.', answer: 'lived', hint: 'Years ago = past → Simple Past' },
+      { sentence: 'Listen! The boy <span class="blank">______</span> (sing).', answer: 'is singing', hint: 'Listen! = now → Present Continuous' },
+      { sentence: 'I <span class="blank">______</span> (finish) my homework last night.', answer: 'finished', hint: 'Last night = past → Simple Past' },
+      { sentence: 'He always <span class="blank">______</span> (get) up early.', answer: 'gets', hint: 'Always = habit → Simple Present (he + s)' },
+      { sentence: 'She <span class="blank">______</span> (draw) a picture now.', answer: 'is drawing', hint: 'Now = happening → Present Continuous' }
+    ];
+
+    // Section 3 Questions
+    const s3Questions = [
+      { 
+        sentence: 'Yesterday I <span class="blank">[1]______</span> (play) football and now I <span class="blank">[2]______</span> (do) my homework.',
+        answers: ['played', 'am doing'],
+        hints: ['Yesterday → Simple Past', 'Now → Present Continuous']
+      },
+      { 
+        sentence: 'Daniel usually <span class="blank">[1]______</span> (sing) in the morning, but today he <span class="blank">[2]______</span> (study) at the moment.',
+        answers: ['sings', 'is studying'],
+        hints: ['Usually → Simple Present', 'At the moment → Present Continuous']
+      },
+      { 
+        sentence: 'Years ago we <span class="blank">[1]______</span> (live) in Kowloon. Now we <span class="blank">[2]______</span> (live) in Sha Tin.',
+        answers: ['lived', 'live'],
+        hints: ['Years ago → Simple Past', 'Now (fact) → Simple Present']
+      },
+      { 
+        sentence: 'On Sundays she <span class="blank">[1]______</span> (visit) her grandma, but last Sunday she <span class="blank">[2]______</span> (stay) at home.',
+        answers: ['visits', 'stayed'],
+        hints: ['On Sundays → Simple Present', 'Last Sunday → Simple Past']
+      },
+      {
+        sentence: 'Right now we <span class="blank">[1]______</span> (prepare) dinner, but yesterday we <span class="blank">[2]______</span> (eat) out.',
+        answers: ['are preparing', 'ate'],
+        hints: ['Right now → Present Continuous', 'Yesterday → Simple Past (irregular: eat → ate)']
+      },
+      {
+        sentence: 'Leo usually <span class="blank">[1]______</span> (walk) to school, but this morning he <span class="blank">[2]______</span> (take) the bus.',
+        answers: ['walks', 'took'],
+        hints: ['Usually → Simple Present (he + s)', 'This morning (finished) → Simple Past (take → took)']
+      },
+      {
+        sentence: 'Usually the team <span class="blank">[1]______</span> (train) after school, but right now they <span class="blank">[2]______</span> (rest).',
+        answers: ['trains', 'are resting'],
+        hints: ['Usually → Simple Present (team as singular)', 'Right now → Present Continuous']
+      },
+      {
+        sentence: 'Last Sunday we <span class="blank">[1]______</span> (visit) the museum, and now we <span class="blank">[2]______</span> (talk) about it.',
+        answers: ['visited', 'are talking'],
+        hints: ['Last Sunday → Simple Past', 'Now → Present Continuous']
+      }
+    ];
+
+    const s3BonusQuestions = [
+      {
+        sentence: 'Listen! The twins <span class="blank">[1]______</span> (argue) now, but they <span class="blank">[2]______</span> (play) happily this morning.',
+        answers: ['are arguing', 'played'],
+        hints: ['Listen!/now → Present Continuous', 'This morning (finished) → Simple Past']
+      },
+      {
+        sentence: 'My dad always <span class="blank">[1]______</span> (read) before bed, but last night he <span class="blank">[2]______</span> (fall) asleep early.',
+        answers: ['reads', 'fell'],
+        hints: ['Always → Simple Present', 'Last night → Simple Past (fall → fell)']
+      },
+      {
+        sentence: 'At the moment, Amy <span class="blank">[1]______</span> (write) a card, and yesterday she <span class="blank">[2]______</span> (buy) a gift.',
+        answers: ['is writing', 'bought'],
+        hints: ['At the moment → Present Continuous', 'Yesterday → Simple Past (buy → bought)']
+      }
+    ];
+
+
+    // Game state
+    let currentSection = 1;
+    let currentQuestion = 0;
+    let score = 0;
+    let totalQuestions = 10;
+    let streak = 0;
+    let activeS1Questions = [];
+    let activeS2Questions = [];
+    let activeS3Questions = [];
+    let s3AnsweredCount = 0;
+    let s3CorrectCount = 0;
+    let s3BonusAdded = false;
+    let s3PendingPhaseLabel = '';
+    let audioEnabled = true;
+    let audioCtx;
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const title = document.getElementById('main-title');
+          if (title) title.textContent = config.app_title || defaultConfig.app_title;
+          
+          const container = document.getElementById('app-container');
+          if (container) {
+            container.style.background = `linear-gradient(135deg, ${config.secondary_color || defaultConfig.secondary_color} 0%, ${adjustColor(config.secondary_color || defaultConfig.secondary_color, -10)} 100%)`;
+          }
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.secondary_color || defaultConfig.secondary_color,
+              set: (value) => { config.secondary_color = value; window.elementSdk.setConfig({ secondary_color: value }); }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => { config.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+            },
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => { config.primary_color = value; window.elementSdk.setConfig({ primary_color: value }); }
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => { config.accent_color = value; window.elementSdk.setConfig({ accent_color: value }); }
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['app_title', config.app_title || defaultConfig.app_title],
+          ['encouragement_text', config.encouragement_text || defaultConfig.encouragement_text]
+        ])
+      });
+    }
+
+    function adjustColor(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+    }
+
+    function shuffleArray(arr) {
+      const clone = [...arr];
+      for (let i = clone.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [clone[i], clone[j]] = [clone[j], clone[i]];
+      }
+      return clone;
+    }
+
+    function setStreak(value) {
+      streak = value;
+      const streakEl = document.getElementById('streak');
+      const streakCard = document.getElementById('streak-card');
+      streakEl.textContent = streak;
+      streakCard.classList.remove('streak-pop');
+      void streakCard.offsetWidth;
+      streakCard.classList.add('streak-pop');
+      streakCard.style.background = streak >= 3 ? 'linear-gradient(140deg, #ffedd5, #fed7aa)' : '#ffffff';
+    }
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, type = 'sine', volume = 0.06) {
+      if (!audioEnabled) return;
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.value = volume;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+      osc.stop(ctx.currentTime + duration);
+    }
+
+    function playSound(effect) {
+      if (effect === 'correct') {
+        playTone(680, 0.08, 'triangle', 0.07);
+        setTimeout(() => playTone(940, 0.12, 'triangle', 0.07), 70);
+      } else if (effect === 'wrong') {
+        playTone(220, 0.12, 'sawtooth', 0.06);
+        setTimeout(() => playTone(170, 0.12, 'sawtooth', 0.05), 90);
+      } else if (effect === 'next') {
+        playTone(420, 0.05, 'sine', 0.04);
+      } else if (effect === 'complete') {
+        [523, 659, 784, 1047].forEach((freq, index) => {
+          setTimeout(() => playTone(freq, 0.12, 'triangle', 0.06), index * 90);
+        });
+      }
+    }
+
+    function burstSparks(color) {
+      const layer = document.getElementById('reaction-layer');
+      for (let i = 0; i < 14; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'spark';
+        spark.style.background = color;
+        spark.style.left = `${window.innerWidth * 0.5}px`;
+        spark.style.top = `${window.innerHeight * 0.3}px`;
+        spark.style.setProperty('--dx', `${(Math.random() - 0.5) * 320}px`);
+        spark.style.setProperty('--dy', `${(Math.random() - 0.2) * 280}px`);
+        layer.appendChild(spark);
+        setTimeout(() => spark.remove(), 1000);
+      }
+    }
+
+    function updateSoundButton() {
+      const btn = document.getElementById('sound-toggle');
+      const soundIconUse = document.getElementById('sound-icon-use');
+      soundIconUse.setAttribute('href', audioEnabled ? '#svg-sound-on' : '#svg-sound-off');
+      btn.title = audioEnabled ? 'Mute sound' : 'Unmute sound';
+      btn.setAttribute('aria-label', btn.title);
+      btn.style.opacity = audioEnabled ? '1' : '0.82';
+    }
+
+    // Section Navigation
+    function showSection(num) {
+      currentSection = num;
+      currentQuestion = 0;
+      score = 0;
+      setStreak(0);
+      activeS1Questions = shuffleArray(s1Questions);
+      activeS2Questions = shuffleArray(s2Questions);
+      activeS3Questions = shuffleArray(s3Questions);
+      
+      document.getElementById('section1').classList.add('hidden');
+      document.getElementById('section2').classList.add('hidden');
+      document.getElementById('section3').classList.add('hidden');
+      document.getElementById('completion').classList.add('hidden');
+      
+      document.getElementById('tab1').classList.remove('active');
+      document.getElementById('tab2').classList.remove('active');
+      document.getElementById('tab3').classList.remove('active');
+      document.getElementById(`tab${num}`).classList.add('active');
+      
+      if (num === 1) {
+        totalQuestions = activeS1Questions.length;
+        document.getElementById('section1').classList.remove('hidden');
+        loadS1Question();
+      } else if (num === 2) {
+        totalQuestions = activeS2Questions.length;
+        document.getElementById('section2').classList.remove('hidden');
+        loadS2Question();
+      } else if (num === 3) {
+        s3AnsweredCount = 0;
+        s3CorrectCount = 0;
+        s3BonusAdded = false;
+        s3PendingPhaseLabel = '';
+        totalQuestions = activeS3Questions.length;
+        document.getElementById('section3').classList.remove('hidden');
+        loadS3Question();
+      }
+      
+      updateProgress();
+      document.getElementById('score').textContent = score;
+      document.getElementById('total-q').textContent = totalQuestions;
+    }
+
+    function updateProgress() {
+      const progress = (currentQuestion / totalQuestions) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+      document.getElementById('current-q').textContent = Math.min(currentQuestion + 1, totalQuestions);
+      updateProgressStars();
+    }
+
+    function updateProgressStars() {
+      const stars = 5;
+      const accuracy = totalQuestions > 0 ? score / totalQuestions : 0;
+      const filled = Math.max(0, Math.min(stars, Math.floor(accuracy * stars)));
+      for (let i = 1; i <= stars; i++) {
+        document.getElementById(`star-${i}`).classList.toggle('filled', i <= filled);
+      }
+    }
+
+    // Section 1 Functions
+    function loadS1Question() {
+      if (currentQuestion >= activeS1Questions.length) {
+        showCompletion();
+        return;
+      }
+      const q = activeS1Questions[currentQuestion];
+      document.getElementById('s1-sentence').innerHTML = q.sentence;
+      document.getElementById('s1-feedback').classList.add('hidden');
+      document.getElementById('s1-next').classList.add('hidden');
+      updateProgress();
+    }
+
+    function checkS1Answer(answer) {
+      const q = activeS1Questions[currentQuestion];
+      const feedback = document.getElementById('s1-feedback');
+      feedback.classList.remove('hidden');
+      
+      if (answer === q.answer) {
+        score++;
+        setStreak(streak + 1);
+        playSound('correct');
+        burstSparks('#22c55e');
+        document.getElementById('score').textContent = score;
+        feedback.className = 'feedback-card feedback-good text-center py-4 rounded-xl font-bold text-lg bounce';
+        feedback.innerHTML = `✅ Brilliant! You spotted it!<br><span class="text-base font-normal">${q.explanation}</span>`;
+      } else {
+        setStreak(0);
+        playSound('wrong');
+        feedback.className = 'feedback-card feedback-bad text-center py-4 rounded-xl font-bold text-lg shake';
+        const correctTense = q.answer === 'present' ? 'Simple Present' : q.answer === 'past' ? 'Simple Past' : 'Present Continuous';
+        feedback.innerHTML = `❌ Good try! Correct answer: <span class="correct-answer">${correctTense}</span><br><span class="text-base font-normal">${q.explanation}</span>`;
+      }
+      
+      document.getElementById('s1-next').classList.remove('hidden');
+    }
+
+    function nextS1Question() {
+      playSound('next');
+      currentQuestion++;
+      loadS1Question();
+    }
+
+    // Section 2 Functions
+    function loadS2Question() {
+      if (currentQuestion >= activeS2Questions.length) {
+        showCompletion();
+        return;
+      }
+      const q = activeS2Questions[currentQuestion];
+      document.getElementById('s2-sentence').innerHTML = q.sentence;
+      document.getElementById('s2-input').value = '';
+      document.getElementById('s2-feedback').classList.add('hidden');
+      document.getElementById('s2-next').classList.add('hidden');
+      document.getElementById('s2-input').focus();
+      updateProgress();
+    }
+
+    function checkS2Answer() {
+      const q = activeS2Questions[currentQuestion];
+      const userAnswer = document.getElementById('s2-input').value.trim().toLowerCase();
+      const feedback = document.getElementById('s2-feedback');
+      feedback.classList.remove('hidden');
+      
+      if (userAnswer === q.answer.toLowerCase()) {
+        score++;
+        setStreak(streak + 1);
+        playSound('correct');
+        burstSparks('#22c55e');
+        document.getElementById('score').textContent = score;
+        feedback.className = 'feedback-card feedback-good text-center py-4 rounded-xl font-bold text-lg bounce';
+        feedback.innerHTML = `✅ Nice one! "<span class="correct-answer">${q.answer}</span>" is perfect!<br><span class="text-base font-normal">${q.hint}</span>`;
+      } else {
+        setStreak(0);
+        playSound('wrong');
+        feedback.className = 'feedback-card feedback-bad text-center py-4 rounded-xl font-bold text-lg shake';
+        feedback.innerHTML = `❌ Almost there! Correct answer: "<span class="correct-answer">${q.answer}</span>"<br><span class="text-base font-normal">${q.hint}</span>`;
+      }
+      
+      document.getElementById('s2-next').classList.remove('hidden');
+    }
+
+    function nextS2Question() {
+      playSound('next');
+      currentQuestion++;
+      loadS2Question();
+    }
+
+    // Section 3 Functions
+    function tryAppendS3ExtraRounds() {
+      const accuracy = s3AnsweredCount > 0 ? s3CorrectCount / s3AnsweredCount : 0;
+
+      if (!s3BonusAdded && s3AnsweredCount >= 4 && accuracy >= 0.6) {
+        activeS3Questions.push(...shuffleArray(s3BonusQuestions).slice(0, 2));
+        s3BonusAdded = true;
+        s3PendingPhaseLabel = 'Bonus Round unlocked! 2 extra questions!';
+        return true;
+      }
+
+      return false;
+    }
+
+    function loadS3Question() {
+      if (currentQuestion >= activeS3Questions.length) {
+        if (!tryAppendS3ExtraRounds()) {
+          showCompletion();
+          return;
+        }
+
+        totalQuestions = activeS3Questions.length;
+        document.getElementById('total-q').textContent = totalQuestions;
+      }
+
+      const q = activeS3Questions[currentQuestion];
+      const phaseBanner = document.getElementById('s3-phase-banner');
+      document.getElementById('s3-sentence').innerHTML = q.sentence;
+      document.getElementById('s3-input1').value = '';
+      document.getElementById('s3-input2').value = '';
+      document.getElementById('s3-feedback').classList.add('hidden');
+      document.getElementById('s3-next').classList.add('hidden');
+      if (s3PendingPhaseLabel) {
+        phaseBanner.textContent = s3PendingPhaseLabel;
+        phaseBanner.classList.remove('hidden');
+        s3PendingPhaseLabel = '';
+      } else {
+        phaseBanner.classList.add('hidden');
+      }
+      document.getElementById('s3-input1').focus();
+      updateProgress();
+    }
+
+    function checkS3Answer() {
+      const q = activeS3Questions[currentQuestion];
+      const answer1 = document.getElementById('s3-input1').value.trim().toLowerCase();
+      const answer2 = document.getElementById('s3-input2').value.trim().toLowerCase();
+      const feedback = document.getElementById('s3-feedback');
+      feedback.classList.remove('hidden');
+      
+      const correct1 = answer1 === q.answers[0].toLowerCase();
+      const correct2 = answer2 === q.answers[1].toLowerCase();
+      s3AnsweredCount++;
+      
+      if (correct1 && correct2) {
+        score++;
+        s3CorrectCount++;
+        setStreak(streak + 1);
+        playSound('correct');
+        burstSparks('#f97316');
+        document.getElementById('score').textContent = score;
+        feedback.className = 'feedback-card feedback-good text-center py-4 rounded-xl font-bold text-lg bounce';
+        feedback.innerHTML = `✅ Superstar! Both answers are correct!<br><span class="text-base font-normal">[1] ${q.hints[0]} → "${q.answers[0]}"<br>[2] ${q.hints[1]} → "${q.answers[1]}"</span>`;
+      } else {
+        setStreak(0);
+        playSound('wrong');
+        feedback.className = 'feedback-card feedback-bad text-center py-4 rounded-xl font-bold text-lg shake';
+        let feedbackHTML = '❌ Let\'s check:<br><span class="text-base font-normal">';
+        feedbackHTML += `[1] ${correct1 ? '✓' : '✗'} ${q.hints[0]} → "<span class="correct-answer">${q.answers[0]}</span>"<br>`;
+        feedbackHTML += `[2] ${correct2 ? '✓' : '✗'} ${q.hints[1]} → "<span class="correct-answer">${q.answers[1]}</span>"</span>`;
+        feedback.innerHTML = feedbackHTML;
+      }
+      
+      document.getElementById('s3-next').classList.remove('hidden');
+    }
+
+    function nextS3Question() {
+      playSound('next');
+      currentQuestion++;
+      loadS3Question();
+    }
+
+    // Completion & Restart
+    function showCompletion() {
+      document.getElementById('section1').classList.add('hidden');
+      document.getElementById('section2').classList.add('hidden');
+      document.getElementById('section3').classList.add('hidden');
+      document.getElementById('completion').classList.remove('hidden');
+      
+      const percentage = Math.round((score / totalQuestions) * 100);
+      document.getElementById('final-score').textContent = `${score}/${totalQuestions} (${percentage}%)`;
+      
+      let message = '';
+      if (percentage === 100) message = '🌟 Perfect! You\'re a tense master!';
+      else if (percentage >= 80) message = '🎉 Excellent work! Almost perfect!';
+      else if (percentage >= 60) message = '👍 Good job! Keep practicing!';
+      else message = '💪 Keep trying! You\'ll get better!';
+      
+      const config = window.elementSdk?.config || defaultConfig;
+      document.getElementById('completion-message').textContent = message + ' ' + (config.encouragement_text || defaultConfig.encouragement_text);
+      
+      document.getElementById('progress-bar').style.width = '100%';
+      updateProgressStars();
+      playSound('complete');
+      burstSparks('#8b5cf6');
+    }
+
+    function restartSection() {
+      showSection(currentSection);
+    }
+
+    // Handle Enter key for inputs
+    document.getElementById('s2-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkS2Answer();
+    });
+    document.getElementById('s3-input2').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkS3Answer();
+    });
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      audioEnabled = !audioEnabled;
+      updateSoundButton();
+      if (audioEnabled) playTone(520, 0.06, 'sine', 0.04);
+    });
+
+    const hintsModal = document.getElementById('hints-modal');
+    const openHintsBtn = document.getElementById('open-hints');
+    const closeHintsBtn = document.getElementById('close-hints');
+
+    function openHintsModal() {
+      hintsModal.classList.remove('hidden');
+    }
+
+    function closeHintsModal() {
+      hintsModal.classList.add('hidden');
+    }
+
+    openHintsBtn.addEventListener('click', openHintsModal);
+    closeHintsBtn.addEventListener('click', closeHintsModal);
+    hintsModal.addEventListener('click', (e) => {
+      if (e.target === hintsModal) closeHintsModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !hintsModal.classList.contains('hidden')) closeHintsModal();
+    });
+
+    // Initialize
+    updateSoundButton();
+    updateProgressStars();
+    showSection(1);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d26120485d248c7',t:'MTc3MTg0Mjg2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Question Master</title>
+<style>
+  :root {
+    --sky: #8fd3ff;
+    --sun: #ffe783;
+    --mint: #abf2d6;
+    --coral: #ff9a8a;
+    --ink: #233754;
+    --card: #ffffff;
+    --success: #57d08f;
+    --danger: #ff7b7b;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(145deg, var(--sky), #dff6ff 45%, var(--sun));
+    color: var(--ink);
+    padding: 16px;
+  }
+
+  #gameContainer {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .gameCard {
+    background: linear-gradient(150deg, #ffffff, #f3fff8 55%, #fff4e7);
+    border-radius: 30px;
+    border: 4px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 20px 55px rgba(35, 55, 84, 0.22);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: levelPop 0.45s ease;
+  }
+
+  .gameCard::before,
+  .gameCard::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .gameCard::before {
+    width: 200px;
+    height: 200px;
+    right: -70px;
+    top: -85px;
+    background: rgba(143, 211, 255, 0.33);
+  }
+
+  .gameCard::after {
+    width: 170px;
+    height: 170px;
+    left: -60px;
+    bottom: -70px;
+    background: rgba(171, 242, 214, 0.45);
+  }
+
+  h1 {
+    margin: 6px 0 14px;
+    text-align: center;
+    font-size: clamp(2rem, 4.2vw, 2.9rem);
+  }
+
+  .panel {
+    background: rgba(255, 255, 255, 0.86);
+    border-radius: 24px;
+    border: 2px solid #d7edff;
+    padding: 18px;
+    display: none;
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  .modeButton {
+    background: linear-gradient(125deg, var(--sun), #ffd34a);
+    border: none;
+    border-radius: 18px;
+    padding: 18px 24px;
+    font-size: clamp(1.15rem, 2.8vw, 1.5rem);
+    font-weight: 700;
+    cursor: pointer;
+    color: #35455f;
+    margin: 1.5rem 0;
+    box-shadow: 0 8px 0 #eab320, 0 12px 16px rgba(53, 69, 95, 0.22);
+    transition: transform 0.15s ease, box-shadow 0.18s ease;
+    display: block;
+    width: calc(100% - 20px);
+  }
+
+  .modeButton:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 0 #eab320, 0 14px 18px rgba(53, 69, 95, 0.26), 0 0 18px rgba(255, 231, 131, 0.72);
+  }
+
+  .sectionCard {
+    background: linear-gradient(135deg, #e0f2ff, #f0f8ff);
+    border: 3px solid #b8d8f0;
+    border-radius: 20px;
+    padding: 16px;
+    margin: 12px 0;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .sectionCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(39, 84, 130, 0.18);
+  }
+
+  .sectionCard h3 {
+    margin: 0 0 8px;
+    font-size: clamp(1.3rem, 2.8vw, 1.7rem);
+  }
+
+  .teachingSlide {
+    animation: levelPop 0.4s ease;
+  }
+
+  .teachingTitle {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    color: #1e3a5f;
+    margin: 10px 0 14px;
+    text-align: center;
+  }
+
+  .teachingContent {
+    font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+    line-height: 1.65;
+  }
+
+  .conceptBox {
+    background: #f0f8ff;
+    border: 2px solid #b8d8f0;
+    border-radius: 16px;
+    padding: 14px;
+    margin: 12px 0;
+  }
+
+  .exampleBox {
+    background: #fffef0;
+    border: 2px solid #f0e6b8;
+    border-radius: 14px;
+    padding: 12px;
+    margin: 10px 0;
+  }
+
+  .keywordHighlight {
+    background: var(--sun);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .infoCard {
+    background: white;
+    border: 2px solid #d0e6ff;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .toneTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .toneTable th,
+  .toneTable td {
+    border: 1px solid #d4e6f7;
+    padding: 8px;
+    text-align: left;
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+  }
+
+  .toneTable th {
+    background: #e8f4ff;
+  }
+
+  .emotionCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .emotionCard {
+    background: white;
+    border: 2px solid #d0e6ff;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .statusRow {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    background: #ebf7ff;
+    border: 2px solid #cbe6ff;
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+  }
+
+  .statusItem {
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+  }
+
+  #progressBar {
+    height: 24px;
+    border-radius: 999px;
+    background: #d8edf7;
+    border: 2px solid #b6dcef;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  #progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #7be8b4, #59bfff);
+    transition: width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  #modalTypeBadge {
+    display: none;
+    margin: 0 auto 8px;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #e7f4ff;
+    border: 2px solid #c7e4ff;
+    font-weight: 700;
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+    color: #24507a;
+  }
+
+  #questionCue {
+    min-height: 30px;
+    text-align: center;
+    font-size: clamp(0.95rem, 2.1vw, 1.12rem);
+    font-weight: 700;
+    color: #29506f;
+    margin-bottom: 8px;
+  }
+
+  #questionText {
+    background: #fff;
+    border-radius: 20px;
+    border: 3px solid #cce7ff;
+    font-size: clamp(1.85rem, 4vw, 2.65rem);
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 10px 0 15px;
+    padding: 18px;
+    min-height: 130px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hint-container {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .hint-toggle {
+    background: linear-gradient(135deg, #FFE082, #FFD54F);
+    border: 2px solid #FFA000;
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    font-weight: bold;
+    color: #FF8F00;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(255, 160, 0, 0.3);
+    user-select: none;
+  }
+
+  .hint-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 160, 0, 0.4);
+  }
+
+  .hint-toggle:active {
+    transform: translateY(0);
+  }
+
+  .hint-content {
+    display: none;
+    background: rgba(255, 193, 7, 0.15);
+    border: 2px solid #FFE082;
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-top: 8px;
+    font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+    color: #666;
+    font-style: italic;
+    font-weight: normal;
+    animation: hintSlideDown 0.3s ease-out;
+  }
+
+  .hint-content.show {
+    display: block;
+  }
+
+  @keyframes hintSlideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  #options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .option {
+    background: #fff;
+    border-radius: 20px;
+    border: 3px solid #d6edff;
+    min-height: 98px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    font-weight: 700;
+    padding: 12px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    user-select: none;
+    text-align: center;
+  }
+
+  .option:hover {
+    transform: translateY(-2px);
+    border-color: #9fd4ff;
+    box-shadow: 0 10px 20px rgba(50, 93, 140, 0.2), 0 0 16px rgba(143, 211, 255, 0.65);
+  }
+
+  .optionMain {
+    line-height: 1.2;
+  }
+
+  .toneTag {
+    font-size: clamp(0.78rem, 1.8vw, 0.95rem);
+    border-radius: 999px;
+    padding: 3px 8px;
+    border: 1px solid transparent;
+  }
+
+  .tone-neutral { background: #e6f6ff; color: #226082; border-color: #bde4ff; }
+  .tone-polite { background: #eaf7ef; color: #2f6d4a; border-color: #bde3c8; }
+  .tone-frustrated { background: #ffe8e8; color: #8a2f2f; border-color: #f3b6b6; }
+  .tone-soft { background: #f4ecff; color: #62408a; border-color: #d8c4f5; }
+  .tone-serious { background: #fff1dd; color: #8a5a1f; border-color: #efcf9c; }
+
+  .option.clicked {
+    animation: buttonBounce 0.35s ease;
+  }
+
+  .option.correct {
+    background: #ebfff4;
+    border-color: var(--success);
+    box-shadow: 0 0 0 7px rgba(87, 208, 143, 0.2), 0 0 20px rgba(87, 208, 143, 0.62);
+  }
+
+  .option.wrong {
+    background: #fff1f1;
+    border-color: var(--danger);
+    animation: wrongShake 0.45s ease;
+  }
+
+  .option.alternative {
+    background: linear-gradient(135deg, #FFE082, #FFD54F);
+    border-color: #FFA000;
+    box-shadow: 0 0 0 5px rgba(255, 160, 0, 0.2), 0 0 15px rgba(255, 193, 7, 0.5);
+    animation: alternativePulse 0.6s;
+  }
+
+  .option.better-answer {
+    background: #ebfff4;
+    border-color: var(--success);
+    box-shadow: 0 0 0 5px rgba(87, 208, 143, 0.15), 0 0 15px rgba(76, 175, 80, 0.4);
+    position: relative;
+  }
+
+  .option.better-answer::after {
+    content: '✨ Best';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #4CAF50;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes alternativePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
+
+  #toneFeedback {
+    min-height: 40px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: clamp(0.95rem, 2.1vw, 1.1rem);
+    font-weight: 700;
+    color: #3b5d7b;
+  }
+
+  #toneFeedback.ok {
+    color: #2e7d4f;
+  }
+
+  #toneFeedback.warn {
+    color: #8a3f2d;
+  }
+
+  .explanation-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    display: none;
+    place-items: center;
+    animation: fadeIn 0.3s;
+    backdrop-filter: blur(4px);
+  }
+
+  .explanation-modal-overlay.show {
+    display: grid;
+  }
+
+  .explanation-modal {
+    background: linear-gradient(145deg, #ffffff, #f8f9ff);
+    border: 4px solid #FFB74D;
+    border-radius: 24px;
+    padding: 24px 28px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: modalZoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+  }
+
+  .explanation-modal-icon {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .explanation-modal-title {
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: bold;
+    color: #FF8F00;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .explanation-modal-content {
+    background: rgba(255, 183, 77, 0.1);
+    border: 2px solid #FFE082;
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .explanation-modal-close {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 28px;
+    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    transition: all 0.2s;
+  }
+
+  .explanation-modal-close:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+  }
+
+  .explanation-modal-close:active {
+    transform: translateY(0);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes modalZoomIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.7);
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1);
+    }
+  }
+
+  .mainFlashWrong {
+    animation: redFlash 0.55s ease;
+  }
+
+  #emojiFeedback {
+    font-size: clamp(2.5rem, 5vw, 3.8rem);
+    min-height: 60px;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  button {
+    border: none;
+    border-radius: 18px;
+    padding: 14px 20px;
+    font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+    font-weight: 700;
+    cursor: pointer;
+    color: #35455f;
+    background: linear-gradient(125deg, var(--sun), #ffd34a);
+    box-shadow: 0 8px 0 #eab320, 0 12px 16px rgba(53, 69, 95, 0.22);
+    transition: transform 0.15s ease, box-shadow 0.18s ease;
+    margin: 6px;
+  }
+
+  button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 0 #eab320, 0 14px 18px rgba(53, 69, 95, 0.26), 0 0 18px rgba(255, 231, 131, 0.72);
+  }
+
+  button:active {
+    transform: translateY(2px) scale(0.98);
+  }
+
+  .smallBtn {
+    font-size: 1rem;
+    padding: 10px 12px;
+    margin: 4px;
+  }
+
+  .navButtons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .checkboxGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .checkboxLabel {
+    display: flex;
+    align-items: center;
+    background: #f5fbff;
+    border: 2px solid #d0e7ff;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: clamp(1.1rem, 2.4vw, 1.3rem);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .checkboxLabel:hover {
+    background: #e8f5ff;
+  }
+
+  .checkboxLabel input {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  #teacherPanel {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    width: min(340px, calc(100vw - 24px));
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #cbe7ff;
+    border-radius: 16px;
+    box-shadow: 0 12px 26px rgba(34, 56, 84, 0.2);
+    padding: 10px;
+    z-index: 5;
+  }
+
+  #teacherPanel h3 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+  }
+
+  .teacherRow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    gap: 6px;
+  }
+
+  #confettiLayer,
+  #reactionLayer,
+  #overlayLayer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 20;
+  }
+
+  #overlayLayer {
+    display: none;
+    place-items: center;
+    z-index: 30;
+  }
+
+  .overlayCard {
+    background: linear-gradient(145deg, #fffef2, #e7fff7);
+    border: 3px solid #fff;
+    border-radius: 24px;
+    padding: 22px 26px;
+    box-shadow: 0 20px 40px rgba(31, 58, 91, 0.25);
+    font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+    font-weight: 700;
+    animation: zoomIn 0.4s ease;
+  }
+
+  .confettiPiece {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: floatDown 1.8s linear forwards;
+  }
+
+  .starSpark,
+  .floatingEmoji {
+    position: absolute;
+    animation-fill-mode: forwards;
+  }
+
+  .starSpark {
+    font-size: 24px;
+    animation: starBurst 0.9s ease-out;
+  }
+
+  .floatingEmoji {
+    font-size: 2rem;
+    animation: floatUp 1.25s ease-out;
+  }
+
+  #endPanel h2 {
+    margin: 8px 0;
+    font-size: clamp(2rem, 4.8vw, 2.9rem);
+  }
+
+  #endPanel p {
+    margin: 10px 0;
+    font-size: clamp(1.2rem, 3vw, 1.7rem);
+    font-weight: 700;
+  }
+
+  @keyframes buttonBounce {
+    0% { transform: scale(0.97); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-7px); }
+    50% { transform: translateX(7px); }
+    75% { transform: translateX(-5px); }
+  }
+
+  @keyframes redFlash {
+    0% { box-shadow: 0 0 0 rgba(255, 123, 123, 0); }
+    50% { box-shadow: 0 0 0 999px rgba(255, 123, 123, 0.09) inset; }
+    100% { box-shadow: 0 0 0 rgba(255, 123, 123, 0); }
+  }
+
+  @keyframes levelPop {
+    0% { opacity: 0; transform: translateY(10px) scale(0.97); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes floatDown {
+    to {
+      transform: translateY(105vh) rotate(520deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(0.8); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(-130px) scale(1.15); opacity: 0; }
+  }
+
+  @keyframes starBurst {
+    0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(1.2) rotate(240deg); opacity: 0; }
+  }
+
+  @keyframes zoomIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 860px) {
+    #options {
+      grid-template-columns: 1fr;
+    }
+
+    #teacherPanel {
+      position: static;
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="gameContainer">
+    <div class="gameCard" id="mainCard">
+      <h1>🎯 Question Master 🎯</h1>
+
+      <div id="mainMenu" class="panel active">
+        <p style="text-align: center; font-size: clamp(1.2rem, 2.6vw, 1.5rem); line-height: 1.6;">
+          Master <b>4 Grammar Sections</b> with teaching slides and practice!<br>
+          Choose your learning mode below 🚀
+        </p>
+        <button class="modeButton" onclick="showSectionSelect()">
+          📚 Section Practice<br>
+          <small style="font-size: 0.8em;">Learn one section at a time</small>
+        </button>
+        <button class="modeButton" onclick="showMixedSetup()">
+          🎯 Mixed Practice<br>
+          <small style="font-size: 0.8em;">Combine multiple sections</small>
+        </button>
+        <button class="modeButton" onclick="showChallengeSetup()">
+          🔥 Challenge Mode<br>
+          <small style="font-size: 0.8em;">Fast-paced rapid practice</small>
+        </button>
+      </div>
+
+      <div id="sectionSelect" class="panel">
+        <h2 style="text-align: center;">Choose a Section to Learn</h2>
+        <div class="sectionCard" onclick="startSection(1)">
+          <h3>📝 Section 1: Question Words</h3>
+          <p>Learn Who, What, When, Where, Why, How, Which, Whose</p>
+        </div>
+        <div class="sectionCard" onclick="startSection(2)">
+          <h3>✅ Section 2: Be Verb Questions</h3>
+          <p>Practice am, is, are, was, were</p>
+        </div>
+        <div class="sectionCard" onclick="startSection(3)">
+          <h3>❓ Section 3: Do/Does/Did Questions</h3>
+          <p>Master auxiliary verb questions</p>
+        </div>
+        <div class="sectionCard" onclick="startSection(4)">
+          <h3>🎯 Section 4: Modal Verb Questions</h3>
+          <p>Learn Can/Could/Can't/Couldn't/Must with tone</p>
+        </div>
+        <button onclick="showMainMenu()">◀️ Back to Menu</button>
+      </div>
+
+      <div id="modalSetup" class="panel">
+        <h2 style="text-align: center;">🎯 Modal Verb Practice Modes</h2>
+        <p style="text-align: center; font-size: clamp(1.05rem, 2.4vw, 1.25rem); line-height: 1.6;">
+          Choose a focused training mode for Modal Questions.
+        </p>
+        <button class="modeButton" onclick="startModalMode('full')">
+          🌈 Full Modal Practice<br>
+          <small style="font-size: 0.8em;">6 question types in random order</small>
+        </button>
+        <button class="modeButton" onclick="startModalMode('can')">
+          💪 Can vs Can't Mode<br>
+          <small style="font-size: 0.8em;">neutral vs frustrated tone</small>
+        </button>
+        <button class="modeButton" onclick="startModalMode('could')">
+          ⏳ Could vs Couldn't Mode<br>
+          <small style="font-size: 0.8em;">polite vs gentle disagreement tone</small>
+        </button>
+        <button class="modeButton" onclick="startModalMode('advanced')">
+          🧠 Tone and Contrast Lab<br>
+          <small style="font-size: 0.8em;">tone matching, contrast, tone ID</small>
+        </button>
+        <button class="modeButton" onclick="startModalChallenge(30)">
+          ⚡ Timed Modal Challenge<br>
+          <small style="font-size: 0.8em;">rapid random tone-form decisions</small>
+        </button>
+        <div class="navButtons">
+          <button onclick="showSectionSelect()">◀️ Back to Sections</button>
+        </div>
+      </div>
+
+      <div id="mixedSetup" class="panel">
+        <h2 style="text-align: center;">Mixed Practice Setup</h2>
+        <p style="text-align: center;">Select which sections to include:</p>
+        <div class="checkboxGroup">
+          <label class="checkboxLabel"><input type="checkbox" id="mix1" checked><span>📝 Question Words</span></label>
+          <label class="checkboxLabel"><input type="checkbox" id="mix2" checked><span>✅ Be Verb Questions</span></label>
+          <label class="checkboxLabel"><input type="checkbox" id="mix3" checked><span>❓ Do/Does/Did Questions</span></label>
+          <label class="checkboxLabel"><input type="checkbox" id="mix4" checked><span>🎯 Modal Verb Questions</span></label>
+        </div>
+        <div class="navButtons">
+          <button onclick="showMainMenu()">◀️ Back</button>
+          <button onclick="startMixedPractice()">Start Mixed Practice ▶️</button>
+        </div>
+      </div>
+
+      <div id="challengeSetup" class="panel">
+        <h2 style="text-align: center;">Challenge Mode</h2>
+        <p style="text-align: center; font-size: clamp(1.1rem, 2.4vw, 1.3rem);">
+          Fast-paced random question practice!<br>
+          Select question count:
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 16px 0;">
+          <button onclick="startChallenge(20)">20 Questions</button>
+          <button onclick="startChallenge(30)">30 Questions</button>
+          <button onclick="startChallenge(50)">50 Questions</button>
+        </div>
+        <button onclick="showMainMenu()">◀️ Back to Menu</button>
+      </div>
+
+      <div id="teachingPanel" class="panel">
+        <div id="teachingContent" class="teachingSlide"></div>
+        <div class="navButtons">
+          <button onclick="skipTeaching()">Skip to Practice ⏭️</button>
+          <button onclick="nextTeachingSlide()">Next ➡️</button>
+        </div>
+      </div>
+
+      <div id="practicePanel" class="panel">
+        <div class="statusRow">
+          <div class="statusItem"><span id="sectionLabel">Section 1</span></div>
+          <div class="statusItem">Q: <span id="questionNumber">1</span>/<span id="totalQuestions">10</span></div>
+          <div class="statusItem">Score: <span id="score">0</span></div>
+          <div class="statusItem">⭐ <span id="stars">0</span></div>
+          <div class="statusItem" id="timerItem" style="display:none;">⏱️ <span id="timerValue">--</span>s</div>
+        </div>
+
+        <div id="progressBar"><div id="progress"></div></div>
+
+        <div id="modalTypeBadge"></div>
+        <div id="questionCue"></div>
+        <div id="questionText">Get ready!</div>
+        <div id="options"></div>
+        <div id="toneFeedback"></div>
+        <div id="emojiFeedback"></div>
+      </div>
+
+      <div id="endPanel" class="panel">
+        <h2 id="finalTitle">🎉 Amazing!</h2>
+        <p id="finalMessage">You are a Question Master!</p>
+        <p id="finalScore">Final Score: 0/10</p>
+        <p id="finalStars">Stars: ⭐⭐⭐⭐⭐</p>
+        <div class="navButtons">
+          <button onclick="showMainMenu()">🏠 Main Menu</button>
+          <button onclick="restartCurrentMode()">🔁 Practice Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside id="teacherPanel">
+    <h3>👩‍🏫 Teacher Controls</h3>
+    <div class="teacherRow">
+      <button class="smallBtn" onclick="nextQuestion()">Next ▶️</button>
+      <button class="smallBtn" onclick="revealAnswer()">Reveal 💡</button>
+      <button class="smallBtn" onclick="skipQuestion()">Skip ⏭️</button>
+      <button class="smallBtn" onclick="restartGame()">Restart 🔄</button>
+    </div>
+  </aside>
+
+  <div id="confettiLayer"></div>
+  <div id="reactionLayer"></div>
+  <div id="overlayLayer"><div class="overlayCard" id="overlayText"></div></div>
+
+  <div id="explanationModalOverlay" class="explanation-modal-overlay">
+    <div class="explanation-modal">
+      <div class="explanation-modal-icon">💡</div>
+      <div class="explanation-modal-title">Also Correct!</div>
+      <div class="explanation-modal-content" id="explanationModalContent"></div>
+      <button class="explanation-modal-close" onclick="closeExplanationModal()">Got it! ✓</button>
+    </div>
+  </div>
+
+<script>
+  const mainMenu = document.getElementById("mainMenu");
+  const sectionSelect = document.getElementById("sectionSelect");
+  const modalSetup = document.getElementById("modalSetup");
+  const mixedSetup = document.getElementById("mixedSetup");
+  const challengeSetup = document.getElementById("challengeSetup");
+  const teachingPanel = document.getElementById("teachingPanel");
+  const practicePanel = document.getElementById("practicePanel");
+  const endPanel = document.getElementById("endPanel");
+  const mainCard = document.getElementById("mainCard");
+
+  const teachingContent = document.getElementById("teachingContent");
+  const sectionLabel = document.getElementById("sectionLabel");
+  const questionNumber = document.getElementById("questionNumber");
+  const totalQuestions = document.getElementById("totalQuestions");
+  const scoreEl = document.getElementById("score");
+  const starsEl = document.getElementById("stars");
+  const timerItem = document.getElementById("timerItem");
+  const timerValue = document.getElementById("timerValue");
+  const progressEl = document.getElementById("progress");
+  const modalTypeBadgeEl = document.getElementById("modalTypeBadge");
+  const questionCueEl = document.getElementById("questionCue");
+  const questionTextEl = document.getElementById("questionText");
+  const optionsEl = document.getElementById("options");
+  const toneFeedbackEl = document.getElementById("toneFeedback");
+  const emojiFeedbackEl = document.getElementById("emojiFeedback");
+
+  const confettiLayer = document.getElementById("confettiLayer");
+  const reactionLayer = document.getElementById("reactionLayer");
+  const overlayLayer = document.getElementById("overlayLayer");
+  const overlayText = document.getElementById("overlayText");
+  const explanationModalOverlay = document.getElementById("explanationModalOverlay");
+  const explanationModalContent = document.getElementById("explanationModalContent");
+
+  let gameState = {
+    mode: null,
+    currentSection: null,
+    teachingSlideIndex: 0,
+    questionBank: [],
+    currentQuestionIndex: 0,
+    score: 0,
+    stars: 0,
+    answered: false,
+    totalQuestions: 0,
+    selectedSections: [],
+    modalMode: "full",
+    timerEnabled: false,
+    timerValue: 0,
+    timerLimit: 8,
+    timerId: null
+  };
+
+  const sections = {
+    1: {
+      name: "Question Words",
+      emoji: "📝",
+      teaching: [
+        {
+          title: "Question Words Overview",
+          content: `
+            <div class="conceptBox">
+              <h3>Wh- Question Words</h3>
+              <p><strong>Question words help us ask for information.</strong></p>
+              <p><b>Who / What / When / Where / Why / How / Which / Whose</b></p>
+            </div>
+            <div class="exampleBox">
+              <p><strong>Example:</strong></p>
+              <p>Q: <span class="keywordHighlight">Who</span> is your best friend?</p>
+              <p>A: Joanne is my best friend.</p>
+            </div>
+          `
+        },
+        {
+          title: "What Each Question Word Asks For",
+          content: `
+            <div class="infoGrid">
+              <div class="infoCard"><h4><span class="keywordHighlight">Who</span></h4><p>→ person</p><small>Who is she?</small></div>
+              <div class="infoCard"><h4><span class="keywordHighlight">What</span></h4><p>→ thing</p><small>What is this?</small></div>
+              <div class="infoCard"><h4><span class="keywordHighlight">When</span></h4><p>→ time/date</p><small>When is class?</small></div>
+              <div class="infoCard"><h4><span class="keywordHighlight">Where</span></h4><p>→ place</p><small>Where is it?</small></div>
+              <div class="infoCard"><h4><span class="keywordHighlight">Why</span></h4><p>→ reason</p><small>Why are you late?</small></div>
+              <div class="infoCard"><h4><span class="keywordHighlight">How</span></h4><p>→ method/feeling</p><small>How are you?</small></div>
+              <div class="infoCard"><h4><span class="keywordHighlight">Which</span></h4><p>→ choice</p><small>Which one?</small></div>
+              <div class="infoCard"><h4><span class="keywordHighlight">Whose</span></h4><p>→ possession</p><small>Whose is this?</small></div>
+            </div>
+          `
+        }
+      ],
+      questions: [
+        {q:"______ is your favourite colour?", context:"asking about a thing", options:["Who","What","Where","Why"], answer:"What", alternatives:{}},
+        {q:"______ is your best friend?", context:"asking about a person", options:["Who","What","When","Why"], answer:"Who", alternatives:{}},
+        {q:"______ do you go to school? 🏫", context:"asking about location", options:["When","Where","Why","How"], answer:"Where", alternatives:{}},
+        {q:"______ are you sad?", context:"asking for a reason", options:["Who","Why","When","Which"], answer:"Why", alternatives:{}},
+        {q:"______ is your birthday? 🎂", context:"asking about date/time", options:["When","Where","Who","Why"], answer:"When", alternatives:{}},
+        {q:"______ do you feel today? 😊", context:"asking about condition", options:["How","Who","When","Why"], answer:"How", alternatives:{}},
+        {q:"______ book do you want? 📚", context:"choosing between options", options:["Which","Who","When","Why"], answer:"Which", alternatives:{}},
+        {q:"______ pencil is this? ✏️", context:"asking about ownership", options:["Whose","Which","Who","Why"], answer:"Whose", alternatives:{}},
+        {q:"______ is your teacher?", context:"asking about a person", options:["Who","What","When","Why"], answer:"Who", alternatives:{}},
+        {q:"______ is your favourite food? 🍕", context:"asking about a thing", options:["What","Who","When","Why"], answer:"What", alternatives:{}},
+        {q:"______ is the library? 📍", context:"asking about location", options:["Where","When","Who","What"], answer:"Where", alternatives:{}},
+        {q:"______ do you study English?", context:"asking for a reason", options:["Why","When","Who","What"], answer:"Why", alternatives:{}},
+        {q:"______ do you go to bed? 🌙", context:"asking about time", options:["When","Where","Who","What"], answer:"When", alternatives:{}},
+        {q:"______ do you make a cake? 👩‍🍳", context:"asking about method/steps", options:["How","Who","When","Why"], answer:"How", alternatives:{}},
+        {q:"______ colour do you like?", context:"choosing between options", options:["Which","Who","When","Why"], answer:"Which", alternatives:{}}
+      ]
+    },
+    2: {
+      name: "Be Verb Questions",
+      emoji: "✅",
+      teaching: [
+        {
+          title: "Be Verb Questions",
+          content: `
+            <div class="conceptBox">
+              <h3>Yes/No Questions with Be Verbs</h3>
+              <p><strong>Be verbs:</strong> am / is / are / was / were</p>
+              <p>We use them to ask Yes/No questions.</p>
+            </div>
+            <div class="exampleBox">
+              <p><strong>Examples:</strong></p>
+              <p><b>Is</b> he your brother?</p>
+              <p><b>Are</b> they playing?</p>
+              <p><b>Was</b> she late?</p>
+            </div>
+          `
+        }
+      ],
+      questions: [
+        {q:"______ you happy? 😊", context:"present, you/we/they", options:["Are","Is","Am","Was"], answer:"Are", alternatives:{}},
+        {q:"______ he your brother? 👦", context:"present, he/she/it", options:["Is","Are","Am","Were"], answer:"Is", alternatives:{}},
+        {q:"______ they at school? 🏫", context:"present, you/we/they", options:["Are","Is","Am","Was"], answer:"Are", alternatives:{}},
+        {q:"______ she your teacher? 👩‍🏫", context:"present, he/she/it", options:["Is","Are","Am","Were"], answer:"Is", alternatives:{}},
+        {q:"______ I late? ⏰", context:"present, I", options:["Am","Is","Are","Was"], answer:"Am", alternatives:{}},
+        {q:"______ it raining now? 🌧️", context:"present continuous, it", options:["Is","Are","Am","Were"], answer:"Is", alternatives:{}},
+        {q:"______ you tired yesterday? 😴", context:"past, you/we/they", options:["Were","Was","Are","Is"], answer:"Were", alternatives:{}},
+        {q:"______ he at home last night? 🏠", context:"past, he/she/it", options:["Was","Were","Is","Are"], answer:"Was", alternatives:{}},
+        {q:"______ we ready now? ✅", context:"present, you/we/they", options:["Are","Is","Am","Was"], answer:"Are", alternatives:{}},
+        {q:"______ she sick yesterday? 🤒", context:"past, he/she/it", options:["Was","Were","Is","Are"], answer:"Was", alternatives:{}}
+      ]
+    },
+    3: {
+      name: "Do/Does/Did Questions",
+      emoji: "❓",
+      teaching: [
+        {
+          title: "Do/Does/Did Questions",
+          content: `
+            <div class="conceptBox">
+              <h3>Auxiliary Verb Questions</h3>
+              <p><strong>Auxiliary verbs:</strong> do / does / did</p>
+              <p>We use them to ask Yes/No questions about actions.</p>
+            </div>
+            <div class="exampleBox">
+              <p><strong>Examples:</strong></p>
+              <p><b>Do</b> you like apples?</p>
+              <p><b>Does</b> she play piano?</p>
+              <p><b>Did</b> they finish homework?</p>
+            </div>
+          `
+        }
+      ],
+      questions: [
+        {q:"______ you like pizza? 🍕", context:"present habit", options:["Do","Does","Did","Are"], answer:"Do", alternatives:{}},
+        {q:"______ she play soccer? ⚽", context:"present habit, 3rd person", options:["Does","Do","Did","Is"], answer:"Does", alternatives:{}},
+        {q:"______ they go to school yesterday? 📅", context:"past action", options:["Did","Do","Does","Were"], answer:"Did", alternatives:{}},
+        {q:"______ he watch TV? 📺", context:"present habit, 3rd person", options:["Does","Do","Did","Is"], answer:"Does", alternatives:{}},
+        {q:"______ we need to study? 📖", context:"present", options:["Do","Does","Did","Are"], answer:"Do", alternatives:{}},
+        {q:"______ it rain yesterday? 🌧️", context:"past weather", options:["Did","Do","Does","Was"], answer:"Did", alternatives:{}},
+        {q:"______ you finish your homework last night? 📝", context:"past action", options:["Did","Do","Does","Were"], answer:"Did", alternatives:{}},
+        {q:"______ she like chocolate? 🍫", context:"present preference", options:["Does","Do","Did","Is"], answer:"Does", alternatives:{}},
+        {q:"______ they usually play basketball? 🏀", context:"present habit", options:["Do","Does","Did","Are"], answer:"Do", alternatives:{}},
+        {q:"______ he eat breakfast every day? 🥐", context:"present habit, 3rd person", options:["Does","Do","Did","Is"], answer:"Does", alternatives:{}}
+      ]
+    },
+    4: {
+      name: "Modal Verb Questions",
+      emoji: "🎯",
+      teaching: [
+        {
+          title: "Modal Verb Questions Overview",
+          content: `
+            <div class="conceptBox">
+              <h3>Target Question Forms</h3>
+              <p><strong>Can / Could / Can't / Couldn't / Must</strong></p>
+              <p>Match each form to <b>function</b> and <b>tone</b>.</p>
+            </div>
+            <div class="exampleBox">
+              <p><b>Can</b> you help me?</p>
+              <p><b>Could</b> you check this, please?</p>
+              <p><b>Can't</b> you just try once?</p>
+              <p><b>Couldn't</b> we email it instead?</p>
+              <p><b>Must</b> we wear helmets in this lab?</p>
+            </div>
+          `
+        },
+        {
+          title: "Modal Question Tone Levels",
+          content: `
+            <div class="conceptBox">
+              <table class="toneTable">
+                <thead>
+                  <tr><th>Form</th><th>Function</th><th>Tone</th><th>Typical Situation</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Can...?</td><td>request / ability</td><td>neutral</td><td>everyday questions</td></tr>
+                  <tr><td>Could...?</td><td>polite request / possibility</td><td>polite</td><td>formal or respectful requests</td></tr>
+                  <tr><td>Can't...?</td><td>challenge / surprise</td><td>strong</td><td>frustration or disbelief</td></tr>
+                  <tr><td>Couldn't...?</td><td>gentle disagreement</td><td>soft</td><td>polite suggestion or doubt</td></tr>
+                  <tr><td>Must...?</td><td>necessity / rule</td><td>serious</td><td>obligation or requirement</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="emotionCards">
+              <div class="emotionCard">Can...?<br>🙂 normal</div>
+              <div class="emotionCard">Could...?<br>🙏 polite</div>
+              <div class="emotionCard">Can't...?<br>😤 frustrated / surprised</div>
+              <div class="emotionCard">Couldn't...?<br>🤔 gentle disagreement</div>
+              <div class="emotionCard">Must...?<br>⚠️ serious / rule</div>
+            </div>
+          `
+        },
+        {
+          title: "Situation + Tone Matching",
+          content: `
+            <div class="conceptBox">
+              <p><b>Think in 2 steps:</b></p>
+              <p>1) What is the function? (request / permission / challenge / rule)</p>
+              <p>2) What is the tone? (neutral / polite / frustrated / soft / serious)</p>
+            </div>
+            <div class="exampleBox">
+              <p><b>Situation:</b> Ask teacher respectfully → <b>Could...?</b></p>
+              <p><b>Situation:</b> Ask about a rule → <b>Must...?</b></p>
+              <p><b>Situation:</b> Frustrated challenge → <b>Can't...?</b></p>
+            </div>
+          `
+        },
+        {
+          title: "Contrast and Tone Identification",
+          content: `
+            <div class="conceptBox">
+              <p><b>Can you...?</b> = normal request</p>
+              <p><b>Could you...?</b> = more polite request</p>
+              <p><b>Can't you...?</b> = annoyed / surprised challenge</p>
+              <p><b>Couldn't we...?</b> = soft disagreement / suggestion</p>
+              <p><b>Must we...?</b> = rules and obligations</p>
+            </div>
+            <div class="exampleBox">
+              <p><b>Contrast Drill:</b> Choose the best question for the same situation.</p>
+              <p><b>Tone ID:</b> Read a question and identify its emotional tone.</p>
+              <p><b>Full Mode:</b> situation, tone, contrast, dialogue, transformation mixed together.</p>
+            </div>
+          `
+        }
+      ],
+      questions: []
+    }
+  };
+
+  const modalToneMap = {
+    can: { emoji: "🙂", label: "neutral", className: "tone-neutral" },
+    could: { emoji: "🙏", label: "polite", className: "tone-polite" },
+    "can't": { emoji: "😤", label: "frustrated", className: "tone-frustrated" },
+    "couldn't": { emoji: "🤔", label: "soft disagreement", className: "tone-soft" },
+    must: { emoji: "⚠️", label: "rule", className: "tone-serious" }
+  };
+
+  function modalFamily(answerText) {
+    const lead = String(answerText).toLowerCase().trim();
+    if (lead.startsWith("can") || lead.startsWith("can't")) return "can";
+    if (lead.startsWith("could") || lead.startsWith("couldn't")) return "could";
+    if (lead.startsWith("must")) return "must";
+    return "advanced";
+  }
+
+  function createModalQuestion(config) {
+    return {
+      q: config.q,
+      context: config.context,
+      options: config.options,
+      answer: config.answer,
+      alternatives: config.alternatives || {},
+      practiceType: config.practiceType,
+      explainCorrect: config.explainCorrect,
+      modalGroup: config.modalGroup || modalFamily(config.answer)
+    };
+  }
+
+  function buildModalQuestionBank() {
+    const bank = [];
+    const modalOptions = ["Can", "Could", "Can't", "Couldn't", "Must"];
+
+    const situationChoice = [
+      ["You need help carrying a box.", "___ you help me with this?", "Can", "'Can you...?' is a normal everyday request."],
+      ["You want to politely ask a teacher for help.", "___ you help me with this problem?", "Could", "'Could you...?' sounds respectful and polite."],
+      ["Your friend refuses to try.", "___ you just try it once?", "Can't", "'Can't you...?' shows frustration or disbelief."],
+      ["You think emailing is easier.", "___ we just email it instead?", "Couldn't", "'Couldn't we...?' gives a gentle alternative."],
+      ["You are asking about a lab rule.", "___ we wear helmets in this lab?", "Must", "'Must we...?' asks about obligation or rules."],
+      ["You are asking a friend for a small favour.", "___ you hold this for me?", "Can", "Neutral everyday request."],
+      ["You want to sound extra respectful to the principal.", "___ you check my form, please?", "Could", "Formal or respectful request."],
+      ["Your teammate still ignores the instructions.", "___ you follow the checklist?", "Can't", "This sounds annoyed and challenging."],
+      ["You politely suggest another plan.", "___ we start with the short version?", "Couldn't", "This gives a soft disagreement or suggestion."],
+      ["You ask about a school requirement.", "___ students wear ID cards today?", "Must", "This checks a serious rule or requirement."],
+      ["You ask a classmate normally.", "___ you pass me the glue?", "Can", "Simple normal request."],
+      ["You politely ask an office worker.", "___ I leave this document here?", "Could", "Polite request." ]
+    ];
+
+    situationChoice.forEach(([situation, stem, answer, explain]) => {
+      bank.push(createModalQuestion({
+        practiceType: "Situation Choice",
+        q: `Situation: ${situation}<br>${stem}`,
+        context: "Choose the best modal question for the situation.",
+        options: modalOptions,
+        answer,
+        explainCorrect: explain
+      }));
+    });
+
+    const toneMatching = [
+      ["POLITE 🙏", "___ you help me carry this?", "Could"],
+      ["FRUSTRATED 😤", "___ you just listen for a second?", "Can't"],
+      ["NEUTRAL 🙂", "___ you close the window?", "Can"],
+      ["SOFT DISAGREEMENT 🤔", "___ we just email it instead?", "Couldn't"],
+      ["SERIOUS RULE ⚠️", "___ we wear helmets in this lab?", "Must"],
+      ["POLITE 🙏", "___ I ask one more question, please?", "Could"],
+      ["NEUTRAL 🙂", "___ you check my answer?", "Can"],
+      ["FRUSTRATED 😤", "___ you stop making that noise?", "Can't"],
+      ["SOFT DISAGREEMENT 🤔", "___ we move this to tomorrow instead?", "Couldn't"],
+      ["SERIOUS RULE ⚠️", "___ visitors sign in first?", "Must"]
+    ];
+
+    toneMatching.forEach(([emotion, stem, answer]) => {
+      bank.push(createModalQuestion({
+        practiceType: "Tone Matching",
+        q: `Emotion: ${emotion}<br>${stem}`,
+        context: "Match the emotion card to the modal question form.",
+        options: modalOptions,
+        answer,
+        explainCorrect: `This tone matches '${answer}...?' in this context.`
+      }));
+    });
+
+    const contrastDrills = [
+      { situation: "Asking your teacher politely.", options: ["Can you help me?", "Could you help me?", "Can't you help me?", "Must you help me?"], answer: "Could you help me?" },
+      { situation: "Asking a friend normally.", options: ["Can you help me?", "Could you help me?", "Can't you help me?", "Must you help me?"], answer: "Can you help me?" },
+      { situation: "Showing frustration.", options: ["Can you just try?", "Could you just try?", "Can't you just try?", "Must you just try?"], answer: "Can't you just try?" },
+      { situation: "Checking a strict lab rule.", options: ["Can we wear helmets?", "Could we wear helmets?", "Couldn't we wear helmets?", "Must we wear helmets?"], answer: "Must we wear helmets?" },
+      { situation: "Making a gentle alternative suggestion.", options: ["Can we print it?", "Could we print it?", "Can't we print it?", "Couldn't we print two pages only?"], answer: "Couldn't we print two pages only?" },
+      { situation: "Formal request to office staff.", options: ["Can I speak to the manager?", "Could I speak to the manager?", "Can't I speak to the manager?", "Must I speak to the manager?"], answer: "Could I speak to the manager?" },
+      { situation: "Polite question to your teacher.", options: ["Can I leave early?", "Could I leave early?", "Can't I leave early?", "Must I leave early?"], answer: "Could I leave early?" },
+      { situation: "You feel annoyed because someone is late again.", options: ["Can you be on time?", "Could you be on time?", "Can't you be on time?", "Must you be on time?"], answer: "Can't you be on time?" },
+      { situation: "You gently disagree with the current plan.", options: ["Can we try again?", "Could we try again?", "Can't we try again?", "Couldn't we try a shorter task first?"], answer: "Couldn't we try a shorter task first?" },
+      { situation: "You ask about a school rule.", options: ["Can students stay here?", "Could students stay here?", "Can't students stay here?", "Must students stay here?"], answer: "Must students stay here?" }
+    ];
+
+    contrastDrills.forEach((item) => {
+      bank.push(createModalQuestion({
+        practiceType: "Contrast Drill",
+        q: `Situation: ${item.situation}<br>Choose the best question:`,
+        context: "Choose the sentence with the best tone and function.",
+        options: item.options,
+        answer: item.answer,
+        explainCorrect: `Best choice for this situation: ${item.answer}`,
+        modalGroup: "advanced"
+      }));
+    });
+
+    const toneIdentification = [
+      ["Can't you come? It's only two hours!", "Frustrated 😤"],
+      ["Could you open the window, please?", "Polite 🙏"],
+      ["Can you pass me the marker?", "Neutral 🙂"],
+      ["Couldn't we send the report by email instead?", "Soft Disagreement 🤔"],
+      ["Must we wear full uniform tomorrow?", "Serious Rule ⚠️"],
+      ["Can't you wait for one more minute?", "Frustrated 😤"],
+      ["Could you explain that again, please?", "Polite 🙏"],
+      ["Couldn't we work in pairs first?", "Soft Disagreement 🤔"]
+    ];
+
+    toneIdentification.forEach(([line, answer]) => {
+      bank.push(createModalQuestion({
+        practiceType: "Tone Identification",
+        q: `Question: ${line}<br>What is the tone?`,
+        context: "Identify the emotional tone of the question.",
+        options: ["Neutral 🙂", "Polite 🙏", "Frustrated 😤", "Soft Disagreement 🤔", "Serious Rule ⚠️"],
+        answer,
+        explainCorrect: `Yes. The tone is ${answer}.`,
+        modalGroup: "advanced"
+      }));
+    });
+
+    const dialogueCompletion = [
+      ["A: I don't understand this step. ___ you explain it again, Miss Lee?<br>B: Of course.", "Could"],
+      ["A: It's heavy. ___ you carry this side with me?<br>B: Sure.", "Can"],
+      ["A: We are entering the chemistry room. ___ we wear gloves?<br>B: Yes, it's required.", "Must"],
+      ["A: You promised to join. ___ you come for ten minutes at least?<br>B: Sorry, I'm busy.", "Can't"],
+      ["A: This route is too far. ___ we take the bus instead?<br>B: Good idea.", "Couldn't"],
+      ["A: Teacher, ___ I ask one final question?<br>B: Yes, please.", "Could"],
+      ["A: I forgot my key card. ___ I still enter the lab?<br>B: No. It's not allowed.", "Must"],
+      ["A: ___ you message me after class?<br>B: Sure, no problem.", "Can"]
+    ];
+
+    dialogueCompletion.forEach(([dialogue, answer]) => {
+      bank.push(createModalQuestion({
+        practiceType: "Dialogue Completion",
+        q: dialogue,
+        context: "Complete the dialogue with the best modal question.",
+        options: modalOptions,
+        answer,
+        explainCorrect: `Good fit: '${answer}...?' matches the dialogue tone.`
+      }));
+    });
+
+    const sentenceTransform = [
+      { prompt: "Make this more polite: Can you help me check my paragraph?", options: ["Could you help me check my paragraph?", "Can't you help me check my paragraph?", "Must you help me check my paragraph?", "Can you help me check my paragraph?"], answer: "Could you help me check my paragraph?" },
+      { prompt: "Change this to a frustrated challenge: Can you wait quietly?", options: ["Could you wait quietly?", "Can't you wait quietly?", "Must you wait quietly?", "Can you wait quietly?"], answer: "Can't you wait quietly?" },
+      { prompt: "Change this to a gentle alternative: Can we print all 20 pages?", options: ["Could we print all 20 pages?", "Can't we print all 20 pages?", "Couldn't we print only 2 pages?", "Must we print all 20 pages?"], answer: "Couldn't we print only 2 pages?" },
+      { prompt: "Change this to a rule-checking question: Can we enter without goggles?", options: ["Could we enter without goggles?", "Can't we enter without goggles?", "Must we wear goggles before entering?", "Can we enter without goggles?"], answer: "Must we wear goggles before entering?" },
+      { prompt: "Make this neutral request: Could you lend me your eraser?", options: ["Can you lend me your eraser?", "Can't you lend me your eraser?", "Couldn't you lend me your eraser?", "Must you lend me your eraser?"], answer: "Can you lend me your eraser?" },
+      { prompt: "Make this polite request: Can I ask one question?", options: ["Could I ask one question?", "Can't I ask one question?", "Must I ask one question?", "Can I ask one question?"], answer: "Could I ask one question?" },
+      { prompt: "Make this stronger challenge: Could you stop shouting?", options: ["Can you stop shouting?", "Can't you stop shouting?", "Must you stop shouting?", "Couldn't you stop shouting?"], answer: "Can't you stop shouting?" },
+      { prompt: "Turn this into a soft disagreement: Can we start the long project now?", options: ["Could we start the long project now?", "Can't we start the long project now?", "Couldn't we do the short task first?", "Must we start the long project now?"], answer: "Couldn't we do the short task first?" }
+    ];
+
+    sentenceTransform.forEach((item) => {
+      bank.push(createModalQuestion({
+        practiceType: "Sentence Transformation",
+        q: item.prompt,
+        context: "Transform the question to match the target tone or function.",
+        options: item.options,
+        answer: item.answer,
+        explainCorrect: "This rewrite best matches the requested tone.",
+        modalGroup: "advanced"
+      }));
+    });
+
+    return bank;
+  }
+
+  sections[4].questions = buildModalQuestionBank();
+
+  function showPanel(panelId) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  function showMainMenu() {
+    showPanel('mainMenu');
+    resetGame();
+  }
+
+  function showSectionSelect() { showPanel('sectionSelect'); }
+  function showMixedSetup() { showPanel('mixedSetup'); }
+  function showChallengeSetup() { showPanel('challengeSetup'); }
+
+  function startSection(sectionNum) {
+    if (sectionNum === 4) {
+      gameState.mode = 'section';
+      gameState.currentSection = 4;
+      gameState.modalMode = 'full';
+      showPanel('modalSetup');
+      return;
+    }
+    gameState.mode = 'section';
+    gameState.currentSection = sectionNum;
+    gameState.timerEnabled = false;
+    gameState.teachingSlideIndex = 0;
+    showTeachingSlide();
+  }
+
+  function startModalMode(mode) {
+    gameState.mode = 'section';
+    gameState.currentSection = 4;
+    gameState.modalMode = mode;
+    gameState.timerEnabled = false;
+    gameState.teachingSlideIndex = 0;
+    showTeachingSlide();
+  }
+
+  function startModalChallenge(count = 30) {
+    gameState.mode = 'modalChallenge';
+    gameState.currentSection = 4;
+    gameState.modalMode = 'full';
+    gameState.questionBank = shuffle([...sections[4].questions]).slice(0, count);
+    gameState.totalQuestions = gameState.questionBank.length;
+    gameState.currentQuestionIndex = 0;
+    gameState.score = 0;
+    gameState.stars = 0;
+    gameState.answered = false;
+    gameState.timerEnabled = true;
+    gameState.timerLimit = 8;
+    sectionLabel.textContent = `⚡ Timed Modal Challenge (${count})`;
+    showPanel('practicePanel');
+    showOverlay(`Timed Modal Challenge! ⏱️`, 850);
+    showQuestion();
+  }
+
+  function showTeachingSlide() {
+    const section = sections[gameState.currentSection];
+    const slides = section.teaching;
+    if (gameState.teachingSlideIndex >= slides.length) {
+      startPractice();
+      return;
+    }
+    const slide = slides[gameState.teachingSlideIndex];
+    teachingContent.innerHTML = `<h2 class="teachingTitle">${section.emoji} ${slide.title}</h2><div class="teachingContent">${slide.content}</div>`;
+    showPanel('teachingPanel');
+  }
+
+  function nextTeachingSlide() {
+    gameState.teachingSlideIndex++;
+    showTeachingSlide();
+  }
+
+  function skipTeaching() {
+    startPractice();
+  }
+
+  function startPractice() {
+    if (gameState.mode === 'section') {
+      const section = sections[gameState.currentSection];
+      if (gameState.currentSection === 4) {
+        const allModalQuestions = section.questions;
+        const mode = gameState.modalMode || 'full';
+        if (mode === 'can') {
+          gameState.questionBank = shuffle([...allModalQuestions.filter(q => q.modalGroup === 'can')]);
+          sectionLabel.textContent = `🎯 Modal Verbs: Can vs Can't`;
+        } else if (mode === 'could') {
+          gameState.questionBank = shuffle([...allModalQuestions.filter(q => q.modalGroup === 'could')]);
+          sectionLabel.textContent = `🎯 Modal Verbs: Could vs Couldn't`;
+        } else if (mode === 'advanced') {
+          gameState.questionBank = shuffle([...allModalQuestions.filter(q => ["advanced", "must"].includes(q.modalGroup))]);
+          sectionLabel.textContent = `🎯 Modal Verbs: Tone and Contrast Lab`;
+        } else {
+          gameState.questionBank = shuffle([...allModalQuestions]);
+          sectionLabel.textContent = `🎯 Modal Verbs: Full Practice`;
+        }
+        gameState.timerEnabled = false;
+      } else {
+        gameState.questionBank = shuffle([...section.questions]);
+        sectionLabel.textContent = `${section.emoji} ${section.name}`;
+        gameState.timerEnabled = false;
+      }
+      gameState.totalQuestions = gameState.questionBank.length;
+    }
+
+    gameState.currentQuestionIndex = 0;
+    gameState.score = 0;
+    gameState.stars = 0;
+    gameState.answered = false;
+    showPanel('practicePanel');
+    showOverlay(`Let's Practice! 🚀`, 800);
+    showQuestion();
+  }
+
+  function startMixedPractice() {
+    const selected = [];
+    if (document.getElementById('mix1').checked) selected.push(1);
+    if (document.getElementById('mix2').checked) selected.push(2);
+    if (document.getElementById('mix3').checked) selected.push(3);
+    if (document.getElementById('mix4').checked) selected.push(4);
+    if (selected.length === 0) {
+      showOverlay('Please select at least one section! 👩‍🏫', 1000);
+      return;
+    }
+    gameState.mode = 'mixed';
+    gameState.selectedSections = selected;
+    let allQuestions = [];
+    selected.forEach(num => { allQuestions = allQuestions.concat(sections[num].questions); });
+    gameState.questionBank = shuffle(allQuestions).slice(0, 30);
+    gameState.totalQuestions = gameState.questionBank.length;
+    gameState.currentQuestionIndex = 0;
+    gameState.score = 0;
+    gameState.stars = 0;
+    gameState.answered = false;
+    gameState.timerEnabled = false;
+    sectionLabel.textContent = "🎯 Mixed Practice";
+    showPanel('practicePanel');
+    showOverlay(`Mixed Practice Started! 🎉`, 800);
+    showQuestion();
+  }
+
+  function startChallenge(count) {
+    gameState.mode = 'challenge';
+    let allQuestions = [];
+    for (let i = 1; i <= 4; i++) allQuestions = allQuestions.concat(sections[i].questions);
+    gameState.questionBank = shuffle(allQuestions).slice(0, count);
+    gameState.totalQuestions = count;
+    gameState.currentQuestionIndex = 0;
+    gameState.score = 0;
+    gameState.stars = 0;
+    gameState.answered = false;
+    gameState.timerEnabled = false;
+    sectionLabel.textContent = `🔥 Challenge Mode (${count})`;
+    showPanel('practicePanel');
+    showOverlay(`Challenge Mode Started! 🔥`, 800);
+    showQuestion();
+  }
+
+  function buildQuestionCue(q) {
+    if (!q || !q.options) return "";
+    const lowered = q.options.map(o => String(o).toLowerCase());
+    const hasModal = lowered.some(o => ["can", "could", "can't", "couldn't", "must"].includes(o));
+    return hasModal ? "🙂 Can | 🙏 Could | 😤 Can't | 🤔 Couldn't | ⚠️ Must" : "";
+  }
+
+  function detectToneKey(text) {
+    const first = String(text).trim().toLowerCase().split(/\s+/)[0].replace(/[?.!,]/g, "");
+    if (first === "can") return "can";
+    if (first === "could") return "could";
+    if (first === "can't") return "can't";
+    if (first === "couldn't") return "couldn't";
+    if (first === "must") return "must";
+    return null;
+  }
+
+  function renderOptionLabel(optionText) {
+    const toneKey = detectToneKey(optionText);
+    if (!toneKey || !modalToneMap[toneKey]) return `<span class="optionMain">${optionText}</span>`;
+    const tone = modalToneMap[toneKey];
+    return `<span class="optionMain">${optionText}</span><span class="toneTag ${tone.className}">${tone.emoji} ${tone.label}</span>`;
+  }
+
+  function updateTimerUI() {
+    if (gameState.timerEnabled) {
+      timerItem.style.display = 'block';
+      timerValue.textContent = gameState.timerValue > 0 ? gameState.timerValue : gameState.timerLimit;
+    } else {
+      timerItem.style.display = 'none';
+      timerValue.textContent = '--';
+    }
+  }
+
+  function stopTimer() {
+    if (gameState.timerId) {
+      clearInterval(gameState.timerId);
+      gameState.timerId = null;
+    }
+  }
+
+  function startTimer() {
+    stopTimer();
+    if (!gameState.timerEnabled) return;
+    gameState.timerValue = gameState.timerLimit;
+    timerValue.textContent = gameState.timerValue;
+    gameState.timerId = setInterval(() => {
+      gameState.timerValue -= 1;
+      timerValue.textContent = Math.max(0, gameState.timerValue);
+      if (gameState.timerValue <= 0) {
+        stopTimer();
+        if (gameState.answered) return;
+        const q = gameState.questionBank[gameState.currentQuestionIndex];
+        lockOptions();
+        toneFeedbackEl.textContent = `Time's up. Best answer: ${q.answer}`;
+        toneFeedbackEl.classList.add('warn');
+        optionsEl.querySelectorAll('.option').forEach(o => {
+          if (o.dataset.value === q.answer) o.classList.add('correct');
+        });
+        setTimeout(() => {
+          gameState.currentQuestionIndex++;
+          showQuestion();
+        }, 1400);
+      }
+    }, 1000);
+  }
+
+  function showQuestion() {
+    if (gameState.currentQuestionIndex >= gameState.questionBank.length) {
+      stopTimer();
+      endPractice();
+      return;
+    }
+
+    const q = gameState.questionBank[gameState.currentQuestionIndex];
+    gameState.answered = false;
+    questionNumber.textContent = gameState.currentQuestionIndex + 1;
+    totalQuestions.textContent = gameState.totalQuestions;
+    emojiFeedbackEl.textContent = "";
+    toneFeedbackEl.textContent = "";
+    toneFeedbackEl.classList.remove('ok', 'warn');
+
+    modalTypeBadgeEl.style.display = q.practiceType ? 'inline-block' : 'none';
+    modalTypeBadgeEl.textContent = q.practiceType ? `Mode: ${q.practiceType}` : '';
+    questionCueEl.textContent = buildQuestionCue(q);
+
+    if (q.context) {
+      questionTextEl.innerHTML = `<div>${q.q}</div><div class="hint-container"><div class="hint-toggle" onclick="toggleHint()">💡 Show Hint <span style="opacity: 0.6; font-size: 0.85em;">(H)</span></div><div class="hint-content" id="hintContent">${q.context}</div></div>`;
+    } else {
+      questionTextEl.innerHTML = q.q;
+    }
+
+    optionsEl.innerHTML = "";
+    shuffle([...q.options]).forEach(opt => {
+      const btn = document.createElement("div");
+      btn.className = "option";
+      btn.dataset.value = opt;
+      btn.innerHTML = renderOptionLabel(opt);
+      btn.onclick = () => checkAnswer(btn, opt, q.answer);
+      optionsEl.appendChild(btn);
+    });
+
+    updateProgress();
+    updateTimerUI();
+    startTimer();
+  }
+
+  function toggleHint() {
+    const hintContent = document.getElementById('hintContent');
+    const hintToggle = document.querySelector('.hint-toggle');
+    if (hintContent && hintToggle) {
+      if (hintContent.classList.contains('show')) {
+        hintContent.classList.remove('show');
+        hintToggle.innerHTML = '💡 Show Hint <span style="opacity: 0.6; font-size: 0.85em;">(H)</span>';
+      } else {
+        hintContent.classList.add('show');
+        hintToggle.innerHTML = '🔼 Hide Hint <span style="opacity: 0.6; font-size: 0.85em;">(H)</span>';
+      }
+    }
+  }
+
+  function showExplanation(anchorElement, message) {
+    explanationModalContent.textContent = message;
+    explanationModalOverlay.classList.add('show');
+  }
+
+  function closeExplanationModal() {
+    explanationModalOverlay.classList.remove('show');
+    setTimeout(() => {
+      gameState.currentQuestionIndex++;
+      showQuestion();
+    }, 300);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (explanationModalOverlay.classList.contains('show')) {
+      if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+        e.preventDefault();
+        closeExplanationModal();
+      }
+    } else if ((e.key === 'h' || e.key === 'H') && practicePanel.classList.contains('active')) {
+      e.preventDefault();
+      toggleHint();
+    }
+  });
+
+  function checkAnswer(optionEl, chosen, correct) {
+    if (gameState.answered) return;
+    stopTimer();
+    const q = gameState.questionBank[gameState.currentQuestionIndex];
+    const alternatives = q.alternatives || {};
+
+    gameState.answered = true;
+    optionEl.classList.add("clicked");
+    lockOptions();
+
+    if (chosen === correct) {
+      optionEl.classList.add("correct");
+      gameState.score++;
+      gameState.stars++;
+      scoreEl.textContent = gameState.score;
+      starsEl.textContent = gameState.stars;
+      emojiFeedbackEl.textContent = "😄";
+      toneFeedbackEl.textContent = q.explainCorrect ? `Correct! ${q.explainCorrect}` : "Correct!";
+      toneFeedbackEl.classList.add('ok');
+      launchConfetti(28);
+      starExplosion(optionEl);
+      floatEmoji("🎉");
+      floatEmoji("⭐");
+      setTimeout(() => {
+        gameState.currentQuestionIndex++;
+        showQuestion();
+      }, 1800);
+    } else if (alternatives[chosen]) {
+      optionEl.classList.add("alternative");
+      gameState.score += 0.5;
+      scoreEl.textContent = Math.floor(gameState.score);
+      emojiFeedbackEl.textContent = "💭";
+      showExplanation(optionEl, alternatives[chosen]);
+      optionsEl.querySelectorAll(".option").forEach(o => {
+        if (o.dataset.value === correct) o.classList.add("better-answer");
+      });
+      toneFeedbackEl.textContent = alternatives[chosen];
+      toneFeedbackEl.classList.add('warn');
+      floatEmoji("💡");
+    } else {
+      optionEl.classList.add("wrong");
+      emojiFeedbackEl.textContent = "🤔";
+      mainCard.classList.add("mainFlashWrong");
+      floatEmoji("🤔");
+      setTimeout(() => mainCard.classList.remove("mainFlashWrong"), 520);
+      optionsEl.querySelectorAll(".option").forEach(o => {
+        if (o.dataset.value === correct) o.classList.add("correct");
+      });
+      toneFeedbackEl.textContent = q.explainCorrect ? `This sounds better: ${q.explainCorrect}` : `Correct answer: ${correct}`;
+      toneFeedbackEl.classList.add('warn');
+      setTimeout(() => {
+        gameState.currentQuestionIndex++;
+        showQuestion();
+      }, 2400);
+    }
+  }
+
+  function updateProgress() {
+    const percent = (gameState.currentQuestionIndex / gameState.totalQuestions) * 100;
+    progressEl.style.width = percent + "%";
+  }
+
+  function lockOptions() {
+    optionsEl.querySelectorAll(".option").forEach(o => o.style.pointerEvents = "none");
+  }
+
+  function endPractice() {
+    stopTimer();
+    showPanel('endPanel');
+    const percent = Math.round((gameState.score / gameState.totalQuestions) * 100);
+    const starCount = Math.max(1, Math.ceil(gameState.stars / 3));
+    const starsDisplay = "⭐".repeat(Math.min(5, starCount));
+    document.getElementById('finalTitle').textContent = "🎉 Amazing!";
+    document.getElementById('finalMessage').textContent = "You are a Question Master!";
+    document.getElementById('finalScore').textContent = `Final Score: ${gameState.score}/${gameState.totalQuestions} (${percent}%)`;
+    document.getElementById('finalStars').textContent = `Stars: ${starsDisplay}`;
+    launchConfetti(40);
+    showOverlay("🏆 Great Job!", 1300);
+  }
+
+  function nextQuestion() {
+    stopTimer();
+    gameState.currentQuestionIndex++;
+    showQuestion();
+  }
+
+  function revealAnswer() {
+    if (!gameState.answered && gameState.currentQuestionIndex < gameState.questionBank.length) {
+      const q = gameState.questionBank[gameState.currentQuestionIndex];
+      optionsEl.querySelectorAll(".option").forEach(o => {
+        if (o.dataset.value === q.answer) o.classList.add("correct");
+      });
+      emojiFeedbackEl.textContent = "💡";
+      if (q.explainCorrect) {
+        toneFeedbackEl.textContent = q.explainCorrect;
+        toneFeedbackEl.classList.add('ok');
+      }
+    }
+  }
+
+  function skipQuestion() {
+    stopTimer();
+    gameState.currentQuestionIndex++;
+    showQuestion();
+  }
+
+  function restartGame() {
+    showMainMenu();
+  }
+
+  function restartCurrentMode() {
+    if (gameState.mode === 'section') {
+      startSection(gameState.currentSection);
+    } else if (gameState.mode === 'modalChallenge') {
+      startModalChallenge(gameState.totalQuestions || 30);
+    } else if (gameState.mode === 'mixed') {
+      startMixedPractice();
+    } else if (gameState.mode === 'challenge') {
+      startChallenge(gameState.totalQuestions);
+    }
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function resetGame() {
+    stopTimer();
+    gameState = {
+      mode: null,
+      currentSection: null,
+      teachingSlideIndex: 0,
+      questionBank: [],
+      currentQuestionIndex: 0,
+      score: 0,
+      stars: 0,
+      answered: false,
+      totalQuestions: 0,
+      selectedSections: [],
+      modalMode: 'full',
+      timerEnabled: false,
+      timerValue: 0,
+      timerLimit: 8,
+      timerId: null
+    };
+    progressEl.style.width = "0%";
+    updateTimerUI();
+  }
+
+  function launchConfetti(count = 24) {
+    const colors = ["#8fd3ff", "#ffe783", "#abf2d6", "#ff9a8a", "#ffffff"];
+    for (let i = 0; i < count; i++) {
+      const piece = document.createElement("div");
+      piece.className = "confettiPiece";
+      piece.style.left = Math.random() * 100 + "vw";
+      piece.style.top = "-14px";
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (Math.random() * 1.4 + 0.9) + "s";
+      confettiLayer.appendChild(piece);
+      setTimeout(() => piece.remove(), 2000);
+    }
+  }
+
+  function starExplosion(originElement) {
+    const rect = originElement.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    for (let i = 0; i < 8; i++) {
+      const star = document.createElement("div");
+      star.className = "starSpark";
+      star.textContent = "⭐";
+      star.style.left = x + "px";
+      star.style.top = y + "px";
+      star.style.setProperty("--dx", (Math.random() * 240 - 120) + "px");
+      star.style.setProperty("--dy", (Math.random() * 180 - 90) + "px");
+      reactionLayer.appendChild(star);
+      setTimeout(() => star.remove(), 950);
+    }
+  }
+
+  function floatEmoji(emoji) {
+    const node = document.createElement("div");
+    node.className = "floatingEmoji";
+    node.textContent = emoji;
+    node.style.left = (Math.random() * 70 + 15) + "vw";
+    node.style.top = (Math.random() * 40 + 40) + "vh";
+    reactionLayer.appendChild(node);
+    setTimeout(() => node.remove(), 1300);
+  }
+
+  function showOverlay(text, duration = 1100) {
+    overlayText.textContent = text;
+    overlayLayer.style.display = "grid";
+    launchConfetti(20);
+    setTimeout(() => {
+      overlayLayer.style.display = "none";
+    }, duration);
+  }
+</script>
+</body>
+</html>

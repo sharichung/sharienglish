@@ -1,0 +1,1286 @@
+<!doctype html>
+<html lang="en" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerund Learning Game</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    * {
+      font-family: 'Nunito', sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .game-container {
+      height: 100%;
+      width: 100%;
+      overflow-y: auto;
+    }
+
+    .btn-bounce {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-bounce:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-bounce:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes correctPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes wrongShake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-10px);
+      }
+
+      75% {
+        transform: translateX(10px);
+      }
+    }
+
+    @keyframes starBurst {
+      0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+      }
+
+      50% {
+        transform: scale(1.3) rotate(180deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 1;
+      }
+    }
+
+    @keyframes confetti {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100px) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatEmoji {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-60px) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      to {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+    }
+
+    .animate-correct {
+      animation: correctPulse 0.5s ease-in-out;
+    }
+
+    .animate-wrong {
+      animation: wrongShake 0.5s ease-in-out;
+    }
+
+    .animate-star {
+      animation: starBurst 0.6s ease-out forwards;
+    }
+
+    .animate-float {
+      animation: floatEmoji 1s ease-out forwards;
+    }
+
+    .slide-enter {
+      animation: slideIn 0.4s ease-out forwards;
+    }
+
+    .slide-exit {
+      animation: slideOut 0.4s ease-out forwards;
+    }
+
+    .progress-fill {
+      transition: width 0.5s ease-out;
+    }
+
+    .option-btn {
+      transition: all 0.3s ease;
+    }
+
+    .option-btn.correct {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      color: white !important;
+      border-color: #059669 !important;
+    }
+
+    .option-btn.wrong {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      color: white !important;
+      border-color: #dc2626 !important;
+    }
+
+    .example-box {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-left: 6px solid #f59e0b;
+    }
+
+    .rule-card {
+      background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+      border: 3px solid #0ea5e9;
+    }
+
+    .level-badge {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .star-gold {
+      color: #fbbf24;
+      filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+    }
+
+    .star-gray {
+      color: #d1d5db;
+    }
+
+    .checkbox-custom {
+      width: 28px;
+      height: 28px;
+      accent-color: #8b5cf6;
+    }
+  </style>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+  </style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+</head>
+
+<body class="h-full w-full bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200">
+  <div class="game-container" id="app">
+    <!-- Main Menu -->
+    <div id="mainMenu" class="flex flex-col items-center justify-center min-h-full p-6">
+      <div class="text-center mb-8">
+        <h1 id="gameTitle" class="text-5xl md:text-7xl font-black text-white drop-shadow-lg mb-4">🎮 Gerund Game! 🎮
+        </h1>
+        <p class="text-2xl md:text-3xl text-purple-800 font-bold">Learn -ing words and have fun!</p>
+      </div>
+      <div class="flex flex-col gap-6 w-full max-w-md"><button onclick="startSlides()"
+          class="btn-bounce bg-gradient-to-r from-green-400 to-green-600 text-white text-3xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:shadow-2xl">
+          📚 Learn First! </button> <button onclick="startGame()"
+          class="btn-bounce bg-gradient-to-r from-blue-400 to-blue-600 text-white text-3xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:shadow-2xl">
+          🎯 Start Game! </button> <button onclick="showChallengeSetup()"
+          class="btn-bounce bg-gradient-to-r from-purple-400 to-purple-600 text-white text-3xl font-bold py-6 px-8 rounded-3xl shadow-xl hover:shadow-2xl">
+          🏆 Challenge Mode! </button>
+      </div>
+      <div class="mt-8 text-xl text-purple-700 font-semibold">
+        👨‍🏫 Perfect for Zoom lessons! 👩‍🏫
+      </div>
+    </div><!-- Learning Slides -->
+    <div id="slidesSection" class="hidden min-h-full p-4 md:p-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-10 min-h-96">
+          <div id="slideContent"></div>
+        </div>
+        <div class="flex justify-between items-center mt-6 gap-4"><button id="prevBtn" onclick="prevSlide()"
+            class="btn-bounce bg-gray-400 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            ⬅️ Back </button>
+          <div class="flex items-center gap-2"><span id="slideIndicator"
+              class="text-xl font-bold text-purple-800"></span>
+          </div><button id="nextBtn" onclick="nextSlide()"
+            class="btn-bounce bg-blue-500 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg"> Next ➡️
+          </button>
+        </div>
+      </div>
+    </div><!-- Game Section -->
+    <div id="gameSection" class="hidden min-h-full p-4 md:p-6">
+      <div class="max-w-4xl mx-auto">
+        <!-- Game Header -->
+        <div class="bg-white/90 rounded-2xl p-4 mb-4 shadow-xl">
+          <div class="flex justify-between items-center flex-wrap gap-3">
+            <div class="level-badge text-white px-5 py-2 rounded-xl text-xl font-bold">
+              Level <span id="levelDisplay">1</span>
+            </div>
+            <div class="text-2xl font-bold text-purple-700">
+              Question <span id="questionNum">1</span>/30
+            </div>
+            <div class="text-2xl font-bold text-green-600">
+              ⭐ <span id="scoreDisplay">0</span>
+            </div>
+          </div><!-- Progress Bar -->
+          <div class="mt-4 bg-gray-200 rounded-full h-6 overflow-hidden">
+            <div id="progressBar" class="progress-fill bg-gradient-to-r from-green-400 to-blue-500 h-full rounded-full"
+              style="width: 0%"></div>
+          </div><!-- Level Description -->
+          <div id="levelDesc" class="mt-3 text-center text-lg font-semibold text-purple-600"></div>
+        </div><!-- Question Card -->
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 relative overflow-hidden">
+          <div id="floatingEmoji"
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl pointer-events-none hidden">
+          </div>
+          <h2 id="questionText" class="text-2xl md:text-4xl font-bold text-gray-800 text-center mb-8"></h2>
+          <div id="optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          <div id="feedbackArea" class="mt-6 text-center hidden">
+            <p id="feedbackText" class="text-2xl font-bold"></p>
+          </div><button id="nextQuestionBtn" onclick="nextQuestion()"
+            class="hidden mt-6 w-full btn-bounce bg-gradient-to-r from-blue-400 to-purple-500 text-white text-2xl font-bold py-4 rounded-2xl shadow-lg">
+            Next Question ➡️ </button>
+        </div><button onclick="backToMenu()"
+          class="mt-4 btn-bounce bg-gray-500 text-white text-xl font-bold py-3 px-6 rounded-xl shadow-lg"> 🏠 Back to
+          Menu </button>
+      </div>
+    </div><!-- Challenge Setup -->
+    <div id="challengeSetup" class="hidden min-h-full p-4 md:p-6">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-10">
+          <h2 class="text-3xl md:text-4xl font-black text-purple-700 text-center mb-6">🏆 Challenge Mode Setup 🏆</h2>
+          <p class="text-xl text-gray-600 text-center mb-8">Teacher: Select which grammar types to mix!</p>
+          <div class="space-y-4"><label
+              class="flex items-center gap-4 p-4 bg-green-100 rounded-2xl cursor-pointer hover:bg-green-200 transition">
+              <input type="checkbox" id="chkGerund" checked class="checkbox-custom rounded-lg"> <span
+                class="text-2xl font-bold text-green-700">✅ Gerund (-ing)</span> </label> <label
+              class="flex items-center gap-4 p-4 bg-blue-100 rounded-2xl cursor-pointer hover:bg-blue-200 transition">
+              <input type="checkbox" id="chkSimplePresent" class="checkbox-custom rounded-lg"> <span
+                class="text-2xl font-bold text-blue-700">📘 Simple Present</span> </label> <label
+              class="flex items-center gap-4 p-4 bg-yellow-100 rounded-2xl cursor-pointer hover:bg-yellow-200 transition">
+              <input type="checkbox" id="chkSimplePast" class="checkbox-custom rounded-lg"> <span
+                class="text-2xl font-bold text-yellow-700">📙 Simple Past</span> </label> <label
+              class="flex items-center gap-4 p-4 bg-purple-100 rounded-2xl cursor-pointer hover:bg-purple-200 transition">
+              <input type="checkbox" id="chkPresentCont" class="checkbox-custom rounded-lg"> <span
+                class="text-2xl font-bold text-purple-700">📗 Present Continuous</span> </label> <label
+              class="flex items-center gap-4 p-4 bg-pink-100 rounded-2xl cursor-pointer hover:bg-pink-200 transition">
+              <input type="checkbox" id="chkInfinitive" class="checkbox-custom rounded-lg"> <span
+                class="text-2xl font-bold text-pink-700">📕 Infinitive (to + verb)</span> </label>
+          </div>
+          <div class="mt-8 flex gap-4 flex-wrap justify-center"><button onclick="startChallenge()"
+              class="btn-bounce bg-gradient-to-r from-purple-500 to-pink-500 text-white text-2xl font-bold py-4 px-10 rounded-2xl shadow-lg">
+              🚀 Start Challenge! </button> <button onclick="backToMenu()"
+              class="btn-bounce bg-gray-400 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg"> 🏠 Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div><!-- End Screen -->
+    <div id="endScreen" class="hidden min-h-full p-4 md:p-6 flex items-center justify-center">
+      <div class="max-w-3xl w-full mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center">
+          <h2 class="text-4xl md:text-5xl font-black text-purple-700 mb-6">🎉 Amazing Job! 🎉</h2>
+          <div class="mb-6">
+            <p class="text-3xl font-bold text-gray-700 mb-4">Your Score:</p>
+            <p class="text-6xl font-black text-green-500" id="finalScore">0/30</p>
+          </div>
+          <div id="starsDisplay" class="flex justify-center gap-4 mb-6 text-6xl"></div>
+          <p id="endMessage" class="text-2xl font-bold text-purple-600 mb-8"></p>
+          <div class="flex flex-col md:flex-row gap-4 justify-center"><button onclick="startGame()"
+              class="btn-bounce bg-gradient-to-r from-green-400 to-green-600 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg">
+              🔄 Play Again! </button> <button onclick="showChallengeSetup()"
+              class="btn-bounce bg-gradient-to-r from-purple-400 to-purple-600 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg">
+              🏆 Challenge Mode! </button> <button onclick="backToMenu()"
+              class="btn-bounce bg-gradient-to-r from-blue-400 to-blue-600 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg">
+              🏠 Menu </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Config and SDK setup
+    const defaultConfig = {
+      game_title: "🎮 Gerund Game! 🎮",
+      encouragement_text: "You are becoming a gerund master!",
+      primary_color: "#8b5cf6",
+      secondary_color: "#ec4899",
+      background_color: "#fef3c7",
+      text_color: "#374151",
+      accent_color: "#10b981"
+    };
+
+    let config = {
+      ...defaultConfig
+    };
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (newConfig) => {
+          config = {
+            ...defaultConfig,
+            ...newConfig
+          };
+          applyConfig();
+        },
+        mapToCapabilities: (cfg) => ({
+          recolorables: [{
+              get: () => cfg.primary_color || defaultConfig.primary_color,
+              set: (v) => {
+                cfg.primary_color = v;
+                window.elementSdk.setConfig({
+                  primary_color: v
+                });
+              }
+            },
+            {
+              get: () => cfg.secondary_color || defaultConfig.secondary_color,
+              set: (v) => {
+                cfg.secondary_color = v;
+                window.elementSdk.setConfig({
+                  secondary_color: v
+                });
+              }
+            },
+            {
+              get: () => cfg.accent_color || defaultConfig.accent_color,
+              set: (v) => {
+                cfg.accent_color = v;
+                window.elementSdk.setConfig({
+                  accent_color: v
+                });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (cfg) => new Map([
+          ["game_title", cfg.game_title || defaultConfig.game_title],
+          ["encouragement_text", cfg.encouragement_text || defaultConfig.encouragement_text]
+        ])
+      });
+    }
+
+    function applyConfig() {
+      const titleEl = document.getElementById('gameTitle');
+      if (titleEl) titleEl.textContent = config.game_title || defaultConfig.game_title;
+    }
+
+    // Learning Slides Data
+    const slides = [{
+        title: "What is a Gerund? 🤔",
+        content: `
+                    <div class="text-center">
+                        <p class="text-3xl md:text-4xl font-bold text-purple-700 mb-6">A Gerund = Verb + <span class="text-pink-500">-ing</span></p>
+                        <div class="example-box p-6 rounded-2xl mb-6 inline-block">
+                            <p class="text-2xl md:text-3xl font-bold">run → runn<span class="text-pink-500 text-4xl">ing</span></p>
+                        </div>
+                        <p class="text-2xl text-gray-600 mt-4">Gerunds look like verbs but act like <span class="text-blue-600 font-bold">NOUNS!</span></p>
+                        <div class="text-6xl mt-6">🏃‍♂️ → 🏃‍♂️ing</div>
+                    </div>
+                `
+      },
+      {
+        title: "Gerund as Subject 📍",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">A gerund can be the <span class="text-purple-600 font-bold">main thing</span> in a sentence!</p>
+                        <div class="space-y-4">
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold"><span class="text-green-600">Running</span> is fun. 🏃</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold"><span class="text-green-600">Swimming</span> is healthy. 🏊</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold"><span class="text-green-600">Reading</span> is important. 📚</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Gerund as Object 🎯",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">A gerund can come <span class="text-purple-600 font-bold">after the verb!</span></p>
+                        <div class="space-y-4">
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">I like <span class="text-blue-600">running</span>. 🏃</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">She loves <span class="text-blue-600">dancing</span>. 💃</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">They enjoy <span class="text-blue-600">playing</span>. ⚽</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Used After LOVE / LIKE ❤️",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">We use gerunds after <span class="text-pink-600 font-bold">love</span> and <span class="text-pink-600 font-bold">like</span>!</p>
+                        <div class="space-y-4">
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">I <span class="text-pink-600">love</span> sing<span class="text-green-600">ing</span>. 🎤</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">They <span class="text-pink-600">like</span> draw<span class="text-green-600">ing</span>. 🎨</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">She <span class="text-pink-600">loves</span> cook<span class="text-green-600">ing</span>. 👩‍🍳</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Used After GOOD AT 💪",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">Use gerunds after <span class="text-green-600 font-bold">"be good at"</span>!</p>
+                        <div class="space-y-4">
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">I am <span class="text-green-600">good at</span> draw<span class="text-blue-600">ing</span>. 🎨</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">She is <span class="text-green-600">good at</span> sing<span class="text-blue-600">ing</span>. 🎵</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">He is <span class="text-green-600">good at</span> cook<span class="text-blue-600">ing</span>. 🍳</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Used After WEAK IN 😅",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">Use gerunds after <span class="text-orange-600 font-bold">"be weak in"</span>!</p>
+                        <div class="space-y-4">
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">He is <span class="text-orange-600">weak in</span> spell<span class="text-blue-600">ing</span>. 📝</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">I am <span class="text-orange-600">weak in</span> writ<span class="text-blue-600">ing</span>. ✍️</p>
+                            </div>
+                            <div class="example-box p-5 rounded-2xl">
+                                <p class="text-2xl md:text-3xl font-bold">She is <span class="text-orange-600">weak in</span> count<span class="text-blue-600">ing</span>. 🔢</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Spelling Rule 1: Remove 'e' ✂️",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">If the verb ends in <span class="text-red-500 font-bold">'e'</span>, remove it and add <span class="text-green-600 font-bold">-ing</span>!</p>
+                        <div class="rule-card p-6 rounded-2xl mb-6">
+                            <p class="text-3xl font-bold text-blue-700">Remove 'e' + add 'ing'</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">mak<span class="text-red-500 line-through">e</span> → mak<span class="text-green-600">ing</span></p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">danc<span class="text-red-500 line-through">e</span> → danc<span class="text-green-600">ing</span></p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">writ<span class="text-red-500 line-through">e</span> → writ<span class="text-green-600">ing</span></p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">rid<span class="text-red-500 line-through">e</span> → rid<span class="text-green-600">ing</span></p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Spelling Rule 2: Double Letter 🔠🔠",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">Short verbs with <span class="text-purple-600 font-bold">vowel + consonant</span>: double the last letter!</p>
+                        <div class="rule-card p-6 rounded-2xl mb-6">
+                            <p class="text-3xl font-bold text-blue-700">Double last letter + add 'ing'</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">run → ru<span class="text-purple-600">nn</span>ing 🏃</p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">swim → swi<span class="text-purple-600">mm</span>ing 🏊</p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">sit → si<span class="text-purple-600">tt</span>ing 🪑</p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">cut → cu<span class="text-purple-600">tt</span>ing ✂️</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Spelling Rule 3: Just Add -ing ➕",
+        content: `
+                    <div class="text-center">
+                        <p class="text-2xl text-gray-600 mb-6">Most verbs: just add <span class="text-green-600 font-bold">-ing</span>! Easy!</p>
+                        <div class="rule-card p-6 rounded-2xl mb-6">
+                            <p class="text-3xl font-bold text-blue-700">Just add 'ing' 😊</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">read → read<span class="text-green-600">ing</span> 📖</p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">play → play<span class="text-green-600">ing</span> ⚽</p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">eat → eat<span class="text-green-600">ing</span> 🍕</p>
+                            </div>
+                            <div class="example-box p-4 rounded-2xl">
+                                <p class="text-2xl font-bold">sleep → sleep<span class="text-green-600">ing</span> 😴</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+      },
+      {
+        title: "Ready to Play? 🎮",
+        content: `
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-purple-700 mb-8">Now you know all about gerunds!</p>
+                        <div class="text-6xl mb-8">🎉🏆🌟</div>
+                        <p class="text-2xl text-gray-600 mb-8">Let's test what you learned!</p>
+                        <button onclick="startGame()" class="btn-bounce bg-gradient-to-r from-green-400 to-blue-500 text-white text-3xl font-bold py-6 px-12 rounded-3xl shadow-xl">
+                            🎯 Start Game! 🎯
+                        </button>
+                    </div>
+                `
+      }
+    ];
+
+    // Game Questions Data
+    const level1Questions = [{
+        question: "Which word is the gerund?",
+        options: ["run", "running", "ran", "runs"],
+        correct: 1
+      },
+      {
+        question: "Which word is the gerund?",
+        options: ["swim", "swam", "swimming", "swims"],
+        correct: 2
+      },
+      {
+        question: "Which word is the gerund?",
+        options: ["played", "plays", "play", "playing"],
+        correct: 3
+      },
+      {
+        question: "Which word is the gerund?",
+        options: ["reading", "read", "reads", "readed"],
+        correct: 0
+      },
+      {
+        question: "Which word is the gerund?",
+        options: ["danced", "dance", "dancing", "dances"],
+        correct: 2
+      }
+    ];
+
+    const level2Questions = [{
+        question: "run → ?",
+        options: ["runing", "running", "runned", "runs"],
+        correct: 1
+      },
+      {
+        question: "make → ?",
+        options: ["makeing", "makking", "making", "maked"],
+        correct: 2
+      },
+      {
+        question: "swim → ?",
+        options: ["swiming", "swimming", "swimmed", "swims"],
+        correct: 1
+      },
+      {
+        question: "dance → ?",
+        options: ["danceing", "dancing", "danced", "danccing"],
+        correct: 1
+      },
+      {
+        question: "write → ?",
+        options: ["writeing", "writting", "writing", "writed"],
+        correct: 2
+      }
+    ];
+
+    const level3Questions = [{
+        question: "I like ______.",
+        options: ["swim", "swimming", "swam", "swims"],
+        correct: 1
+      },
+      {
+        question: "She loves ______.",
+        options: ["dance", "dancing", "danced", "dances"],
+        correct: 1
+      },
+      {
+        question: "They like ______.",
+        options: ["read", "reads", "reading", "readed"],
+        correct: 2
+      },
+      {
+        question: "He loves ______.",
+        options: ["running", "run", "ran", "runs"],
+        correct: 0
+      },
+      {
+        question: "We like ______.",
+        options: ["played", "plays", "play", "playing"],
+        correct: 3
+      }
+    ];
+
+    const level4Questions = [{
+        question: "She is good at ______.",
+        options: ["dance", "dancing", "danced", "dances"],
+        correct: 1
+      },
+      {
+        question: "I am weak in ______.",
+        options: ["spell", "spells", "spelled", "spelling"],
+        correct: 3
+      },
+      {
+        question: "He is good at ______.",
+        options: ["cooked", "cooking", "cook", "cooks"],
+        correct: 1
+      },
+      {
+        question: "They are weak in ______.",
+        options: ["write", "writes", "wrote", "writing"],
+        correct: 3
+      },
+      {
+        question: "She is good at ______.",
+        options: ["singing", "sing", "sang", "sings"],
+        correct: 0
+      }
+    ];
+
+    const level5Questions = [{
+        question: "______ is fun!",
+        options: ["Swim", "Swimming", "Swam", "Swims"],
+        correct: 1
+      },
+      {
+        question: "I enjoy ______.",
+        options: ["read", "reads", "reading", "readed"],
+        correct: 2
+      },
+      {
+        question: "sit → ?",
+        options: ["siting", "sitting", "sitted", "sits"],
+        correct: 1
+      },
+      {
+        question: "She is good at ______.",
+        options: ["paint", "painting", "painted", "paints"],
+        correct: 1
+      },
+      {
+        question: "They love ______.",
+        options: ["play", "plays", "playing", "played"],
+        correct: 2
+      },
+      {
+        question: "cut → ?",
+        options: ["cuting", "cutting", "cutted", "cuts"],
+        correct: 1
+      },
+      {
+        question: "______ is healthy.",
+        options: ["Walk", "Walking", "Walked", "Walks"],
+        correct: 1
+      },
+      {
+        question: "I am weak in ______.",
+        options: ["count", "counting", "counted", "counts"],
+        correct: 1
+      },
+      {
+        question: "ride → ?",
+        options: ["rideing", "ridding", "riding", "rided"],
+        correct: 2
+      },
+      {
+        question: "We like ______ games.",
+        options: ["play", "playing", "played", "plays"],
+        correct: 1
+      }
+    ];
+
+    // Challenge Mode Questions
+    const challengeQuestions = {
+      gerund: [{
+          question: "I enjoy ______ football.",
+          options: ["play", "playing", "played", "to play"],
+          correct: 1,
+          type: "gerund"
+        },
+        {
+          question: "She loves ______ books.",
+          options: ["read", "reading", "reads", "to read"],
+          correct: 1,
+          type: "gerund"
+        },
+        {
+          question: "They are good at ______.",
+          options: ["swim", "swimming", "swam", "to swim"],
+          correct: 1,
+          type: "gerund"
+        },
+        {
+          question: "______ is my hobby.",
+          options: ["Cook", "Cooking", "Cooked", "To cook"],
+          correct: 1,
+          type: "gerund"
+        },
+        {
+          question: "I like ______ to music.",
+          options: ["listen", "listening", "listened", "to listen"],
+          correct: 1,
+          type: "gerund"
+        }
+      ],
+      simplePresent: [{
+          question: "She ______ to school every day.",
+          options: ["go", "goes", "going", "went"],
+          correct: 1,
+          type: "simplePresent"
+        },
+        {
+          question: "They ______ football on Sundays.",
+          options: ["play", "plays", "playing", "played"],
+          correct: 0,
+          type: "simplePresent"
+        },
+        {
+          question: "He ______ breakfast at 7am.",
+          options: ["eat", "eats", "eating", "ate"],
+          correct: 1,
+          type: "simplePresent"
+        },
+        {
+          question: "I ______ English.",
+          options: ["study", "studies", "studying", "studied"],
+          correct: 0,
+          type: "simplePresent"
+        },
+        {
+          question: "The cat ______ milk.",
+          options: ["drink", "drinks", "drinking", "drank"],
+          correct: 1,
+          type: "simplePresent"
+        }
+      ],
+      simplePast: [{
+          question: "Yesterday he ______ soccer.",
+          options: ["play", "playing", "played", "plays"],
+          correct: 2,
+          type: "simplePast"
+        },
+        {
+          question: "She ______ a book last night.",
+          options: ["read", "reading", "reads", "readed"],
+          correct: 0,
+          type: "simplePast"
+        },
+        {
+          question: "They ______ to the park yesterday.",
+          options: ["go", "going", "goes", "went"],
+          correct: 3,
+          type: "simplePast"
+        },
+        {
+          question: "I ______ my homework last night.",
+          options: ["do", "doing", "did", "does"],
+          correct: 2,
+          type: "simplePast"
+        },
+        {
+          question: "He ______ pizza for dinner.",
+          options: ["eat", "eating", "eats", "ate"],
+          correct: 3,
+          type: "simplePast"
+        }
+      ],
+      presentContinuous: [{
+          question: "She ______ TV now.",
+          options: ["watch", "watching", "is watching", "watched"],
+          correct: 2,
+          type: "presentContinuous"
+        },
+        {
+          question: "They ______ at the moment.",
+          options: ["study", "studying", "are studying", "studied"],
+          correct: 2,
+          type: "presentContinuous"
+        },
+        {
+          question: "I ______ lunch right now.",
+          options: ["eat", "eating", "am eating", "ate"],
+          correct: 2,
+          type: "presentContinuous"
+        },
+        {
+          question: "He ______ to music now.",
+          options: ["listen", "listening", "is listening", "listened"],
+          correct: 2,
+          type: "presentContinuous"
+        },
+        {
+          question: "We ______ a game now.",
+          options: ["play", "playing", "are playing", "played"],
+          correct: 2,
+          type: "presentContinuous"
+        }
+      ],
+      infinitive: [{
+          question: "They decided ______ early.",
+          options: ["leave", "leaving", "to leave", "left"],
+          correct: 2,
+          type: "infinitive"
+        },
+        {
+          question: "I want ______ a cake.",
+          options: ["make", "making", "to make", "made"],
+          correct: 2,
+          type: "infinitive"
+        },
+        {
+          question: "She needs ______ her homework.",
+          options: ["do", "doing", "to do", "did"],
+          correct: 2,
+          type: "infinitive"
+        },
+        {
+          question: "He hopes ______ the exam.",
+          options: ["pass", "passing", "to pass", "passed"],
+          correct: 2,
+          type: "infinitive"
+        },
+        {
+          question: "We plan ______ to Japan.",
+          options: ["go", "going", "to go", "went"],
+          correct: 2,
+          type: "infinitive"
+        }
+      ]
+    };
+
+    // Game State
+    let currentSlide = 0;
+    let currentQuestion = 0;
+    let score = 0;
+    let currentLevel = 1;
+    let allQuestions = [];
+    let isChallenge = false;
+    let answered = false;
+
+    const levelDescriptions = [
+      "Identify the Gerund",
+      "Spelling Rules",
+      "Love / Like + Gerund",
+      "Good at / Weak in",
+      "Mixed Practice"
+    ];
+
+    const positiveEmojis = ["🌟", "⭐", "🎉", "👏", "🏆", "💪", "🙌", "✨", "🔥", "💯"];
+    const encouragements = ["Awesome!", "Great job!", "Perfect!", "Excellent!", "You rock!", "Amazing!", "Brilliant!",
+      "Fantastic!", "Super!", "Wonderful!"
+    ];
+
+    // Audio context for sounds (offline compatible)
+    let audioCtx = null;
+
+    function playSound(type) {
+      try {
+        if (!audioCtx) {
+          audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+        }
+
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if (type === 'correct') {
+          oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+          oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+          gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.4);
+        } else {
+          oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
+          oscillator.frequency.setValueAtTime(150, audioCtx.currentTime + 0.1);
+          gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.3);
+        }
+      } catch (e) {
+        // Audio not supported, continue silently
+      }
+    }
+
+    // Navigation functions
+    function showSection(sectionId) {
+      ['mainMenu', 'slidesSection', 'gameSection', 'challengeSetup', 'endScreen'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(sectionId).classList.remove('hidden');
+    }
+
+    function backToMenu() {
+      showSection('mainMenu');
+    }
+
+    // Slides Functions
+    function startSlides() {
+      currentSlide = 0;
+      showSection('slidesSection');
+      renderSlide();
+    }
+
+    function renderSlide() {
+      const slideContent = document.getElementById('slideContent');
+      slideContent.innerHTML = `
+                <h2 class="text-3xl md:text-4xl font-black text-purple-700 mb-6 text-center">${slides[currentSlide].title}</h2>
+                ${slides[currentSlide].content}
+            `;
+
+      document.getElementById('slideIndicator').textContent = `${currentSlide + 1} / ${slides.length}`;
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('prevBtn').classList.toggle('bg-gray-400', currentSlide === 0);
+      document.getElementById('prevBtn').classList.toggle('bg-blue-500', currentSlide > 0);
+
+      if (currentSlide === slides.length - 1) {
+        document.getElementById('nextBtn').textContent = '🎮 Start Game!';
+        document.getElementById('nextBtn').onclick = startGame;
+      } else {
+        document.getElementById('nextBtn').textContent = 'Next ➡️';
+        document.getElementById('nextBtn').onclick = nextSlide;
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        renderSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide();
+      }
+    }
+
+    // Game Functions
+    function startGame() {
+      isChallenge = false;
+      currentQuestion = 0;
+      score = 0;
+      currentLevel = 1;
+
+      allQuestions = [
+        ...level1Questions.map(q => ({
+          ...q,
+          level: 1
+        })),
+        ...level2Questions.map(q => ({
+          ...q,
+          level: 2
+        })),
+        ...level3Questions.map(q => ({
+          ...q,
+          level: 3
+        })),
+        ...level4Questions.map(q => ({
+          ...q,
+          level: 4
+        })),
+        ...level5Questions.map(q => ({
+          ...q,
+          level: 5
+        }))
+      ];
+
+      showSection('gameSection');
+      renderQuestion();
+    }
+
+    function showChallengeSetup() {
+      showSection('challengeSetup');
+    }
+
+    function startChallenge() {
+      const selectedTypes = [];
+
+      if (document.getElementById('chkGerund').checked) selectedTypes.push('gerund');
+      if (document.getElementById('chkSimplePresent').checked) selectedTypes.push('simplePresent');
+      if (document.getElementById('chkSimplePast').checked) selectedTypes.push('simplePast');
+      if (document.getElementById('chkPresentCont').checked) selectedTypes.push('presentContinuous');
+      if (document.getElementById('chkInfinitive').checked) selectedTypes.push('infinitive');
+
+      if (selectedTypes.length === 0) {
+        showInlineMessage('Please select at least one grammar type!', 'warning');
+        return;
+      }
+
+      isChallenge = true;
+      currentQuestion = 0;
+      score = 0;
+      currentLevel = 1;
+
+      allQuestions = [];
+      selectedTypes.forEach(type => {
+        allQuestions.push(...challengeQuestions[type]);
+      });
+
+      // Shuffle questions
+      allQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 15);
+
+      showSection('gameSection');
+      document.getElementById('levelDesc').textContent = "🏆 Challenge Mode - Mixed Grammar!";
+      renderQuestion();
+    }
+
+    function showInlineMessage(message, type) {
+      const existingMsg = document.querySelector('.inline-message');
+      if (existingMsg) existingMsg.remove();
+
+      const msgDiv = document.createElement('div');
+      msgDiv.className =
+        `inline-message fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl text-xl font-bold z-50 ${type === 'warning' ? 'bg-yellow-400 text-yellow-900' : 'bg-green-400 text-green-900'}`;
+      msgDiv.textContent = message;
+      document.body.appendChild(msgDiv);
+
+      setTimeout(() => msgDiv.remove(), 3000);
+    }
+
+    function renderQuestion() {
+      answered = false;
+      const question = allQuestions[currentQuestion];
+
+      if (!isChallenge) {
+        currentLevel = question.level;
+        document.getElementById('levelDisplay').textContent = currentLevel;
+        document.getElementById('levelDesc').textContent =
+          `Level ${currentLevel}: ${levelDescriptions[currentLevel - 1]}`;
+      }
+
+      document.getElementById('questionNum').textContent = currentQuestion + 1;
+      document.getElementById('scoreDisplay').textContent = score;
+      document.getElementById('questionText').textContent = question.question;
+
+      const totalQuestions = allQuestions.length;
+      const progress = ((currentQuestion) / totalQuestions) * 100;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+
+      const optionsGrid = document.getElementById('optionsGrid');
+      optionsGrid.innerHTML = '';
+
+      const colors = [
+        'bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600',
+        'bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600',
+        'bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600',
+        'bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600'
+      ];
+
+      const letters = ['A', 'B', 'C', 'D'];
+
+      question.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className =
+          `option-btn btn-bounce ${colors[index]} text-white text-2xl md:text-3xl font-bold py-5 px-6 rounded-2xl shadow-lg flex items-center gap-4`;
+        btn.innerHTML =
+          `<span class="bg-white/30 w-12 h-12 rounded-full flex items-center justify-center text-2xl">${letters[index]}</span> ${option}`;
+        btn.onclick = () => checkAnswer(index);
+        optionsGrid.appendChild(btn);
+      });
+
+      document.getElementById('feedbackArea').classList.add('hidden');
+      document.getElementById('nextQuestionBtn').classList.add('hidden');
+      document.getElementById('floatingEmoji').classList.add('hidden');
+    }
+
+    function checkAnswer(selected) {
+      if (answered) return;
+      answered = true;
+
+      const question = allQuestions[currentQuestion];
+      const buttons = document.querySelectorAll('.option-btn');
+
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === question.correct) {
+          btn.classList.add('correct', 'animate-correct');
+        } else if (index === selected && selected !== question.correct) {
+          btn.classList.add('wrong', 'animate-wrong');
+        }
+      });
+
+      const feedbackArea = document.getElementById('feedbackArea');
+      const feedbackText = document.getElementById('feedbackText');
+      feedbackArea.classList.remove('hidden');
+
+      if (selected === question.correct) {
+        score++;
+        document.getElementById('scoreDisplay').textContent = score;
+
+        const emoji = positiveEmojis[Math.floor(Math.random() * positiveEmojis.length)];
+        const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+
+        feedbackText.textContent = `${emoji} ${encouragement} ${emoji}`;
+        feedbackText.className = 'text-2xl font-bold text-green-600';
+
+        // Show floating emoji
+        const floatingEmoji = document.getElementById('floatingEmoji');
+        floatingEmoji.textContent = emoji;
+        floatingEmoji.classList.remove('hidden');
+        floatingEmoji.classList.add('animate-float');
+
+        playSound('correct');
+      } else {
+        feedbackText.innerHTML =
+          `😅 Oops! The correct answer is: <span class="text-green-600">${question.options[question.correct]}</span>`;
+        feedbackText.className = 'text-2xl font-bold text-red-500';
+
+        playSound('wrong');
+      }
+
+      document.getElementById('nextQuestionBtn').classList.remove('hidden');
+
+      if (currentQuestion >= allQuestions.length - 1) {
+        document.getElementById('nextQuestionBtn').textContent = '🎉 See Results! 🎉';
+      } else {
+        document.getElementById('nextQuestionBtn').textContent = 'Next Question ➡️';
+      }
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+
+      if (currentQuestion >= allQuestions.length) {
+        showEndScreen();
+      } else {
+        renderQuestion();
+      }
+    }
+
+    function showEndScreen() {
+      showSection('endScreen');
+
+      const totalQuestions = allQuestions.length;
+      const percentage = (score / totalQuestions) * 100;
+
+      document.getElementById('finalScore').textContent = `${score}/${totalQuestions}`;
+
+      // Stars
+      let stars = 0;
+      if (percentage >= 90) stars = 5;
+      else if (percentage >= 80) stars = 4;
+      else if (percentage >= 70) stars = 3;
+      else if (percentage >= 60) stars = 2;
+      else if (percentage >= 40) stars = 1;
+
+      const starsDisplay = document.getElementById('starsDisplay');
+      starsDisplay.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const star = document.createElement('span');
+        star.className = i < stars ? 'star-gold animate-star' : 'star-gray';
+        star.style.animationDelay = `${i * 0.2}s`;
+        star.textContent = '⭐';
+        starsDisplay.appendChild(star);
+      }
+
+      // End message
+      const endMessage = document.getElementById('endMessage');
+      const encouragementText = config.encouragement_text || defaultConfig.encouragement_text;
+
+      if (percentage >= 90) {
+        endMessage.textContent = `🏆 PERFECT! ${encouragementText} 🏆`;
+      } else if (percentage >= 70) {
+        endMessage.textContent = `🌟 Great work! ${encouragementText} 🌟`;
+      } else if (percentage >= 50) {
+        endMessage.textContent = "👍 Good effort! Keep practicing! 👍";
+      } else {
+        endMessage.textContent = "💪 Don't give up! Practice makes perfect! 💪";
+      }
+    }
+
+    // Initialize
+    applyConfig();
+  </script>
+</body>
+
+</html>

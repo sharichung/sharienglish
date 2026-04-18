@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentation Script Adventure</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      font-family: 'Nunito', sans-serif;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 182, 193, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(255, 182, 193, 0.8); }
+    }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes mic-glow {
+      0%, 100% { filter: drop-shadow(0 0 5px #ffd700); }
+      50% { filter: drop-shadow(0 0 20px #ffd700); }
+    }
+    
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .sparkle {
+      animation: sparkle 2s ease-in-out infinite;
+    }
+    
+    .slide-in {
+      animation: slideIn 0.5s ease-out forwards;
+    }
+    
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .bounce-in {
+      animation: bounce-in 0.6s ease-out forwards;
+    }
+    
+    .mic-glow {
+      animation: mic-glow 1.5s ease-in-out infinite;
+    }
+    
+    .topic-card {
+      transition: all 0.3s ease;
+    }
+    
+    .topic-card:hover {
+      transform: translateY(-5px) scale(1.02);
+    }
+    
+    .script-sentence {
+      animation: slideIn 0.5s ease-out forwards;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #fff5f7 0%, #f0f9ff 50%, #fefce8 100%);
+    }
+    
+    .card-shadow {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full gradient-bg overflow-auto">
+  <div id="app" class="w-full min-h-full p-4 md:p-8"><!-- Title Screen -->
+   <div id="title-screen" class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+     <div class="text-6xl mb-4 float-animation">
+      🎤
+     </div>
+     <h1 id="main-title" class="text-3xl md:text-5xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent mb-3">Presentation Script Adventure</h1>
+     <p id="subtitle" class="text-lg md:text-xl text-gray-600 font-medium">Choose your topic and prepare your speech!</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"><button onclick="selectTopic('book', '📚', 'A book I enjoyed')" class="topic-card bg-white rounded-3xl p-6 card-shadow border-4 border-pink-200 hover:border-pink-400 cursor-pointer">
+      <div class="text-5xl mb-3">
+       📚
+      </div>
+      <div class="font-bold text-gray-800 text-lg">
+       A book I enjoyed
+      </div></button> <button onclick="selectTopic('environment', '🌍', 'An environmental problem')" class="topic-card bg-white rounded-3xl p-6 card-shadow border-4 border-green-200 hover:border-green-400 cursor-pointer">
+      <div class="text-5xl mb-3">
+       🌍
+      </div>
+      <div class="font-bold text-gray-800 text-lg">
+       An environmental problem
+      </div></button> <button onclick="selectTopic('sport', '⚽', 'My favourite sport')" class="topic-card bg-white rounded-3xl p-6 card-shadow border-4 border-blue-200 hover:border-blue-400 cursor-pointer">
+      <div class="text-5xl mb-3">
+       ⚽
+      </div>
+      <div class="font-bold text-gray-800 text-lg">
+       My favourite sport
+      </div></button> <button onclick="selectTopic('music', '🎶', 'A song or concert I love')" class="topic-card bg-white rounded-3xl p-6 card-shadow border-4 border-purple-200 hover:border-purple-400 cursor-pointer">
+      <div class="text-5xl mb-3">
+       🎶
+      </div>
+      <div class="font-bold text-gray-800 text-lg">
+       A song or concert I love
+      </div></button> <button onclick="selectTopic('person', '🎤', 'A person I admire')" class="topic-card bg-white rounded-3xl p-6 card-shadow border-4 border-orange-200 hover:border-orange-400 cursor-pointer">
+      <div class="text-5xl mb-3">
+       🎤
+      </div>
+      <div class="font-bold text-gray-800 text-lg">
+       A person I admire
+      </div></button> <button onclick="selectRandomTopic()" class="topic-card bg-gradient-to-br from-yellow-100 to-pink-100 rounded-3xl p-6 card-shadow border-4 border-yellow-300 hover:border-yellow-500 cursor-pointer">
+      <div class="text-5xl mb-3 sparkle">
+       🎲
+      </div>
+      <div class="font-bold text-gray-800 text-lg">
+       Surprise me!
+      </div></button>
+    </div>
+   </div><!-- Writing Screen -->
+   <div id="writing-screen" class="hidden max-w-5xl mx-auto">
+    <div class="flex flex-col lg:flex-row gap-6"><!-- Left Panel - Writing Area -->
+     <div class="flex-1">
+      <div class="bg-white rounded-3xl p-6 card-shadow mb-4"><!-- Progress -->
+       <div class="flex items-center gap-2 mb-4">
+        <div id="progress-dots" class="flex gap-2"><!-- Dots will be generated -->
+        </div><span id="step-counter" class="text-sm font-semibold text-gray-500 ml-auto"></span>
+       </div><!-- Current Topic Badge -->
+       <div id="topic-badge" class="inline-flex items-center gap-2 bg-gradient-to-r from-pink-100 to-purple-100 px-4 py-2 rounded-full mb-4"><span id="topic-emoji" class="text-2xl"></span> <span id="topic-name" class="font-bold text-gray-700"></span>
+       </div><!-- Step Title -->
+       <h2 id="step-title" class="text-2xl font-extrabold text-gray-800 mb-2"></h2><!-- Instruction -->
+       <div id="instruction-box" class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 mb-4 border-2 border-blue-200">
+        <div class="flex items-start gap-3"><span class="text-2xl">✏️</span>
+         <div>
+          <p id="instruction-text" class="font-semibold text-gray-700"></p>
+         </div>
+        </div>
+       </div><!-- Guidance Box -->
+       <div id="guidance-box" class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-4 mb-4 border-2 border-yellow-200">
+        <div class="flex items-start gap-3"><span class="text-2xl">💡</span>
+         <div>
+          <p class="font-semibold text-gray-700 mb-2">Ideas to help you:</p>
+          <ul id="guidance-list" class="text-gray-600 space-y-1"></ul>
+         </div>
+        </div>
+       </div><!-- Grammar Tip -->
+       <div id="grammar-tip" class="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-4 mb-4 border-2 border-green-200">
+        <div class="flex items-start gap-3"><span class="text-2xl">📝</span>
+         <div>
+          <p class="font-semibold text-gray-700 mb-1">Grammar Tip:</p>
+          <p id="grammar-text" class="text-gray-600"></p>
+         </div>
+        </div>
+       </div><!-- Example -->
+       <div id="example-box" class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 mb-6 border-2 border-purple-200">
+        <div class="flex items-start gap-3"><span class="text-2xl">🌟</span>
+         <div>
+          <p class="font-semibold text-gray-700 mb-1">Example:</p>
+          <p id="example-text" class="text-gray-600 italic"></p>
+         </div>
+        </div>
+       </div><!-- Input Area -->
+       <div class="relative"><textarea id="sentence-input" class="w-full h-32 p-4 text-lg border-4 border-pink-200 rounded-2xl focus:border-pink-400 focus:outline-none resize-none" placeholder="Type your sentence here..."></textarea>
+        <div class="absolute bottom-3 right-3 text-2xl mic-glow">
+         🎤
+        </div>
+       </div><!-- Buttons -->
+       <div class="flex gap-3 mt-4"><button onclick="goBack()" id="back-btn" class="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-full font-bold text-gray-600 transition-all"> ← Back </button> <button onclick="useSurprise()" class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-200 to-orange-200 hover:from-yellow-300 hover:to-orange-300 rounded-full font-bold text-gray-700 transition-all"> 🎲 Surprise me! </button> <button onclick="submitSentence()" class="flex-1 px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 text-white rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl"> Add to Script ✨ </button>
+       </div>
+      </div>
+     </div><!-- Right Panel - Script Preview -->
+     <div class="lg:w-96">
+      <div class="bg-white rounded-3xl p-6 card-shadow pulse-glow sticky top-4">
+       <div class="flex items-center gap-3 mb-4"><span class="text-3xl">📜</span>
+        <h3 class="text-xl font-extrabold text-gray-800">Your Script</h3>
+       </div>
+       <div id="script-preview" class="min-h-48 bg-gradient-to-b from-amber-50 to-orange-50 rounded-2xl p-4 border-2 border-amber-200">
+        <p class="text-gray-400 italic" id="empty-script-msg">Your sentences will appear here...</p>
+        <div id="script-sentences" class="space-y-2"></div>
+       </div>
+       <div class="mt-4 flex items-center justify-between text-sm"><span class="text-gray-500">Word count:</span> <span id="word-count" class="font-bold text-purple-600">0 words</span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Expansion Gate Screen -->
+   <div id="expansion-gate" class="hidden max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+     <div class="text-6xl mb-4 bounce-in">
+      ⭐
+     </div>
+     <h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent mb-3">Great Start!</h1>
+     <p class="text-lg text-gray-600 mb-2">Your basic script is complete.</p>
+     <p id="basic-word-count" class="text-2xl font-bold text-purple-600 mb-6">📊 Words: ? | Sentences: ?</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6 mb-8 max-w-3xl mx-auto"><!-- View Script -->
+     <div class="bg-white rounded-3xl p-6 card-shadow border-4 border-blue-200">
+      <div class="text-4xl mb-3">
+       📜
+      </div>
+      <h3 class="font-bold text-lg text-gray-800 mb-2">Review Your Script</h3>
+      <p class="text-gray-600 text-sm mb-4">See what you've written so far</p><button onclick="viewBasicScript()" class="w-full px-4 py-3 bg-blue-100 hover:bg-blue-200 rounded-full font-bold text-blue-700 transition-all"> View Script 👀 </button>
+     </div><!-- Expand -->
+     <div class="bg-gradient-to-br from-green-100 to-teal-100 rounded-3xl p-6 card-shadow border-4 border-green-300">
+      <div class="text-4xl mb-3">
+       🚀
+      </div>
+      <h3 class="font-bold text-lg text-gray-800 mb-2">Level Up!</h3>
+      <p class="text-gray-700 text-sm mb-4">Add details to reach 200+ words for exams</p><button onclick="startExpansion()" class="w-full px-4 py-3 bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white rounded-full font-bold transition-all shadow-lg"> Start Expansion 💪 </button>
+     </div>
+    </div>
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-3xl p-6 border-2 border-indigo-200 max-w-3xl mx-auto">
+     <div class="flex items-start gap-3"><span class="text-2xl">💡</span>
+      <div>
+       <p class="font-bold text-gray-800 mb-2">What's next?</p>
+       <p class="text-gray-700">In the expansion round, you'll add 2–3 more sentences to each section. This will make your speech longer, more detailed, and perfect for exams!</p>
+      </div>
+     </div>
+    </div>
+   </div><!-- Basic Script View -->
+   <div id="basic-script-view" class="hidden max-w-4xl mx-auto">
+    <div class="mb-6"><button onclick="goToExpansionGate()" class="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-full font-bold text-gray-600 transition-all"> ← Back </button>
+    </div>
+    <div class="bg-white rounded-3xl p-8 card-shadow">
+     <div class="text-center mb-8">
+      <div class="flex items-center justify-center gap-3 mb-4"><span id="view-topic-emoji" class="text-5xl"></span>
+       <h1 id="view-topic-name" class="text-3xl font-extrabold text-gray-800"></h1>
+      </div>
+      <p class="text-gray-500 text-lg">Round 1: Basic Speech</p>
+     </div>
+     <div id="view-script-content" class="bg-gradient-to-b from-amber-50 to-orange-50 rounded-2xl p-6 border-2 border-amber-300 text-lg leading-relaxed text-gray-700 mb-6">
+     </div>
+     <div class="flex flex-wrap gap-4 justify-center">
+      <div class="bg-green-100 px-6 py-3 rounded-full"><span class="font-bold text-green-700" id="view-word-count">0 words</span>
+      </div>
+      <div class="bg-blue-100 px-6 py-3 rounded-full"><span class="font-bold text-blue-700" id="view-sentence-count">0 sentences</span>
+      </div>
+     </div>
+    </div>
+   </div><!-- Expansion Screen -->
+   <div id="expansion-screen" class="hidden max-w-5xl mx-auto">
+    <div class="flex flex-col lg:flex-row gap-6"><!-- Left Panel - Writing Area -->
+     <div class="flex-1">
+      <div class="bg-white rounded-3xl p-6 card-shadow mb-4"><!-- Progress -->
+       <div class="flex items-center gap-2 mb-4">
+        <div id="expansion-progress-dots" class="flex gap-2"><!-- Dots will be generated -->
+        </div><span id="expansion-step-counter" class="text-sm font-semibold text-gray-500 ml-auto"></span>
+       </div><!-- Mode Badge -->
+       <div class="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-teal-100 px-4 py-2 rounded-full mb-4"><span class="text-2xl">🚀</span> <span class="font-bold text-gray-700">Round 2: Expansion</span>
+       </div><!-- Step Title -->
+       <h2 id="expansion-step-title" class="text-2xl font-extrabold text-gray-800 mb-2"></h2><!-- Current Section Preview -->
+       <div id="section-preview-box" class="bg-blue-50 rounded-2xl p-4 mb-4 border-2 border-blue-200">
+        <p class="text-sm font-semibold text-gray-600 mb-2">Current section:</p>
+        <p id="section-preview" class="text-gray-700 italic"></p>
+       </div><!-- Instruction -->
+       <div id="expansion-instruction-box" class="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-4 mb-4 border-2 border-green-200">
+        <div class="flex items-start gap-3"><span class="text-2xl">✏️</span>
+         <div>
+          <p id="expansion-instruction-text" class="font-semibold text-gray-700"></p>
+         </div>
+        </div>
+       </div><!-- Guidance Box -->
+       <div id="expansion-guidance-box" class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-4 mb-4 border-2 border-yellow-200">
+        <div class="flex items-start gap-3"><span class="text-2xl">💡</span>
+         <div>
+          <p class="font-semibold text-gray-700 mb-2">Ways to expand:</p>
+          <ul id="expansion-guidance-list" class="text-gray-600 space-y-1"></ul>
+         </div>
+        </div>
+       </div><!-- Example -->
+       <div id="expansion-example-box" class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 mb-6 border-2 border-purple-200">
+        <div class="flex items-start gap-3"><span class="text-2xl">🌟</span>
+         <div>
+          <p class="font-semibold text-gray-700 mb-1">Expansion example:</p>
+          <p id="expansion-example-text" class="text-gray-600 italic"></p>
+         </div>
+        </div>
+       </div><!-- Input Area -->
+       <div class="relative"><textarea id="expansion-input" class="w-full h-32 p-4 text-lg border-4 border-green-200 rounded-2xl focus:border-green-400 focus:outline-none resize-none" placeholder="Add 2–3 sentences here to expand this section..."></textarea>
+        <div class="absolute bottom-3 right-3 text-2xl mic-glow">
+         📝
+        </div>
+       </div><!-- Buttons -->
+       <div class="flex gap-3 mt-4"><button onclick="goBackExpansion()" id="expansion-back-btn" class="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-full font-bold text-gray-600 transition-all"> ← Back </button> <button onclick="useExpansionSurprise()" class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-200 to-orange-200 hover:from-yellow-300 hover:to-orange-300 rounded-full font-bold text-gray-700 transition-all"> 💡 Suggest </button> <button onclick="submitExpansion()" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl"> Add Expansion ✨ </button>
+       </div>
+      </div>
+     </div><!-- Right Panel - Full Script Preview -->
+     <div class="lg:w-96">
+      <div class="bg-white rounded-3xl p-6 card-shadow pulse-glow sticky top-4">
+       <div class="flex items-center gap-3 mb-4"><span class="text-3xl">📜</span>
+        <h3 class="text-xl font-extrabold text-gray-800">Full Script</h3>
+       </div>
+       <div id="expansion-script-preview" class="max-h-96 overflow-y-auto bg-gradient-to-b from-amber-50 to-orange-50 rounded-2xl p-4 border-2 border-amber-200">
+        <div id="expansion-script-content" class="text-gray-700 leading-relaxed space-y-3"></div>
+       </div>
+       <div class="mt-4 flex items-center justify-between text-sm"><span class="text-gray-500">Word count:</span> <span id="expansion-word-count" class="font-bold text-purple-600">0 words</span>
+       </div>
+       <div class="mt-2 flex items-center justify-between text-sm"><span class="text-gray-500">Target:</span> <span class="font-bold text-green-600">200+ words</span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Final Screen -->
+   <div id="final-screen" class="hidden max-w-4xl mx-auto">
+    <div class="text-center mb-6">
+     <div class="text-6xl mb-4 bounce-in">
+      🎉
+     </div>
+     <h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent mb-2">Exam-Ready Speech!</h1>
+     <p class="text-lg text-gray-600">Your expanded presentation script:</p>
+    </div>
+    <div class="bg-white rounded-3xl p-8 card-shadow mb-6">
+     <div class="flex items-center gap-3 mb-6"><span id="final-topic-emoji" class="text-4xl"></span>
+      <h2 id="final-topic-name" class="text-2xl font-bold text-gray-800"></h2>
+     </div>
+     <div id="final-script" class="bg-gradient-to-b from-amber-50 to-orange-50 rounded-2xl p-6 border-2 border-amber-300 text-lg leading-relaxed text-gray-700">
+     </div>
+     <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+       <div class="bg-green-100 px-4 py-2 rounded-full"><span class="font-bold text-green-700" id="final-word-count">0 words</span>
+       </div>
+       <div class="bg-blue-100 px-4 py-2 rounded-full"><span class="font-bold text-blue-700" id="final-sentence-count">0 sentences</span>
+       </div>
+      </div>
+     </div>
+    </div><!-- Teacher Tips -->
+    <div class="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-3xl p-6 mb-6 border-2 border-indigo-200">
+     <h3 class="font-extrabold text-gray-800 text-xl mb-4 flex items-center gap-2"><span>👩‍🏫</span> Teacher's Extension Tips</h3>
+     <ul class="space-y-2 text-gray-700">
+      <li class="flex items-start gap-2"><span>📝</span> <span>Ask the student to expand each point with more details (aim for 200+ words)</span></li>
+      <li class="flex items-start gap-2"><span>🔗</span> <span>Practice using connectors: <strong>because, and, but, so, however, therefore</strong></span></li>
+      <li class="flex items-start gap-2"><span>⏰</span> <span>Check tenses: Introduction (present), Experience (past), Plans (future)</span></li>
+      <li class="flex items-start gap-2"><span>🎭</span> <span>Practice delivery: eye contact, clear voice, natural pauses</span></li>
+     </ul>
+    </div>
+    <div class="flex justify-center gap-4"><button onclick="goToStart()" class="px-8 py-4 bg-gray-100 hover:bg-gray-200 rounded-full font-bold text-gray-700 text-lg transition-all"> ← Back to Topics </button> <button onclick="playAgain()" class="px-8 py-4 bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 text-white rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl"> Play Again 🎲 </button>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      main_title: 'Presentation Script Adventure',
+      subtitle_text: 'Choose your topic and prepare your speech!'
+    };
+    
+    // Game state
+    let currentTopic = null;
+    let currentStep = 0;
+    let sentences = [];
+    let expansions = [null, null, null, null, null]; // Expansions for each section
+    
+    // Topic data
+    const topics = {
+      book: { emoji: '📚', name: 'A book I enjoyed' },
+      environment: { emoji: '🌍', name: 'An environmental problem' },
+      sport: { emoji: '⚽', name: 'My favourite sport' },
+      music: { emoji: '🎶', name: 'A song or concert I love' },
+      person: { emoji: '🎤', name: 'A person I admire' }
+    };
+    
+    // Step data with guidance
+    const steps = [
+      {
+        title: 'Introduction',
+        instruction: 'Write 1 sentence to introduce yourself and your topic.',
+        guidance: [
+          'Good morning everyone, today I will talk about…',
+          'Hello, my name is… and my topic is…',
+          'I would like to present about…'
+        ],
+        grammarTip: 'Use present tense to clearly introduce your topic.',
+        examples: {
+          book: 'Good morning everyone, today I will talk about my favourite book, Harry Potter.',
+          environment: 'Hello, my name is Alex and my topic is plastic pollution.',
+          sport: 'Good morning everyone, today I will talk about my favourite sport, football.',
+          music: 'Hello everyone, today I would like to present about my favourite song.',
+          person: 'Good morning, today I will talk about a person I admire, my grandmother.'
+        },
+        expansionInstruction: 'Add 2 more sentences to explain why you chose this topic.',
+        expansionGuidance: [
+          'Because it is important to me',
+          'Because many people are interested',
+          'Because it can change our lives'
+        ],
+        expansionExamples: {
+          book: 'I chose this book because it is important to me. Many people love this story, so it is easy to share my passion.',
+          environment: 'I chose this topic because plastic pollution is important to me. Many scientists are worried about this problem, and it can change our lives.',
+          sport: 'I chose football because it is important to me. Many people in my country love this sport, so it is easy to share my passion.',
+          music: 'I chose this song because it is important to me. Many young people enjoy this type of music, and it brings us together.',
+          person: 'I chose my grandmother because she is important to me. Many people admire her, and her kindness can change our lives.'
+        }
+      },
+      {
+        title: 'Point 1 - Why',
+        instruction: 'Write 1 sentence about your first idea.',
+        guidance: [
+          'Why you like it / Why it matters',
+          'When you started / discovered it',
+          'What it means to you'
+        ],
+        grammarTip: 'Use "because" to explain your reasons.',
+        examples: {
+          book: 'I love this book because the story is magical and exciting.',
+          environment: 'This problem is important because plastic harms ocean animals.',
+          sport: 'I like football because it is exciting and helps me stay healthy.',
+          music: 'I love this song because the melody always makes me happy.',
+          person: 'I admire her because she is kind and always helps others.'
+        },
+        expansionInstruction: 'Add 2–3 sentences with more details or examples.',
+        expansionGuidance: [
+          'Describe a specific moment or experience',
+          'Explain how it helps you or affects you',
+          'Compare it with another similar thing'
+        ],
+        expansionExamples: {
+          book: 'Last year, I read the first book in a quiet summer. It was exciting because the magical world felt very real. Compared to other fantasy books, Harry Potter has better characters and adventure.',
+          environment: 'Last year, I visited a beach and saw plastic everywhere. It was sad because the ocean animals could eat this plastic and get sick. Compared to other pollution, plastic pollution lasts for hundreds of years.',
+          sport: 'Last year, I joined a football match at school. It was exciting because everyone cheered for us. Compared to other sports, football makes me feel more energetic and happy.',
+          music: 'Last year, I heard this song at a concert. It was amazing because the singer performed it live. Compared to other songs, this one has the most beautiful lyrics.',
+          person: 'When I was young, my grandmother taught me to cook. It was special because she shared her secrets with me. Compared to other family members, she spends the most time helping me.'
+        }
+      },
+      {
+        title: 'Point 2 - Experience',
+        instruction: 'Write 1 sentence about your second idea.',
+        guidance: [
+          'Describe an experience or memory',
+          'Give a specific example',
+          'Explain a benefit or effect'
+        ],
+        grammarTip: 'Use past tense for experiences: "I started...", "I learned..."',
+        examples: {
+          book: 'I first read it when I was ten years old, and I could not stop reading.',
+          environment: 'Last year, I saw rubbish on the beach and felt very sad.',
+          sport: 'I started playing football when I was eight years old, and I made many friends.',
+          music: 'I heard this song at a concert last summer, and it was amazing.',
+          person: 'When I was young, she taught me how to cook my favourite dish.'
+        },
+        expansionInstruction: 'Add 2–3 sentences about your experience.',
+        expansionGuidance: [
+          'When you started or discovered it',
+          'Who helped you or influenced you',
+          'What you learned or gained'
+        ],
+        expansionExamples: {
+          book: 'I started reading this book when I was ten years old. My teacher recommended it to me, and she helped me understand the difficult parts. I learned about friendship, courage, and magic through this book.',
+          environment: 'I started caring about this problem last year when I saw a nature documentary. My mother taught me about recycling, and she helped me understand why plastic is bad. I learned that every person can make a difference.',
+          sport: 'I started playing football when I was eight years old. My father taught me the basic rules, and my coach helped me improve my skills. I learned teamwork and discipline from these experiences.',
+          music: 'I first heard this song when I was twelve years old. My older brother shared it with me, and he taught me about the singer\'s story. I learned that music can express feelings and connect people.',
+          person: 'I started learning from her when I was very young. She taught me kindness and patience through her actions. I learned that helping others makes life more meaningful.'
+        }
+      },
+      {
+        title: 'Point 3 - Future',
+        instruction: 'Write 1 sentence about your third idea.',
+        guidance: [
+          'Your future plan or hope',
+          'Advice for others',
+          'Why it\'s important for everyone'
+        ],
+        grammarTip: 'Use future tense: "I will...", "I want to...", "I hope..."',
+        examples: {
+          book: 'In the future, I want to read all the books in this series.',
+          environment: 'I hope more people will use reusable bags to help the environment.',
+          sport: 'In the future, I want to join the school team and play in competitions.',
+          music: 'I hope to see this singer perform live one day.',
+          person: 'I hope to be as kind and helpful as her when I grow up.'
+        },
+        expansionInstruction: 'Add 2–3 sentences about your future plan or advice.',
+        expansionGuidance: [
+          'What you want to achieve',
+          'How you will prepare or practice',
+          'Advice or recommendations for others'
+        ],
+        expansionExamples: {
+          book: 'In the future, I want to read all seven books in this series. To do this, I will read one book every month. I advise other students to try this series because it teaches valuable lessons about friendship.',
+          environment: 'In the future, I want to help reduce plastic pollution in my community. To achieve this, I will organize recycling activities and teach others. I advise everyone to use less plastic and buy reusable products.',
+          sport: 'In the future, I want to join the school team and play in competitions. To prepare, I will practice three times a week and study tactics. I advise other students to try football because it builds confidence and friendship.',
+          music: 'I hope to see this singer perform live one day in a big concert. To save money for tickets, I will start part-time work. I advise everyone to listen to good music because it makes life more beautiful.',
+          person: 'I hope to become as helpful as her when I grow up and have my own family. To learn from her, I will spend more time with her and ask about her experiences. I advise younger people to respect and learn from their grandparents.'
+        }
+      },
+      {
+        title: 'Conclusion',
+        instruction: 'Write 1 sentence to end your presentation.',
+        guidance: [
+          'Thank the audience',
+          'Summarize your main point',
+          'Give a final thought or wish'
+        ],
+        grammarTip: 'End strongly with "Thank you for listening" or a wish.',
+        examples: {
+          book: 'Thank you for listening, I hope you will also enjoy reading Harry Potter.',
+          environment: 'Thank you for listening, let\'s all work together to protect our planet.',
+          sport: 'Thank you for listening, I hope you also find football interesting.',
+          music: 'Thank you for listening, I hope this song brings you joy too.',
+          person: 'Thank you for listening, I am grateful to have her in my life.'
+        },
+        expansionInstruction: 'Add 2 sentences to summarize and thank the audience.',
+        expansionGuidance: [
+          'Repeat your main idea in a new way',
+          'Give a final encouraging thought',
+          'Thank them for their attention'
+        ],
+        expansionExamples: {
+          book: 'Harry Potter is more than just a book; it taught me about courage and friendship. I hope this book will also change your life. Thank you for listening to my presentation.',
+          environment: 'Plastic pollution is one of the biggest problems in our world, but we can all help solve it. Every small action makes a big difference. Thank you for caring about our planet.',
+          sport: 'Football is more than just a game; it is a way to connect with people and stay healthy. I hope you will also try this beautiful sport. Thank you for listening, and please join me on the football field!',
+          music: 'Music is the universal language that connects all people, regardless of their background. I hope this song will also touch your heart. Thank you for sharing this moment with me.',
+          person: 'My grandmother is a hero in my life, and I am proud to admire her. I hope everyone can find a person like her to learn from. Thank you for listening to my story.'
+        }
+      }
+    ];
+    
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          document.getElementById('main-title').textContent = config.main_title || defaultConfig.main_title;
+          document.getElementById('subtitle').textContent = config.subtitle_text || defaultConfig.subtitle_text;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['main_title', config.main_title || defaultConfig.main_title],
+          ['subtitle_text', config.subtitle_text || defaultConfig.subtitle_text]
+        ])
+      });
+    }
+    
+    // Select a topic
+    function selectTopic(topicKey, emoji, name) {
+      currentTopic = { key: topicKey, emoji, name };
+      currentStep = 0;
+      sentences = [];
+      
+      document.getElementById('title-screen').classList.add('hidden');
+      document.getElementById('writing-screen').classList.remove('hidden');
+      document.getElementById('final-screen').classList.add('hidden');
+      
+      updateWritingScreen();
+      updateScriptPreview();
+    }
+    
+    // Select random topic
+    function selectRandomTopic() {
+      const topicKeys = Object.keys(topics);
+      const randomKey = topicKeys[Math.floor(Math.random() * topicKeys.length)];
+      const topic = topics[randomKey];
+      selectTopic(randomKey, topic.emoji, topic.name);
+    }
+    
+    // Update writing screen
+    function updateWritingScreen() {
+      const step = steps[currentStep];
+      
+      // Update topic badge
+      document.getElementById('topic-emoji').textContent = currentTopic.emoji;
+      document.getElementById('topic-name').textContent = currentTopic.name;
+      
+      // Update progress
+      const progressDots = document.getElementById('progress-dots');
+      progressDots.innerHTML = steps.map((s, i) => `
+        <div class="w-3 h-3 rounded-full transition-all ${i < currentStep ? 'bg-green-400' : i === currentStep ? 'bg-pink-500 scale-125' : 'bg-gray-300'}"></div>
+      `).join('');
+      
+      document.getElementById('step-counter').textContent = `Step ${currentStep + 1} of ${steps.length}`;
+      
+      // Update step content
+      document.getElementById('step-title').textContent = step.title;
+      document.getElementById('instruction-text').textContent = step.instruction;
+      
+      // Update guidance list
+      const guidanceList = document.getElementById('guidance-list');
+      guidanceList.innerHTML = step.guidance.map(g => `<li>• ${g}</li>`).join('');
+      
+      // Update grammar tip
+      document.getElementById('grammar-text').textContent = step.grammarTip;
+      
+      // Update example
+      document.getElementById('example-text').textContent = `"${step.examples[currentTopic.key]}"`;
+      
+      // Clear input
+      document.getElementById('sentence-input').value = '';
+      document.getElementById('sentence-input').focus();
+      
+      // Update back button
+      document.getElementById('back-btn').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
+    }
+    
+    // Update script preview
+    function updateScriptPreview() {
+      const container = document.getElementById('script-sentences');
+      const emptyMsg = document.getElementById('empty-script-msg');
+      
+      if (sentences.length === 0) {
+        emptyMsg.style.display = 'block';
+        container.innerHTML = '';
+      } else {
+        emptyMsg.style.display = 'none';
+        container.innerHTML = sentences.map((s, i) => `
+          <p class="script-sentence text-gray-700" style="animation-delay: ${i * 0.1}s">${s}</p>
+        `).join('');
+      }
+      
+      // Update word count
+      const wordCount = sentences.join(' ').split(/\s+/).filter(w => w.length > 0).length;
+      document.getElementById('word-count').textContent = `${wordCount} words`;
+    }
+    
+    // Submit sentence
+    function submitSentence() {
+      const input = document.getElementById('sentence-input');
+      let sentence = input.value.trim();
+      
+      if (!sentence) {
+        input.classList.add('border-red-400');
+        setTimeout(() => input.classList.remove('border-red-400'), 500);
+        return;
+      }
+      
+      // Add period if missing
+      if (!/[.!?]$/.test(sentence)) {
+        sentence += '.';
+      }
+      
+      // Capitalize first letter
+      sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
+      
+      sentences.push(sentence);
+      updateScriptPreview();
+      
+      // Move to next step or finish
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateWritingScreen();
+      } else {
+        showFinalScreen();
+      }
+    }
+    
+    // Use surprise (example sentence)
+    function useSurprise() {
+      const step = steps[currentStep];
+      const example = step.examples[currentTopic.key];
+      document.getElementById('sentence-input').value = example;
+    }
+    
+    // Go back
+    function goBack() {
+      if (currentStep > 0) {
+        sentences.pop();
+        currentStep--;
+        updateWritingScreen();
+        updateScriptPreview();
+      }
+    }
+    
+    // Show final screen
+    function showFinalScreen() {
+      document.getElementById('writing-screen').classList.add('hidden');
+      document.getElementById('expansion-gate').classList.remove('hidden');
+      document.getElementById('final-screen').classList.add('hidden');
+      
+      // Calculate stats
+      const fullScript = sentences.join(' ');
+      const wordCount = fullScript.split(/\s+/).filter(w => w.length > 0).length;
+      
+      document.getElementById('basic-word-count').textContent = `📊 Words: ${wordCount} | Sentences: ${sentences.length}`;
+    }
+    
+    // View basic script
+    function viewBasicScript() {
+      document.getElementById('expansion-gate').classList.add('hidden');
+      document.getElementById('basic-script-view').classList.remove('hidden');
+      
+      document.getElementById('view-topic-emoji').textContent = currentTopic.emoji;
+      document.getElementById('view-topic-name').textContent = currentTopic.name;
+      
+      const fullScript = sentences.join(' ');
+      document.getElementById('view-script-content').textContent = fullScript;
+      
+      const wordCount = fullScript.split(/\s+/).filter(w => w.length > 0).length;
+      document.getElementById('view-word-count').textContent = `${wordCount} words`;
+      document.getElementById('view-sentence-count').textContent = `${sentences.length} sentences`;
+    }
+    
+    // Go to expansion gate
+    function goToExpansionGate() {
+      document.getElementById('basic-script-view').classList.add('hidden');
+      document.getElementById('expansion-gate').classList.remove('hidden');
+    }
+    
+    // Start expansion
+    function startExpansion() {
+      currentStep = 0;
+      expansions = [null, null, null, null, null];
+      
+      document.getElementById('expansion-gate').classList.add('hidden');
+      document.getElementById('expansion-screen').classList.remove('hidden');
+      
+      updateExpansionScreen();
+      updateExpansionPreview();
+    }
+    
+    // Update expansion screen
+    function updateExpansionScreen() {
+      const step = steps[currentStep];
+      
+      // Update progress
+      const progressDots = document.getElementById('expansion-progress-dots');
+      progressDots.innerHTML = steps.map((s, i) => `
+        <div class="w-3 h-3 rounded-full transition-all ${i < currentStep ? 'bg-green-400' : i === currentStep ? 'bg-green-500 scale-125' : 'bg-gray-300'}"></div>
+      `).join('');
+      
+      document.getElementById('expansion-step-counter').textContent = `Step ${currentStep + 1} of ${steps.length}`;
+      document.getElementById('expansion-step-title').textContent = step.title;
+      
+      // Show current section
+      document.getElementById('section-preview').textContent = `"${sentences[currentStep]}"`;
+      
+      // Update expansion instruction
+      document.getElementById('expansion-instruction-text').textContent = step.expansionInstruction;
+      
+      // Update guidance
+      const guidanceList = document.getElementById('expansion-guidance-list');
+      guidanceList.innerHTML = step.expansionGuidance.map(g => `<li>• ${g}</li>`).join('');
+      
+      // Update example
+      document.getElementById('expansion-example-text').textContent = `"${step.expansionExamples[currentTopic.key]}"`;
+      
+      // Clear input
+      document.getElementById('expansion-input').value = '';
+      document.getElementById('expansion-input').focus();
+      
+      // Update back button
+      document.getElementById('expansion-back-btn').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
+    }
+    
+    // Update expansion preview
+    function updateExpansionPreview() {
+      const container = document.getElementById('expansion-script-content');
+      let html = '';
+      
+      sentences.forEach((sentence, i) => {
+        html += `<p class="font-semibold text-gray-800">${sentence}</p>`;
+        if (expansions[i]) {
+          html += `<p class="text-gray-600 ml-2">${expansions[i]}</p>`;
+        }
+        html += '';
+      });
+      
+      container.innerHTML = html;
+      
+      // Calculate word count
+      const allText = sentences.concat(expansions.filter(e => e)).join(' ');
+      const wordCount = allText.split(/\s+/).filter(w => w.length > 0).length;
+      document.getElementById('expansion-word-count').textContent = `${wordCount} words`;
+    }
+    
+    // Submit expansion
+    function submitExpansion() {
+      const input = document.getElementById('expansion-input');
+      let expansion = input.value.trim();
+      
+      if (!expansion) {
+        input.classList.add('border-red-400');
+        setTimeout(() => input.classList.remove('border-red-400'), 500);
+        return;
+      }
+      
+      // Add period if missing
+      if (!/[.!?]$/.test(expansion)) {
+        expansion += '.';
+      }
+      
+      expansions[currentStep] = expansion;
+      updateExpansionPreview();
+      
+      // Move to next step or finish
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateExpansionScreen();
+      } else {
+        showExpandedFinalScreen();
+      }
+    }
+    
+    // Use suggestion
+    function useExpansionSurprise() {
+      const step = steps[currentStep];
+      const example = step.expansionExamples[currentTopic.key];
+      document.getElementById('expansion-input').value = example;
+    }
+    
+    // Go back in expansion
+    function goBackExpansion() {
+      if (currentStep > 0) {
+        expansions[currentStep] = null;
+        currentStep--;
+        updateExpansionScreen();
+        updateExpansionPreview();
+      }
+    }
+    
+    // Show expanded final screen
+    function showExpandedFinalScreen() {
+      document.getElementById('expansion-screen').classList.add('hidden');
+      document.getElementById('final-screen').classList.remove('hidden');
+      
+      document.getElementById('final-topic-emoji').textContent = currentTopic.emoji;
+      document.getElementById('final-topic-name').textContent = currentTopic.name;
+      
+      // Build full script with expansions
+      let fullText = '';
+      sentences.forEach((sentence, i) => {
+        fullText += sentence + ' ';
+        if (expansions[i]) {
+          fullText += expansions[i] + ' ';
+        }
+      });
+      
+      document.getElementById('final-script').innerHTML = `<p>${fullText.trim()}</p>`;
+      
+      const wordCount = fullText.split(/\s+/).filter(w => w.length > 0).length;
+      document.getElementById('final-word-count').textContent = `${wordCount} words`;
+      
+      const sentenceCount = sentences.length + expansions.filter(e => e).length;
+      document.getElementById('final-sentence-count').textContent = `${sentenceCount} sentences`;
+    }
+    
+    // Go to start
+    function goToStart() {
+      document.getElementById('final-screen').classList.add('hidden');
+      document.getElementById('writing-screen').classList.add('hidden');
+      document.getElementById('title-screen').classList.remove('hidden');
+    }
+    
+    // Play again
+    function playAgain() {
+      goToStart();
+    }
+    
+    // Handle Enter key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        const input = document.getElementById('sentence-input');
+        if (document.activeElement === input) {
+          e.preventDefault();
+          submitSentence();
+        }
+      }
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c90b3dc85eda0b0',t:'MTc3MDI3NjYyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

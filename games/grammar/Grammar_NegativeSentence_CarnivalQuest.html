@@ -1,0 +1,1366 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No-Magic Carnival: Negative Sentences</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-a: #1f1d4d;
+      --bg-b: #3b175a;
+      --ink: #271a30;
+      --muted: #6e5b81;
+      --sky: #3bb8ff;
+      --mint: #35c49a;
+      --sun: #ffcc46;
+      --orange: #ff7a45;
+      --rose: #ff4f79;
+      --panel: #fff9ef;
+      --line: #f0d3a4;
+      --radius-lg: 26px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: "Quicksand", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 16%, rgba(255, 204, 70, 0.2), transparent 30%),
+        radial-gradient(circle at 82% 20%, rgba(255, 79, 121, 0.28), transparent 34%),
+        radial-gradient(circle at 50% 120%, rgba(59, 184, 255, 0.18), transparent 40%),
+        linear-gradient(145deg, var(--bg-a), var(--bg-b));
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: 108px;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 255, 255, 0.18) 0,
+          rgba(255, 255, 255, 0.18) 14px,
+          rgba(255, 79, 121, 0.28) 14px,
+          rgba(255, 79, 121, 0.28) 28px
+        );
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.7;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 10% 30%, rgba(255, 204, 70, 0.22) 0 2px, transparent 3px),
+        radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.24) 0 2px, transparent 3px),
+        radial-gradient(circle at 74% 28%, rgba(59, 184, 255, 0.2) 0 2px, transparent 3px),
+        radial-gradient(circle at 88% 24%, rgba(255, 79, 121, 0.24) 0 2px, transparent 3px);
+      z-index: 0;
+    }
+
+    .app-shell {
+      height: 100vh;
+      width: 100%;
+      padding: 14px;
+      display: flex;
+      justify-content: center;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .app-frame {
+      width: min(1200px, 100%);
+      min-height: calc(100vh - 28px);
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+      animation: enterSoft 460ms ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .surface {
+      background: linear-gradient(180deg, rgba(255, 251, 241, 0.98), rgba(255, 247, 230, 0.95));
+      border: 2px solid rgba(255, 214, 140, 0.62);
+      border-radius: var(--radius-lg);
+      box-shadow:
+        0 22px 42px rgba(15, 10, 42, 0.35),
+        0 2px 0 rgba(255, 255, 255, 0.72) inset,
+        0 -2px 0 rgba(86, 48, 16, 0.1) inset;
+    }
+
+    .top-bar {
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Fredoka", sans-serif;
+      font-size: clamp(28px, 3.2vw, 44px);
+      letter-spacing: 0.04em;
+      line-height: 1.05;
+      color: #8d1738;
+      text-shadow: 0 2px 0 #ffe8b0;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      font-size: clamp(14px, 1.4vw, 18px);
+      color: #7a4f13;
+      font-weight: 700;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      border: 1px solid #f4d59c;
+      background: linear-gradient(180deg, #fff8df, #ffeebf);
+      color: #6a3c0c;
+      min-height: 48px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-family: "Fredoka", sans-serif;
+      font-size: 17px;
+      cursor: pointer;
+      box-shadow: 0 8px 14px rgba(45, 16, 5, 0.16);
+    }
+
+    .pill-btn.sun {
+      border-color: #f1b65a;
+      background: linear-gradient(180deg, #ffd96e, #ffb738);
+      color: #633e07;
+    }
+
+    .pill-btn.sky {
+      border-color: #96d6ff;
+      background: linear-gradient(180deg, #79cbff, #2aa6ff);
+      color: #ffffff;
+    }
+
+    .part-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 20px 14px;
+    }
+
+    .part-tab {
+      border: 1px solid #efc98f;
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, #fff8e8, #ffefcf);
+      color: #7a4b13;
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 8px 12px rgba(51, 27, 9, 0.14);
+      transition: transform 140ms ease, filter 140ms ease;
+    }
+
+    .part-tab:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+
+    .part-tab.active {
+      background: linear-gradient(180deg, #ff5f7e, #e63f62);
+      color: #ffffff;
+      border-color: #cf3052;
+    }
+
+    .part-tab-title {
+      display: block;
+      font-family: "Fredoka", sans-serif;
+      font-size: 16px;
+      line-height: 1.1;
+    }
+
+    .part-tab-meta {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.1;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    .hud-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 20px 12px;
+    }
+
+    .hud-card {
+      border-radius: var(--radius-md);
+      border: 1px solid #f0d4a8;
+      background: linear-gradient(180deg, #fffdf6, #fff3dd);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 68px;
+      box-shadow: 0 8px 12px rgba(42, 22, 9, 0.1);
+    }
+
+    .hud-icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .hud-label {
+      font-size: 11px;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .hud-value {
+      font-size: 24px;
+      line-height: 1;
+      font-family: "Fredoka", sans-serif;
+    }
+
+    .progress-wrap {
+      padding: 0 20px 16px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      position: relative;
+      height: 18px;
+      border-radius: 999px;
+      border: 1px solid #efcf99;
+      background: linear-gradient(180deg, #ffe9b8, #ffd68d);
+      overflow: hidden;
+      box-shadow: 0 5px 10px rgba(81, 37, 8, 0.16) inset;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ff5f7e, #ff9b4e 48%, #35c49a 100%);
+      transition: width 320ms ease;
+    }
+
+    .main-panel {
+      position: relative;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .question-card {
+      border-radius: var(--radius-md);
+      border: 2px solid #f0c77d;
+      background: linear-gradient(180deg, #fffef7, #fff2da);
+      padding: 16px;
+      box-shadow: 0 14px 20px rgba(77, 31, 15, 0.2);
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .question-card::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 10px;
+      height: 8px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle, #ffd86c 0 3px, transparent 4px) 0 0/20px 8px repeat-x;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .question-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 7px 11px;
+      border: 1px solid #f1ba6f;
+      background: linear-gradient(180deg, #ffd97a, #ffbd4f);
+      color: #663f09;
+      font-size: 15px;
+      line-height: 1;
+      font-family: "Fredoka", sans-serif;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .prompt {
+      margin: 0;
+      font-size: clamp(27px, 3.1vw, 42px);
+      line-height: 1.22;
+      font-family: "Fredoka", sans-serif;
+      color: var(--ink);
+    }
+
+    .helper-pill {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid #f4d7a8;
+      background: #fff9ec;
+      color: #7b5a33;
+      width: fit-content;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice-btn {
+      border: none;
+      border-radius: var(--radius-sm);
+      min-height: 68px;
+      font-size: 22px;
+      font-family: "Fredoka", sans-serif;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.16);
+    }
+
+    .choice-do { background: linear-gradient(180deg, #35c49a, #23aa83); }
+    .choice-does { background: linear-gradient(180deg, #ff5f7e, #df3d60); }
+    .choice-did { background: linear-gradient(180deg, #ffb24a, #ff8a2b); }
+
+    .answer-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .answer-input {
+      min-height: 58px;
+      border: 2px solid #efcb8f;
+      border-radius: var(--radius-sm);
+      background: #fffdf7;
+      color: var(--ink);
+      font-size: 23px;
+      font-weight: 700;
+      padding: 10px 14px;
+      outline: none;
+    }
+
+    .answer-input:focus {
+      border-color: #ff8b48;
+      box-shadow: 0 0 0 4px rgba(255, 139, 72, 0.2);
+    }
+
+    .mini-hint {
+      margin: 0;
+      color: #607b92;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: var(--radius-sm);
+      min-height: 58px;
+      font-family: "Fredoka", sans-serif;
+      font-size: 20px;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.16);
+    }
+
+    .btn-check { background: linear-gradient(180deg, #35c49a, #23aa83); }
+    .btn-reveal { background: linear-gradient(180deg, #ff5f7e, #df3d60); }
+    .btn-next { background: linear-gradient(180deg, #ffb24a, #ff8a2b); }
+
+    .btn:disabled,
+    .choice-btn:disabled {
+      opacity: 0.62;
+      cursor: not-allowed;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.11);
+    }
+
+    .banner {
+      border-radius: 14px;
+      padding: 8px 10px;
+      text-align: center;
+      font-family: "Fredoka", sans-serif;
+      font-size: 22px;
+      display: none;
+      border: 1px solid #f4d29d;
+      background: linear-gradient(90deg, #fff0c6, #ffe2a0);
+      color: #714d17;
+      animation: popIn 280ms ease;
+    }
+
+    .banner.good {
+      border-color: #9ee7cf;
+      background: linear-gradient(90deg, #d9f8eb, #c0f0db);
+      color: #1f6a51;
+    }
+
+    .banner.bad {
+      border-color: #f4a6b9;
+      background: linear-gradient(90deg, #ffe7ee, #ffcfdc);
+      color: #8f2940;
+    }
+
+    .banner.celebrate {
+      border-color: #f4b36f;
+      background: linear-gradient(90deg, #ffd47c, #ff9d47);
+      color: #5f3709;
+    }
+
+    .confetti-layer {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 30;
+    }
+
+    .confetti-dot {
+      position: absolute;
+      font-size: 20px;
+      animation: confettiBurst 880ms ease forwards;
+      opacity: 0;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(18, 35, 51, 0.5);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(860px, 100%);
+      border-radius: 24px;
+      border: 2px solid #f0cb89;
+      background: linear-gradient(180deg, #fffdf6, #fff3df);
+      box-shadow: 0 24px 44px rgba(18, 35, 51, 0.28);
+      padding: 22px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 30px;
+      font-family: "Fredoka", sans-serif;
+    }
+
+    .close-x {
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1px solid #f0cb91;
+      background: #fff8ea;
+      color: #7a5627;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .rule-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .rule-card {
+      border-radius: 14px;
+      border: 1px solid #f0cf98;
+      background: #fffef8;
+      padding: 12px;
+      box-shadow: 0 8px 12px rgba(74, 35, 10, 0.09);
+    }
+
+    .rule-card h3 {
+      margin: 0;
+      font-size: 20px;
+      font-family: "Fredoka", sans-serif;
+    }
+
+    .rule-card p {
+      margin: 8px 0 0;
+      font-size: 15px;
+      line-height: 1.35;
+      color: #547089;
+      font-weight: 700;
+    }
+
+    .result-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .result-metric {
+      border-radius: 14px;
+      border: 1px solid #f1ce96;
+      background: #fffdf7;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .result-metric .name {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: #6b859b;
+    }
+
+    .result-metric .value {
+      margin-top: 6px;
+      font-family: "Fredoka", sans-serif;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .timer-wrap {
+      display: none;
+      margin-top: 4px;
+    }
+
+    .timer-wrap.show { display: block; }
+
+    .timer-track {
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid #d3e2ee;
+      background: #edf4fa;
+      overflow: hidden;
+    }
+
+    .timer-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #35c49a, #ffbe3b, #ff6f3a);
+      transition: width 100ms linear;
+    }
+
+    @keyframes enterSoft {
+      0% { transform: translateY(16px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.95); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes confettiBurst {
+      0% { transform: translateY(0) scale(0.5); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translate(var(--x), var(--y)) rotate(24deg) scale(1.2); opacity: 0; }
+    }
+
+    @media (max-width: 980px) {
+      .part-tabs,
+      .hud-grid,
+      .result-grid,
+      .rule-grid,
+      .controls-grid,
+      .option-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      body { overflow: auto; }
+      .app-shell { height: auto; min-height: 100%; }
+      .app-frame { min-height: unset; }
+      .top-bar, .main-panel { padding: 14px; }
+      .part-tabs,
+      .hud-grid,
+      .result-grid,
+      .rule-grid,
+      .controls-grid,
+      .option-grid,
+      .answer-row {
+        grid-template-columns: 1fr;
+      }
+      .prompt { font-size: clamp(28px, 7.5vw, 40px); }
+      .answer-input { font-size: 21px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div id="app" class="app-frame">
+      <section class="surface">
+        <div class="top-bar">
+          <div>
+            <h1>No-Magic Carnival</h1>
+            <div class="subtitle">Master Negative Sentences: do not / does not / did not</div>
+          </div>
+          <div class="top-actions">
+            <button id="btn-sound" class="pill-btn sky" type="button">Sound: On</button>
+            <button id="btn-rules" class="pill-btn sun" type="button">Rules</button>
+          </div>
+        </div>
+
+        <div class="hud-grid">
+          <div class="hud-card">
+            <div class="hud-icon">🎯</div>
+            <div>
+              <div class="hud-label">Question</div>
+              <div id="hud-question" class="hud-value">1 / 80</div>
+            </div>
+          </div>
+          <div class="hud-card">
+            <div class="hud-icon">🔥</div>
+            <div>
+              <div class="hud-label">Streak</div>
+              <div id="hud-streak" class="hud-value">0</div>
+            </div>
+          </div>
+          <div class="hud-card">
+            <div class="hud-icon">🏅</div>
+            <div>
+              <div class="hud-label">Tickets</div>
+              <div id="hud-tickets" class="hud-value">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="part-label">Part 1: Helper Hunt</span>
+            <span id="progress-label">0 / 20</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="part-tabs" role="tablist" aria-label="Switch parts">
+          <button class="part-tab active" type="button" data-part-tab="part1">
+            <span class="part-tab-title">Part 1</span>
+            <span id="part-tab-meta-part1" class="part-tab-meta">Helper Hunt</span>
+          </button>
+          <button class="part-tab" type="button" data-part-tab="part2">
+            <span class="part-tab-title">Part 2</span>
+            <span id="part-tab-meta-part2" class="part-tab-meta">Sentence Switch</span>
+          </button>
+          <button class="part-tab" type="button" data-part-tab="part3">
+            <span class="part-tab-title">Part 3</span>
+            <span id="part-tab-meta-part3" class="part-tab-meta">Fix-It Booth</span>
+          </button>
+          <button class="part-tab" type="button" data-part-tab="part4">
+            <span class="part-tab-title">Part 4</span>
+            <span id="part-tab-meta-part4" class="part-tab-meta">Turbo Parade</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="surface main-panel">
+        <div id="confetti-layer" class="confetti-layer"></div>
+
+        <section class="question-card" id="question-card">
+          <div id="question-badge" class="question-badge">Helper Hunt</div>
+          <p id="question-prompt" class="prompt">Choose the correct helper word.</p>
+          <p id="question-context" class="helper-pill">Nori says: we need a negative sentence.</p>
+
+          <div id="timer-wrap" class="timer-wrap">
+            <div class="timer-track"><div id="timer-fill" class="timer-fill"></div></div>
+          </div>
+
+          <div id="option-grid" class="option-grid"></div>
+
+          <div class="answer-row">
+            <input id="answer-input" class="answer-input" type="text" autocomplete="off" placeholder="Type the full negative sentence here">
+            <button id="btn-check" class="btn btn-check" type="button">Check</button>
+          </div>
+
+          <p id="mini-hint" class="mini-hint">Tip: keep the main verb in base form after do/does/did.</p>
+        </section>
+
+        <div id="banner" class="banner">Great job!</div>
+
+        <section class="controls-grid">
+          <button id="btn-reveal" class="btn btn-reveal" type="button">Reveal</button>
+          <button id="btn-skip" class="btn btn-reveal" type="button">Skip</button>
+          <button id="btn-next" class="btn btn-next" type="button">Next</button>
+        </section>
+      </section>
+    </div>
+  </div>
+
+  <div id="rules-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="rules-title" class="modal-title">Negative Sentence Rules</h2>
+        <button id="btn-rules-close" class="close-x" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="rule-grid">
+        <article class="rule-card">
+          <h3>do not</h3>
+          <p>Use with I, you, we, they in present tense.<br>Example: We do not watch TV at lunch.</p>
+        </article>
+        <article class="rule-card">
+          <h3>does not</h3>
+          <p>Use with he, she, it, or one person in present tense.<br>Example: Elaine does not do homework at recess.</p>
+        </article>
+        <article class="rule-card">
+          <h3>did not</h3>
+          <p>Use with all subjects in past tense.<br>Example: Kobe did not read on Monday.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div id="results-modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="results-title" class="modal-title">Carnival Complete!</h2>
+      </div>
+      <p id="results-subtitle" class="subtitle">Amazing grammar control.</p>
+      <div class="result-grid">
+        <div class="result-metric"><div class="name">Correct</div><div id="result-correct" class="value">0</div></div>
+        <div class="result-metric"><div class="name">Total</div><div id="result-total" class="value">80</div></div>
+        <div class="result-metric"><div class="name">Best Streak</div><div id="result-streak" class="value">0</div></div>
+        <div class="result-metric"><div class="name">Tickets</div><div id="result-tickets" class="value">0</div></div>
+      </div>
+      <div class="top-actions" style="margin-top:14px; justify-content:center;">
+        <button id="btn-restart" class="pill-btn sky" type="button" style="min-width:220px;">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PART_CONFIG = {
+      part1: { label: "Part 1: Helper Hunt", shortLabel: "Helper Hunt", size: 20 },
+      part2: { label: "Part 2: Sentence Switch", shortLabel: "Sentence Switch", size: 20 },
+      part3: { label: "Part 3: Fix-It Booth", shortLabel: "Fix-It Booth", size: 20 },
+      part4: { label: "Part 4: Turbo Parade", shortLabel: "Turbo Parade", size: 20 }
+    };
+
+    const PART_KEYS = Object.keys(PART_CONFIG);
+
+    const BASE_ITEMS = [
+      { subject: "My small dog", subjectType: "singular", tense: "present", baseVerb: "play", positiveVerb: "plays", tail: "with me every night." },
+      { subject: "Elaine", subjectType: "singular", tense: "present", baseVerb: "do", positiveVerb: "does", tail: "her homework at recess in the morning." },
+      { subject: "Kobe, Kennith and Hanson", subjectType: "plural", tense: "present", baseVerb: "read", positiveVerb: "read", tail: "storybooks on Mondays." },
+      { subject: "Chloe", subjectType: "singular", tense: "present", baseVerb: "do", positiveVerb: "does", tail: "sums on Fridays." },
+      { subject: "I", subjectType: "i-you", tense: "present", baseVerb: "eat", positiveVerb: "eat", tail: "apples after class." },
+      { subject: "You", subjectType: "i-you", tense: "present", baseVerb: "watch", positiveVerb: "watch", tail: "cartoons at dinner." },
+      { subject: "We", subjectType: "plural", tense: "present", baseVerb: "practice", positiveVerb: "practice", tail: "English every weekend." },
+      { subject: "They", subjectType: "plural", tense: "present", baseVerb: "go", positiveVerb: "go", tail: "to the library on Tuesdays." },
+      { subject: "The baby", subjectType: "singular", tense: "present", baseVerb: "sleep", positiveVerb: "sleeps", tail: "at noon." },
+      { subject: "Our teacher", subjectType: "singular", tense: "present", baseVerb: "give", positiveVerb: "gives", tail: "us spelling quizzes." },
+      { subject: "Mia and Zoe", subjectType: "plural", tense: "present", baseVerb: "sing", positiveVerb: "sing", tail: "before lunch." },
+      { subject: "My brother", subjectType: "singular", tense: "present", baseVerb: "ride", positiveVerb: "rides", tail: "his bike after school." },
+      { subject: "The cat", subjectType: "singular", tense: "past", baseVerb: "jump", positiveVerb: "jumped", tail: "onto the sofa last night." },
+      { subject: "I", subjectType: "i-you", tense: "past", baseVerb: "finish", positiveVerb: "finished", tail: "my worksheet yesterday." },
+      { subject: "You", subjectType: "i-you", tense: "past", baseVerb: "visit", positiveVerb: "visited", tail: "your grandma last weekend." },
+      { subject: "We", subjectType: "plural", tense: "past", baseVerb: "play", positiveVerb: "played", tail: "basketball on Sunday." },
+      { subject: "He", subjectType: "singular", tense: "past", baseVerb: "watch", positiveVerb: "watched", tail: "the movie last night." },
+      { subject: "She", subjectType: "singular", tense: "past", baseVerb: "do", positiveVerb: "did", tail: "her chores yesterday." },
+      { subject: "They", subjectType: "plural", tense: "past", baseVerb: "read", positiveVerb: "read", tail: "comic books after dinner." },
+      { subject: "Our class", subjectType: "singular", tense: "past", baseVerb: "go", positiveVerb: "went", tail: "to the science room on Friday." },
+      { subject: "The boys", subjectType: "plural", tense: "past", baseVerb: "build", positiveVerb: "built", tail: "a robot last month." },
+      { subject: "My aunt", subjectType: "singular", tense: "past", baseVerb: "cook", positiveVerb: "cooked", tail: "pasta yesterday evening." },
+      { subject: "The players", subjectType: "plural", tense: "present", baseVerb: "train", positiveVerb: "train", tail: "every morning." },
+      { subject: "Sam", subjectType: "singular", tense: "present", baseVerb: "study", positiveVerb: "studies", tail: "Chinese on Thursdays." },
+      { subject: "My parents", subjectType: "plural", tense: "present", baseVerb: "drive", positiveVerb: "drive", tail: "me to school." },
+      { subject: "The rabbit", subjectType: "singular", tense: "present", baseVerb: "eat", positiveVerb: "eats", tail: "carrots at night." },
+      { subject: "Leo", subjectType: "singular", tense: "past", baseVerb: "write", positiveVerb: "wrote", tail: "a letter yesterday." },
+      { subject: "The girls", subjectType: "plural", tense: "past", baseVerb: "dance", positiveVerb: "danced", tail: "on stage last week." },
+      { subject: "I", subjectType: "i-you", tense: "present", baseVerb: "bring", positiveVerb: "bring", tail: "my water bottle to class." },
+      { subject: "She", subjectType: "singular", tense: "present", baseVerb: "wash", positiveVerb: "washes", tail: "the dishes after dinner." }
+    ];
+
+    const state = {
+      questionBank: [],
+      partQuestionMap: {},
+      currentPart: "part1",
+      partIndices: { part1: 0, part2: 0, part3: 0, part4: 0 },
+      questionStatus: {},
+      score: 0,
+      streak: 0,
+      bestStreak: 0,
+      tickets: 0,
+      soundOn: true,
+      timerId: null,
+      timerEnd: 0,
+      timerRunning: false,
+      bannerTimeoutId: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function pick(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function helperFor(item) {
+      if (item.tense === "past") return "did not";
+      if (item.subjectType === "singular") return "does not";
+      return "do not";
+    }
+
+    function positiveSentence(item) {
+      return `${item.subject} ${item.positiveVerb} ${item.tail}`;
+    }
+
+    function negativeSentence(item) {
+      return `${item.subject} ${helperFor(item)} ${item.baseVerb} ${item.tail}`;
+    }
+
+    function contractions(sentence) {
+      return sentence
+        .replace(/do not/gi, "don't")
+        .replace(/does not/gi, "doesn't")
+        .replace(/did not/gi, "didn't");
+    }
+
+    function normalize(text) {
+      return (text || "")
+        .toLowerCase()
+        .replace(/[.,!?]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function altHelper(item) {
+      const options = ["do not", "does not", "did not"].filter((x) => x !== helperFor(item));
+      return pick(options);
+    }
+
+    function makeHelperQuestions(size) {
+      const source = shuffle(BASE_ITEMS);
+      return source.slice(0, size).map((item, i) => ({
+        id: `p1-${i + 1}`,
+        partKey: "part1",
+        type: "helper",
+        badge: "Helper Hunt",
+        prompt: positiveSentence(item),
+        context: "Pick the helper for the negative sentence.",
+        answer: helperFor(item),
+        choices: ["do not", "does not", "did not"]
+      }));
+    }
+
+    function makeRewriteQuestions(size, partKey = "part2") {
+      const source = shuffle(BASE_ITEMS);
+      return source.slice(0, size).map((item, i) => ({
+        id: `${partKey}-${i + 1}`,
+        partKey,
+        type: "rewrite",
+        badge: partKey === "part4" ? "Turbo Rewrite" : "Sentence Switch",
+        prompt: positiveSentence(item),
+        context: "Rewrite as a negative sentence.",
+        answer: negativeSentence(item),
+        answerAlt: contractions(negativeSentence(item))
+      }));
+    }
+
+    function makeFixQuestions(size, partKey = "part3") {
+      const source = shuffle(BASE_ITEMS);
+      return source.slice(0, size).map((item, i) => {
+        const correct = negativeSentence(item);
+        const wrongHelper = `${item.subject} ${altHelper(item)} ${item.baseVerb} ${item.tail}`;
+        const wrongVerb = `${item.subject} ${helperFor(item)} ${item.positiveVerb} ${item.tail}`;
+        const choices = shuffle([correct, wrongHelper, wrongVerb]);
+        return {
+          id: `${partKey}-${i + 1}`,
+          partKey,
+          type: "fix",
+          badge: partKey === "part4" ? "Turbo Fix" : "Fix-It Booth",
+          prompt: `Wrong sentence: ${wrongHelper}`,
+          context: "Pick the best correction.",
+          answer: correct,
+          choices
+        };
+      });
+    }
+
+    function buildQuestionBank() {
+      const part1 = makeHelperQuestions(PART_CONFIG.part1.size);
+      const part2 = makeRewriteQuestions(PART_CONFIG.part2.size, "part2");
+      const part3 = makeFixQuestions(PART_CONFIG.part3.size, "part3");
+      const turboRewrite = makeRewriteQuestions(10, "part4");
+      const turboFix = makeFixQuestions(10, "part4");
+      const part4 = shuffle([...turboRewrite, ...turboFix]).map((q, idx) => ({ ...q, id: `part4-${idx + 1}` }));
+      return [...part1, ...part2, ...part3, ...part4].map((q, idx) => ({ ...q, number: idx + 1 }));
+    }
+
+    function buildPartMap(questions) {
+      return PART_KEYS.reduce((acc, key) => {
+        acc[key] = questions.filter((q) => q.partKey === key);
+        return acc;
+      }, {});
+    }
+
+    function currentQuestion() {
+      const list = state.partQuestionMap[state.currentPart] || [];
+      const index = state.partIndices[state.currentPart] || 0;
+      return list[index];
+    }
+
+    function completedCountForPart(partKey) {
+      const list = state.partQuestionMap[partKey] || [];
+      return list.filter((q) => state.questionStatus[q.id]).length;
+    }
+
+    function markQuestion(question, status) {
+      if (!question || state.questionStatus[question.id]) return false;
+      state.questionStatus[question.id] = status;
+      return true;
+    }
+
+    function updateHUD() {
+      const partList = state.partQuestionMap[state.currentPart] || [];
+      const partTotal = partList.length;
+      const partIndex = state.partIndices[state.currentPart] || 0;
+      const partDone = completedCountForPart(state.currentPart);
+      const pct = partTotal ? Math.round((partDone / partTotal) * 100) : 0;
+
+      $("hud-question").textContent = `${Math.min(partIndex + 1, Math.max(1, partTotal))} / ${partTotal}`;
+      $("hud-streak").textContent = String(state.streak);
+      $("hud-tickets").textContent = String(state.tickets);
+      $("progress-fill").style.width = `${pct}%`;
+      $("progress-label").textContent = `${partDone} / ${partTotal}`;
+      const q = currentQuestion();
+      if (q) $("part-label").textContent = PART_CONFIG[state.currentPart].label;
+    }
+
+    function renderPartTabs() {
+      PART_KEYS.forEach((key) => {
+        const tab = document.querySelector(`[data-part-tab="${key}"]`);
+        const meta = $(`part-tab-meta-${key}`);
+        const done = completedCountForPart(key);
+        const total = (state.partQuestionMap[key] || []).length;
+        if (tab) {
+          tab.classList.toggle("active", key === state.currentPart);
+          tab.setAttribute("aria-selected", key === state.currentPart ? "true" : "false");
+        }
+        if (meta) meta.textContent = `${PART_CONFIG[key].shortLabel} • ${done}/${total}`;
+      });
+    }
+
+    function stopTimer() {
+      state.timerRunning = false;
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+      $("timer-fill").style.width = "100%";
+      $("timer-wrap").classList.remove("show");
+    }
+
+    function startTurboTimer(seconds = 11) {
+      stopTimer();
+      if (state.currentPart !== "part4") return;
+      state.timerEnd = Date.now() + seconds * 1000;
+      state.timerRunning = true;
+      $("timer-wrap").classList.add("show");
+      state.timerId = setInterval(() => {
+        const leftMs = Math.max(0, state.timerEnd - Date.now());
+        const pct = (leftMs / (seconds * 1000)) * 100;
+        $("timer-fill").style.width = `${pct}%`;
+        if (leftMs <= 0) {
+          stopTimer();
+          handleTimeout();
+        }
+      }, 100);
+    }
+
+    function showBanner(text, tone = "good", hideMs = 1400) {
+      const banner = $("banner");
+      if (state.bannerTimeoutId) {
+        clearTimeout(state.bannerTimeoutId);
+        state.bannerTimeoutId = null;
+      }
+      banner.className = `banner ${tone}`;
+      banner.textContent = text;
+      banner.style.display = "block";
+      if (hideMs > 0) {
+        state.bannerTimeoutId = setTimeout(() => {
+          banner.style.display = "none";
+        }, hideMs);
+      }
+    }
+
+    function playTone(type = "good") {
+      if (!state.soundOn) return;
+      const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextCtor) return;
+      try {
+        const ctx = new AudioContextCtor();
+        const now = ctx.currentTime;
+        const notesByType = {
+          good: [659, 784, 988],
+          star: [523, 659, 784, 1046],
+          bad: [260, 210],
+          timeout: [320, 220, 170]
+        };
+        const notes = notesByType[type] || notesByType.good;
+
+        notes.forEach((note, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = type === "bad" || type === "timeout" ? "square" : "triangle";
+          osc.frequency.setValueAtTime(note, now + i * 0.08);
+          gain.gain.setValueAtTime(0.0001, now + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.08, now + i * 0.08 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.08 + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.08);
+          osc.stop(now + i * 0.08 + 0.24);
+        });
+
+        setTimeout(() => ctx.close().catch(() => {}), 900);
+      } catch (_) {
+        // ignore sound error
+      }
+    }
+
+    function confettiBurst() {
+      const layer = $("confetti-layer");
+      const emojis = ["✨", "🎉", "⭐", "🎈", "💥", "🌟"];
+      for (let i = 0; i < 14; i++) {
+        const dot = document.createElement("span");
+        dot.className = "confetti-dot";
+        dot.textContent = pick(emojis);
+        dot.style.left = `${42 + Math.random() * 16}%`;
+        dot.style.top = `${44 + Math.random() * 10}%`;
+        dot.style.setProperty("--x", `${(Math.random() - 0.5) * 260}px`);
+        dot.style.setProperty("--y", `${(Math.random() - 1) * 220}px`);
+        layer.appendChild(dot);
+        setTimeout(() => dot.remove(), 900);
+      }
+    }
+
+    function setQuestionModeUI(question) {
+      const options = $("option-grid");
+      options.innerHTML = "";
+      const input = $("answer-input");
+      const check = $("btn-check");
+
+      if (question.type === "helper" || question.type === "fix") {
+        input.style.display = "none";
+        check.style.display = "none";
+      } else {
+        input.style.display = "block";
+        check.style.display = "inline-block";
+      }
+
+      if (question.type === "helper") {
+        question.choices.forEach((choice) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = `choice-btn ${choice === "do not" ? "choice-do" : choice === "does not" ? "choice-does" : "choice-did"}`;
+          b.textContent = choice;
+          b.addEventListener("click", () => handleChoice(choice));
+          options.appendChild(b);
+        });
+      }
+
+      if (question.type === "fix") {
+        question.choices.forEach((choice, idx) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = `choice-btn ${idx % 3 === 0 ? "choice-do" : idx % 3 === 1 ? "choice-does" : "choice-did"}`;
+          b.style.fontSize = "17px";
+          b.textContent = choice;
+          b.addEventListener("click", () => handleChoice(choice));
+          options.appendChild(b);
+        });
+      }
+
+      if (question.type === "rewrite") {
+        input.placeholder = "Type the full negative sentence";
+      }
+    }
+
+    function renderQuestion() {
+      const q = currentQuestion();
+      if (!q) return;
+
+      stopTimer();
+      $("question-badge").textContent = q.badge;
+      $("question-prompt").textContent = q.prompt;
+      $("question-context").textContent = q.context;
+      $("answer-input").value = "";
+      $("btn-next").disabled = true;
+      $("btn-check").disabled = false;
+      $("answer-input").disabled = false;
+      $("btn-reveal").disabled = false;
+
+      setQuestionModeUI(q);
+      updateHUD();
+      renderPartTabs();
+      if (state.currentPart === "part4") startTurboTimer(11);
+    }
+
+    function isCorrectTyped(inputText, question) {
+      const typed = normalize(inputText);
+      const exact = normalize(question.answer);
+      const contraction = normalize(question.answerAlt || "");
+      return typed === exact || (contraction && typed === contraction);
+    }
+
+    function handleCorrect(question) {
+      const first = markQuestion(question, "correct");
+      if (first) {
+        state.score += 1;
+        state.streak += 1;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        if (state.score % 4 === 0) {
+          state.tickets += 1;
+          showBanner("Ticket earned!", "celebrate", 1500);
+          playTone("star");
+        } else {
+          showBanner("Great switch!", "good", 1300);
+          playTone("good");
+        }
+        confettiBurst();
+      }
+      stopTimer();
+      $("btn-next").disabled = false;
+      $("btn-check").disabled = true;
+      $("answer-input").disabled = true;
+      $("btn-reveal").disabled = true;
+      updateHUD();
+      renderPartTabs();
+    }
+
+    function handleIncorrect(question, message = "Not yet. Try again!") {
+      state.streak = 0;
+      showBanner(message, "bad", 1500);
+      playTone("bad");
+      updateHUD();
+    }
+
+    function handleChoice(choice) {
+      const q = currentQuestion();
+      if (!q || state.questionStatus[q.id]) return;
+      if (normalize(choice) === normalize(q.answer)) {
+        handleCorrect(q);
+      } else {
+        handleIncorrect(q, `Oops! Correct is: ${q.answer}`);
+      }
+    }
+
+    function checkTyped() {
+      const q = currentQuestion();
+      if (!q || q.type !== "rewrite" || state.questionStatus[q.id]) return;
+      const typed = $("answer-input").value;
+      if (!typed.trim()) {
+        showBanner("Type a sentence first.", "bad", 900);
+        return;
+      }
+      if (isCorrectTyped(typed, q)) {
+        handleCorrect(q);
+      } else {
+        handleIncorrect(q, `Try again. Hint answer starts with: ${q.answer.split(" ").slice(0, 3).join(" ")}`);
+      }
+    }
+
+    function revealAnswer() {
+      const q = currentQuestion();
+      if (!q || state.questionStatus[q.id]) return;
+      $("answer-input").value = q.answer;
+      handleCorrect(q);
+      showBanner(`Reveal: ${q.answer}`, "good", 1700);
+    }
+
+    function handleTimeout() {
+      const q = currentQuestion();
+      if (!q || state.questionStatus[q.id]) return;
+      state.streak = 0;
+      showBanner("Time up! Moving on.", "bad", 1000);
+      playTone("timeout");
+      setTimeout(() => nextQuestion(), 760);
+    }
+
+    function nextQuestion() {
+      const list = state.partQuestionMap[state.currentPart] || [];
+      const idx = state.partIndices[state.currentPart] || 0;
+      if (idx >= list.length - 1) {
+        if (Object.keys(state.questionStatus).length >= state.questionBank.length) {
+          showResults();
+        } else {
+          showBanner("Part done! Pick another tab.", "celebrate", 1600);
+        }
+        return;
+      }
+      state.partIndices[state.currentPart] += 1;
+      renderQuestion();
+    }
+
+    function skipQuestion() {
+      state.streak = 0;
+      nextQuestion();
+    }
+
+    function switchPart(partKey) {
+      if (!state.partQuestionMap[partKey]) return;
+      state.currentPart = partKey;
+      renderQuestion();
+    }
+
+    function showResults() {
+      $("result-correct").textContent = String(state.score);
+      $("result-total").textContent = String(state.questionBank.length);
+      $("result-streak").textContent = String(state.bestStreak);
+      $("result-tickets").textContent = String(state.tickets);
+
+      const pct = Math.round((state.score / state.questionBank.length) * 100);
+      if (pct >= 92) {
+        $("results-title").textContent = "Negative Sentence Superstar!";
+        $("results-subtitle").textContent = "Perfect helper choice and awesome sentence control.";
+      } else if (pct >= 75) {
+        $("results-title").textContent = "Great Carnival Champion!";
+        $("results-subtitle").textContent = "Strong do/does/did not accuracy.";
+      } else {
+        $("results-title").textContent = "Mission Complete!";
+        $("results-subtitle").textContent = "Keep practicing and your negatives will become automatic.";
+      }
+
+      $("results-modal").classList.add("open");
+      playTone("star");
+      confettiBurst();
+    }
+
+    function restartGame() {
+      stopTimer();
+      state.questionBank = buildQuestionBank();
+      state.partQuestionMap = buildPartMap(state.questionBank);
+      state.currentPart = "part1";
+      state.partIndices = { part1: 0, part2: 0, part3: 0, part4: 0 };
+      state.questionStatus = {};
+      state.score = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.tickets = 0;
+      $("results-modal").classList.remove("open");
+      renderQuestion();
+    }
+
+    function bindEvents() {
+      $("btn-check").addEventListener("click", checkTyped);
+      $("btn-next").addEventListener("click", nextQuestion);
+      $("btn-skip").addEventListener("click", skipQuestion);
+      $("btn-reveal").addEventListener("click", revealAnswer);
+
+      $("btn-rules").addEventListener("click", () => $("rules-modal").classList.add("open"));
+      $("btn-rules-close").addEventListener("click", () => $("rules-modal").classList.remove("open"));
+      $("rules-modal").addEventListener("click", (e) => {
+        if (e.target.id === "rules-modal") $("rules-modal").classList.remove("open");
+      });
+
+      $("btn-restart").addEventListener("click", restartGame);
+
+      $("btn-sound").addEventListener("click", () => {
+        state.soundOn = !state.soundOn;
+        $("btn-sound").textContent = `Sound: ${state.soundOn ? "On" : "Off"}`;
+      });
+
+      $("answer-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          checkTyped();
+        }
+      });
+
+      document.querySelectorAll("[data-part-tab]").forEach((button) => {
+        button.addEventListener("click", () => switchPart(button.getAttribute("data-part-tab")));
+      });
+    }
+
+    function validateBank() {
+      if (state.questionBank.length !== 80) {
+        console.warn("Question bank size expected 80, got:", state.questionBank.length);
+      }
+    }
+
+    function init() {
+      bindEvents();
+      state.questionBank = buildQuestionBank();
+      state.partQuestionMap = buildPartMap(state.questionBank);
+      validateBank();
+      renderQuestion();
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1643 @@
+<!doctype html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Review Kitchen Board</title>
+    <style>
+        :root {
+            --cream: #F7EFE5;
+            --tomato: #D35400;
+            --coffee: #6E2C00;
+            --shadow: 0 10px 24px rgba(110, 44, 0, 0.1);
+            --line: #e7d8c9;
+            --station-tint: rgba(211, 84, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+            color: var(--coffee);
+            background: radial-gradient(circle at 15% 0%, #fff8ef 0%, transparent 45%), var(--cream);
+        }
+
+        .app {
+            min-height: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 14px;
+        }
+
+        .progress-wrap {
+            background: #fff9f3;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 10px;
+        }
+
+        .progress-steps {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .step {
+            text-align: center;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+            color: #8b6143;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 10px 6px;
+            transition: 180ms ease;
+        }
+
+        .step.active {
+            background: var(--tomato);
+            color: #fff;
+            border-color: var(--tomato);
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .progress-bar {
+            margin-top: 9px;
+            width: 100%;
+            height: 6px;
+            border-radius: 99px;
+            background: #f0e2d2;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 20%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #d35400, #e27f3b);
+            transition: width 260ms ease;
+        }
+
+        .stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            width: 100%;
+            height: -webkit-fill-available;
+            background: #fffefb;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: var(--station-tint);
+            pointer-events: none;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .guide {
+            margin: 0 0 14px;
+            padding: 9px 12px;
+            border: 1px solid #edd2bd;
+            border-radius: 10px;
+            background: #fff6ee;
+            color: #7a3b12;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .title {
+            margin: 0;
+            color: var(--tomato);
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .title-tools {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rule-btn {
+            border: 1px solid #d8bba3;
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: #fff9f3;
+            color: #6a2f0a;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .prompt-view {
+            min-height: 300px;
+            display: block;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .grid-3 {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .grid-2 {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .tile {
+            border: 1px solid #dfc6af;
+            border-radius: 12px;
+            background: #fff;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .tile.flip-in {
+            animation: flipIn 380ms ease;
+        }
+
+        .step-random-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .step-random-btn {
+            border: 2px solid #8b4012;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #ffd9bf, #ffbf94);
+            color: #5a2807;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 0.02em;
+            padding: 7px 10px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0 #8b4012;
+            transition: 120ms ease;
+        }
+
+        .step-random-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 #8b4012;
+        }
+
+        @keyframes flipIn {
+            from {
+                transform: perspective(500px) rotateX(20deg) translateY(8px);
+                opacity: 0;
+            }
+
+            to {
+                transform: perspective(500px) rotateX(0deg) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 12px;
+            color: #99684a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .value {
+            font-size: 36px;
+            line-height: 1.1;
+            font-weight: 800;
+            color: #5a2807;
+        }
+
+        .single {
+            width: 100%;
+            border: 1px solid #ddc2aa;
+            border-radius: 14px;
+            background: #fff;
+            padding: 24px 16px;
+            text-align: center;
+            color: #5a2807;
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.2;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .silhouette {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 90%;
+            max-width: 620px;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.2;
+            display: grid;
+            gap: 10px;
+        }
+
+        .silhouette-bar {
+            height: 16px;
+            border-radius: 99px;
+            background: #efd6bd;
+        }
+
+        .single .text {
+            position: relative;
+            z-index: 1;
+        }
+
+        .wiggle {
+            display: inline-block;
+            animation: wiggle 1300ms ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        @keyframes wiggle {
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            20% {
+                transform: rotate(-4deg) translateY(-1px);
+            }
+
+            40% {
+                transform: rotate(4deg) translateY(1px);
+            }
+
+            60% {
+                transform: rotate(-3deg);
+            }
+
+            80% {
+                transform: rotate(3deg);
+            }
+        }
+
+        .example {
+            width: 100%;
+            margin-top: 10px;
+            border: 1px dashed #d8bba3;
+            border-radius: 12px;
+            background: #fff5ea;
+            padding: 11px 13px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #7a3b12;
+        }
+
+        .serve-block {
+            cursor: pointer;
+            transition: 160ms ease;
+        }
+
+        .serve-block.covered {
+            background: #e8f4e9;
+            border-color: #bfd7c2;
+            box-shadow: inset 0 0 0 1px #c5dbc8;
+        }
+
+        .serve-guide {
+            margin-top: 10px;
+            border: 2px solid #d6b79d;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #fffaf4 0%, #fff3e7 100%);
+            padding: 12px;
+        }
+
+        .serve-equation {
+            font-size: 16px;
+            font-weight: 800;
+            color: #6a2f0a;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .serve-plan {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .serve-plan-item {
+            border: 1px solid #ddbfa7;
+            border-radius: 10px;
+            background: #fff;
+            padding: 8px 9px;
+            color: #7a3b12;
+            font-size: 14px;
+            line-height: 1.45;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .serve-example-stack {
+            margin-top: 8px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .serve-example-item {
+            background: #fff5ea;
+            border-style: dashed;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .tense-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tense-quiz {
+            border: 2px solid #d6b79d;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #fffaf4 0%, #fff3e7 100%);
+            padding: 12px;
+        }
+
+        .tense-quiz-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tense-badge {
+            border: 1px solid #ddbfa7;
+            border-radius: 999px;
+            background: #fff;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #7a3b12;
+        }
+
+        .tense-progress {
+            margin-top: 10px;
+            width: 100%;
+            height: 8px;
+            border-radius: 99px;
+            background: #f2ded0;
+            overflow: hidden;
+        }
+
+        .tense-progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #d35400, #e27f3b);
+            transition: width 220ms ease;
+        }
+
+        .tense-question {
+            margin-top: 10px;
+            border: 1px solid #ddbfa7;
+            border-radius: 12px;
+            background: #fff;
+            padding: 12px;
+            color: #6a2f0a;
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1.35;
+            text-align: center;
+        }
+
+        .tense-input-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tense-input {
+            width: 100%;
+            border: 1px solid #d8bba3;
+            border-radius: 10px;
+            background: #fff;
+            padding: 10px 12px;
+            font-size: 16px;
+            color: #5a2807;
+        }
+
+        .tense-check-btn {
+            border: 1px solid #c84f0b;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #d35400;
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .tense-feedback {
+            margin-top: 8px;
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 14px;
+            font-weight: 700;
+            min-height: 20px;
+        }
+
+        .tense-feedback.ok {
+            background: #e8f4e9;
+            color: #1f6d2c;
+            border: 1px solid #bfd7c2;
+        }
+
+        .tense-feedback.retry {
+            background: #fff3e8;
+            color: #8a3c10;
+            border: 1px solid #e7c8ab;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .rule-card {
+            border: 1px solid #e2cab4;
+            border-radius: 12px;
+            background: #fff9f2;
+            padding: 10px;
+        }
+
+        .rule-card-title {
+            margin: 0 0 6px;
+            font-size: 15px;
+            color: #6a2f0a;
+            font-weight: 800;
+        }
+
+        .rule-card-text {
+            margin: 0;
+            font-size: 14px;
+            color: #7a3b12;
+            line-height: 1.5;
+        }
+
+        .rule-highlight {
+            margin-top: 10px;
+            border: 1px dashed #d7b79b;
+            border-radius: 12px;
+            background: #fff6ec;
+            padding: 10px;
+            color: #7a3b12;
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 700;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(40, 20, 8, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 100;
+        }
+
+        .modal-panel {
+            width: 100%;
+            max-width: 680px;
+            border: 1px solid #d8bba3;
+            border-radius: 14px;
+            background: #fffefb;
+            box-shadow: var(--shadow);
+            padding: 16px;
+        }
+
+        .modal-title {
+            margin: 0 0 10px;
+            color: #6a2f0a;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .rules-simple {
+            display: grid;
+            gap: 10px;
+        }
+
+        .rules-simple-item {
+            border: 1px solid #e2cab4;
+            border-radius: 12px;
+            background: #fff9f2;
+            padding: 10px;
+        }
+
+        .rules-simple-title {
+            margin: 0 0 6px;
+            font-size: 16px;
+            color: #6a2f0a;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .rules-simple-example {
+            margin: 0;
+            color: #7a3b12;
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 700;
+        }
+
+        .modal-list {
+            margin: 0;
+            padding-left: 18px;
+            color: #7a3b12;
+            font-size: 15px;
+            line-height: 1.55;
+            display: grid;
+            gap: 6px;
+        }
+
+        .modal-actions {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 130ms ease;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: var(--tomato);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--coffee);
+            border-color: #dcc2ad;
+        }
+
+        .thinking {
+            animation: thinkingGlow 1000ms ease;
+        }
+
+        @keyframes thinkingGlow {
+            0% {
+                box-shadow: 0 0 0 rgba(211, 84, 0, 0);
+            }
+
+            40% {
+                box-shadow: 0 0 0 8px rgba(211, 84, 0, 0.14);
+            }
+
+            100% {
+                box-shadow: 0 0 0 rgba(211, 84, 0, 0);
+            }
+        }
+
+        .ripple {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(211, 84, 0, 0.18) 0%, rgba(211, 84, 0, 0) 60%);
+            animation: rippleOut 330ms ease;
+        }
+
+        @keyframes rippleOut {
+            from {
+                transform: scale(0.6);
+                opacity: 0.8;
+            }
+
+            to {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        .chef-pop {
+            position: fixed;
+            right: 22px;
+            top: 22px;
+            font-size: 28px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .chef-pop.show {
+            animation: chefPop 850ms ease;
+        }
+
+        @keyframes chefPop {
+            0% {
+                opacity: 0;
+                transform: translateY(8px) scale(0.8);
+            }
+
+            35% {
+                opacity: 1;
+                transform: translateY(0) scale(1.15);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10px) scale(1);
+            }
+        }
+
+        @media (max-width: 760px) {
+            .progress-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-3,
+            .grid-2,
+            .serve-plan,
+            .tense-grid,
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tense-input-row {
+                grid-template-columns: 1fr;
+            }
+
+            .single {
+                font-size: 30px;
+            }
+
+            .value {
+                font-size: 30px;
+            }
+
+            .prompt-view {
+                min-height: 260px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app" id="app">
+        <section class="progress-wrap">
+            <div class="progress-steps">
+                <div class="step active" id="step-0">⏱ Tense Check</div>
+                <div class="step" id="step-1">🍅 Ingredients</div>
+                <div class="step" id="step-2">🔥 Cook</div>
+                <div class="step" id="step-3">🧂 Season</div>
+                <div class="step" id="step-4">🔧 Fix</div>
+                <div class="step" id="step-5">🍽 Serve</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </section>
+
+        <main class="stage">
+            <article class="card" id="taskCard">
+                <div class="card-content">
+                    <div class="title-row">
+                        <h1 class="title" id="stationTitle">🍅 Ingredients</h1>
+                        <div class="title-tools">
+                            <button class="rule-btn" id="rulesBtn" aria-label="Open tense rules">📘 Tense Rules</button>
+                        </div>
+                    </div>
+                    <p class="guide" id="guideText">Make a sentence using the 3 words.</p>
+
+                    <div class="prompt-view">
+                        <section id="station-0" class="station-screen">
+                            <div class="tense-quiz">
+                                <div class="tense-quiz-top">
+                                    <div class="tense-badge" id="tenseCountBadge">Question 1 / 10</div>
+                                    <div class="tense-badge" id="tenseScoreBadge">Correct 0 / 10</div>
+                                </div>
+                                <div class="tense-progress">
+                                    <div class="tense-progress-fill" id="tenseQuizFill"></div>
+                                </div>
+                                <div class="tense-question" id="tenseQuestionText"></div>
+                                <div class="tense-input-row">
+                                    <input class="tense-input" id="tenseAnswerInput" type="text" placeholder="Teacher types the student's full sentence here" autocomplete="off">
+                                    <button class="tense-check-btn" id="tenseCheckBtn">Check Answer</button>
+                                </div>
+                                <div class="tense-feedback" id="tenseFeedback"></div>
+                            </div>
+                            <div class="example hidden" id="example-0"></div>
+                        </section>
+
+                        <section id="station-1" class="station-screen">
+                            <div class="grid-3">
+                                <div class="tile ingredient-tile">
+                                    <div class="label">Food</div>
+                                    <div class="value" id="ingFood">ramen</div>
+                                </div>
+                                <div class="tile ingredient-tile">
+                                    <div class="label">Adjective</div>
+                                    <div class="value" id="ingAdj">spicy</div>
+                                </div>
+                                <div class="tile ingredient-tile">
+                                    <div class="label">Verb</div>
+                                    <div class="value" id="ingVerb">eat</div>
+                                </div>
+                            </div>
+                            <div class="example hidden" id="example-1"></div>
+                        </section>
+
+                        <section id="station-2" class="station-screen hidden">
+                            <div class="single" id="cookPrompt">
+                                <div class="silhouette">
+                                    <div class="silhouette-bar" style="width: 70%;"></div>
+                                    <div class="silhouette-bar" style="width: 85%;"></div>
+                                </div>
+                                <div class="text" id="cookText">The ____ was ____.</div>
+                            </div>
+                            <div class="example hidden" id="example-2"></div>
+                        </section>
+
+                        <section id="station-3" class="station-screen hidden">
+                            <div class="single" id="seasonPrompt">
+                                <div class="silhouette">
+                                    <div class="silhouette-bar" style="width: 62%;"></div>
+                                    <div class="silhouette-bar" style="width: 80%;"></div>
+                                </div>
+                                <div class="text" id="seasonText">The pizza was delicious.</div>
+                            </div>
+                            <div class="example hidden" id="example-3"></div>
+                        </section>
+
+                        <section id="station-4" class="station-screen hidden">
+                            <div class="single" id="fixPrompt"></div>
+                            <div class="example hidden" id="example-4"></div>
+                        </section>
+
+                        <section id="station-5" class="station-screen hidden">
+                            <div class="grid-2" id="serveBoard">
+                                <div class="tile serve-block" data-block="restaurant">
+                                    <div class="label">Restaurant</div>
+                                    <div class="value" id="serveRestaurant">Italian restaurant</div>
+                                </div>
+                                <div class="tile serve-block" data-block="food">
+                                    <div class="label">Food</div>
+                                    <div class="value" id="serveFood">pizza and pasta</div>
+                                </div>
+                                <div class="tile serve-block" data-block="service">
+                                    <div class="label">Service</div>
+                                    <div class="value" id="serveService">friendly</div>
+                                </div>
+                                <div class="tile serve-block" data-block="atmosphere">
+                                    <div class="label">Atmosphere</div>
+                                    <div class="value" id="serveAtmosphere">cozy</div>
+                                </div>
+                            </div>
+                            <div class="serve-guide">
+                                <div class="serve-equation" id="serveEquation"></div>
+                                <div class="serve-plan" id="servePlan"></div>
+                                <div class="serve-example-stack hidden" id="serveExampleStack">
+                                    <div class="serve-plan-item serve-example-item" id="serveExample-1"></div>
+                                    <div class="serve-plan-item serve-example-item" id="serveExample-2"></div>
+                                    <div class="serve-plan-item serve-example-item" id="serveExample-3"></div>
+                                    <div class="serve-plan-item serve-example-item" id="serveExample-4"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            </article>
+        </main>
+
+        <footer class="controls">
+            <div class="control-group">
+                <button class="btn btn-secondary" id="backBtn">Back</button>
+                <button class="step-random-btn" id="randomBtn">⚡ Random Context</button>
+            </div>
+            <div class="control-group">
+                <button class="btn btn-secondary" id="revealBtn">Reveal Example</button>
+                <button class="btn btn-primary" id="nextBtn">Next</button>
+            </div>
+        </footer>
+    </div>
+
+    <div class="chef-pop" id="chefPop">👨‍🍳</div>
+
+    <div class="modal hidden" id="rulesModal">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+            <h2 class="modal-title" id="rulesTitle">Tense Rules For This Review</h2>
+            <div class="rules-simple">
+                <section class="rules-simple-item">
+                    <h3 class="rules-simple-title">Use Past Tense if it happened during that visit</h3>
+                    <p class="rules-simple-example">Example verbs: went, ordered, arrived, was/were, tasted.</p>
+                </section>
+                <section class="rules-simple-item">
+                    <h3 class="rules-simple-title">Use Present Tense if it is generally true now e.g. general facts and recommendations</h3>
+                    <p class="rules-simple-example">Example verbs: is, has, serves, I recommend.</p>
+                </section>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="closeRulesBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!--
+        Teacher notes:
+        - Student is oral only. Do not ask student to type.
+        - Default view is always prompt only.
+        - Use Reveal Example only after student attempts.
+        - Tap blocks in Serve to mark what student has covered.
+    -->
+
+    <script>
+        const stations = {
+            0: {
+                name: '⏱ Tense Check',
+                tint: 'rgba(170, 192, 214, 0.20)',
+                guide: 'Decide tense first: use past for visit events and present for general opinions.'
+            },
+            1: {
+                name: '🍅 Ingredients',
+                tint: 'rgba(211, 84, 0, 0.08)',
+                guide: 'Make a sentence using the 3 words and keep tense choice consistent.'
+            },
+            2: {
+                name: '🔥 Cook',
+                tint: 'rgba(235, 151, 78, 0.08)',
+                guide: 'Complete the frame and choose tense: past for events, present for facts.'
+            },
+            3: {
+                name: '🧂 Season',
+                tint: 'rgba(245, 214, 130, 0.12)',
+                guide: 'Add one detail and keep the tense accurate.'
+            },
+            4: {
+                name: '🔧 Fix',
+                tint: 'rgba(222, 203, 185, 0.18)',
+                guide: 'Fix tense and grammar errors, then say the corrected sentence.'
+            },
+            5: {
+                name: '🍽 Serve',
+                tint: 'rgba(206, 229, 205, 0.22)',
+                guide: 'Build your review with both tenses: past for experience, present for recommendation.'
+            }
+        };
+
+        const data = {
+            ingredients: {
+                food: ['ramen', 'pizza', 'spaghetti'],
+                adjective: ['spicy', 'salty', 'fresh'],
+                verb: ['eat', 'try', 'order']
+            },
+            tenseWarmup: [
+                { question: 'Yesterday, I ____ to a Japanese restaurant. (go)', answer: 'Yesterday, I went to a Japanese restaurant.' },
+                { question: 'We ____ pizza and pasta last night. (order)', answer: 'We ordered pizza and pasta last night.' },
+                { question: 'The soup ____ very hot when it arrived. (be)', answer: 'The soup was very hot when it arrived.' },
+                { question: 'I ____ this restaurant to my friends. (recommend)', answer: 'I recommend this restaurant to my friends.' },
+                { question: 'The service ____ friendly and fast yesterday. (be)', answer: 'The service was friendly and fast yesterday.' },
+                { question: 'This place ____ clean and comfortable. (be)', answer: 'This place is clean and comfortable.' },
+                { question: 'My family and I ____ there by MTR. (go)', answer: 'My family and I went there by MTR.' },
+                { question: 'They ____ many vegetarian dishes. (serve)', answer: 'They serve many vegetarian dishes.' },
+                { question: 'The noodles ____ soft and tasty. (be)', answer: 'The noodles were soft and tasty.' },
+                { question: 'I usually ____ this cafe on weekends. (visit)', answer: 'I usually visit this cafe on weekends.' },
+                { question: 'Last weekend, we ____ seafood for dinner. (try)', answer: 'Last weekend, we tried seafood for dinner.' },
+                { question: 'The atmosphere ____ cozy and relaxing. (be)', answer: 'The atmosphere is cozy and relaxing.' },
+                { question: 'The waiter ____ our table quickly. (clean)', answer: 'The waiter cleaned our table quickly.' },
+                { question: 'This restaurant ____ a great dessert menu. (have)', answer: 'This restaurant has a great dessert menu.' },
+                { question: 'I ____ very happy with the meal yesterday. (feel)', answer: 'I felt very happy with the meal yesterday.' },
+                { question: 'They ____ the food fresh every day. (make)', answer: 'They make the food fresh every day.' },
+                { question: 'The drink ____ too sweet for me. (be)', answer: 'The drink was too sweet for me.' },
+                { question: 'I ____ this place because it is affordable. (like)', answer: 'I like this place because it is affordable.' },
+                { question: 'Our food ____ after fifteen minutes. (arrive)', answer: 'Our food arrived after fifteen minutes.' },
+                { question: 'The restaurant ____ near my home. (be)', answer: 'The restaurant is near my home.' }
+            ],
+            cook: [
+                {
+                    frame: 'The ____ was ____.',
+                    example: 'The pizza was crispy.'
+                },
+                {
+                    frame: 'I ordered the ____ and it was ____.',
+                    example: 'I ordered the ramen and it was spicy.'
+                },
+                {
+                    frame: 'The ____ tasted very ____.',
+                    example: 'The fried rice tasted very savory.'
+                },
+                {
+                    frame: 'My ____ looked ____ on the plate.',
+                    example: 'My steak looked amazing on the plate.'
+                },
+                {
+                    frame: 'The ____ was ____ and hot.',
+                    example: 'The soup was creamy and hot.'
+                },
+                {
+                    frame: 'I tried the ____; it was ____.',
+                    example: 'I tried the curry; it was rich.'
+                },
+                {
+                    frame: 'Their ____ felt ____ when I ate it.',
+                    example: 'Their noodles felt smooth when I ate it.'
+                },
+                {
+                    frame: 'The first bite of ____ was ____.',
+                    example: 'The first bite of dumplings was juicy.'
+                },
+                {
+                    frame: 'Our ____ arrived ____ and fresh.',
+                    example: 'Our seafood arrived warm and fresh.'
+                },
+                {
+                    frame: 'This ____ was ____ for dinner.',
+                    example: 'This burger was perfect for dinner.'
+                },
+                {
+                    frame: 'I think the ____ looked ____.',
+                    example: 'I think the salad looked colorful.'
+                },
+                {
+                    frame: 'The ____ smelled ____ from far away.',
+                    example: 'The bread smelled buttery from far away.'
+                },
+                {
+                    frame: 'My favorite ____ was ____ today.',
+                    example: 'My favorite dessert was fantastic today.'
+                },
+                {
+                    frame: 'The ____ stayed ____ until the end.',
+                    example: 'The pasta stayed tasty until the end.'
+                },
+                {
+                    frame: 'I found the ____ really ____.',
+                    example: 'I found the fish really tender.'
+                },
+                {
+                    frame: 'That ____ was ____ but light.',
+                    example: 'That cheesecake was sweet but light.'
+                },
+                {
+                    frame: 'The ____ became ____ after one bite.',
+                    example: 'The sauce became memorable after one bite.'
+                },
+                {
+                    frame: 'Their ____ tasted ____ and balanced.',
+                    example: 'Their pizza tasted smoky and balanced.'
+                },
+                {
+                    frame: 'The ____ looked ____ under the lights.',
+                    example: 'The sushi looked elegant under the lights.'
+                },
+                {
+                    frame: 'I can say the ____ was ____ overall.',
+                    example: 'I can say the meal was satisfying overall.'
+                }
+            ],
+            season: [
+                {
+                    sentence: 'The pizza was delicious.',
+                    example: 'The pizza was delicious and freshly made.'
+                },
+                {
+                    sentence: 'The noodles were good.',
+                    example: 'The noodles were good because they were soft and hot.'
+                },
+                {
+                    sentence: 'The soup was tasty.',
+                    example: 'The soup was tasty, especially when I added black pepper.'
+                },
+                {
+                    sentence: 'The burger was nice.',
+                    example: 'The burger was nice and the sauce gave it a smoky flavor.'
+                },
+                {
+                    sentence: 'The salad was fresh.',
+                    example: 'The salad was fresh, crunchy, and full of color.'
+                },
+                {
+                    sentence: 'The curry was spicy.',
+                    example: 'The curry was spicy but still smooth and rich.'
+                },
+                {
+                    sentence: 'The steak was good.',
+                    example: 'The steak was good because it was juicy and tender.'
+                },
+                {
+                    sentence: 'The rice was soft.',
+                    example: 'The rice was soft and matched the meat very well.'
+                },
+                {
+                    sentence: 'The fish was fresh.',
+                    example: 'The fish was fresh, and it melted in my mouth.'
+                },
+                {
+                    sentence: 'The dessert was sweet.',
+                    example: 'The dessert was sweet with a light and creamy texture.'
+                },
+                {
+                    sentence: 'The drinks were cold.',
+                    example: 'The drinks were cold and refreshing after a long day.'
+                },
+                {
+                    sentence: 'The meal was great.',
+                    example: 'The meal was great because every dish had strong flavor.'
+                },
+                {
+                    sentence: 'The dumplings were hot.',
+                    example: 'The dumplings were hot, juicy, and full of flavor.'
+                },
+                {
+                    sentence: 'The pasta was creamy.',
+                    example: 'The pasta was creamy and the cheese tasted rich.'
+                },
+                {
+                    sentence: 'The chicken was crispy.',
+                    example: 'The chicken was crispy outside but soft inside.'
+                },
+                {
+                    sentence: 'The sandwich was simple.',
+                    example: 'The sandwich was simple, yet it tasted homemade and warm.'
+                },
+                {
+                    sentence: 'The seafood was good.',
+                    example: 'The seafood was good because it was clean and not oily.'
+                },
+                {
+                    sentence: 'The bread was warm.',
+                    example: 'The bread was warm and smelled buttery and sweet.'
+                },
+                {
+                    sentence: 'The sauce was rich.',
+                    example: 'The sauce was rich and made the dish more exciting.'
+                },
+                {
+                    sentence: 'The food was balanced.',
+                    example: 'The food was balanced, with sweet, salty, and sour notes.'
+                }
+            ],
+            fix: [
+                {
+                    wrong: 'Yesterday I [go] to restaurant.',
+                    correct: 'Yesterday I went to the restaurant.'
+                },
+                {
+                    wrong: 'The food [are] very tasty.',
+                    correct: 'The food is very tasty.'
+                },
+                {
+                    wrong: 'I [eated] sushi last night.',
+                    correct: 'I ate sushi last night.'
+                },
+                {
+                    wrong: 'She [like] the soup very much.',
+                    correct: 'She likes the soup very much.'
+                },
+                {
+                    wrong: 'We [was] happy with the service.',
+                    correct: 'We were happy with the service.'
+                },
+                {
+                    wrong: 'The waiter [bring] our food quickly yesterday.',
+                    correct: 'The waiter brought our food quickly yesterday.'
+                },
+                {
+                    wrong: 'There [is] many choices on the menu.',
+                    correct: 'There are many choices on the menu.'
+                },
+                {
+                    wrong: 'My noodles [is] too salty.',
+                    correct: 'My noodles are too salty.'
+                },
+                {
+                    wrong: 'I [did not liked] the drink.',
+                    correct: 'I did not like the drink.'
+                },
+                {
+                    wrong: 'He [order] a burger every Friday.',
+                    correct: 'He orders a burger every Friday.'
+                },
+                {
+                    wrong: 'The plates [was] very clean.',
+                    correct: 'The plates were very clean.'
+                },
+                {
+                    wrong: 'Our table [have] a nice view.',
+                    correct: 'Our table had a nice view.'
+                },
+                {
+                    wrong: 'They [does not] serve breakfast.',
+                    correct: 'They do not serve breakfast.'
+                },
+                {
+                    wrong: 'I [am go] there every weekend.',
+                    correct: 'I go there every weekend.'
+                },
+                {
+                    wrong: 'The music [were] too loud.',
+                    correct: 'The music was too loud.'
+                },
+                {
+                    wrong: 'We [waited for] 20 minutes and then leave.',
+                    correct: 'We waited for 20 minutes and then left.'
+                },
+                {
+                    wrong: 'This restaurant [have] friendly staff.',
+                    correct: 'This restaurant has friendly staff.'
+                },
+                {
+                    wrong: 'My friend [don\'t] like spicy food.',
+                    correct: 'My friend does not like spicy food.'
+                },
+                {
+                    wrong: 'The atmosphere [make] us relaxed.',
+                    correct: 'The atmosphere made us relaxed.'
+                },
+                {
+                    wrong: 'I [was enjoy] the dinner a lot.',
+                    correct: 'I enjoyed the dinner a lot.'
+                }
+            ],
+            serve: {
+                restaurant: ['Italian restaurant', 'Japanese restaurant', 'Family cafe'],
+                food: ['pizza and pasta', 'ramen and sushi', 'spaghetti and salad'],
+                service: ['friendly', 'quick', 'helpful'],
+                atmosphere: ['cozy', 'noisy', 'comfortable']
+            },
+            detail: {
+                who: ['my family', 'my best friend', 'my classmates'],
+                when: ['last Saturday evening', 'yesterday after school', 'last weekend'],
+                where: ['in Mong Kok', 'near Central', 'close to my home'],
+                why: ['we wanted to celebrate', 'we were very hungry', 'we heard great reviews'],
+                how: ['by MTR', 'after a short walk', 'after booking online']
+            }
+        };
+
+        const stationCount = Object.keys(stations).length;
+
+        let currentServeContext = {
+            restaurant: '',
+            food: '',
+            service: '',
+            atmosphere: ''
+        };
+
+        let currentDetails = {
+            who: '',
+            when: '',
+            where: '',
+            why: '',
+            how: ''
+        };
+
+        let tenseQuiz = {
+            items: [],
+            currentIndex: 0,
+            correctCount: 0,
+            finished: false
+        };
+
+        function getServeContext() {
+            return {
+                restaurant: document.getElementById('serveRestaurant').textContent,
+                food: document.getElementById('serveFood').textContent,
+                service: document.getElementById('serveService').textContent,
+                atmosphere: document.getElementById('serveAtmosphere').textContent
+            }
+        }
+
+        function randomizeServeContext() {
+            currentServeContext = {
+                restaurant: random(data.serve.restaurant),
+                food: random(data.serve.food),
+                service: random(data.serve.service),
+                atmosphere: random(data.serve.atmosphere)
+            };
+
+            currentDetails = {
+                who: random(data.detail.who),
+                when: random(data.detail.when),
+                where: random(data.detail.where),
+                why: random(data.detail.why),
+                how: random(data.detail.how)
+            };
+        }
+
+        let currentStation = 0;
+        const stationTitle = document.getElementById('stationTitle');
+        const guideText = document.getElementById('guideText');
+        const taskCard = document.getElementById('taskCard');
+        const progressFill = document.getElementById('progressFill');
+
+        function random(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function normalizeSentence(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function shuffle(list) {
+            const copy = [...list];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function toPast(verb) {
+            if (verb === 'eat') {
+                return 'ate';
+            }
+            if (verb.endsWith('e')) {
+                return verb + 'd';
+            }
+            return verb + 'ed';
+        }
+
+        function hideAllScreens() {
+            document.querySelectorAll('.station-screen').forEach((el) => el.classList.add('hidden'));
+        }
+
+        function hideAllExamples() {
+            document.querySelectorAll('.example').forEach((el) => el.classList.add('hidden'));
+            document.getElementById('serveExampleStack').classList.add('hidden');
+        }
+
+        function applyThinkingGlow() {
+            taskCard.classList.remove('thinking');
+            void taskCard.offsetWidth;
+            taskCard.classList.add('thinking');
+        }
+
+        function applyRipple() {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            taskCard.appendChild(ripple);
+            ripple.addEventListener('animationend', () => ripple.remove());
+        }
+
+        function showChefPop() {
+            const chef = document.getElementById('chefPop');
+            chef.classList.remove('show');
+            void chef.offsetWidth;
+            chef.classList.add('show');
+        }
+
+        function setStationTint() {
+            document.documentElement.style.setProperty('--station-tint', stations[currentStation].tint);
+        }
+
+        function setStepUI() {
+            for (let i = 0; i < stationCount; i++) {
+                document.getElementById('step-' + i).classList.toggle('active', i === currentStation);
+            }
+            progressFill.style.width = String(((currentStation + 1) / stationCount) * 100) + '%';
+            stationTitle.textContent = stations[currentStation].name;
+            guideText.textContent = stations[currentStation].guide;
+            setStationTint();
+        }
+
+        function renderIngredients() {
+            const food = random(data.ingredients.food);
+            const adj = random(data.ingredients.adjective);
+            const verb = random(data.ingredients.verb);
+            document.getElementById('ingFood').textContent = food;
+            document.getElementById('ingAdj').textContent = adj;
+            document.getElementById('ingVerb').textContent = verb;
+            document.getElementById('example-1').textContent = 'Example: I ' + toPast(verb) + ' ' + adj + ' ' + food + '.';
+
+            document.querySelectorAll('.ingredient-tile').forEach((tile) => {
+                tile.classList.remove('flip-in');
+                void tile.offsetWidth;
+                tile.classList.add('flip-in');
+            });
+        }
+
+        function updateTenseQuizUI() {
+            const countBadge = document.getElementById('tenseCountBadge');
+            const scoreBadge = document.getElementById('tenseScoreBadge');
+            const fill = document.getElementById('tenseQuizFill');
+            const questionText = document.getElementById('tenseQuestionText');
+            const input = document.getElementById('tenseAnswerInput');
+            const checkBtn = document.getElementById('tenseCheckBtn');
+            const feedback = document.getElementById('tenseFeedback');
+
+            if (tenseQuiz.finished) {
+                countBadge.textContent = 'Question 10 / 10';
+                scoreBadge.textContent = 'Correct ' + tenseQuiz.correctCount + ' / 10';
+                fill.style.width = '100%';
+                questionText.textContent = 'Quiz complete. Score: ' + tenseQuiz.correctCount + '/10. Click Random Context to start a new quiz.';
+                input.value = '';
+                input.disabled = true;
+                checkBtn.disabled = true;
+                feedback.className = 'tense-feedback ok';
+                feedback.textContent = tenseQuiz.correctCount >= 8
+                    ? 'Excellent work. Great tense control.'
+                    : 'Good effort. Review rules and try another quiz.';
+                document.getElementById('example-0').textContent = 'Reveal Example now shows only the current question answer while quiz is active.';
+                return;
+            }
+
+            const current = tenseQuiz.items[tenseQuiz.currentIndex];
+            countBadge.textContent = 'Question ' + (tenseQuiz.currentIndex + 1) + ' / 10';
+            scoreBadge.textContent = 'Correct ' + tenseQuiz.correctCount + ' / 10';
+            fill.style.width = String((tenseQuiz.currentIndex / 10) * 100) + '%';
+            questionText.textContent = current.question;
+            input.disabled = false;
+            checkBtn.disabled = false;
+            input.value = '';
+            input.focus();
+            feedback.className = 'tense-feedback';
+            feedback.textContent = 'Type the full sentence and click Check Answer.';
+            document.getElementById('example-0').textContent = 'Answer: ' + current.answer;
+        }
+
+        function startTenseQuiz() {
+            tenseQuiz = {
+                items: shuffle(data.tenseWarmup).slice(0, 10),
+                currentIndex: 0,
+                correctCount: 0,
+                finished: false
+            };
+            updateTenseQuizUI();
+        }
+
+        function checkTenseAnswer() {
+            if (tenseQuiz.finished) {
+                return;
+            }
+
+            const input = document.getElementById('tenseAnswerInput');
+            const feedback = document.getElementById('tenseFeedback');
+            const userAnswer = input.value.trim();
+            const expected = tenseQuiz.items[tenseQuiz.currentIndex].answer;
+
+            if (!userAnswer) {
+                feedback.className = 'tense-feedback retry';
+                feedback.textContent = 'Please type an answer first.';
+                return;
+            }
+
+            if (normalizeSentence(userAnswer) === normalizeSentence(expected)) {
+                tenseQuiz.correctCount += 1;
+                feedback.className = 'tense-feedback ok';
+                feedback.textContent = 'Correct. Great job. Next question...';
+                showChefPop();
+                applyRipple();
+
+                setTimeout(() => {
+                    tenseQuiz.currentIndex += 1;
+                    if (tenseQuiz.currentIndex >= 10) {
+                        tenseQuiz.finished = true;
+                    }
+                    updateTenseQuizUI();
+                }, 550);
+            } else {
+                feedback.className = 'tense-feedback retry';
+                feedback.textContent = 'Not yet. Try again, or click Reveal Example for the answer.';
+            }
+        }
+
+        function renderCook() {
+            const item = random(data.cook);
+            document.getElementById('cookText').textContent = item.frame;
+            document.getElementById('example-2').textContent = 'Example: ' + item.example;
+        }
+
+        function renderSeason() {
+            const item = random(data.season);
+            document.getElementById('seasonText').textContent = item.sentence;
+            document.getElementById('example-3').textContent = 'Example: ' + item.example;
+        }
+
+        function renderFix() {
+            const item = random(data.fix);
+            const html = item.wrong.replace(/\[(.*?)\]/, '<span class="wiggle">$1</span>');
+            document.getElementById('fixPrompt').innerHTML = '<div class="text">' + html + '</div>';
+            document.getElementById('example-4').textContent = 'Answer: ' + item.correct;
+        }
+
+        function clearServeCoverage() {
+            document.querySelectorAll('.serve-block').forEach((block) => block.classList.remove('covered'));
+        }
+
+        function renderServe() {
+            randomizeServeContext();
+
+            document.getElementById('serveRestaurant').textContent = currentServeContext.restaurant;
+            document.getElementById('serveFood').textContent = currentServeContext.food;
+            document.getElementById('serveService').textContent = currentServeContext.service;
+            document.getElementById('serveAtmosphere').textContent = currentServeContext.atmosphere;
+
+            document.getElementById('serveEquation').textContent =
+                'Restaurant (3 sentences) + Food (3 sentences) + Service (3 sentences) + Atmosphere (3 sentences) ~= 200 words | Past for events + Present for overall opinion';
+
+            const servePlan = document.getElementById('servePlan');
+            servePlan.innerHTML = '';
+
+            const planLines = [
+                'Restaurant (3): who + when + how/why',
+                'Food (3): what + look/smell + taste reason',
+                'Service (3): adjective + action + effect',
+                'Atmosphere (3): feeling + where + final impression'
+            ];
+
+            planLines.forEach((line) => {
+                const item = document.createElement('div');
+                item.className = 'serve-plan-item';
+                item.textContent = line;
+                servePlan.appendChild(item);
+            });
+
+            document.getElementById('serveExample-1').textContent =
+                'Restaurant example: I went to a Japanese restaurant with my family. It was yesterday after school and we went there after a short walk. We chose this place because we were very hungry.';
+            document.getElementById('serveExample-2').textContent =
+                'Food example: We ordered pizza and pasta. The food looked fresh and smelled great. I liked it because the flavor was rich and balanced.';
+            document.getElementById('serveExample-3').textContent =
+                'Service example: The staff were helpful. They helped us quickly when we needed anything. This made our meal easy and relaxing.';
+            document.getElementById('serveExample-4').textContent =
+                'Atmosphere example: The place felt cozy. We sat in Mong Kok and enjoyed the mood. The environment made me want to stay longer.';
+
+            clearServeCoverage();
+        }
+
+        function randomizeStation(station) {
+            hideAllExamples();
+            if (station === 0) {
+                startTenseQuiz();
+            } else if (station === 1) {
+                renderIngredients();
+            } else if (station === 2) {
+                renderCook();
+            } else if (station === 3) {
+                renderSeason();
+            } else if (station === 4) {
+                renderFix();
+            } else if (station === 5) {
+                renderServe();
+            }
+            applyThinkingGlow();
+        }
+
+        function renderCurrentStationPrompt() {
+            hideAllExamples();
+            if (currentStation === 0) {
+                if (!tenseQuiz.items.length) {
+                    startTenseQuiz();
+                } else {
+                    updateTenseQuizUI();
+                }
+            } else if (currentStation === 1) {
+                renderIngredients();
+            } else if (currentStation === 2) {
+                renderCook();
+            } else if (currentStation === 3) {
+                renderSeason();
+            } else if (currentStation === 4) {
+                renderFix();
+            } else {
+                renderServe();
+            }
+            applyThinkingGlow();
+        }
+
+        function setStation(station) {
+            currentStation = Math.max(0, Math.min(stationCount - 1, station));
+            hideAllScreens();
+            document.getElementById('station-' + currentStation).classList.remove('hidden');
+            setStepUI();
+            renderCurrentStationPrompt();
+        }
+
+        function goNext() {
+            if (currentStation < stationCount - 1) {
+                applyRipple();
+                showChefPop();
+                setTimeout(() => setStation(currentStation + 1), 120);
+            }
+        }
+
+        function goBack() {
+            if (currentStation > 0) {
+                setStation(currentStation - 1);
+            }
+        }
+
+        function toggleExample() {
+            if (currentStation === 5) {
+                document.getElementById('serveExampleStack').classList.toggle('hidden');
+                return;
+            }
+            document.getElementById('example-' + currentStation).classList.toggle('hidden');
+        }
+
+        document.getElementById('backBtn').addEventListener('click', goBack);
+        document.getElementById('nextBtn').addEventListener('click', goNext);
+        document.getElementById('randomBtn').addEventListener('click', () => randomizeStation(currentStation));
+        document.getElementById('revealBtn').addEventListener('click', toggleExample);
+        document.getElementById('tenseCheckBtn').addEventListener('click', checkTenseAnswer);
+        document.getElementById('tenseAnswerInput').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                checkTenseAnswer();
+            }
+        });
+        document.getElementById('rulesBtn').addEventListener('click', () => {
+            document.getElementById('rulesModal').classList.remove('hidden');
+        });
+        document.getElementById('closeRulesBtn').addEventListener('click', () => {
+            document.getElementById('rulesModal').classList.add('hidden');
+        });
+        document.getElementById('rulesModal').addEventListener('click', (event) => {
+            if (event.target.id === 'rulesModal') {
+                document.getElementById('rulesModal').classList.add('hidden');
+            }
+        });
+
+        document.querySelectorAll('.serve-block').forEach((block) => {
+            block.addEventListener('click', () => block.classList.toggle('covered'));
+        });
+
+        setStation(0);
+    </script>
+</body>
+
+</html>

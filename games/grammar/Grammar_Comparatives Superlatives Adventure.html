@@ -1,0 +1,2170 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparatives & Superlatives Mission</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #f5efe0;
+      --bg-secondary: #e4f2ef;
+      --surface: #fffdf8;
+      --surface-soft: #f6f3ea;
+      --text-strong: #1f2a38;
+      --text-soft: #5f6f7b;
+      --primary: #ff8f3f;
+      --primary-strong: #f66f1e;
+      --accent: #2da8a0;
+      --accent-strong: #178f86;
+      --success: #38b56a;
+      --danger: #e45d5d;
+      --gold: #f7c948;
+      --sky: #3a7bd5;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-3: 16px;
+      --space-4: 24px;
+      --space-5: 32px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Nunito", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      color: var(--text-strong);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.62), transparent 32%),
+        radial-gradient(circle at 90% 18%, rgba(45, 168, 160, 0.18), transparent 36%),
+        linear-gradient(140deg, var(--bg-main) 0%, #dcecf6 52%, var(--bg-secondary) 100%);
+      overflow: hidden;
+    }
+
+    .font-display {
+      font-family: "Baloo 2", "Nunito", sans-serif;
+    }
+
+    .app-shell {
+      height: 100vh;
+      width: 100%;
+      padding: 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .app-frame {
+      width: min(1200px, 100%);
+      min-height: calc(100vh - 24px);
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+    }
+
+    .surface {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,253,248,0.95));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow:
+        0 18px 38px rgba(31, 42, 56, 0.12),
+        0 2px 0 rgba(255,255,255,0.55) inset,
+        0 -2px 0 rgba(31, 42, 56, 0.05) inset;
+    }
+
+    .top-bar {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .title-wrap h1 {
+      font-size: clamp(30px, 3.2vw, 46px);
+      line-height: 1.05;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .title-wrap p {
+      margin: 4px 0 0;
+      color: var(--text-soft);
+      font-weight: 800;
+      font-size: clamp(15px, 1.6vw, 20px);
+      line-height: 1.35;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .top-hints-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid #efb846;
+      background: linear-gradient(180deg, #ffd978, #ffbf47);
+      color: #4f3f1d;
+      min-height: 52px;
+      padding: 10px 18px;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 8px 16px rgba(247, 201, 72, 0.24);
+    }
+
+    .top-hints-btn:hover {
+      filter: brightness(1.04);
+    }
+
+    .top-hints-btn:focus-visible {
+      box-shadow: 0 0 0 4px rgba(58, 123, 213, 0.22), 0 8px 16px rgba(247, 201, 72, 0.24);
+    }
+
+    .part-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 20px 16px;
+    }
+
+    .part-tab {
+      border: 1px solid #cddbe7;
+      border-radius: var(--radius-md);
+      background: #f7fbff;
+      color: #36536d;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(31, 42, 56, 0.06);
+      transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .part-tab:hover {
+      filter: brightness(1.03);
+      transform: translateY(-1px);
+    }
+
+    .part-tab.active {
+      background: linear-gradient(180deg, #2da8a0, #178f86);
+      color: #ffffff;
+      border-color: #178f86;
+      box-shadow: 0 10px 18px rgba(45, 168, 160, 0.22);
+    }
+
+    .part-tab-title {
+      display: block;
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .part-tab-meta {
+      display: block;
+      margin-top: 4px;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 800;
+      opacity: 0.88;
+    }
+
+    .hud-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 20px 12px;
+    }
+
+    .hud-card {
+      border-radius: var(--radius-md);
+      background: var(--surface-soft);
+      border: 1px solid #e6e1d5;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 66px;
+      box-shadow: 0 6px 12px rgba(31, 42, 56, 0.06);
+    }
+
+    .hud-card .icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .hud-card .label {
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+    }
+
+    .hud-card .value {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--text-strong);
+    }
+
+    .reward-stars-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .reward-stars-row.celebrate {
+      animation: rewardRowPulse 520ms ease;
+    }
+
+    .reward-star {
+      color: #c4ced8;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+      transition: transform 180ms ease, color 180ms ease, text-shadow 180ms ease;
+    }
+
+    .reward-star.filled {
+      color: #f7c948;
+      transform: translateY(-1px);
+      text-shadow: 0 0 10px rgba(247, 201, 72, 0.34);
+    }
+
+    .reward-star.pop {
+      animation: rewardStarPop 700ms ease;
+    }
+
+    .progress-wrap {
+      padding: 0 20px 16px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-weight: 800;
+      color: var(--text-soft);
+      font-size: 15px;
+    }
+
+    .progress-track {
+      position: relative;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid #ccd7e2;
+      background: linear-gradient(180deg, #e2e8f0, #cfd8e3);
+      overflow: hidden;
+      box-shadow: 0 6px 12px rgba(31, 42, 56, 0.08) inset;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 420ms ease;
+      background: linear-gradient(90deg, #ffd166, #ff8f3f 40%, #2da8a0 100%);
+      box-shadow: 0 2px 0 rgba(255, 255, 255, 0.7) inset;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      inset: 3px 8px auto 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.46);
+    }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+      min-height: 0;
+    }
+
+    .main-panel {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: opacity 220ms ease, filter 220ms ease;
+    }
+
+    .focus-ring {
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(247, 201, 72, 0.85);
+      box-shadow: 0 0 0 7px rgba(247, 201, 72, 0.22);
+      background: #fffefa;
+      position: relative;
+      z-index: 2;
+    }
+
+    .question-card {
+      border-radius: var(--radius-md);
+      border: 1px solid #dfe8ef;
+      background: #f7fbff;
+      padding: 16px;
+      box-shadow: 0 12px 18px rgba(58, 123, 213, 0.12);
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .question-chip {
+      align-self: flex-start;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #d9efff;
+      border: 1px solid #a5d1f3;
+      color: #174f87;
+      font-weight: 900;
+      font-size: 16px;
+      line-height: 1;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .question-text {
+      font-size: clamp(32px, 3.3vw, 46px);
+      line-height: 1.2;
+      font-weight: 900;
+      color: var(--text-strong);
+      margin: 0;
+      word-break: break-word;
+    }
+
+    .blank-slot {
+      display: inline-block;
+      min-width: 140px;
+      text-align: center;
+      border-bottom: 5px dashed #ff8f3f;
+      color: #ff8f3f;
+      margin: 0 6px;
+    }
+
+    .question-base-hint {
+      display: inline-block;
+      margin-left: 10px;
+      color: #55718b;
+      font-size: 0.58em;
+      font-weight: 800;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .base-word {
+      display: none;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .answer-check-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .answer-input {
+      width: 100%;
+      min-height: 58px;
+      border-radius: var(--radius-sm);
+      border: 2px solid #cfdce8;
+      background: #ffffff;
+      color: var(--text-strong);
+      font-size: 24px;
+      font-weight: 800;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .answer-input:focus {
+      border-color: #3a7bd5;
+      box-shadow: 0 0 0 4px rgba(58, 123, 213, 0.18);
+    }
+
+    .answer-format-hint {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.3;
+      color: #5d7388;
+      font-weight: 800;
+    }
+
+    .btn,
+    .option-btn {
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 900;
+      line-height: 1.25;
+      cursor: pointer;
+      transition: filter 160ms ease, box-shadow 160ms ease;
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+      outline: none;
+    }
+
+    .btn:focus-visible,
+    .option-btn:focus-visible {
+      box-shadow: 0 0 0 4px rgba(58, 123, 213, 0.35), 0 8px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:hover,
+    .option-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn:active,
+    .option-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.17);
+    }
+
+    .btn:disabled,
+    .option-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: none;
+      transform: none;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      font-size: 22px;
+      color: #fff;
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option-er { background: linear-gradient(180deg, #ff8f3f, #f66f1e); }
+    .option-ier { background: linear-gradient(180deg, #3a7bd5, #245ea8); }
+    .option-more { background: linear-gradient(180deg, #2da8a0, #178f86); }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 60px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .btn.primary { background: linear-gradient(180deg, #ff8f3f, #f66f1e); }
+    .btn.teal { background: linear-gradient(180deg, #2da8a0, #178f86); }
+    .btn.blue { background: linear-gradient(180deg, #3a7bd5, #245ea8); }
+    .btn.gold { background: linear-gradient(180deg, #ffd166, #f4b942); color: #4f3f1d; }
+    .btn.green { background: linear-gradient(180deg, #44c776, #2fa35b); }
+    .btn.red { background: linear-gradient(180deg, #ef7f7f, #dc5e5e); }
+    .btn.gray { background: linear-gradient(180deg, #8fa2b3, #6a7d8e); }
+
+    .hint-block {
+      border-radius: var(--radius-md);
+      border: 1px solid #d8e3ec;
+      background: #f7fbff;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .hint-block details {
+      border-radius: 12px;
+      border: 1px solid #cbd8e5;
+      background: #fff;
+      padding: 7px 10px;
+    }
+
+    .hint-block summary {
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 900;
+      color: #26445f;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .hint-block p {
+      margin: 6px 0 0;
+      font-size: 18px;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #3e5f7a;
+    }
+
+    .celebrate-banner {
+      border-radius: 14px;
+      background: linear-gradient(90deg, #e5eef8, #d9efff);
+      color: #23415d;
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 900;
+      text-align: center;
+      padding: 8px 10px;
+      border: 1px solid #b6d4ec;
+      box-shadow: 0 8px 14px rgba(58, 123, 213, 0.16);
+      animation: popIn 320ms ease;
+    }
+
+    .celebrate-banner.good {
+      background: linear-gradient(90deg, #e6faee, #c9f0d7);
+      color: #1f5b36;
+      border-color: #9fe1b8;
+      box-shadow: 0 8px 14px rgba(56, 181, 106, 0.18);
+    }
+
+    .celebrate-banner.bad {
+      background: linear-gradient(90deg, #fff0f0, #ffd7d7);
+      color: #8c3535;
+      border-color: #f0b4b4;
+      box-shadow: 0 8px 14px rgba(228, 93, 93, 0.18);
+    }
+
+    .celebrate-banner.celebrate {
+      background: linear-gradient(90deg, #ffd166, #ff8f3f);
+      color: #4f3f1d;
+      border-color: #efb846;
+      box-shadow: 0 8px 14px rgba(247, 201, 72, 0.3);
+    }
+
+    .hint-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(16, 28, 40, 0.5);
+      backdrop-filter: blur(2px);
+    }
+
+    .hint-modal.open {
+      display: flex;
+    }
+
+    .hint-modal-card {
+      width: min(820px, 100%);
+      border-radius: 24px;
+      background: linear-gradient(180deg, #fffefb, #f7fbff);
+      border: 1px solid #d8e3ec;
+      box-shadow: 0 24px 44px rgba(17, 30, 43, 0.3);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .hint-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .hint-modal-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+      font-weight: 900;
+      color: #1f2a38;
+    }
+
+    .hint-modal-subtitle {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.45;
+      color: #536b80;
+      font-weight: 800;
+    }
+
+    .hint-modal-close {
+      min-height: 46px;
+      min-width: 46px;
+      border-radius: 10px;
+      border: 1px solid #cedae5;
+      background: #ffffff;
+      color: #36536d;
+      font-size: 24px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .hint-concept-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .hint-concept-card {
+      border-radius: 18px;
+      border: 1px solid #d8e3ec;
+      background: #ffffff;
+      padding: 16px;
+      box-shadow: 0 10px 16px rgba(31, 42, 56, 0.08);
+    }
+
+    .hint-concept-card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+      color: #1f2a38;
+    }
+
+    .hint-concept-card p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.45;
+      font-weight: 800;
+      color: #51687c;
+    }
+
+    .hint-example {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hint-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 900;
+      background: #edf6ff;
+      color: #274866;
+      border: 1px solid #c8dff3;
+    }
+
+    .hint-pill.emphasis {
+      background: #fff2d9;
+      color: #875a11;
+      border-color: #f1cd84;
+    }
+
+    .part-complete-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(20, 30, 42, 0.5);
+      backdrop-filter: blur(3px);
+      overflow: hidden;
+    }
+
+    .part-complete-screen.open {
+      display: flex;
+    }
+
+    .part-complete-card {
+      position: relative;
+      width: min(760px, 100%);
+      border-radius: 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.92), transparent 34%),
+        radial-gradient(circle at top right, rgba(255, 209, 102, 0.42), transparent 28%),
+        linear-gradient(135deg, #fffdf7 0%, #f6fff9 46%, #eef8ff 100%);
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 24px 44px rgba(20, 30, 42, 0.28);
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: partCardLift 520ms cubic-bezier(0.2, 0.9, 0.2, 1);
+    }
+
+    .part-complete-card > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .part-complete-glow {
+      position: absolute;
+      inset: -20% -10% auto;
+      height: 180px;
+      background: radial-gradient(circle, rgba(255, 209, 102, 0.65), rgba(255, 209, 102, 0));
+      filter: blur(10px);
+      opacity: 0.9;
+      animation: glowSweep 3.2s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .part-complete-kicker {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.1;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 900;
+      color: #c57a14;
+    }
+
+    .part-complete-burst {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      font-size: 34px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .part-complete-burst span {
+      display: inline-block;
+      animation: badgeBounce 1.4s ease-in-out infinite;
+    }
+
+    .part-complete-burst span:nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    .part-complete-burst span:nth-child(3) {
+      animation-delay: 0.24s;
+    }
+
+    .part-complete-burst span:nth-child(4) {
+      animation-delay: 0.36s;
+    }
+
+    .part-complete-title {
+      margin: 0;
+      font-size: clamp(34px, 4vw, 54px);
+      line-height: 1.08;
+      font-weight: 900;
+      color: #1f2a38;
+    }
+
+    .part-complete-text {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.45;
+      font-weight: 800;
+      color: #52697d;
+    }
+
+    .part-complete-orbit {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .part-complete-orbit span {
+      position: absolute;
+      display: inline-block;
+      font-size: 22px;
+      opacity: 0.72;
+      animation: confettiFloat 3.8s ease-in-out infinite;
+    }
+
+    .part-complete-orbit span:nth-child(1) { top: 14%; left: 7%; animation-delay: 0s; }
+    .part-complete-orbit span:nth-child(2) { top: 20%; right: 10%; animation-delay: 0.4s; }
+    .part-complete-orbit span:nth-child(3) { bottom: 20%; left: 12%; animation-delay: 0.8s; }
+    .part-complete-orbit span:nth-child(4) { bottom: 14%; right: 8%; animation-delay: 1.2s; }
+    .part-complete-orbit span:nth-child(5) { top: 44%; left: 4%; animation-delay: 1.6s; }
+    .part-complete-orbit span:nth-child(6) { top: 48%; right: 4%; animation-delay: 2s; }
+
+    .results-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 30, 42, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 50;
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .results-screen.open {
+      display: flex;
+    }
+
+    .results-card {
+      width: min(860px, 100%);
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.8);
+      background: linear-gradient(180deg, #fffdf7, #f8f4e8);
+      box-shadow: 0 22px 44px rgba(20, 30, 42, 0.3);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .results-title {
+      margin: 0;
+      font-size: clamp(38px, 5.3vw, 64px);
+      line-height: 1.06;
+      font-weight: 900;
+    }
+
+    .results-subtitle {
+      margin: 0;
+      font-size: clamp(22px, 2.4vw, 32px);
+      line-height: 1.4;
+      font-weight: 800;
+      color: #486177;
+    }
+
+    .results-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid #dbe4ec;
+      padding: 12px;
+      box-shadow: 0 8px 12px rgba(31, 42, 56, 0.08);
+    }
+
+    .metric .name {
+      font-size: 14px;
+      font-weight: 900;
+      color: #607487;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .metric .number {
+      margin-top: 6px;
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1;
+      color: #1f2a38;
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-stars {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      pointer-events: none;
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+
+    .mini-stars.show {
+      opacity: 1;
+    }
+
+    .mini-stars span {
+      display: inline-block;
+      animation: starRise 760ms ease forwards;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .shake {
+      animation: shake 340ms ease;
+    }
+
+    .pop {
+      animation: popIn 320ms ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.95); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes starRise {
+      0% { transform: translateY(0) scale(0.7); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: translateY(-28px) scale(1.05); opacity: 0; }
+    }
+
+    @keyframes badgeBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      20% { transform: translateY(-10px) scale(1.08); }
+      40% { transform: translateY(0) scale(0.98); }
+      60% { transform: translateY(-5px) scale(1.04); }
+    }
+
+    @keyframes partCardLift {
+      0% { transform: translateY(24px) scale(0.92); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @keyframes glowSweep {
+      0%, 100% { transform: translateX(-8%) translateY(0); opacity: 0.68; }
+      50% { transform: translateX(8%) translateY(8px); opacity: 1; }
+    }
+
+    @keyframes confettiFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+      50% { transform: translateY(-12px) rotate(8deg) scale(1.08); }
+    }
+
+    @keyframes rewardRowPulse {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes rewardStarPop {
+      0% { transform: scale(0.8) rotate(-8deg); opacity: 0.2; }
+      45% { transform: scale(1.35) rotate(8deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    @media (max-width: 1100px) {
+      body {
+        overflow: auto;
+      }
+
+      .app-shell {
+        height: auto;
+        min-height: 100%;
+        overflow: visible;
+      }
+
+      .app-frame {
+        min-height: unset;
+      }
+
+      .hud-grid,
+      .results-metrics,
+      .controls-grid,
+      .part-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .question-text {
+        font-size: clamp(34px, 5vw, 48px);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app-shell {
+        padding: 10px;
+      }
+
+      .top-bar,
+      .main-panel {
+        padding: 14px;
+      }
+
+      .hud-card {
+        min-height: 72px;
+      }
+
+      .hud-card .value {
+        font-size: 26px;
+      }
+
+      .question-text {
+        font-size: clamp(32px, 7vw, 42px);
+      }
+
+      .btn,
+      .option-btn {
+        font-size: 22px;
+      }
+
+      .hint-block p,
+      .hint-block summary,
+      .base-word {
+        font-size: 21px;
+      }
+
+      .controls-grid,
+      .hud-grid,
+      .results-metrics,
+      .part-tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-check-row {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-input {
+        font-size: 22px;
+      }
+
+      .hint-concept-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div id="app" class="app-frame">
+      <section class="surface">
+        <div class="top-bar">
+          <div class="title-wrap">
+            <h1 class="font-display">Comparatives & Superlatives Mission</h1>
+          </div>
+          <div class="top-actions">
+            <button id="btn-hints" class="top-hints-btn" type="button">Hints & Rules</button>
+          </div>
+        </div>
+        <div class="hud-grid">
+          <div class="hud-card">
+            <div class="icon">❓</div>
+            <div>
+              <div class="label">Question</div>
+              <div id="hud-question" class="value">1 / 100</div>
+            </div>
+          </div>
+          <div class="hud-card">
+            <div class="icon">⭐</div>
+            <div>
+              <div class="label">Reward Stars</div>
+              <div id="hud-stars-row" class="reward-stars-row" aria-label="Reward star meter">
+                <span class="reward-star" data-reward-star="1">★</span>
+                <span class="reward-star" data-reward-star="2">★</span>
+                <span class="reward-star" data-reward-star="3">★</span>
+                <span class="reward-star" data-reward-star="4">★</span>
+                <span class="reward-star" data-reward-star="5">★</span>
+              </div>
+            </div>
+          </div>
+          <div class="hud-card">
+            <div class="icon">🔥</div>
+            <div>
+              <div class="label">Streak</div>
+              <div id="hud-streak" class="value">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="part-label">Part 1: Rule Detective</span>
+            <span id="progress-label">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="part-tabs" role="tablist" aria-label="Switch game parts">
+          <button class="part-tab active" type="button" data-part-tab="part1">
+            <span class="part-tab-title">Part 1</span>
+            <span id="part-tab-meta-part1" class="part-tab-meta">Rule Detective</span>
+          </button>
+          <button class="part-tab" type="button" data-part-tab="part2">
+            <span class="part-tab-title">Part 2</span>
+            <span id="part-tab-meta-part2" class="part-tab-meta">Comparative Fill</span>
+          </button>
+          <button class="part-tab" type="button" data-part-tab="part3">
+            <span class="part-tab-title">Part 3</span>
+            <span id="part-tab-meta-part3" class="part-tab-meta">Superlative Challenge</span>
+          </button>
+          <button class="part-tab" type="button" data-part-tab="part4">
+            <span class="part-tab-title">Part 4</span>
+            <span id="part-tab-meta-part4" class="part-tab-meta">Mixed Round</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="game-layout">
+        <article id="main-panel" class="surface main-panel">
+          <div id="mini-stars" class="mini-stars"><span>⭐</span><span>⭐</span><span>⭐</span></div>
+          <section id="question-card" class="question-card focus-ring">
+            <div id="question-chip" class="question-chip">Rule Detective</div>
+            <p id="question-text" class="question-text">How do we change tall?</p>
+            <p id="base-word" class="base-word">Base adjective: tall</p>
+            <div id="option-grid" class="option-grid"></div>
+            <div class="answer-check-row">
+              <input id="answer-input" class="answer-input" type="text" placeholder="Type the answer here" autocomplete="off">
+              <button id="btn-check" class="btn primary" type="button">Check</button>
+            </div>
+            <p id="answer-format-hint" class="answer-format-hint">Type only the missing form, for example: taller or most beautiful.</p>
+          </section>
+
+          <div id="celebrate-banner" class="celebrate-banner" style="display:none;">Mini Celebration</div>
+
+          <section class="controls-grid">
+            <button id="btn-reveal" class="btn primary">Reveal</button>
+            <button id="btn-skip" class="btn gray">Skip</button>
+            <button id="btn-next" class="btn teal">Next</button>
+          </section>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <div id="hint-modal" class="hint-modal" role="dialog" aria-modal="true" aria-labelledby="hint-modal-title">
+    <div class="hint-modal-card">
+      <div class="hint-modal-head">
+        <div>
+          <h2 id="hint-modal-title" class="hint-modal-title">Comparatives & Superlatives Guide</h2>
+          <p class="hint-modal-subtitle">Look for the word pattern first. Short words, y-ending words, and long words use different changes.</p>
+        </div>
+        <button id="btn-hints-close" class="hint-modal-close" type="button" aria-label="Close hints">×</button>
+      </div>
+      <section id="hint-panel" class="hint-concept-grid">
+        <article class="hint-concept-card">
+          <h3>1-syllable: add -er / -est</h3>
+          <p>Most short adjectives just add a new ending.</p>
+          <div class="hint-example">
+            <span class="hint-pill">tall -> taller -> tallest</span>
+            <span class="hint-pill">fast -> faster -> fastest</span>
+          </div>
+        </article>
+        <article class="hint-concept-card">
+          <h3>Short vowel + final consonant: double it</h3>
+          <p>Some short words need the last consonant doubled before the new ending.</p>
+          <div class="hint-example">
+            <span class="hint-pill emphasis">big -> bi + ger -> bigger</span>
+            <span class="hint-pill emphasis">big -> bi + gest -> biggest</span>
+            <span class="hint-pill">hot -> hotter -> hottest</span>
+          </div>
+        </article>
+        <article class="hint-concept-card">
+          <h3>Words ending in y: change y to i</h3>
+          <p>For many y-ending adjectives, swap the y before adding the ending.</p>
+          <div class="hint-example">
+            <span class="hint-pill">noisy -> noisier -> noisiest</span>
+            <span class="hint-pill">happy -> happier -> happiest</span>
+          </div>
+        </article>
+        <article class="hint-concept-card">
+          <h3>Long words: use more / most</h3>
+          <p>Long adjectives usually keep the original word and use helper words.</p>
+          <div class="hint-example">
+            <span class="hint-pill">beautiful -> more beautiful -> most beautiful</span>
+            <span class="hint-pill">interesting -> more interesting -> most interesting</span>
+          </div>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <div id="part-complete-screen" class="part-complete-screen" role="dialog" aria-modal="true" aria-labelledby="part-complete-title">
+    <div class="part-complete-card">
+      <div class="part-complete-glow"></div>
+      <div class="part-complete-orbit" aria-hidden="true">
+        <span>✨</span>
+        <span>🌟</span>
+        <span>🎉</span>
+        <span>🏆</span>
+        <span>💫</span>
+        <span>🎈</span>
+      </div>
+      <p class="part-complete-kicker">Level Cleared</p>
+      <div class="part-complete-burst" aria-hidden="true"><span>🎉</span><span>⭐</span><span>🏆</span><span>🎉</span></div>
+      <p class="part-complete-title font-display" id="part-complete-title">Part Complete!</p>
+      <p class="part-complete-text" id="part-complete-text">You finished this part. Switch tabs to continue or stay here and review.</p>
+      <div class="results-actions">
+        <button id="btn-part-complete-close" class="btn teal" style="min-width: 220px;">Keep Going</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="results-screen" class="results-screen" role="dialog" aria-modal="true">
+    <div class="results-card">
+      <p class="results-title font-display" id="results-title">Mission Complete!</p>
+      <p class="results-subtitle" id="results-subtitle">Great speaking and grammar thinking.</p>
+      <div class="results-metrics">
+        <div class="metric">
+          <div class="name">Correct</div>
+          <div class="number" id="result-correct">0</div>
+        </div>
+        <div class="metric">
+          <div class="name">Total</div>
+          <div class="number" id="result-total">100</div>
+        </div>
+        <div class="metric">
+          <div class="name">Reward Stars</div>
+          <div class="number" id="result-stars">0</div>
+        </div>
+        <div class="metric">
+          <div class="name">Best Streak</div>
+          <div class="number" id="result-streak">0</div>
+        </div>
+      </div>
+      <div class="results-actions">
+        <button id="btn-restart" class="btn teal" style="min-width: 220px;">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const RULE_OPTIONS = [
+      { key: "er", label: "Add -er / -est", className: "option-er" },
+      { key: "ier", label: "Change y to -ier / -iest", className: "option-ier" },
+      { key: "more", label: "Use more / most", className: "option-more" }
+    ];
+
+    const MASCOT = {
+      thinking: ["🧭", "🤔", "🧐"],
+      happy: ["🥳", "🤩", "🚀"],
+      gentle: ["🙂", "🧠", "💡"],
+      celebrate: ["🎉", "🏆", "🌟"]
+    };
+
+    const ONE_SYLLABLE = [
+      { base: "tall", comparative: "taller", superlative: "tallest", rule: "er", tags: ["person", "animal", "building"] },
+      { base: "fast", comparative: "faster", superlative: "fastest", rule: "er", tags: ["animal", "vehicle", "person"] },
+      { base: "hot", comparative: "hotter", superlative: "hottest", rule: "er", tags: ["weather", "place", "food"] },
+      { base: "big", comparative: "bigger", superlative: "biggest", rule: "er", tags: ["animal", "object", "place"] },
+      { base: "small", comparative: "smaller", superlative: "smallest", rule: "er", tags: ["animal", "object", "place"] },
+      { base: "long", comparative: "longer", superlative: "longest", rule: "er", tags: ["object", "place", "story"] },
+      { base: "short", comparative: "shorter", superlative: "shortest", rule: "er", tags: ["object", "person", "route", "story"] },
+      { base: "cold", comparative: "colder", superlative: "coldest", rule: "er", tags: ["weather", "place", "food"] },
+      { base: "warm", comparative: "warmer", superlative: "warmest", rule: "er", tags: ["weather", "place", "clothing"] },
+      { base: "bright", comparative: "brighter", superlative: "brightest", rule: "er", tags: ["light", "room", "color"] },
+      { base: "clean", comparative: "cleaner", superlative: "cleanest", rule: "er", tags: ["room", "place", "object"] },
+      { base: "cute", comparative: "cuter", superlative: "cutest", rule: "er", tags: ["animal", "baby", "toy"] },
+      { base: "smart", comparative: "smarter", superlative: "smartest", rule: "er", tags: ["person", "student"] },
+      { base: "quick", comparative: "quicker", superlative: "quickest", rule: "er", tags: ["animal", "person", "vehicle"] },
+      { base: "strong", comparative: "stronger", superlative: "strongest", rule: "er", tags: ["person", "animal", "hero"] },
+      { base: "young", comparative: "younger", superlative: "youngest", rule: "er", tags: ["person", "animal"] }
+    ];
+
+    const TWO_SYLLABLE = [
+      { base: "noisy", comparative: "noisier", superlative: "noisiest", rule: "ier", tags: ["place", "animal", "person"] },
+      { base: "happy", comparative: "happier", superlative: "happiest", rule: "ier", tags: ["person", "animal"] },
+      { base: "easy", comparative: "easier", superlative: "easiest", rule: "ier", tags: ["task", "game", "subject"] },
+      { base: "funny", comparative: "funnier", superlative: "funniest", rule: "ier", tags: ["story", "movie", "person"] },
+      { base: "busy", comparative: "busier", superlative: "busiest", rule: "ier", tags: ["place", "person", "street"] },
+      { base: "pretty", comparative: "prettier", superlative: "prettiest", rule: "ier", tags: ["dress", "picture", "garden"] },
+      { base: "messy", comparative: "messier", superlative: "messiest", rule: "ier", tags: ["room", "desk", "place"] },
+      { base: "friendly", comparative: "friendlier", superlative: "friendliest", rule: "ier", tags: ["person", "animal", "neighbor"] }
+    ];
+
+    const THREE_SYLLABLE = [
+      { base: "beautiful", comparative: "more beautiful", superlative: "most beautiful", rule: "more", tags: ["place", "picture", "person"] },
+      { base: "interesting", comparative: "more interesting", superlative: "most interesting", rule: "more", tags: ["book", "game", "story", "lesson"] },
+      { base: "dangerous", comparative: "more dangerous", superlative: "most dangerous", rule: "more", tags: ["animal", "place", "activity"] },
+      { base: "expensive", comparative: "more expensive", superlative: "most expensive", rule: "more", tags: ["object", "toy", "bike"] },
+      { base: "important", comparative: "more important", superlative: "most important", rule: "more", tags: ["rule", "lesson", "thing"] },
+      { base: "delicious", comparative: "more delicious", superlative: "most delicious", rule: "more", tags: ["food", "cake", "fruit"] },
+      { base: "difficult", comparative: "more difficult", superlative: "most difficult", rule: "more", tags: ["task", "game", "subject", "puzzle"] },
+      { base: "careful", comparative: "more careful", superlative: "most careful", rule: "more", tags: ["person", "student"] }
+    ];
+
+    const ALL_ADJECTIVES = [...ONE_SYLLABLE, ...TWO_SYLLABLE, ...THREE_SYLLABLE];
+
+    const COMP_TEMPLATES = [
+      { sentence: "Tom is _____ than his brother.", tags: ["person"] },
+      { sentence: "He is _____ than his sister.", tags: ["person"] },
+      { sentence: "This book is _____ than that game.", tags: ["book", "game", "story", "lesson"] },
+      { sentence: "Hong Kong is _____ than Harbin.", tags: ["place", "weather"] },
+      { sentence: "This bike is _____ than that bike.", tags: ["bike", "vehicle", "object"] },
+      { sentence: "My room is _____ than your room.", tags: ["room"] },
+      { sentence: "A tiger is _____ than a cat.", tags: ["animal"] },
+      { sentence: "Today is _____ than yesterday.", tags: ["weather"] },
+      { sentence: "This puzzle is _____ than that one.", tags: ["puzzle", "task", "game"] },
+      { sentence: "The blue whale is _____ than a dolphin.", tags: ["animal"] },
+      { sentence: "A rabbit is _____ than a turtle.", tags: ["animal"] },
+      { sentence: "My desk is _____ than your desk.", tags: ["desk", "object"] },
+      { sentence: "This road is _____ than that road.", tags: ["route", "place"] },
+      { sentence: "Summer is _____ than winter.", tags: ["weather"] },
+      { sentence: "Her picture is _____ than mine.", tags: ["picture", "color"] }
+    ];
+
+    const SUP_TEMPLATES = [
+      { sentence: "This is the _____ dog in the world.", tags: ["animal"] },
+      { sentence: "She is the _____ person in class.", tags: ["person"] },
+      { sentence: "Cheetahs are the _____ animals in the world.", tags: ["animal"] },
+      { sentence: "This is the _____ cake in the shop.", tags: ["cake", "food"] },
+      { sentence: "He is the _____ runner on the team.", tags: ["person"] },
+      { sentence: "That was the _____ movie this year.", tags: ["movie", "story"] },
+      { sentence: "This is the _____ mountain in our country.", tags: ["place", "building"] },
+      { sentence: "It is the _____ answer in the quiz.", tags: ["task", "rule", "thing"] },
+      { sentence: "She is the _____ singer in the group.", tags: ["person"] },
+      { sentence: "Today is the _____ day of my week.", tags: ["weather"] },
+      { sentence: "This is the _____ story in the book.", tags: ["story", "book"] },
+      { sentence: "He is the _____ student in class.", tags: ["student", "person"] },
+      { sentence: "It was the _____ game in the tournament.", tags: ["game"] },
+      { sentence: "This is the _____ toy in the store.", tags: ["toy", "object"] },
+      { sentence: "That is the _____ path to school.", tags: ["route", "place"] }
+    ];
+
+    const REQUIRED_SENTENCES = [
+      { type: "comparative", sentence: "Tom is _____ than his brother.", base: "tall" },
+      { type: "comparative", sentence: "He is _____ than his sister.", base: "noisy" },
+      { type: "superlative", sentence: "This is the _____ dog in the world.", base: "cute" },
+      { type: "superlative", sentence: "She is the _____ person in class.", base: "beautiful" },
+      { type: "superlative", sentence: "Cheetahs are the _____ animals in the world.", base: "fast" },
+      { type: "comparative", sentence: "Books are _____ than games.", base: "interesting" },
+      { type: "comparative", sentence: "Hong Kong is _____ than Harbin.", base: "hot" }
+    ];
+
+    const PART_CONFIG = {
+      part1: { label: "Part 1: Rule Detective", shortLabel: "Rule Detective" },
+      part2: { label: "Part 2: Comparative Fill", shortLabel: "Comparative Fill" },
+      part3: { label: "Part 3: Superlative Challenge", shortLabel: "Superlative Challenge" },
+      part4: { label: "Part 4: Mixed Round", shortLabel: "Mixed Round" }
+    };
+
+    const PART_KEYS = Object.keys(PART_CONFIG);
+
+    const state = {
+      questionBank: [],
+      partQuestionMap: {},
+      currentPart: "part1",
+      partIndices: {
+        part1: 0,
+        part2: 0,
+        part3: 0,
+        part4: 0
+      },
+      questionStatus: {},
+      phase: "thinking",
+      score: 0,
+      totalMarked: 0,
+      stars: 0,
+      totalRewardStars: 0,
+      correctInCurrentPartRun: 0,
+      streak: 0,
+      bestStreak: 0,
+      revealed: false,
+      hintUsedThisQuestion: false,
+      noHintRun: 0,
+      partCompletionShown: {
+        part1: false,
+        part2: false,
+        part3: false,
+        part4: false
+      },
+      celebrationCooldown: false,
+      bannerTimeoutId: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function shuffle(items) {
+      const arr = [...items];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function randomPick(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function byBase(base) {
+      return ALL_ADJECTIVES.find((a) => a.base === base);
+    }
+
+    function uniqueSentencePool(basePool, count) {
+      const result = [];
+      let guard = 0;
+      while (result.length < count && guard < 4000) {
+        guard += 1;
+        const item = randomPick(basePool);
+        if (!result.includes(item)) {
+          result.push(item);
+        }
+      }
+      return result;
+    }
+
+    function tagsOverlap(adjective, template) {
+      const adjectiveTags = adjective.tags || [];
+      const templateTags = template.tags || [];
+      return templateTags.some((tag) => adjectiveTags.includes(tag));
+    }
+
+    function pickCompatibleTemplate(templates, adjective, fallbackIndex = 0) {
+      const compatible = templates.filter((template) => tagsOverlap(adjective, template));
+      if (!compatible.length) return null;
+      return compatible[fallbackIndex % compatible.length];
+    }
+
+    function adjectivesWithCompatibleTemplates(mode) {
+      const templatePool = mode === "comparative" ? COMP_TEMPLATES : SUP_TEMPLATES;
+      return ALL_ADJECTIVES.filter((adjective) => templatePool.some((template) => tagsOverlap(adjective, template)));
+    }
+
+    function buildRuleQuestions() {
+      const pool = shuffle(ALL_ADJECTIVES);
+      return pool.slice(0, 25).map((adj, i) => ({
+        id: `r-${i + 1}`,
+        partKey: "part1",
+        part: "Part 1: Rule Detective",
+        mode: "rule",
+        adjective: adj.base,
+        answer: adj.rule,
+        comparative: adj.comparative,
+        superlative: adj.superlative,
+        explanation: ruleExplanation(adj.rule),
+        prompt: "Ask your student: What's the correct form?"
+      }));
+    }
+
+    function buildFillQuestions({ partKey, partName, target, count, templates, forced = [] }) {
+      const result = [];
+      const used = new Set();
+
+      forced.forEach((f, idx) => {
+        const adj = byBase(f.base);
+        if (!adj) return;
+        result.push(createFillQuestion(partKey, partName, target, f.sentence, adj, idx + 1));
+        used.add(`${f.sentence}|${adj.base}`);
+      });
+
+      let index = result.length;
+      let guard = 0;
+      while (result.length < count) {
+        guard += 1;
+        if (guard > 5000) break;
+        index += 1;
+        const mode = target === "mixed" ? (Math.random() > 0.5 ? "comparative" : "superlative") : target;
+        const templatePool = mode === "comparative" ? COMP_TEMPLATES : SUP_TEMPLATES;
+        const adjectivePool = adjectivesWithCompatibleTemplates(mode);
+        if (!adjectivePool.length) break;
+        const adjSource = randomPick(adjectivePool);
+        const template = pickCompatibleTemplate(templatePool, adjSource, index);
+        if (!template) continue;
+        const sentence = template.sentence;
+        const answer = mode === "comparative" ? adjSource.comparative : adjSource.superlative;
+        const signature = `${sentence}|${adjSource.base}|${mode}`;
+        if (used.has(signature)) continue;
+        used.add(signature);
+
+        result.push({
+          id: `${partName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${result.length + 1}`,
+            partKey,
+          part: partName,
+          mode: "fill",
+          target,
+          sentence,
+          adjective: adjSource.base,
+          answer,
+          comparative: adjSource.comparative,
+          superlative: adjSource.superlative,
+          rule: adjSource.rule,
+          explanation: mode === "comparative"
+            ? `${adjSource.base} -> ${adjSource.comparative}`
+            : `${adjSource.base} -> ${adjSource.superlative}`,
+          prompt: "Ask your student: What's the correct form?",
+          revealMode: mode
+        });
+      }
+
+      return result.slice(0, count);
+    }
+
+    function createFillQuestion(partKey, partName, target, sentence, adj, number) {
+      const revealMode = target;
+      const answer = revealMode === "comparative" ? adj.comparative : adj.superlative;
+      return {
+        id: `${partName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${number}`,
+        partKey,
+        part: partName,
+        mode: "fill",
+        target,
+        sentence,
+        adjective: adj.base,
+        answer,
+        comparative: adj.comparative,
+        superlative: adj.superlative,
+        rule: adj.rule,
+        explanation: revealMode === "comparative"
+          ? `${adj.base} -> ${adj.comparative}`
+          : `${adj.base} -> ${adj.superlative}`,
+        prompt: "Ask your student: What's the correct form?",
+        revealMode
+      };
+    }
+
+    function buildQuestionBank() {
+      const requiredComparative = REQUIRED_SENTENCES.filter((x) => x.type === "comparative");
+      const requiredSuperlative = REQUIRED_SENTENCES.filter((x) => x.type === "superlative");
+
+      const part1 = buildRuleQuestions();
+      const part2 = buildFillQuestions({
+        partKey: "part2",
+        partName: "Part 2: Comparative Fill",
+        target: "comparative",
+        count: 25,
+        templates: COMP_TEMPLATES,
+        forced: requiredComparative
+      });
+      const part3 = buildFillQuestions({
+        partKey: "part3",
+        partName: "Part 3: Superlative Challenge",
+        target: "superlative",
+        count: 25,
+        templates: SUP_TEMPLATES,
+        forced: requiredSuperlative
+      });
+      const part4 = buildFillQuestions({
+        partKey: "part4",
+        partName: "Part 4: Mixed Round",
+        target: "mixed",
+        count: 25,
+        templates: []
+      });
+
+      const full = [...part1, ...part2, ...part3, ...part4];
+      return full.map((q, idx) => ({ ...q, number: idx + 1 }));
+    }
+
+    function buildPartQuestionMap(questions) {
+      return PART_KEYS.reduce((acc, partKey) => {
+        acc[partKey] = questions.filter((question) => question.partKey === partKey);
+        return acc;
+      }, {});
+    }
+
+    function ruleExplanation(rule) {
+      if (rule === "er") return "One syllable -> add -er/-est";
+      if (rule === "ier") return "Ends with y -> change to -ier/-iest";
+      return "Three or more syllables -> use more/most";
+    }
+
+    function currentQuestion() {
+      const questions = state.partQuestionMap[state.currentPart] || [];
+      const index = state.partIndices[state.currentPart] || 0;
+      return questions[index];
+    }
+
+    function getCompletedCount() {
+      return Object.keys(state.questionStatus).length;
+    }
+
+    function getCompletedCountForPart(partKey) {
+      const questions = state.partQuestionMap[partKey] || [];
+      return questions.filter((question) => state.questionStatus[question.id]).length;
+    }
+
+    function isQuestionCompleted(question) {
+      return Boolean(question && state.questionStatus[question.id]);
+    }
+
+    function markQuestionStatus(question, status) {
+      if (!question || state.questionStatus[question.id]) return false;
+      state.questionStatus[question.id] = status;
+      return true;
+    }
+
+    function setMascot(kind, text) {
+      const avatar = $("mascot-avatar");
+      const speech = $("mascot-speech");
+      const card = $("mascot-card");
+      if (!avatar || !speech || !card) return;
+      const emoji = randomPick(MASCOT[kind] || MASCOT.thinking);
+      avatar.textContent = emoji;
+      speech.textContent = text;
+      card.classList.remove("shake", "pop");
+      void card.offsetWidth;
+      card.classList.add("pop");
+    }
+
+    function updateHUD() {
+      const total = state.questionBank.length;
+      const partIndex = state.partIndices[state.currentPart] || 0;
+        const partQuestions = state.partQuestionMap[state.currentPart] || [];
+        const partTotal = partQuestions.length;
+        const partComplete = getCompletedCountForPart(state.currentPart);
+        const progress = partTotal ? Math.round((partComplete / partTotal) * 100) : 0;
+      $("hud-question").textContent = `${Math.min(partIndex + 1, Math.max(partQuestions.length, 1))} / ${partQuestions.length || 0}`;
+      const rewardProgress = Math.max(0, Math.min(5, state.stars));
+      document.querySelectorAll("[data-reward-star]").forEach((starEl, index) => {
+        starEl.classList.toggle("filled", index < rewardProgress);
+      });
+      $("hud-streak").textContent = String(state.streak);
+      $("progress-fill").style.width = `${progress}%`;
+        $("progress-label").textContent = `${partComplete} / ${partTotal}`;
+      const q = currentQuestion();
+      if (q) $("part-label").textContent = q.part;
+    }
+
+    function runRewardStarEffect(starNumber) {
+      const row = $("hud-stars-row");
+      if (row) {
+        row.classList.remove("celebrate");
+        void row.offsetWidth;
+        row.classList.add("celebrate");
+      }
+      const starEl = document.querySelector(`[data-reward-star="${starNumber}"]`);
+      if (starEl) {
+        starEl.classList.remove("pop");
+        void starEl.offsetWidth;
+        starEl.classList.add("pop");
+        setTimeout(() => starEl.classList.remove("pop"), 760);
+      }
+    }
+
+    function renderPartTabs() {
+      PART_KEYS.forEach((partKey) => {
+        const button = document.querySelector(`[data-part-tab="${partKey}"]`);
+        const meta = $(`part-tab-meta-${partKey}`);
+        const total = (state.partQuestionMap[partKey] || []).length;
+        const complete = getCompletedCountForPart(partKey);
+        if (button) {
+          button.classList.toggle("active", partKey === state.currentPart);
+          button.setAttribute("aria-selected", partKey === state.currentPart ? "true" : "false");
+        }
+        if (meta) {
+          meta.textContent = `${PART_CONFIG[partKey].shortLabel} • ${complete}/${total}`;
+        }
+      });
+    }
+
+    function switchPart(partKey) {
+      if (!state.partQuestionMap[partKey]) return;
+      if (partKey !== state.currentPart) {
+        state.streak = 0;
+        state.stars = 0;
+        state.correctInCurrentPartRun = 0;
+      }
+      state.currentPart = partKey;
+      closePartCompleteScreen();
+      renderQuestion();
+    }
+
+    function openHintModal() {
+      const modal = $("hint-modal");
+      if (!modal) return;
+      hintOpened();
+      modal.classList.add("open");
+    }
+
+    function closeHintModal() {
+      const modal = $("hint-modal");
+      if (!modal) return;
+      modal.classList.remove("open");
+    }
+
+    function openPartCompleteScreen(partKey) {
+      const screen = $("part-complete-screen");
+      if (!screen) return;
+      $("part-complete-title").textContent = `${PART_CONFIG[partKey].shortLabel} Complete!`;
+      $("part-complete-text").textContent = `You finished ${PART_CONFIG[partKey].label}. Switch tabs to continue or stay here and review your answers.`;
+      const card = screen.querySelector(".part-complete-card");
+      if (card) {
+        card.style.animation = "none";
+        void card.offsetWidth;
+        card.style.animation = "partCardLift 520ms cubic-bezier(0.2, 0.9, 0.2, 1)";
+      }
+      screen.classList.add("open");
+      playPartCompleteSound();
+    }
+
+    function closePartCompleteScreen() {
+      const screen = $("part-complete-screen");
+      if (!screen) return;
+      screen.classList.remove("open");
+    }
+
+    function maybeShowPartComplete(partKey) {
+      const questions = state.partQuestionMap[partKey] || [];
+      if (!questions.length) return;
+      const complete = getCompletedCountForPart(partKey);
+      if (complete === questions.length && !state.partCompletionShown[partKey]) {
+        state.partCompletionShown[partKey] = true;
+        openPartCompleteScreen(partKey);
+      }
+    }
+
+    function normalizeAnswer(value) {
+      return (value || "").toLowerCase().trim().replace(/\s+/g, " ");
+    }
+
+    function playPartCompleteSound() {
+      const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextCtor) return;
+
+      try {
+        const audioContext = new AudioContextCtor();
+        const now = audioContext.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+
+        notes.forEach((frequency, index) => {
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          oscillator.type = "triangle";
+          oscillator.frequency.setValueAtTime(frequency, now + index * 0.09);
+          gain.gain.setValueAtTime(0.0001, now + index * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.09, now + index * 0.09 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.09 + 0.28);
+          oscillator.connect(gain);
+          gain.connect(audioContext.destination);
+          oscillator.start(now + index * 0.09);
+          oscillator.stop(now + index * 0.09 + 0.3);
+        });
+
+        setTimeout(() => {
+          audioContext.close().catch(() => {});
+        }, 900);
+      } catch (error) {
+        console.warn("Unable to play celebration sound.", error);
+      }
+    }
+
+    function expectedAnswerMeta(question) {
+      if (!question) return { exact: "", acceptable: [] };
+
+      if (question.mode === "rule") {
+        if (question.answer === "er") {
+          return {
+            exact: "-er / -est",
+            acceptable: ["er", "est", "-er", "-est", "er est", "add er", "add -er", "add er est", "add -er -est", "one syllable"]
+          };
+        }
+        if (question.answer === "ier") {
+          return {
+            exact: "-ier / -iest",
+            acceptable: ["ier", "iest", "-ier", "-iest", "ier iest", "change y", "change y to ier", "change y to i", "two syllable y"]
+          };
+        }
+        return {
+          exact: "more / most",
+          acceptable: ["more", "most", "more most", "use more", "use most", "use more most", "three syllable"]
+        };
+      }
+
+      const answer = normalizeAnswer(question.answer);
+      const noSpaces = answer.replace(/\s+/g, "");
+      return {
+        exact: question.answer,
+        acceptable: [answer, noSpaces]
+      };
+    }
+
+    function checkTypedAnswer() {
+      const question = currentQuestion();
+      const input = $("answer-input");
+      if (!question || !input) return;
+
+      if (isQuestionCompleted(question)) {
+        showBannerMessage("This question is already completed.", "info", 1200);
+        return;
+      }
+
+      const typed = normalizeAnswer(input.value);
+      if (!typed) {
+        showBannerMessage("Type an answer first.", "info", 1200);
+        return;
+      }
+
+      const meta = expectedAnswerMeta(question);
+      const acceptable = meta.acceptable.map((value) => normalizeAnswer(value));
+      const isCorrect = acceptable.includes(typed) || acceptable.includes(typed.replace(/\s+/g, ""));
+
+      if (isCorrect) {
+        applyCorrect(`Correct: ${meta.exact}`, question.explanation);
+      } else {
+        showBannerMessage(`Try again. Expected form: ${meta.exact}`, "bad", 1600);
+        state.streak = 0;
+        $("hud-streak").textContent = String(state.streak);
+      }
+    }
+
+    function hideBanner() {
+      const banner = $("celebrate-banner");
+      if (!banner) return;
+      if (state.bannerTimeoutId) {
+        clearTimeout(state.bannerTimeoutId);
+        state.bannerTimeoutId = null;
+      }
+      banner.style.display = "none";
+      banner.className = "celebrate-banner";
+    }
+
+    function showBannerMessage(text, tone = "info", autoHideMs = 0) {
+      const banner = $("celebrate-banner");
+      if (!banner) return;
+      if (state.bannerTimeoutId) {
+        clearTimeout(state.bannerTimeoutId);
+        state.bannerTimeoutId = null;
+      }
+      banner.className = `celebrate-banner ${tone}`;
+      banner.textContent = text;
+      banner.style.display = "block";
+      if (autoHideMs > 0) {
+        state.bannerTimeoutId = setTimeout(() => {
+          hideBanner();
+        }, autoHideMs);
+      }
+    }
+
+    function resetForQuestion() {
+      state.revealed = false;
+      state.phase = "thinking";
+      state.hintUsedThisQuestion = false;
+      $("btn-next").disabled = true;
+      $("btn-reveal").disabled = false;
+      $("btn-check").disabled = false;
+      $("answer-input").disabled = false;
+      $("answer-input").value = "";
+      $("mini-stars").classList.remove("show");
+      closeHintModal();
+      hideBanner();
+    }
+
+    function renderQuestion() {
+      const q = currentQuestion();
+      if (!q) {
+        showBannerMessage("This part has no question loaded yet.", "info", 1500);
+        return;
+      }
+
+      resetForQuestion();
+      updateHUD();
+      renderPartTabs();
+
+      setMascot("thinking", "Your turn. Listen to your student and guide them.");
+
+      const chip = $("question-chip");
+      const qText = $("question-text");
+      const baseWord = $("base-word");
+      const options = $("option-grid");
+      options.innerHTML = "";
+      $("answer-input").placeholder = q.mode === "rule" ? "Type the rule: -er / -ier / more" : "Type the missing word or phrase";
+
+      if (q.mode === "rule") {
+        chip.textContent = "Rule Detective";
+        qText.innerHTML = `How do we change <span style="color:#f66f1e">${q.adjective}</span>?`;
+
+        RULE_OPTIONS.forEach((opt) => {
+          const button = document.createElement("button");
+          button.className = `option-btn ${opt.className}`;
+          button.type = "button";
+          button.innerHTML = `<span>${opt.label}</span>`;
+          button.addEventListener("click", () => {
+            $("answer-input").value = opt.key;
+            checkTypedAnswer();
+          });
+          options.appendChild(button);
+        });
+
+        if (isQuestionCompleted(q)) {
+          options.querySelectorAll("button").forEach((button) => {
+            button.disabled = true;
+          });
+          $("btn-reveal").disabled = true;
+          $("btn-check").disabled = true;
+          $("answer-input").disabled = true;
+          $("btn-next").disabled = false;
+          showBannerMessage("This question is already completed. Switch tabs or go next.", "info", 1600);
+        }
+      } else {
+        chip.textContent = q.part.includes("Mixed") ? "Mixed Round" : q.part.includes("Superlative") ? "Superlative" : "Comparative";
+        const baseHint = q.partKey === "part2" || q.partKey === "part3" || q.partKey === "part4"
+          ? ` <span class="question-base-hint">(${q.adjective})</span>`
+          : "";
+        qText.innerHTML = q.sentence.replace("_____", '<span class="blank-slot">_____</span>') + baseHint;
+
+        if (isQuestionCompleted(q)) {
+          $("btn-reveal").disabled = true;
+          $("btn-check").disabled = true;
+          $("answer-input").disabled = true;
+          $("btn-next").disabled = false;
+          showBannerMessage("This question is already completed. Switch tabs or go next.", "info", 1600);
+        }
+      }
+    }
+
+    function handleRuleChoice(choice) {
+      const q = currentQuestion();
+      if (!q || q.mode !== "rule") return;
+      if (isQuestionCompleted(q)) return;
+      $("answer-input").value = choice;
+      state.revealed = true;
+      $("btn-next").disabled = false;
+      $("btn-reveal").disabled = true;
+
+      if (choice === q.answer) {
+        applyCorrect(`Correct: ${q.adjective} -> ${q.comparative} -> ${q.superlative}`, q.explanation);
+      } else {
+        showBannerMessage(`Try again. Rule hint: ${ruleExplanation(q.answer)}`, "bad", 1600);
+        state.streak = 0;
+        $("hud-streak").textContent = String(state.streak);
+        $("btn-next").disabled = true;
+        $("btn-reveal").disabled = false;
+      }
+    }
+
+    function revealAnswer() {
+      const q = currentQuestion();
+      if (!q) return;
+      if (isQuestionCompleted(q)) {
+        $("btn-next").disabled = false;
+        return;
+      }
+
+      if (q.mode === "rule") {
+        state.revealed = true;
+        state.phase = "revealed";
+        $("btn-reveal").disabled = true;
+        $("btn-check").disabled = true;
+        $("answer-input").disabled = true;
+        $("answer-input").value = q.answer;
+        applyCorrect(`Answer: ${expectedAnswerMeta(q).exact}`, q.explanation);
+        return;
+      }
+
+      state.revealed = true;
+      state.phase = "revealed";
+      $("btn-reveal").disabled = true;
+      $("btn-check").disabled = true;
+      $("answer-input").disabled = true;
+      setMascot("gentle", `The answer is ${q.answer}. Ask: Why is that form correct?`);
+      applyCorrect(`Answer: ${q.answer}`, q.explanation);
+    }
+
+    function applyCorrect(title, detail) {
+      const q = currentQuestion();
+      const firstCompletion = markQuestionStatus(q, "correct");
+      let earnedRewardStar = false;
+
+      if (firstCompletion) {
+        state.score += 1;
+        state.streak += 1;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        state.totalMarked += 1;
+        state.correctInCurrentPartRun += 1;
+
+        if (!state.hintUsedThisQuestion) {
+          state.noHintRun += 1;
+        } else {
+          state.noHintRun = 0;
+        }
+
+        if (state.correctInCurrentPartRun % 5 === 0 && state.stars < 5) {
+          state.stars += 1;
+          state.totalRewardStars += 1;
+          earnedRewardStar = true;
+        }
+      }
+
+      if (earnedRewardStar) {
+        runRewardStarEffect(state.stars);
+        showCelebration(`Reward star earned! ${state.correctInCurrentPartRun} correct in this part.`);
+      } else {
+        showBannerMessage(`${title} • ${detail}`, "good");
+      }
+
+      setMascot("happy", "Awesome! Keep the speaking confidence high.");
+      if (firstCompletion) runMiniStars();
+      $("btn-next").disabled = false;
+      $("btn-check").disabled = true;
+      $("answer-input").disabled = true;
+      updateHUD();
+      renderPartTabs();
+      if (firstCompletion) maybeShowPartComplete(state.currentPart);
+    }
+
+    function applyIncorrect(title, detail) {
+      const q = currentQuestion();
+      const firstCompletion = markQuestionStatus(q, "incorrect");
+      state.streak = 0;
+      if (firstCompletion) state.totalMarked += 1;
+      state.noHintRun = 0;
+      showBannerMessage(`${title} • ${detail}`, "bad");
+      setMascot("gentle", "Good try. Let's say the correct sentence together.");
+      $("btn-next").disabled = false;
+      updateHUD();
+      renderPartTabs();
+      if (firstCompletion) maybeShowPartComplete(state.currentPart);
+    }
+
+    function nextQuestion() {
+      const questions = state.partQuestionMap[state.currentPart] || [];
+      const currentIndex = state.partIndices[state.currentPart] || 0;
+
+      if (currentIndex >= questions.length - 1) {
+        if (getCompletedCount() === state.questionBank.length) {
+          showResults();
+        } else {
+          showBannerMessage("End of this part. Use the tabs to switch or review another question.", "info", 1800);
+        }
+        return;
+      }
+      state.partIndices[state.currentPart] += 1;
+      renderQuestion();
+    }
+
+    function skipQuestion() {
+      state.streak = 0;
+      state.noHintRun = 0;
+      nextQuestion();
+    }
+
+    function hintOpened() {
+      state.hintUsedThisQuestion = true;
+    }
+
+    function showCelebration(text) {
+      if (state.celebrationCooldown) return;
+      state.celebrationCooldown = true;
+      showBannerMessage(text, "celebrate", 1800);
+      setTimeout(() => {
+        state.celebrationCooldown = false;
+      }, 1800);
+    }
+
+    function runMiniStars() {
+      const stars = $("mini-stars");
+      stars.classList.add("show");
+      setTimeout(() => stars.classList.remove("show"), 780);
+    }
+
+    function showResults() {
+      $("result-correct").textContent = String(state.score);
+      $("result-total").textContent = String(state.questionBank.length);
+      $("result-stars").textContent = String(state.totalRewardStars);
+      $("result-streak").textContent = String(state.bestStreak);
+
+      const pct = state.questionBank.length ? Math.round((state.score / state.questionBank.length) * 100) : 0;
+      if (pct >= 90) {
+        $("results-title").textContent = "Galaxy Master!";
+        $("results-subtitle").textContent = "Outstanding grammar speaking and explanation skills.";
+      } else if (pct >= 70) {
+        $("results-title").textContent = "Super Grammar Hero!";
+        $("results-subtitle").textContent = "Strong speaking and form accuracy. Great work.";
+      } else {
+        $("results-title").textContent = "Mission Complete!";
+        $("results-subtitle").textContent = "Keep practicing and you will level up quickly.";
+      }
+
+      $("results-screen").classList.add("open");
+    }
+
+    function restartGame() {
+      state.questionBank = buildQuestionBank();
+      state.partQuestionMap = buildPartQuestionMap(state.questionBank);
+      state.currentPart = "part1";
+      state.partIndices = { part1: 0, part2: 0, part3: 0, part4: 0 };
+      state.questionStatus = {};
+      state.phase = "thinking";
+      state.score = 0;
+      state.totalMarked = 0;
+      state.stars = 0;
+      state.totalRewardStars = 0;
+      state.correctInCurrentPartRun = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.revealed = false;
+      state.hintUsedThisQuestion = false;
+      state.noHintRun = 0;
+      state.partCompletionShown = { part1: false, part2: false, part3: false, part4: false };
+      $("results-screen").classList.remove("open");
+      closePartCompleteScreen();
+      renderQuestion();
+    }
+
+    function bindEvents() {
+      $("btn-reveal").addEventListener("click", revealAnswer);
+      $("btn-check").addEventListener("click", checkTypedAnswer);
+      $("btn-next").addEventListener("click", nextQuestion);
+      $("btn-skip").addEventListener("click", skipQuestion);
+      $("btn-hints").addEventListener("click", openHintModal);
+      $("btn-hints-close").addEventListener("click", closeHintModal);
+      $("btn-part-complete-close").addEventListener("click", closePartCompleteScreen);
+      $("btn-restart").addEventListener("click", restartGame);
+
+      $("answer-input").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          checkTypedAnswer();
+        }
+      });
+
+      $("hint-modal").addEventListener("click", (event) => {
+        if (event.target.id === "hint-modal") {
+          closeHintModal();
+        }
+      });
+
+      $("part-complete-screen").addEventListener("click", (event) => {
+        if (event.target.id === "part-complete-screen") {
+          closePartCompleteScreen();
+        }
+      });
+
+      document.querySelectorAll("[data-part-tab]").forEach((button) => {
+        button.addEventListener("click", () => {
+          switchPart(button.getAttribute("data-part-tab"));
+        });
+      });
+    }
+
+    function validateQuestionBank() {
+      if (state.questionBank.length !== 100) {
+        console.warn("Question bank size is not 100. Current:", state.questionBank.length);
+      }
+    }
+
+    function init() {
+      bindEvents();
+      state.questionBank = buildQuestionBank();
+      state.partQuestionMap = buildPartQuestionMap(state.questionBank);
+      validateQuestionBank();
+      renderQuestion();
+    }
+
+    init();
+  </script>
+</body>
+</html>

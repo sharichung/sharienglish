@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles Adventure</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="/_sdk/element_sdk.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100%) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100%) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes orbit {
+            0% {
+                transform: rotate(0deg) translateX(30px) rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg) translateX(30px) rotate(-360deg);
+            }
+        }
+
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slide-up {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .shake-animation {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .bounce-in {
+            animation: bounce-in 0.5s ease-out;
+        }
+
+        .slide-up {
+            animation: slide-up 0.5s ease-out;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        .planet {
+            position: absolute;
+            animation: orbit 20s linear infinite;
+        }
+
+        .game-button {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .game-button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-button:active {
+            transform: scale(0.95);
+        }
+
+        .correct-glow {
+            box-shadow: 0 0 30px #22c55e, 0 0 60px #22c55e;
+            background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        }
+
+        .wrong-shake {
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 0 30px #ef4444;
+        }
+
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+
+        .nav-button.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+</head>
+
+<body class="h-full overflow-auto">
+    <div id="app" class="min-h-full w-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <!-- Navigation Menu -->
+        <nav id="nav-menu"
+            class="sticky top-0 z-50 bg-white/20 backdrop-blur-md p-3 flex justify-center gap-4 flex-wrap"><button
+                onclick="goToStage(1)"
+                class="nav-button px-6 py-3 bg-yellow-400 hover:bg-yellow-300 rounded-full font-bold text-lg text-purple-800 shadow-lg flex items-center gap-2">
+                <span class="text-2xl">📚</span> Learn </button> <button onclick="goToStage(2)"
+                class="nav-button px-6 py-3 bg-green-400 hover:bg-green-300 rounded-full font-bold text-lg text-purple-800 shadow-lg flex items-center gap-2">
+                <span class="text-2xl">🎯</span> Practice </button> <button onclick="goToStage(3)"
+                class="nav-button px-6 py-3 bg-blue-400 hover:bg-blue-300 rounded-full font-bold text-lg text-purple-800 shadow-lg flex items-center gap-2">
+                <span class="text-2xl">🚀</span> Space Challenge </button>
+        </nav><!-- Score & Progress Bar -->
+        <div id="score-bar" class="hidden p-4 bg-white/10 backdrop-blur-sm">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex justify-between items-center mb-2"><span class="text-white font-bold text-xl">⭐ Score:
+                        <span id="score">0</span></span> <span class="text-white font-bold text-xl">Question: <span
+                            id="question-num">1</span>/10</span>
+                </div>
+                <div class="w-full bg-white/30 rounded-full h-4 overflow-hidden">
+                    <div id="progress-bar"
+                        class="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-500"
+                        style="width: 0%"></div>
+                </div>
+            </div>
+        </div><!-- Main Content Area -->
+        <main id="main-content" class="p-6 pb-32">
+            <!-- Content will be dynamically inserted here -->
+        </main><!-- Teacher Control Panel -->
+        <div id="teacher-panel"
+            class="fixed bottom-4 right-4 bg-gray-900/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl border-2 border-yellow-400 z-50">
+            <div class="text-yellow-400 font-bold text-sm mb-3 text-center">
+                👩‍🏫 Teacher Panel
+            </div>
+            <div class="grid grid-cols-2 gap-2"><button onclick="revealAnswer()"
+                    class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-semibold transition-all">
+                    👁️ Reveal </button> <button onclick="skipQuestion()"
+                    class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-all">
+                    ⏭️ Skip </button> <button onclick="resetGame()"
+                    class="px-3 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-semibold transition-all">
+                    🔄 Reset </button> <button onclick="toggleTeacherMode()" id="teacher-mode-btn"
+                    class="px-3 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-semibold transition-all">
+                    🎓 Mode: ON </button>
+            </div>
+        </div><!-- Confetti Container -->
+        <div id="confetti-container" class="fixed inset-0 pointer-events-none z-40"></div>
+    </div>
+    <script>
+        // Default configuration
+        const defaultConfig = {
+            game_title: "Articles Adventure",
+            encouragement_message: "You're doing great!",
+            primary_color: "#8b5cf6",
+            secondary_color: "#ec4899",
+            accent_color: "#fbbf24",
+            text_color: "#ffffff",
+            button_color: "#22c55e"
+        };
+
+        let config = {
+            ...defaultConfig
+        };
+
+        // Game State
+        let currentStage = 1;
+        let score = 0;
+        let currentQuestionIndex = 0;
+        let teacherMode = true;
+        let currentQuestions = [];
+        let answerRevealed = false;
+
+        // Question Bank - 50 mixed questions
+        const allQuestions = [
+            // A/AN/THE MIXED SET 1 (10 questions)
+            {
+                sentence: "___ dog is barking.",
+                answer: "A",
+                emoji: "🐶"
+            },
+            {
+                sentence: "___ apple is red.",
+                answer: "AN",
+                emoji: "🍎"
+            },
+            {
+                sentence: "___ sun is very hot.",
+                answer: "THE",
+                emoji: "☀️"
+            },
+            {
+                sentence: "___ cat is sleeping.",
+                answer: "A",
+                emoji: "🐱"
+            },
+            {
+                sentence: "___ elephant is big.",
+                answer: "AN",
+                emoji: "🐘"
+            },
+            {
+                sentence: "___ moon shines at night.",
+                answer: "THE",
+                emoji: "🌙"
+            },
+            {
+                sentence: "___ bird is flying.",
+                answer: "A",
+                emoji: "🐦"
+            },
+            {
+                sentence: "___ umbrella is wet.",
+                answer: "AN",
+                emoji: "☂️"
+            },
+            {
+                sentence: "We live on ___ Earth.",
+                answer: "THE",
+                emoji: "🌍"
+            },
+            {
+                sentence: "___ car is red.",
+                answer: "A",
+                emoji: "🚗"
+            },
+
+            // A/AN/THE MIXED SET 2 (10 questions)
+            {
+                sentence: "___ ice cream is cold.",
+                answer: "AN",
+                emoji: "🍦"
+            },
+            {
+                sentence: "___ sky is blue.",
+                answer: "THE",
+                emoji: "🌤️"
+            },
+            {
+                sentence: "___ book is on the table.",
+                answer: "A",
+                emoji: "📚"
+            },
+            {
+                sentence: "___ orange is sweet.",
+                answer: "AN",
+                emoji: "🍊"
+            },
+            {
+                sentence: "___ ocean is deep.",
+                answer: "THE",
+                emoji: "🌊"
+            },
+            {
+                sentence: "___ teacher is kind.",
+                answer: "A",
+                emoji: "👩‍🏫"
+            },
+            {
+                sentence: "___ egg is in the nest.",
+                answer: "AN",
+                emoji: "🥚"
+            },
+            {
+                sentence: "___ president lives here.",
+                answer: "THE",
+                emoji: "🏛️"
+            },
+            {
+                sentence: "___ ball is round.",
+                answer: "A",
+                emoji: "⚽"
+            },
+            {
+                sentence: "___ owl is wise.",
+                answer: "AN",
+                emoji: "🦉"
+            },
+
+            // A/AN/THE MIXED SET 3 (10 questions)
+            {
+                sentence: "___ world is round.",
+                answer: "THE",
+                emoji: "🌎"
+            },
+            {
+                sentence: "___ flower is pretty.",
+                answer: "A",
+                emoji: "🌸"
+            },
+            {
+                sentence: "___ igloo is cold.",
+                answer: "AN",
+                emoji: "❄️"
+            },
+            {
+                sentence: "___ North Pole is cold.",
+                answer: "THE",
+                emoji: "🧊"
+            },
+            {
+                sentence: "___ house is big.",
+                answer: "A",
+                emoji: "🏠"
+            },
+            {
+                sentence: "___ ant is small.",
+                answer: "AN",
+                emoji: "🐜"
+            },
+            {
+                sentence: "___ Eiffel Tower is tall.",
+                answer: "THE",
+                emoji: "🗼"
+            },
+            {
+                sentence: "___ tree is tall.",
+                answer: "A",
+                emoji: "🌳"
+            },
+            {
+                sentence: "___ idea is good.",
+                answer: "AN",
+                emoji: "💡"
+            },
+            {
+                sentence: "___ Amazon River is long.",
+                answer: "THE",
+                emoji: "🏞️"
+            },
+
+            // A/AN/THE MIXED SET 4 (10 questions)
+            {
+                sentence: "___ banana is yellow.",
+                answer: "A",
+                emoji: "🍌"
+            },
+            {
+                sentence: "___ unicorn is magical.",
+                answer: "A",
+                emoji: "🦄"
+            },
+            {
+                sentence: "___ artist draws pictures.",
+                answer: "AN",
+                emoji: "🎨"
+            },
+            {
+                sentence: "___ piano is in the music room.",
+                answer: "A",
+                emoji: "🎹"
+            },
+            {
+                sentence: "___ island is surrounded by water.",
+                answer: "AN",
+                emoji: "🏝️"
+            },
+            {
+                sentence: "___ doctor helps people.",
+                answer: "A",
+                emoji: "👨‍⚕️"
+            },
+            {
+                sentence: "___ alphabet has 26 letters.",
+                answer: "THE",
+                emoji: "🔤"
+            },
+            {
+                sentence: "___ engine is powerful.",
+                answer: "AN",
+                emoji: "⚙️"
+            },
+            {
+                sentence: "___ zoo has animals.",
+                answer: "A",
+                emoji: "🦁"
+            },
+            {
+                sentence: "___ universe is huge.",
+                answer: "THE",
+                emoji: "🌌"
+            },
+
+            // A/AN/THE MIXED SET 5 (10 questions)
+            {
+                sentence: "___ actor performs on stage.",
+                answer: "AN",
+                emoji: "🎭"
+            },
+            {
+                sentence: "___ ocean wave is big.",
+                answer: "AN",
+                emoji: "🌊"
+            },
+            {
+                sentence: "___ forest is green.",
+                answer: "A",
+                emoji: "🌲"
+            },
+            {
+                sentence: "___ anchor keeps boats safe.",
+                answer: "AN",
+                emoji: "⚓"
+            },
+            {
+                sentence: "___ government makes laws.",
+                answer: "THE",
+                emoji: "🏛️"
+            },
+            {
+                sentence: "___ pencil is sharp.",
+                answer: "A",
+                emoji: "✏️"
+            },
+            {
+                sentence: "___ eagle flies high.",
+                answer: "AN",
+                emoji: "🦅"
+            },
+            {
+                sentence: "___ king lives in ___ castle.",
+                answer: "THE",
+                emoji: "👑"
+            },
+            {
+                sentence: "___ violin makes music.",
+                answer: "A",
+                emoji: "🎻"
+            },
+            {
+                sentence: "___ horizon is beautiful.",
+                answer: "THE",
+                emoji: "🌅"
+            }
+        ];
+
+        // Sound effects using Web Audio API
+        const audioContext = new(window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'correct') {
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'click') {
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            }
+        }
+
+        // Confetti effect
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // Navigation
+        function goToStage(stage) {
+            playSound('click');
+            currentStage = stage;
+            currentQuestionIndex = 0;
+            answerRevealed = false;
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-button').forEach((btn, index) => {
+                btn.classList.toggle('active', index + 1 === stage);
+            });
+
+            // Show/hide score bar
+            const scoreBar = document.getElementById('score-bar');
+            scoreBar.classList.toggle('hidden', stage === 1);
+
+            if (stage === 1) {
+                renderLearnStage();
+            } else if (stage === 2) {
+                currentQuestions = shuffleArray([...allQuestions]).slice(0, 10);
+                renderPracticeStage();
+            } else if (stage === 3) {
+                currentQuestions = shuffleArray([...allQuestions]).slice(0, 10);
+                renderSpaceStage();
+            }
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Stage 1: Learn
+        function renderLearnStage() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+        <div class="max-w-4xl mx-auto space-y-8">
+          <!-- Title -->
+          <div class="text-center bounce-in">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4" id="main-title">${config.game_title || defaultConfig.game_title}</h1>
+            <p class="text-xl text-white/90">Let's learn about A, AN, and THE! 📚</p>
+          </div>
+
+          <!-- Section A -->
+          <div class="bg-white/20 backdrop-blur-md rounded-3xl p-8 slide-up" style="animation-delay: 0.1s">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center text-4xl font-extrabold text-white shadow-lg float-animation">
+                A
+              </div>
+              <div>
+                <h2 class="text-3xl font-bold text-white">Use "A"</h2>
+                <p class="text-xl text-white/90">Before consonant sounds (B, C, D, F, G...)</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">🐶</div>
+                <div class="text-xl font-bold text-white">a dog</div>
+              </div>
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">🚗</div>
+                <div class="text-xl font-bold text-white">a car</div>
+              </div>
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">📚</div>
+                <div class="text-xl font-bold text-white">a book</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section AN -->
+          <div class="bg-white/20 backdrop-blur-md rounded-3xl p-8 slide-up" style="animation-delay: 0.2s">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-teal-500 rounded-2xl flex items-center justify-center text-3xl font-extrabold text-white shadow-lg float-animation" style="animation-delay: 0.5s">
+                AN
+              </div>
+              <div>
+                <h2 class="text-3xl font-bold text-white">Use "AN"</h2>
+                <p class="text-xl text-white/90">Before vowel sounds (A, E, I, O, U)</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">🍎</div>
+                <div class="text-xl font-bold text-white">an apple</div>
+              </div>
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">🐘</div>
+                <div class="text-xl font-bold text-white">an elephant</div>
+              </div>
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">🍊</div>
+                <div class="text-xl font-bold text-white">an orange</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section THE -->
+          <div class="bg-white/20 backdrop-blur-md rounded-3xl p-8 slide-up" style="animation-delay: 0.3s">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center text-2xl font-extrabold text-white shadow-lg float-animation" style="animation-delay: 1s">
+                THE
+              </div>
+              <div>
+                <h2 class="text-3xl font-bold text-white">Use "THE"</h2>
+                <p class="text-xl text-white/90">For special or only-one things!</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">☀️</div>
+                <div class="text-xl font-bold text-white">the sun</div>
+              </div>
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">🌙</div>
+                <div class="text-xl font-bold text-white">the moon</div>
+              </div>
+              <div class="bg-white/30 rounded-2xl p-4 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-5xl mb-2">🌍</div>
+                <div class="text-xl font-bold text-white">the Earth</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Start Button -->
+          <div class="text-center pt-4">
+            <button onclick="goToStage(2)" class="game-button px-12 py-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full text-2xl font-extrabold text-purple-900 shadow-2xl pulse-glow">
+              🎮 Let's Practice!
+            </button>
+          </div>
+        </div>
+      `;
+        }
+
+        // Render question card
+        function renderQuestionCard(showSpaceTheme = false) {
+            const main = document.getElementById('main-content');
+            const question = currentQuestions[currentQuestionIndex];
+
+            updateProgress();
+
+            const stageLabel = showSpaceTheme ? '🚀 Space Challenge' : '🎯 Practice Time';
+            const cardClasses = showSpaceTheme ?
+                'bg-gradient-to-br from-indigo-900/80 to-purple-900/80 border-2 border-blue-400/50' :
+                'bg-white/20';
+
+            main.innerHTML = `
+        <div class="max-w-3xl mx-auto relative">
+          ${showSpaceTheme ? `
+            <!-- Space Background -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none" id="space-bg">
+              ${generateStars()}
+              <div class="planet" style="top: 10%; left: 10%; font-size: 3rem;">🪐</div>
+              <div class="planet" style="top: 20%; right: 15%; font-size: 2rem; animation-delay: -5s;">🌟</div>
+              <div class="planet" style="bottom: 30%; left: 5%; font-size: 2.5rem; animation-delay: -10s;">✨</div>
+              <div class="planet" style="bottom: 20%; right: 10%; font-size: 2rem; animation-delay: -15s;">🌠</div>
+            </div>
+          ` : ''}
+          
+          <!-- Question Card -->
+          <div class="relative ${cardClasses} backdrop-blur-md rounded-3xl p-8 md:p-12 text-center shadow-2xl bounce-in">
+            ${showSpaceTheme ? `
+              <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-2 rounded-full text-white font-bold text-lg">
+                ${stageLabel}
+              </div>
+              <div class="mt-4"></div>
+            ` : `
+              <div class="mb-4 text-lg font-bold text-yellow-300">${stageLabel}</div>
+            `}
+            
+            <!-- Question Emoji -->
+            <div class="text-8xl md:text-9xl mb-8">${question.emoji}</div>
+            
+            <!-- Question Text -->
+            <div class="text-2xl md:text-4xl font-bold text-white mb-8 leading-relaxed" id="question-text">
+              ${formatQuestion(question.sentence)}
+            </div>
+            
+            <!-- Teacher Mode Indicator -->
+            ${teacherMode ? `
+              <div class="mb-6 p-3 bg-yellow-400/20 border-2 border-yellow-300 rounded-xl text-yellow-300 font-semibold text-sm md:text-base">
+                🎓 Teacher Mode: Ask the student their answer!
+              </div>
+            ` : ''}
+            
+            <!-- Answer Buttons -->
+            <div class="flex justify-center gap-4 md:gap-6 flex-wrap mb-6" id="answer-buttons">
+              <button onclick="checkAnswer('A')" class="game-button w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl text-2xl md:text-3xl font-extrabold text-purple-900 shadow-lg hover:shadow-xl transition-shadow">
+                A
+              </button>
+              <button onclick="checkAnswer('AN')" class="game-button w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-green-400 to-teal-500 rounded-2xl text-2xl md:text-3xl font-extrabold text-white shadow-lg hover:shadow-xl transition-shadow">
+                AN
+              </button>
+              <button onclick="checkAnswer('THE')" class="game-button w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl text-2xl md:text-3xl font-extrabold text-white shadow-lg hover:shadow-xl transition-shadow">
+                THE
+              </button>
+            </div>
+            
+            <!-- Feedback Area -->
+            <div id="feedback" class="min-h-12 text-2xl md:text-3xl font-bold hidden"></div>
+            
+            <!-- Encouragement Message -->
+            <div class="mt-4 text-sm md:text-lg text-white/70" id="encouragement">${config.encouragement_message || defaultConfig.encouragement_message}</div>
+          </div>
+        </div>
+      `;
+        }
+
+        // Stage 2: Practice
+        function renderPracticeStage() {
+            renderQuestionCard(false);
+        }
+
+        // Stage 3: Space Challenge
+        function renderSpaceStage() {
+            renderQuestionCard(true);
+        }
+
+        function generateStars() {
+            let stars = '';
+            for (let i = 0; i < 30; i++) {
+                const size = Math.random() * 3 + 1;
+                stars += `<div class="star" style="
+          left: ${Math.random() * 100}%;
+          top: ${Math.random() * 100}%;
+          width: ${size}px;
+          height: ${size}px;
+          animation-delay: ${Math.random() * 2}s;
+        "></div>`;
+            }
+            return stars;
+        }
+
+        function formatQuestion(sentence) {
+            return sentence.replace('___',
+                '<span class="inline-block w-20 md:w-32 border-b-4 border-yellow-400 mx-2"></span>');
+        }
+
+        function updateProgress() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('question-num').textContent = currentQuestionIndex + 1;
+            const progress = ((currentQuestionIndex) / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        function checkAnswer(answer) {
+            if (answerRevealed) return;
+
+            const question = currentQuestions[currentQuestionIndex];
+            const correct = answer === question.answer;
+            const buttons = document.querySelectorAll('#answer-buttons button');
+            const feedback = document.getElementById('feedback');
+
+            buttons.forEach(btn => {
+                if (btn.textContent.trim() === question.answer) {
+                    btn.classList.add('correct-glow');
+                } else if (btn.textContent.trim() === answer && !correct) {
+                    btn.classList.add('wrong-shake');
+                }
+                btn.disabled = true;
+            });
+
+            feedback.classList.remove('hidden');
+
+            if (correct) {
+                score += 10;
+                playSound('correct');
+                createConfetti();
+                feedback.innerHTML = '<span class="text-green-300">✨ Great job! ✨</span>';
+            } else {
+                playSound('wrong');
+                feedback.innerHTML = `<span class="text-red-300">The answer is: ${question.answer}</span>`;
+            }
+
+            answerRevealed = true;
+
+            // Auto advance after delay
+            setTimeout(() => {
+                nextQuestion();
+            }, 2500);
+        }
+
+        function nextQuestion() {
+            answerRevealed = false;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex >= currentQuestions.length) {
+                showResults();
+            } else {
+                if (currentStage === 2) {
+                    renderPracticeStage();
+                } else {
+                    renderSpaceStage();
+                }
+            }
+        }
+
+        function showResults() {
+            const main = document.getElementById('main-content');
+            const percentage = (score / (currentQuestions.length * 10)) * 100;
+
+            let message = '';
+            let emoji = '';
+
+            if (percentage >= 80) {
+                message = "Amazing! You're a superstar! 🌟";
+                emoji = "🏆";
+            } else if (percentage >= 60) {
+                message = "Great work! Keep practicing!";
+                emoji = "⭐";
+            } else {
+                message = "Good try! Let's learn more!";
+                emoji = "💪";
+            }
+
+            createConfetti();
+            playSound('correct');
+
+            main.innerHTML = `
+        <div class="max-w-2xl mx-auto text-center">
+          <div class="bg-white/20 backdrop-blur-md rounded-3xl p-12 bounce-in">
+            <div class="text-9xl mb-6">${emoji}</div>
+            <h2 class="text-4xl font-extrabold text-white mb-4">Stage Complete!</h2>
+            <div class="text-6xl font-extrabold text-yellow-300 mb-4">${score} Points</div>
+            <p class="text-2xl text-white mb-8">${message}</p>
+            <div class="flex justify-center gap-4 flex-wrap">
+              <button onclick="resetStage()" class="game-button px-8 py-4 bg-gradient-to-r from-green-400 to-teal-500 rounded-full text-xl font-bold text-white shadow-xl">
+                🔄 Play Again
+              </button>
+              <button onclick="goToStage(1)" class="game-button px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full text-xl font-bold text-purple-900 shadow-xl">
+                📚 Learn More
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+        }
+
+        // Teacher Controls
+        function revealAnswer() {
+            if (answerRevealed || currentStage === 1) return;
+
+            const question = currentQuestions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('#answer-buttons button');
+
+            buttons.forEach(btn => {
+                if (btn.textContent.trim() === question.answer) {
+                    btn.classList.add('correct-glow');
+                }
+            });
+
+            const feedback = document.getElementById('feedback');
+            if (feedback) {
+                feedback.classList.remove('hidden');
+                feedback.innerHTML = `<span class="text-yellow-300">Answer: ${question.answer}</span>`;
+            }
+
+            answerRevealed = true;
+        }
+
+        function skipQuestion() {
+            if (currentStage === 1) return;
+            answerRevealed = false;
+            nextQuestion();
+        }
+
+        function resetGame() {
+            score = 0;
+            currentQuestionIndex = 0;
+            answerRevealed = false;
+            goToStage(currentStage);
+        }
+
+        function resetStage() {
+            score = 0;
+            currentQuestionIndex = 0;
+            answerRevealed = false;
+            if (currentStage === 2) {
+                currentQuestions = shuffleArray([...allQuestions]).slice(0, 10);
+                renderPracticeStage();
+            } else if (currentStage === 3) {
+                currentQuestions = shuffleArray([...allQuestions]).slice(0, 10);
+                renderSpaceStage();
+            }
+        }
+
+        function toggleTeacherMode() {
+            teacherMode = !teacherMode;
+            const btn = document.getElementById('teacher-mode-btn');
+            btn.textContent = teacherMode ? '🎓 Mode: ON' : '🎓 Mode: OFF';
+            btn.classList.toggle('bg-green-600', teacherMode);
+            btn.classList.toggle('bg-gray-600', !teacherMode);
+
+            // Re-render current stage to update teacher mode indicator
+            if (currentStage === 2) {
+                renderPracticeStage();
+            } else if (currentStage === 3) {
+                renderSpaceStage();
+            }
+        }
+
+        // Element SDK Integration
+        async function onConfigChange(newConfig) {
+            config = {
+                ...defaultConfig,
+                ...newConfig
+            };
+
+            // Update title if on learn stage
+            const titleEl = document.getElementById('main-title');
+            if (titleEl) {
+                titleEl.textContent = config.game_title || defaultConfig.game_title;
+            }
+
+            // Update encouragement message if visible
+            const encouragementEl = document.getElementById('encouragement');
+            if (encouragementEl) {
+                encouragementEl.textContent = config.encouragement_message || defaultConfig.encouragement_message;
+            }
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [{
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            window.elementSdk.setConfig({
+                                primary_color: value
+                            });
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            window.elementSdk.setConfig({
+                                secondary_color: value
+                            });
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            window.elementSdk.setConfig({
+                                accent_color: value
+                            });
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["game_title", config.game_title || defaultConfig.game_title],
+                ["encouragement_message", config.encouragement_message || defaultConfig.encouragement_message]
+            ]);
+        }
+
+        // Initialize
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        // Start the game
+        goToStage(1);
+    </script>
+</body>
+
+</html>

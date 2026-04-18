@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Let's Speak in Full Sentences!</title>
+  <style>
+    :root {
+      --bg-1: #73c8ff;
+      --bg-2: #8d7dff;
+      --bg-3: #ff9adf;
+      --bg-4: #ffd166;
+      --card: #ffffff;
+      --ink: #24324a;
+      --accent-a: #2ec4b6;
+      --accent-b: #ff9f1c;
+      --accent-c: #7c4dff;
+      --success: #29bf6f;
+      --shadow: 0 14px 28px rgba(36, 50, 74, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(145deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3) 80%, var(--bg-4));
+      background-size: 220% 220%;
+      animation: skyShift 18s ease-in-out infinite;
+      overflow-x: hidden;
+    }
+
+    @keyframes skyShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cloud {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: clamp(40px, 8vw, 92px);
+      animation: driftCloud linear infinite;
+      filter: drop-shadow(0 6px 8px rgba(255, 255, 255, 0.15));
+    }
+
+    .cloud.c1 { top: 8%; left: -20%; animation-duration: 34s; }
+    .cloud.c2 { top: 24%; left: -28%; animation-duration: 43s; animation-delay: -12s; }
+    .cloud.c3 { top: 70%; left: -25%; animation-duration: 39s; animation-delay: -18s; }
+
+    @keyframes driftCloud {
+      from { transform: translateX(0); }
+      to { transform: translateX(135vw); }
+    }
+
+    .balloon {
+      position: absolute;
+      font-size: clamp(24px, 5vw, 50px);
+      animation: balloonFloat 7s ease-in-out infinite;
+      opacity: 0.85;
+    }
+
+    .balloon.b1 { left: 4%; top: 62%; }
+    .balloon.b2 { right: 6%; top: 58%; animation-delay: 1.4s; }
+    .balloon.b3 { left: 87%; top: 20%; animation-delay: 2.3s; }
+
+    @keyframes balloonFloat {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(-18px) rotate(4deg); }
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.18;
+      animation: shapeDrift 10s ease-in-out infinite;
+    }
+
+    .shape.s1 { width: 110px; height: 110px; background: #fff; top: 18%; left: 18%; }
+    .shape.s2 { width: 80px; height: 80px; background: #ffe082; top: 76%; left: 72%; animation-delay: 1.8s; }
+    .shape.s3 { width: 130px; height: 130px; background: #fff; top: 52%; left: 82%; animation-delay: 3s; }
+
+    @keyframes shapeDrift {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-14px) scale(1.07); }
+    }
+
+    .stage {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+      position: relative;
+    }
+
+    .float-emoji {
+      position: fixed;
+      font-size: clamp(20px, 3vw, 34px);
+      opacity: 0.7;
+      z-index: 0;
+      animation: bob 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .e1 { left: 6%; top: 8%; }
+    .e2 { right: 8%; top: 14%; animation-delay: 0.7s; }
+    .e3 { left: 10%; bottom: 12%; animation-delay: 1.2s; }
+    .e4 { right: 10%; bottom: 10%; animation-delay: 1.8s; }
+    .e5 { left: 45%; top: 6%; animation-delay: 2.1s; }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(6deg); }
+    }
+
+    .screen {
+      display: none;
+      position: relative;
+      z-index: 2;
+      animation: fadeSlide 0.45s ease;
+    }
+
+    .screen.active { display: block; }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title-card,
+    .panel,
+    .end-card {
+      background: var(--card);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      border: 4px solid rgba(255, 255, 255, 0.75);
+    }
+
+    .title-card {
+      padding: 28px 20px;
+      text-align: center;
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .title-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -65% -10%;
+      height: 170px;
+      background: radial-gradient(circle at center, rgba(124, 77, 255, 0.2), transparent 65%);
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 56px);
+      line-height: 1.1;
+      color: var(--accent-c);
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      font-size: clamp(18px, 2.8vw, 24px);
+      color: #52607a;
+      font-weight: 700;
+    }
+
+    .decor-line {
+      margin-top: 14px;
+      font-size: clamp(24px, 4vw, 34px);
+      letter-spacing: 5px;
+    }
+
+    .big-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 16px 28px;
+      min-width: 210px;
+      font-size: clamp(20px, 2.7vw, 28px);
+      font-weight: 900;
+      color: white;
+      box-shadow: 0 10px 20px rgba(36, 50, 74, 0.18), 0 0 0 5px rgba(255, 255, 255, 0.3) inset;
+      cursor: pointer;
+      transition: transform 0.14s ease, filter 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .big-btn:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 14px 24px rgba(36, 50, 74, 0.24), 0 0 22px rgba(255, 255, 255, 0.35);
+    }
+    .big-btn:active { transform: scale(0.97); }
+    .btn-start { background: linear-gradient(90deg, #2ec4b6, #26a69a); }
+    .btn-answer { background: linear-gradient(90deg, #ff9f1c, #ff8a00); }
+    .btn-next { background: linear-gradient(90deg, #7c4dff, #6a38f7); }
+    .btn-play-again { background: linear-gradient(90deg, #29bf6f, #17a85c); }
+
+    .start-actions,
+    .question-actions,
+    .end-actions {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+    }
+
+    .progress-wrap {
+      margin: 18px 0;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 24px;
+      padding: 10px;
+      backdrop-filter: blur(4px);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ffffff;
+      font-weight: 900;
+      margin-bottom: 8px;
+      font-size: clamp(15px, 2.2vw, 21px);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, #ffd400, #ff9800, #ff6f61);
+      transition: width 0.35s ease;
+    }
+
+    .star-progress {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .star-dot {
+      text-align: center;
+      font-size: clamp(14px, 2vw, 22px);
+      opacity: 0.45;
+      transform: scale(0.92);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      user-select: none;
+    }
+
+    .star-dot.filled {
+      opacity: 1;
+      transform: scale(1.07);
+      animation: twinkle 0.45s ease;
+    }
+
+    @keyframes twinkle {
+      0% { transform: scale(0.7) rotate(-10deg); }
+      60% { transform: scale(1.2) rotate(8deg); }
+      100% { transform: scale(1.07) rotate(0deg); }
+    }
+
+    .panel {
+      padding: 24px;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      border: 4px solid #e8e5ff;
+    }
+
+    .panel:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 34px rgba(36, 50, 74, 0.2);
+    }
+
+    .label {
+      margin: 0 0 8px;
+      font-size: clamp(20px, 3vw, 28px);
+      color: #5b6b8a;
+      font-weight: 900;
+    }
+
+    .question-text {
+      margin: 0;
+      font-size: clamp(30px, 4.8vw, 48px);
+      line-height: 1.2;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .frame-box,
+    .answer-box {
+      margin-top: 18px;
+      border-radius: 22px;
+      padding: 18px 16px;
+      border: 4px dashed #9cc6ff;
+      background: #f0f7ff;
+    }
+
+    .frame-box .label,
+    .answer-box .label {
+      margin-bottom: 5px;
+      font-size: clamp(18px, 2.8vw, 24px);
+    }
+
+    .frame-text,
+    .answer-text {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .answer-box {
+      border-color: #90dfb4;
+      background: #ecfff5;
+      animation: pop 0.28s ease;
+      box-shadow: 0 8px 16px rgba(41, 191, 111, 0.18);
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .hidden { display: none !important; }
+
+    .teacher-note {
+      margin-top: 16px;
+      text-align: center;
+      color: #ffffff;
+      font-size: clamp(14px, 2.1vw, 18px);
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    .end-card {
+      margin-top: 18px;
+      padding: 30px 20px;
+      text-align: center;
+      border: 5px solid #ffe27a;
+    }
+
+    .end-title {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 50px);
+      color: #ff8a00;
+      font-weight: 900;
+    }
+
+    .end-msg {
+      margin-top: 12px;
+      font-size: clamp(20px, 3vw, 28px);
+      color: #465571;
+      font-weight: 800;
+    }
+
+    .end-stars {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      font-size: clamp(24px, 4vw, 38px);
+    }
+
+    .end-stars span {
+      display: inline-block;
+      animation: endBounce 1.1s ease-in-out infinite;
+    }
+
+    .end-stars span:nth-child(2) { animation-delay: 0.14s; }
+    .end-stars span:nth-child(3) { animation-delay: 0.28s; }
+    .end-stars span:nth-child(4) { animation-delay: 0.42s; }
+    .end-stars span:nth-child(5) { animation-delay: 0.56s; }
+
+    @keyframes endBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    #confettiLayer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -18px;
+      width: 10px;
+      height: 14px;
+      border-radius: 2px;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(700deg);
+        opacity: 0;
+      }
+    }
+
+    .sound-toggle {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      border: 3px solid rgba(124, 77, 255, 0.4);
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(36, 50, 74, 0.15);
+      transition: transform 0.15s ease, background 0.2s ease;
+      user-select: none;
+    }
+
+    .sound-toggle:hover {
+      transform: scale(1.08);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .sound-toggle:active {
+      transform: scale(0.96);
+    }
+
+    @media (max-width: 700px) {
+      .panel { padding: 18px 14px; }
+      .big-btn { min-width: 185px; }
+      .sound-toggle { width: 50px; height: 50px; font-size: 22px; top: 14px; right: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="float-emoji e1">⭐</div>
+  <div class="float-emoji e2">🎈</div>
+  <div class="float-emoji e3">🐶</div>
+  <div class="float-emoji e4">🌟</div>
+  <div class="float-emoji e5">🧸</div>
+
+  <div class="bg-layer" aria-hidden="true">
+    <div class="cloud c1">☁️</div>
+    <div class="cloud c2">☁️</div>
+    <div class="cloud c3">☁️</div>
+    <div class="balloon b1">🎈</div>
+    <div class="balloon b2">🎈</div>
+    <div class="balloon b3">🎈</div>
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+  </div>
+
+  <div id="confettiLayer"></div>
+  <button id="soundToggle" class="sound-toggle" title="Toggle Sound" aria-label="Toggle Sound">🔊</button>
+
+  <main class="stage">
+    <section id="startScreen" class="screen active">
+      <div class="title-card">
+        <h1 class="title">Let's Speak in Full Sentences!</h1>
+        <p class="subtitle">Teacher clicks • Student speaks out loud</p>
+        <div class="decor-line">⭐ 🎈 🐶 🎤 🌈</div>
+        <div class="start-actions">
+          <button id="startBtn" class="big-btn btn-start">Start Game ▶</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="questionScreen" class="screen">
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span>⭐ Round Progress</span>
+          <span id="progressText">1 of 10</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div id="starProgress" class="star-progress" aria-hidden="true"></div>
+      </div>
+
+      <div id="questionCard" class="panel">
+        <p class="label">❓ Question</p>
+        <p id="questionText" class="question-text">What is your favorite food?</p>
+
+        <div class="frame-box">
+          <p class="label">💬 Sentence Frame</p>
+          <p id="sentenceFrame" class="frame-text">My favorite food is ______.</p>
+        </div>
+
+        <div id="answerBox" class="answer-box hidden">
+          <p class="label">✨ Example Answer</p>
+          <p id="exampleAnswer" class="answer-text">My favorite food is pizza.</p>
+        </div>
+      </div>
+
+      <div class="question-actions">
+        <button id="showAnswerBtn" class="big-btn btn-answer">Show Example Answer 👀</button>
+        <button id="nextBtn" class="big-btn btn-next">Next Question ➡</button>
+      </div>
+      <p class="teacher-note">👨‍🏫 Teacher controls all buttons during Zoom screen sharing.</p>
+    </section>
+
+    <section id="endScreen" class="screen">
+      <div class="end-card">
+        <h2 class="end-title">Awesome speaking! 🎉</h2>
+        <p class="end-msg">You answered 10 questions!</p>
+        <div id="endStars" class="end-stars" aria-hidden="true"></div>
+        <div class="decor-line">🌟 ⭐ 🎊 🐶 🎈</div>
+        <div class="end-actions">
+          <button id="playAgainBtn" class="big-btn btn-play-again">Play Again 🔄</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ============================================
+    // SOUND SYSTEM (Web Audio API)
+    // ============================================
+    let audioContext = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      initAudio();
+
+      const now = audioContext.currentTime;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+
+      switch(type) {
+        case 'start':
+          // Cheerful ascending chime
+          osc.frequency.setValueAtTime(523, now); // C5
+          osc.frequency.setValueAtTime(659, now + 0.08); // E5
+          osc.frequency.setValueAtTime(784, now + 0.16); // G5
+          osc.type = 'sine';
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+          break;
+
+        case 'reveal':
+          // Soft pop sound
+          osc.frequency.setValueAtTime(880, now); // A5
+          osc.type = 'sine';
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+          break;
+
+        case 'next':
+          // Quick swoosh click
+          osc.frequency.setValueAtTime(440, now); // A4
+          osc.frequency.exponentialRampToValueAtTime(523, now + 0.08); // C5
+          osc.type = 'triangle';
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+          break;
+
+        case 'celebrate':
+          // Happy celebration chime
+          const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+          notes.forEach((freq, i) => {
+            const o = audioContext.createOscillator();
+            const g = audioContext.createGain();
+            o.connect(g);
+            g.connect(audioContext.destination);
+            o.frequency.setValueAtTime(freq, now + i * 0.09);
+            o.type = 'sine';
+            g.gain.setValueAtTime(0.22, now + i * 0.09);
+            g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.09 + 0.25);
+            o.start(now + i * 0.09);
+            o.stop(now + i * 0.09 + 0.25);
+          });
+          break;
+
+        case 'button':
+          // Tiny button tap
+          osc.frequency.setValueAtTime(800, now);
+          osc.type = 'sine';
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+          osc.start(now);
+          osc.stop(now + 0.06);
+          break;
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const toggle = document.getElementById('soundToggle');
+      toggle.textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) playSound('button');
+    }
+
+    // ============================================
+    // QUESTION BANK (100 total)
+    // Teachers can edit question, frame, and answer below.
+    // Format: { question: "...", frame: "...", answer: "..." }
+    // ============================================
+    const questionBank = [
+      { question: "What time do you wake up?", frame: "I wake up at ______.", answer: "I wake up at 7 o'clock." },
+      { question: "What do you eat for breakfast?", frame: "I eat ______ for breakfast.", answer: "I eat cereal for breakfast." },
+      { question: "How do you go to school?", frame: "I go to school by ______.", answer: "I go to school by bus." },
+      { question: "What do you do after school?", frame: "After school, I ______.", answer: "After school, I play with my friends." },
+      { question: "What time do you go to bed?", frame: "I go to bed at ______.", answer: "I go to bed at 9 o'clock." },
+      { question: "Do you brush your teeth every day?", frame: "Yes, I brush my teeth ______.", answer: "Yes, I brush my teeth every morning and night." },
+      { question: "What do you do on weekends?", frame: "On weekends, I ______.", answer: "On weekends, I visit my grandparents." },
+      { question: "Do you help at home?", frame: "Yes, I help by ______.", answer: "Yes, I help by cleaning my room." },
+      { question: "What do you wear to school?", frame: "I wear ______ to school.", answer: "I wear a uniform to school." },
+      { question: "When do you do your homework?", frame: "I do my homework ______.", answer: "I do my homework after dinner." },
+      { question: "Do you take a shower in the morning or at night?", frame: "I take a shower ______.", answer: "I take a shower at night." },
+      { question: "What do you do before bed?", frame: "Before bed, I ______.", answer: "Before bed, I read a book." },
+      { question: "Do you watch TV every day?", frame: "I watch TV ______.", answer: "I watch TV after I finish my homework." },
+      { question: "How long does it take to get to school?", frame: "It takes ______ to get to school.", answer: "It takes 20 minutes to get to school." },
+      { question: "What is your morning routine?", frame: "In the morning, I ______.", answer: "In the morning, I brush my teeth and eat breakfast." },
+      { question: "What is your favorite food?", frame: "My favorite food is ______.", answer: "My favorite food is pizza." },
+      { question: "Do you like vegetables?", frame: "Yes, I like ______. / No, I don't like ______.", answer: "Yes, I like carrots and broccoli." },
+      { question: "What fruit do you like?", frame: "I like ______.", answer: "I like apples and bananas." },
+      { question: "What do you drink with lunch?", frame: "I drink ______ with lunch.", answer: "I drink juice with lunch." },
+      { question: "Can you cook?", frame: "Yes, I can cook ______. / No, I can't cook.", answer: "Yes, I can cook eggs." },
+      { question: "What snack do you like?", frame: "I like to eat ______ as a snack.", answer: "I like to eat cookies as a snack." },
+      { question: "Do you like ice cream?", frame: "Yes, I like ______ ice cream. / No, I don't like ice cream.", answer: "Yes, I like chocolate ice cream." },
+      { question: "What do you eat for dinner?", frame: "I eat ______ for dinner.", answer: "I eat rice and chicken for dinner." },
+      { question: "What is your favorite drink?", frame: "My favorite drink is ______.", answer: "My favorite drink is orange juice." },
+      { question: "Do you like spicy food?", frame: "Yes, I like spicy food. / No, I don't like spicy food.", answer: "No, I don't like spicy food." },
+      { question: "What food don't you like?", frame: "I don't like ______.", answer: "I don't like onions." },
+      { question: "Do you eat lunch at school?", frame: "Yes, I eat ______ at school. / No, I eat at home.", answer: "Yes, I eat sandwiches at school." },
+      { question: "What is a healthy food?", frame: "______ is a healthy food.", answer: "Salad is a healthy food." },
+      { question: "What do you eat on your birthday?", frame: "On my birthday, I eat ______.", answer: "On my birthday, I eat cake." },
+      { question: "Do you like soup?", frame: "Yes, I like ______ soup. / No, I don't like soup.", answer: "Yes, I like chicken soup." },
+      { question: "What is your favorite animal?", frame: "My favorite animal is ______.", answer: "My favorite animal is a tiger." },
+      { question: "Do you have a pet?", frame: "Yes, I have a ______. / No, I don't have a pet.", answer: "Yes, I have a dog." },
+      { question: "What animal can fly?", frame: "A ______ can fly.", answer: "A bird can fly." },
+      { question: "What animal lives in the water?", frame: "A ______ lives in the water.", answer: "A fish lives in the water." },
+      { question: "What is the biggest animal?", frame: "The biggest animal is ______.", answer: "The biggest animal is a blue whale." },
+      { question: "What sound does a cat make?", frame: "A cat says ______.", answer: "A cat says meow." },
+      { question: "What animal do you want as a pet?", frame: "I want a ______ as a pet.", answer: "I want a rabbit as a pet." },
+      { question: "Where do lions live?", frame: "Lions live in ______.", answer: "Lions live in Africa." },
+      { question: "What animal is very fast?", frame: "A ______ is very fast.", answer: "A cheetah is very fast." },
+      { question: "Do you like dogs or cats?", frame: "I like ______ more.", answer: "I like dogs more." },
+      { question: "What animal has a long neck?", frame: "A ______ has a long neck.", answer: "A giraffe has a long neck." },
+      { question: "What is a baby dog called?", frame: "A baby dog is called a ______.", answer: "A baby dog is called a puppy." },
+      { question: "What animal can jump high?", frame: "A ______ can jump high.", answer: "A kangaroo can jump high." },
+      { question: "What is your favorite zoo animal?", frame: "My favorite zoo animal is ______.", answer: "My favorite zoo animal is the elephant." },
+      { question: "What animal says 'moo'?", frame: "A ______ says 'moo'.", answer: "A cow says 'moo'." },
+      { question: "What is your favorite subject?", frame: "My favorite subject is ______.", answer: "My favorite subject is math." },
+      { question: "Who is your teacher?", frame: "My teacher is ______.", answer: "My teacher is Mr. Smith." },
+      { question: "What do you learn in English class?", frame: "In English class, I learn ______.", answer: "In English class, I learn new words." },
+      { question: "Do you like school?", frame: "Yes, I like school because ______. / No, I don't like school.", answer: "Yes, I like school because I see my friends." },
+      { question: "How many students are in your class?", frame: "There are ______ students in my class.", answer: "There are 25 students in my class." },
+      { question: "What do you have in your pencil case?", frame: "I have ______ in my pencil case.", answer: "I have pencils and erasers in my pencil case." },
+      { question: "What time does school start?", frame: "School starts at ______.", answer: "School starts at 8 o'clock." },
+      { question: "What is your classroom number?", frame: "My classroom number is ______.", answer: "My classroom number is 3B." },
+      { question: "What do you do in P.E. class?", frame: "In P.E. class, I ______.", answer: "In P.E. class, I play soccer." },
+      { question: "Do you eat lunch at school?", frame: "Yes, I eat lunch at school. / No, I eat at home.", answer: "Yes, I eat lunch at school." },
+      { question: "What is on your desk?", frame: "On my desk, there is ______.", answer: "On my desk, there is a book and a pencil." },
+      { question: "Who do you sit next to?", frame: "I sit next to ______.", answer: "I sit next to my friend Tom." },
+      { question: "What subject is difficult?", frame: "______ is difficult for me.", answer: "Science is difficult for me." },
+      { question: "Do you have homework today?", frame: "Yes, I have ______ homework. / No, I don't have homework.", answer: "Yes, I have math homework." },
+      { question: "What do you like about school?", frame: "I like ______ about school.", answer: "I like playing with my friends about school." },
+      { question: "How many people are in your family?", frame: "There are ______ people in my family.", answer: "There are four people in my family." },
+      { question: "Do you have brothers or sisters?", frame: "Yes, I have ______. / No, I don't have any.", answer: "Yes, I have one younger brother." },
+      { question: "What does your mom do?", frame: "My mom is a ______.", answer: "My mom is a teacher." },
+      { question: "What does your dad do?", frame: "My dad is a ______.", answer: "My dad is a doctor." },
+      { question: "Who do you live with?", frame: "I live with ______.", answer: "I live with my mom, dad, and sister." },
+      { question: "Do you have grandparents?", frame: "Yes, I have ______. / No, I don't.", answer: "Yes, I have two grandmothers and two grandfathers." },
+      { question: "What do you do with your family?", frame: "With my family, I ______.", answer: "With my family, I watch movies." },
+      { question: "Who cooks in your family?", frame: "______ cooks in my family.", answer: "My mom cooks in my family." },
+      { question: "Do you have any cousins?", frame: "Yes, I have ______ cousins. / No, I don't.", answer: "Yes, I have three cousins." },
+      { question: "What is your mom's name?", frame: "My mom's name is ______.", answer: "My mom's name is Sarah." },
+      { question: "What is your dad's name?", frame: "My dad's name is ______.", answer: "My dad's name is John." },
+      { question: "Who helps you with homework?", frame: "______ helps me with homework.", answer: "My dad helps me with homework." },
+      { question: "Do you look like your mom or dad?", frame: "I look like my ______.", answer: "I look like my mom." },
+      { question: "What does your family do on Sundays?", frame: "On Sundays, my family ______.", answer: "On Sundays, my family goes to the park." },
+      { question: "Who is the oldest in your family?", frame: "______ is the oldest in my family.", answer: "My grandfather is the oldest in my family." },
+      { question: "What is your hobby?", frame: "My hobby is ______.", answer: "My hobby is drawing." },
+      { question: "Do you play any sports?", frame: "Yes, I play ______. / No, I don't play any sports.", answer: "Yes, I play basketball." },
+      { question: "What do you like to do for fun?", frame: "For fun, I like to ______.", answer: "For fun, I like to ride my bike." },
+      { question: "Do you play video games?", frame: "Yes, I play ______. / No, I don't play video games.", answer: "Yes, I play Minecraft." },
+      { question: "Can you play an instrument?", frame: "Yes, I can play the ______. / No, I can't.", answer: "Yes, I can play the piano." },
+      { question: "Do you like to read?", frame: "Yes, I like to read ______. / No, I don't like to read.", answer: "Yes, I like to read comic books." },
+      { question: "What do you collect?", frame: "I collect ______.", answer: "I collect stickers." },
+      { question: "Do you like to draw?", frame: "Yes, I like to draw ______. / No, I don't like to draw.", answer: "Yes, I like to draw animals." },
+      { question: "What is your favorite game?", frame: "My favorite game is ______.", answer: "My favorite game is hide and seek." },
+      { question: "Do you like swimming?", frame: "Yes, I like swimming. / No, I don't like swimming.", answer: "Yes, I like swimming in the pool." },
+      { question: "What is the weather like today?", frame: "Today, it is ______.", answer: "Today, it is sunny." },
+      { question: "Do you like rainy days?", frame: "Yes, I like rainy days because ______. / No, I don't.", answer: "Yes, I like rainy days because I can jump in puddles." },
+      { question: "What do you wear when it's cold?", frame: "When it's cold, I wear ______.", answer: "When it's cold, I wear a jacket and scarf." },
+      { question: "What is your favorite season?", frame: "My favorite season is ______.", answer: "My favorite season is summer." },
+      { question: "What do you do on sunny days?", frame: "On sunny days, I ______.", answer: "On sunny days, I play outside." },
+      { question: "Do you like snow?", frame: "Yes, I like snow because ______. / No, I don't like snow.", answer: "Yes, I like snow because I can make a snowman." },
+      { question: "What season is it now?", frame: "Now it is ______.", answer: "Now it is spring." },
+      { question: "What is your favorite color?", frame: "My favorite color is ______.", answer: "My favorite color is blue." },
+      { question: "What is your favorite movie?", frame: "My favorite movie is ______.", answer: "My favorite movie is Frozen." },
+      { question: "What is your favorite song?", frame: "My favorite song is ______.", answer: "My favorite song is Happy Birthday." },
+      { question: "What is your favorite book?", frame: "My favorite book is ______.", answer: "My favorite book is Harry Potter." },
+      { question: "What makes you happy?", frame: "______ makes me happy.", answer: "Playing with my friends makes me happy." },
+      { question: "What are you good at?", frame: "I am good at ______.", answer: "I am good at drawing pictures." },
+      { question: "What do you want to be when you grow up?", frame: "I want to be a ______ when I grow up.", answer: "I want to be a doctor when I grow up." },
+      { question: "What did you do yesterday?", frame: "Yesterday, I ______.", answer: "Yesterday, I went to the park with my family." }
+    ];
+
+    // ============================================
+    // GAME SETTINGS
+    // ============================================
+    const ROUND_SIZE = 10;
+
+    // ============================================
+    // GAME STATE
+    // ============================================
+    let roundQuestions = [];
+    let currentIndex = 0;
+
+    // ============================================
+    // DOM ELEMENTS
+    // ============================================
+    const startScreen = document.getElementById("startScreen");
+    const questionScreen = document.getElementById("questionScreen");
+    const endScreen = document.getElementById("endScreen");
+
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const starProgress = document.getElementById("starProgress");
+    const questionCard = document.getElementById("questionCard");
+
+    const questionText = document.getElementById("questionText");
+    const sentenceFrame = document.getElementById("sentenceFrame");
+    const answerBox = document.getElementById("answerBox");
+    const exampleAnswer = document.getElementById("exampleAnswer");
+
+    const startBtn = document.getElementById("startBtn");
+    const showAnswerBtn = document.getElementById("showAnswerBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+    const endStars = document.getElementById("endStars");
+
+    const confettiLayer = document.getElementById("confettiLayer");
+    const soundToggle = document.getElementById("soundToggle");
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+
+    // Fisher-Yates shuffle: creates a shuffled copy of an array.
+    function shuffleArray(source) {
+      const array = [...source];
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function showScreen(screenName) {
+      startScreen.classList.remove("active");
+      questionScreen.classList.remove("active");
+      endScreen.classList.remove("active");
+
+      if (screenName === "start") startScreen.classList.add("active");
+      if (screenName === "question") questionScreen.classList.add("active");
+      if (screenName === "end") endScreen.classList.add("active");
+    }
+
+    function renderStarProgress(filledCount) {
+      starProgress.innerHTML = "";
+      for (let i = 0; i < ROUND_SIZE; i++) {
+        const star = document.createElement("span");
+        star.className = "star-dot";
+        star.textContent = i < filledCount ? "⭐" : "☆";
+        if (i < filledCount) star.classList.add("filled");
+        starProgress.appendChild(star);
+      }
+    }
+
+    function renderEndStars() {
+      endStars.innerHTML = "";
+      for (let i = 0; i < 5; i++) {
+        const star = document.createElement("span");
+        star.textContent = "⭐";
+        endStars.appendChild(star);
+      }
+    }
+
+    function createCelebration() {
+      const colors = ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#6a4c93", "#ff99c8"];
+      for (let i = 0; i < 110; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = (Math.random() * 1.7 + 1.7) + "s";
+        piece.style.animationDelay = Math.random() * 0.35 + "s";
+        confettiLayer.appendChild(piece);
+
+        setTimeout(() => piece.remove(), 4000);
+      }
+
+      const emojis = ["🎉", "⭐", "🏆", "🌟", "🎈"];
+      for (let i = 0; i < 16; i++) {
+        const pop = document.createElement("div");
+        pop.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        pop.style.position = "fixed";
+        pop.style.left = (Math.random() * 84 + 8) + "vw";
+        pop.style.top = (Math.random() * 40 + 30) + "vh";
+        pop.style.fontSize = (Math.random() * 16 + 22) + "px";
+        pop.style.zIndex = "6";
+        pop.style.pointerEvents = "none";
+        pop.style.animation = "fadeSlide 1.4s ease forwards";
+        confettiLayer.appendChild(pop);
+        setTimeout(() => pop.remove(), 1500);
+      }
+    }
+
+    // ============================================
+    // GAME FLOW
+    // ============================================
+
+    function startGame() {
+      // Pick only 10 random questions for this round from the 100-question bank.
+      playSound('start');
+      roundQuestions = shuffleArray(questionBank).slice(0, ROUND_SIZE);
+      currentIndex = 0;
+      renderStarProgress(1);
+      showScreen("question");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const item = roundQuestions[currentIndex];
+
+      // Smooth card transition for each question.
+      questionCard.style.opacity = "0";
+      questionCard.style.transform = "translateY(14px)";
+      setTimeout(() => {
+        questionText.textContent = item.question;
+        sentenceFrame.textContent = item.frame;
+        exampleAnswer.textContent = item.answer;
+
+        answerBox.classList.add("hidden");
+        showAnswerBtn.textContent = "Show Example Answer 👀";
+
+        progressText.textContent = `${currentIndex + 1} of ${ROUND_SIZE}`;
+        progressFill.style.width = `${((currentIndex + 1) / ROUND_SIZE) * 100}%`;
+        renderStarProgress(currentIndex + 1);
+
+        questionCard.style.opacity = "1";
+        questionCard.style.transform = "translateY(0)";
+      }, 140);
+    }
+
+    function showExample() {
+      if (answerBox.classList.contains("hidden")) {
+        playSound('reveal');
+        answerBox.classList.remove("hidden");
+        showAnswerBtn.textContent = "Example Shown ✅";
+      }
+    }
+
+    function nextQuestion() {
+      if (currentIndex < ROUND_SIZE - 1) {
+        playSound('next');
+        currentIndex += 1;
+        renderQuestion();
+      } else {
+        playSound('celebrate');
+        renderEndStars();
+        showScreen("end");
+        createCelebration();
+      }
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    startBtn.addEventListener("click", startGame);
+    showAnswerBtn.addEventListener("click", showExample);
+    nextBtn.addEventListener("click", nextQuestion);
+    playAgainBtn.addEventListener("click", startGame);
+    soundToggle.addEventListener("click", toggleSound);
+
+    // Start on Start Screen
+    showScreen("start");
+  </script>
+</body>
+</html>
